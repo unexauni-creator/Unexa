@@ -53,3 +53,4 @@ export default function Home({ onSelectUni }) {
     </div>
   );
 }
+export default Home;
