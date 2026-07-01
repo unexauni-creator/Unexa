@@ -29,11 +29,7 @@ export default function Home({ onSelectUni }) {
 
       <div className="uni-grid">
         {universities.map(uni => (
-          <div
-            key={uni.id}
-            className="uni-card-new"
-            onClick={() => onSelectUni(uni)}
-          >
+          <div key={uni.id} className="uni-card-new">
             <img src={uni.image} alt={uni.name} className="uni-card-img" />
             <div className="uni-card-glass">
               <div className="uni-card-glass-blur" />
@@ -53,4 +49,5 @@ export default function Home({ onSelectUni }) {
     </div>
   );
 }
+
 export default Home;
