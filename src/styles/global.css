@@ -39,9 +39,9 @@ body, #root { height: 100vh; font-family: 'DM Sans', sans-serif; background: #e2
   aspect-ratio: 316/247; 
   border-radius: 16px; 
   position: relative; 
-  overflow: hidden; 
   cursor: pointer; 
   transition: transform 0.25s cubic-bezier(.22,.68,0,1.2);
+  transform: translateZ(0);
 }
 
 .uni-card-new:hover {
