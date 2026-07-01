@@ -41,12 +41,13 @@ body, #root { height: 100vh; font-family: 'DM Sans', sans-serif; background: #e2
   position: relative; 
   cursor: pointer; 
   transition: transform 0.25s cubic-bezier(.22,.68,0,1.2);
-  clip-path: inset(0 round 16px);
+  overflow: hidden;
 }
 
 .uni-card-new:hover {
   transform: scale(1.02);
 }
+
 
 .uni-card-img { 
   width: 100%; 
@@ -70,16 +71,19 @@ body, #root { height: 100vh; font-family: 'DM Sans', sans-serif; background: #e2
   justify-content: space-between; 
   gap: 8px;
   overflow: hidden;
+  transform: translateZ(0);
 }
 
 .uni-card-glass-blur {
   position: absolute;
   inset: 0;
-  background: rgba(30, 20, 14, 0.45);
+  background: rgba(15, 10, 8, 0.72);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   z-index: 0;
   border-radius: 12px;
+  transform: translateZ(0);
+  will-change: backdrop-filter;
 }
 
 .uni-card-glass .uni-card-text,
