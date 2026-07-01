@@ -216,3 +216,75 @@ a.nav-item { text-decoration: none; }
 .main::-webkit-scrollbar-track { background: transparent; }
 .main::-webkit-scrollbar-thumb { background-color: rgba(172, 136, 118, 0); border-radius: 8px; border: 2px solid transparent; background-clip: padding-box; transition: background-color 0.5s ease; }
 .main.is-scrolling::-webkit-scrollbar-thumb { background-color: rgba(172, 136, 118, 1); background-clip: padding-box; }
+
+
+/* ── Responsive ── */
+@media (max-width: 768px) {
+
+  /* Sidebar becomes top navbar */
+  .sidebar {
+    width: 100%;
+    min-width: unset;
+    height: auto;
+    flex-direction: row;
+    align-items: center;
+    padding: 16px 20px;
+    border-right: none;
+    border-bottom: 1px solid #e0dbd6;
+    position: sticky;
+    top: 0;
+    z-index: 50;
+  }
+
+  .logo { margin-bottom: 0; font-size: 20px; }
+
+  .nav-group { 
+    display: none; 
+  }
+
+  .sidebar-bottom { 
+    margin-top: 0; 
+    margin-left: auto; 
+  }
+
+  .user-name { display: none; }
+
+  /* Home */
+  .home-header { padding: 24px 20px; }
+  .home-title { font-size: 24px; }
+  .home-desc { font-size: 14px; }
+
+  /* Search */
+  .home-search { width: 100%; }
+  .home-search-row { flex-wrap: wrap; gap: 10px; }
+
+  /* Cards: 1 column on phone */
+  .uni-grid { 
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .uni-card-new { 
+    aspect-ratio: 16/9;
+  }
+
+  /* Main layout */
+  .app { flex-direction: column; }
+  .main { overflow-y: auto; }
+}
+
+@media (min-width: 769px) and (max-width: 1024px) {
+
+  /* Tablet: 2 column grid */
+  .uni-grid { 
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .sidebar { 
+    width: 200px; 
+    min-width: 200px;
+    padding: 32px 16px;
+  }
+
+  .home-header { padding: 28px 24px; }
+}
