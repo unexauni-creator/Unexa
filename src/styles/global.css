@@ -79,7 +79,7 @@ body, #root { height: 100vh; font-family: 'DM Sans', sans-serif; background: #e2
   inset: 0;
   background: rgba(15, 10, 8, 0.72);
   backdrop-filter: blur(40px);
-  -webkit-backdrop-filter: blur(40px);
+  -webkit-backdrop-filter: blur(60px);
   z-index: 0;
   border-radius: 12px;
   transform: translateZ(0);
