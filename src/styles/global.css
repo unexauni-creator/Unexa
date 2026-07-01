@@ -361,3 +361,91 @@ a.nav-item { text-decoration: none; }
     gap: 8px;
   }
 }
+
+
+
+/* ── University Detail Page ── */
+.detail-page { padding: 0 32px 48px; }
+
+/* Tabs */
+.detail-tabs { display: flex; gap: 0; margin-bottom: 0; }
+.detail-tab { padding: 10px 24px; font-family: 'Nunito', sans-serif; font-size: 20px; font-weight: 400; color: #000; background: rgba(208,208,208,0.2); border: none; border-radius: 10px 10px 0 0; cursor: pointer; transition: background 0.18s; }
+.detail-tab.active { background: #AC8876; color: #fff; }
+
+/* Content box */
+.detail-content { background: rgba(208,208,208,0.2); border-radius: 0 24px 24px 24px; padding: 40px 20px; display: flex; flex-direction: column; gap: 32px; }
+
+/* Hero */
+.detail-hero { display: flex; flex-direction: row; gap: 24px; align-items: flex-start; }
+.detail-hero-left { flex: 1; display: flex; flex-direction: column; gap: 16px; }
+.detail-hero-right { width: 316px; min-width: 290px; height: 266px; flex-shrink: 0; }
+.detail-hero-img { width: 100%; height: 100%; object-fit: cover; border-radius: 12px; }
+.detail-hero-top { display: flex; justify-content: space-between; align-items: flex-start; }
+.detail-name { font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 20px; color: rgba(43,31,24,0.96); margin-bottom: 4px; }
+.detail-university { font-family: 'Nunito', sans-serif; font-size: 16px; color: #0F0F0F; }
+.detail-rating { display: flex; align-items: center; gap: 4px; }
+.detail-rating-num { font-family: 'Nunito', sans-serif; font-size: 16px; color: #0F0F0F; }
+.detail-star { color: #E18E65; font-size: 20px; }
+.detail-desc { font-family: 'Nunito', sans-serif; font-size: 16px; color: #0F0F0F; line-height: 150%; }
+.detail-btn-group { display: flex; align-items: center; gap: 16px; }
+.detail-btn-primary { padding: 8px 14px; background: #634F44; color: #F5F5F5; border: none; border-radius: 8px; font-family: 'Nunito', sans-serif; font-size: 14px; cursor: pointer; transition: background 0.18s; }
+.detail-btn-primary:hover { background: #4e3d35; }
+.detail-btn-ghost { padding: 8px 14px; background: transparent; color: #303030; border: none; font-family: 'Nunito', sans-serif; font-size: 14px; cursor: pointer; }
+
+/* Section */
+.detail-section { display: flex; flex-direction: column; gap: 16px; }
+.detail-section-title { font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 20px; color: rgba(43,31,24,0.96); }
+
+/* Academic row */
+.detail-academic-row { display: flex; flex-direction: row; align-items: flex-start; padding: 12px; gap: 0; background: rgba(239,239,239,0.72); border-radius: 12px; }
+.detail-academic-item { flex: 1; display: flex; flex-direction: column; gap: 8px; padding: 0 12px; border-right: 1px solid #D7D7D7; }
+.detail-academic-item:first-child { padding-left: 0; }
+.detail-academic-label { font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 16px; color: rgba(43,31,24,0.96); }
+.detail-academic-value { font-family: 'Nunito', sans-serif; font-size: 16px; color: rgba(43,31,24,0.96); }
+
+/* Docs + Language test row */
+.detail-docs-row { display: flex; gap: 16px; align-items: flex-start; }
+.detail-docs-box { flex: 1; background: rgba(239,239,239,0.72); border-radius: 12px; padding: 16px; display: flex; flex-direction: column; gap: 16px; }
+.detail-docs-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.detail-doc-item { background: rgba(255,250,246,0.41); border-radius: 6px; padding: 14px 8px; display: flex; flex-direction: column; gap: 8px; }
+.detail-doc-label { font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 16px; color: rgba(43,31,24,0.96); }
+.detail-doc-value { font-family: 'Nunito', sans-serif; font-size: 14px; color: rgba(43,31,24,0.96); }
+.detail-lang-box { width: 196px; flex-shrink: 0; background: rgba(239,239,239,0.72); border-radius: 12px; padding: 16px; display: flex; flex-direction: column; gap: 16px; align-items: center; justify-content: space-between; }
+.detail-lang-emoji { font-size: 64px; text-align: center; }
+
+/* Teachers social */
+.detail-social-row { display: flex; flex-direction: row; gap: 32px; }
+.detail-social-card { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 12px; }
+.detail-social-stack { position: relative; width: 100%; height: 180px; }
+.detail-social-img-back { position: absolute; width: 85%; height: 160px; background: rgba(208,208,208,0.35); border-radius: 20px; }
+.detail-social-img-back-2 { transform: rotate(-6deg); top: 0; left: 5%; }
+.detail-social-img-back-1 { transform: rotate(2deg); top: 8px; left: 3%; }
+.detail-social-img-front { position: absolute; width: 85%; height: 155px; object-fit: cover; border-radius: 16px; top: 12px; left: 5%; box-shadow: 0 4px 16px rgba(0,0,0,0.12); }
+.detail-social-label { font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 16px; color: rgba(43,31,24,0.96); }
+
+/* Program tab */
+.detail-program-list { display: flex; flex-direction: column; gap: 8px; }
+.detail-program-item { display: flex; align-items: center; gap: 16px; padding: 14px 16px; background: rgba(239,239,239,0.72); border-radius: 10px; }
+.detail-program-num { font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 14px; color: #AC8876; width: 28px; }
+.detail-program-name { flex: 1; font-family: 'Nunito', sans-serif; font-size: 16px; color: rgba(43,31,24,0.96); }
+.detail-program-semester { font-family: 'Nunito', sans-serif; font-size: 13px; color: #9e8f86; }
+
+/* Scholarship tab */
+.detail-scholarship-card { display: flex; justify-content: space-between; align-items: center; padding: 20px; background: rgba(239,239,239,0.72); border-radius: 12px; margin-bottom: 10px; }
+.detail-scholarship-name { font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 16px; color: rgba(43,31,24,0.96); margin-bottom: 4px; }
+.detail-scholarship-req { font-family: 'Nunito', sans-serif; font-size: 14px; color: #9e8f86; }
+.detail-scholarship-amount { font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 18px; color: #AC8876; }
+
+/* Responsive detail */
+@media (max-width: 768px) {
+  .detail-page { padding: 0 16px 48px; }
+  .detail-hero { flex-direction: column; }
+  .detail-hero-right { width: 100%; height: 220px; }
+  .detail-docs-row { flex-direction: column; }
+  .detail-lang-box { width: 100%; }
+  .detail-social-row { gap: 16px; }
+  .detail-academic-row { flex-wrap: wrap; }
+  .detail-academic-item { min-width: 40%; border-right: none; border-bottom: 1px solid #D7D7D7; padding-bottom: 8px; }
+  .detail-tabs { overflow-x: auto; }
+  .detail-tab { font-size: 15px; padding: 8px 16px; white-space: nowrap; }
+}

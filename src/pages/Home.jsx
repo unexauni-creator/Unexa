@@ -7,7 +7,7 @@ const universities = [
   { id: 6, name: "Université Rennes 2", desc: "Rennes, France", image: "https://upload.wikimedia.org/wikipedia/commons/thumb/2/29/Batiments_de_nuits_-Univ_Rennes_2_-_Louis_Arretche.jpg/330px-Batiments_de_nuits_-Univ_Rennes_2_-_Louis_Arretche.jpg" },
 ];
 
-function Home() {
+export default function Home({ onSelectUni }) {
   return (
     <div className="home-header">
       <h1 className="home-title">Welcome back, Kateryna</h1>
@@ -29,7 +29,11 @@ function Home() {
 
       <div className="uni-grid">
         {universities.map(uni => (
-          <div key={uni.id} className="uni-card-new">
+          <div
+            key={uni.id}
+            className="uni-card-new"
+            onClick={() => onSelectUni(uni)}
+          >
             <img src={uni.image} alt={uni.name} className="uni-card-img" />
             <div className="uni-card-glass">
               <div className="uni-card-glass-blur" />
@@ -49,5 +53,3 @@ function Home() {
     </div>
   );
 }
-
-export default Home;

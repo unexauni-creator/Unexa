@@ -1,44 +1,43 @@
-import React, { useRef, useState, useEffect } from "react";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { useState } from "react";
+import { Routes, Route } from "react-router-dom";
 import Sidebar from "./components/Sidebar";
 import Home from "./pages/Home";
 import Dashboard from "./pages/Dashboard";
 import LanguageTests from "./pages/LanguageTests";
 import Community from "./pages/Community";
+import UniversityDetail from "./pages/UniversityDetail";
 import "./styles/global.css";
 
-function App() {
-  const mainRef = useRef(null);
-  const [scrolling, setScrolling] = useState(false);
-  const timeoutRef = useRef(null);
+export default function App() {
+  const [selectedUni, setSelectedUni] = useState(null);
+  const [toast, setToast] = useState("");
 
-  useEffect(() => {
-    const el = mainRef.current;
-    if (!el) return;
-    const handleScroll = () => {
-      setScrolling(true);
-      clearTimeout(timeoutRef.current);
-      timeoutRef.current = setTimeout(() => setScrolling(false), 1000);
-    };
-    el.addEventListener("scroll", handleScroll);
-    return () => el.removeEventListener("scroll", handleScroll);
-  }, []);
+  function showToast(msg) { setToast(msg); setTimeout(() => setToast(""), 2500); }
 
   return (
-    <BrowserRouter>
-      <div className="app">
-        <Sidebar />
-        <main className={`main ${scrolling ? "is-scrolling" : ""}`} ref={mainRef}>
+    <div className="app">
+      <Sidebar />
+      <main className="main">
+        {selectedUni ? (
+          <div>
+            <button
+              onClick={() => setSelectedUni(null)}
+              style={{ margin: "24px 32px 0", display: "flex", alignItems: "center", gap: 8, background: "none", border: "none", cursor: "pointer", fontFamily: "Nunito", fontSize: 16, color: "#634F44", fontWeight: 600 }}
+            >
+              ← Back
+            </button>
+            <UniversityDetail uni={selectedUni} />
+          </div>
+        ) : (
           <Routes>
-            <Route path="/" element={<Home />} />
+            <Route path="/" element={<Home onSelectUni={setSelectedUni} />} />
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/language-tests" element={<LanguageTests />} />
             <Route path="/community" element={<Community />} />
           </Routes>
-        </main>
-      </div>
-    </BrowserRouter>
+        )}
+      </main>
+      {toast && <div className="toast">{toast}</div>}
+    </div>
   );
 }
-
-export default App;
