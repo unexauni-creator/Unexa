@@ -16,15 +16,7 @@ export default function App() {
       <Sidebar />
       <main className="main">
         {selectedUni ? (
-          <div>
-            <button
-              onClick={() => setSelectedUni(null)}
-              style={{ margin: "24px 32px 0", display: "flex", alignItems: "center", gap: 8, background: "none", border: "none", cursor: "pointer", fontFamily: "Nunito", fontSize: 16, color: "#634F44", fontWeight: 600 }}
-            >
-              ← Back
-            </button>
-            <UniversityDetail uni={selectedUni} />
-          </div>
+          <UniversityDetail uni={selectedUni} onBack={() => setSelectedUni(null)} />
         ) : (
           <Routes>
             <Route path="/" element={<Home onSelectUni={setSelectedUni} />} />

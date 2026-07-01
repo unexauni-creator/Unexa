@@ -1,14 +1,39 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-export default function UniversityDetail({ uni }) {
+export default function UniversityDetail({ uni, onBack }) {
   const [activeTab, setActiveTab] = useState("info");
+  const [compareMsg, setCompareMsg] = useState(false);
   const navigate = useNavigate();
 
   if (!uni) return null;
 
+  function handleCompare() {
+    setCompareMsg(true);
+    setTimeout(() => setCompareMsg(false), 5000);
+  }
+
   return (
     <div className="detail-page">
+
+      {/* Back button */}
+      <button className="detail-back-btn" onClick={onBack}>
+        <img src="/arrow-left.svg" alt="Back" className="detail-back-icon" />
+        Back
+      </button>
+
+      {/* Compare toast message */}
+      {compareMsg && (
+        <div className="compare-toast">
+          <div className="compare-toast-text">
+            <span>✓ Added to Dashboard!</span>
+            <span className="compare-toast-sub">If you want to compare this university go to Dashboard</span>
+          </div>
+          <button className="compare-toast-btn" onClick={() => { setCompareMsg(false); navigate("/dashboard"); }}>
+            See →
+          </button>
+        </div>
+      )}
 
       {/* Tabs */}
       <div className="detail-tabs">
@@ -38,7 +63,7 @@ export default function UniversityDetail({ uni }) {
                 <p className="detail-desc">{uni.description || "It was founded in 1946 and is known for strong programs in engineering, business, design, medicine, and technology. The university has a large international community, offers many English-taught courses, and collaborates with hundreds of universities worldwide."}</p>
                 <div className="detail-btn-group">
                   <button className="detail-btn-primary" onClick={() => window.open(uni.website || "#", "_blank")}>Official Website</button>
-                  <button className="detail-btn-ghost" onClick={() => navigate("/dashboard")}>Compare to others</button>
+                  <button className="detail-btn-ghost" onClick={handleCompare}>Compare to others</button>
                 </div>
               </div>
               <div className="detail-hero-right">
