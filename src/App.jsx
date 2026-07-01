@@ -10,9 +10,6 @@ import "./styles/global.css";
 
 export default function App() {
   const [selectedUni, setSelectedUni] = useState(null);
-  const [toast, setToast] = useState("");
-
-  function showToast(msg) { setToast(msg); setTimeout(() => setToast(""), 2500); }
 
   return (
     <div className="app">
@@ -37,7 +34,6 @@ export default function App() {
           </Routes>
         )}
       </main>
-      {toast && <div className="toast">{toast}</div>}
     </div>
   );
 }

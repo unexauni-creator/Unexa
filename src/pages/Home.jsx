@@ -1,3 +1,5 @@
+import { useState } from "react";
+
 const universities = [
   { id: 1, name: "Aix-Marseille Université", desc: "Marseille, France", image: "https://madeinmarseille.net/actualites-marseille/2019/04/Cube-campus-aix.jpeg" },
   { id: 2, name: "Université Bordeaux-Montaigne", desc: "Bordeaux, France", image: "https://upload.wikimedia.org/wikipedia/commons/8/8f/Ijba_iut_montaigne_bordeaux.jpg" },
@@ -26,10 +28,9 @@ export default function Home({ onSelectUni }) {
           </button>
         </div>
       </div>
-
       <div className="uni-grid">
         {universities.map(uni => (
-          <div key={uni.id} className="uni-card-new">
+          <div key={uni.id} className="uni-card-new" onClick={() => onSelectUni(uni)}>
             <img src={uni.image} alt={uni.name} className="uni-card-img" />
             <div className="uni-card-glass">
               <div className="uni-card-glass-blur" />
@@ -37,7 +38,7 @@ export default function Home({ onSelectUni }) {
                 <div className="uni-card-title">{uni.name}</div>
                 <div className="uni-card-subtitle">{uni.desc}</div>
               </div>
-              <button className="uni-card-save">
+              <button className="uni-card-save" onClick={e => e.stopPropagation()}>
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2">
                   <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" />
                 </svg>
@@ -49,5 +50,3 @@ export default function Home({ onSelectUni }) {
     </div>
   );
 }
-
-export default Home;
