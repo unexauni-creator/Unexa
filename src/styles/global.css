@@ -256,3 +256,141 @@ a.nav-item { text-decoration: none; }
   .compare-toast { min-width: unset; width: calc(100% - 32px); left: 16px; transform: none; bottom: 16px; }
   .detail-back-btn { margin: 16px 0 12px; }
 }
+
+/* ── Dashboard ── */
+.dashboard-page { padding: 32px; display: flex; flex-direction: column; gap: 32px; }
+.dashboard-header { display: flex; flex-direction: column; gap: 4px; }
+.dash-title { font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 28px; color: rgba(43,31,24,0.96); }
+.dash-subtitle { font-family: 'Nunito', sans-serif; font-size: 15px; color: #9e8f86; }
+
+.dash-section { display: flex; flex-direction: column; gap: 16px; }
+.dash-section-title { font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 18px; color: rgba(43,31,24,0.96); }
+
+/* Chart box */
+.dash-chart-box {
+  background: rgba(208,208,208,0.20);
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  border-radius: 20px;
+  padding: 24px 16px;
+}
+
+/* Compare table */
+.dash-compare-wrap {
+  display: flex;
+  gap: 0;
+  background: rgba(208,208,208,0.20);
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  border-radius: 20px;
+  overflow: hidden;
+}
+
+/* Labels column */
+.dash-labels-col {
+  display: flex;
+  flex-direction: column;
+  min-width: 200px;
+  flex-shrink: 0;
+  border-right: 1px solid rgba(172,136,118,0.15);
+}
+.dash-uni-header-placeholder {
+  height: 110px;
+  border-bottom: 1px solid rgba(172,136,118,0.15);
+}
+.dash-label-cell {
+  font-family: 'Nunito', sans-serif;
+  font-weight: 700;
+  font-size: 14px;
+  color: rgba(43,31,24,0.96);
+  padding: 16px 20px;
+  border-bottom: 1px solid rgba(172,136,118,0.1);
+  display: flex;
+  align-items: center;
+}
+
+/* University column */
+.dash-uni-col {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  border-right: 1px solid rgba(172,136,118,0.15);
+}
+.dash-uni-col:last-child { border-right: none; }
+
+/* University header card */
+.dash-uni-card-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 14px;
+  border-bottom: 1px solid rgba(172,136,118,0.15);
+  height: 110px;
+  position: relative;
+}
+.dash-uni-card-img {
+  width: 52px;
+  height: 52px;
+  border-radius: 10px;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+.dash-uni-card-info { flex: 1; overflow: hidden; }
+.dash-uni-card-name {
+  font-family: 'Nunito', sans-serif;
+  font-weight: 700;
+  font-size: 13px;
+  color: rgba(43,31,24,0.96);
+  margin-bottom: 3px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.dash-uni-card-program {
+  font-family: 'Nunito', sans-serif;
+  font-size: 12px;
+  color: #9e8f86;
+}
+.dash-remove-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: rgba(172,136,118,0.15);
+  border: none;
+  cursor: pointer;
+  font-size: 11px;
+  color: #9e8f86;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.18s;
+}
+.dash-remove-btn:hover { background: rgba(172,136,118,0.4); color: #634F44; }
+
+/* Data cells */
+.dash-data-cell {
+  font-family: 'Nunito', sans-serif;
+  font-size: 13px;
+  color: rgba(43,31,24,0.8);
+  padding: 16px 14px;
+  border-bottom: 1px solid rgba(172,136,118,0.1);
+  display: flex;
+  align-items: center;
+  text-align: center;
+  justify-content: center;
+}
+
+/* Responsive dashboard */
+@media (max-width: 768px) {
+  .dashboard-page { padding: 20px 16px; gap: 24px; }
+  .dash-compare-wrap { overflow-x: auto; }
+  .dash-labels-col { min-width: 130px; }
+  .dash-label-cell { font-size: 12px; padding: 12px 10px; }
+  .dash-data-cell { font-size: 12px; padding: 12px 8px; }
+  .dash-uni-card-header { height: auto; flex-direction: column; align-items: flex-start; padding: 10px; gap: 6px; }
+  .dash-uni-card-img { width: 40px; height: 40px; }
+  .dash-uni-header-placeholder { height: 130px; }
+}
