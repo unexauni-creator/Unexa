@@ -16,13 +16,12 @@ export default function UniversityDetail({ uni, onBack }) {
   return (
     <div className="detail-page">
 
-      {/* Back button */}
+      {/* Back button — icon only */}
       <button className="detail-back-btn" onClick={onBack}>
         <img src="/arrow-left.svg" alt="Back" className="detail-back-icon" />
-        Back
       </button>
 
-      {/* Compare toast message */}
+      {/* Compare toast — absolute */}
       {compareMsg && (
         <div className="compare-toast">
           <div className="compare-toast-text">
@@ -62,7 +61,7 @@ export default function UniversityDetail({ uni, onBack }) {
                 </div>
                 <p className="detail-desc">{uni.description || "It was founded in 1946 and is known for strong programs in engineering, business, design, medicine, and technology. The university has a large international community, offers many English-taught courses, and collaborates with hundreds of universities worldwide."}</p>
                 <div className="detail-btn-group">
-                  <button className="detail-btn-primary" onClick={() => window.open(uni.website || "#", "_blank")}>Official Website</button>
+                  <button className="detail-btn-primary" onClick={() => window.open(uni.website || "https://www.univ-amu.fr/", "_blank")}>Official Website</button>
                   <button className="detail-btn-ghost" onClick={handleCompare}>Compare to others</button>
                 </div>
               </div>
