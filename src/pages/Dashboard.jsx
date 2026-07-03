@@ -58,22 +58,7 @@ export default function Dashboard() {
   const [removed, setRemoved] = useState([]);
 
   const unis = mockUniversities.filter(u => !removed.includes(u.id));
-
-  if (unis.length === 0) {
-    return (
-      <div className="dashboard-page">
-        <div className="dashboard-header">
-          <div className="dash-title">Compare Dashboard</div>
-          <div className="dash-subtitle" style={{ color: "#0F0F0F" }}>Add universities from Home to compare them here</div>
-        </div>
-        <div className="compare-empty">
-          <div className="compare-empty-icon">⚖️</div>
-          <div style={{ fontSize: 16, fontWeight: 600, color: "#4a3f38", marginBottom: 12 }}>No universities to compare</div>
-          <button className="detail-btn-primary" onClick={() => navigate("/")}>Browse Universities</button>
-        </div>
-      </div>
-    );
-  }
+  const count = unis.length;
 
   const rows = [
     unis.map(u => u.scholarship),
@@ -85,21 +70,83 @@ export default function Dashboard() {
     unis.map(u => u.tuition),
   ];
 
+  // 0 universities
+  if (count === 0) {
+    return (
+      <div className="dashboard-page">
+        <div className="dashboard-header">
+          <div className="dash-title">Compare Dashboard</div>
+          <div className="dash-subtitle">Compare between 2 and 4 selected universities side by side</div>
+        </div>
+        <div className="compare-empty">
+          <div className="compare-empty-icon">⚖️</div>
+          <div className="compare-empty-title">No universities added</div>
+          <div className="compare-empty-desc">Go to Home and open a university card, then click "Compare to others" to add it here.</div>
+          <button className="detail-btn-primary" style={{ marginTop: 16 }} onClick={() => navigate("/")}>Browse Universities</button>
+        </div>
+      </div>
+    );
+  }
+
+  // 1 university — not enough
+  if (count === 1) {
+    return (
+      <div className="dashboard-page">
+        <div className="dashboard-header">
+          <div className="dash-title">Compare Dashboard</div>
+          <div className="dash-subtitle">Compare between 2 and 4 selected universities side by side</div>
+        </div>
+
+        {/* Warning banner */}
+        <div className="dash-warning">
+          <span className="dash-warning-icon">⚠️</span>
+          <div>
+            <div className="dash-warning-title">Add at least one more university</div>
+            <div className="dash-warning-desc">You need a minimum of 2 universities to start comparing. Go back to Home and add another one.</div>
+          </div>
+          <button className="dash-warning-btn" onClick={() => navigate("/")}>Add university →</button>
+        </div>
+
+        {/* Show the single card as a preview */}
+        <div className="dash-single-preview">
+          {unis.map(u => (
+            <div key={u.id} className="dash-single-card">
+              <img src={u.image} alt={u.name} className="dash-single-img" />
+              <div className="dash-single-info">
+                <div className="dash-uni-card-name" style={{ fontSize: 15 }}>{u.name}</div>
+                <div className="dash-uni-card-program">{u.program}</div>
+              </div>
+              <button className="dash-remove-btn" style={{ position: "static", marginLeft: "auto" }} onClick={() => setRemoved(r => [...r, u.id])}>✕</button>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  // 2–4 universities — show table
   return (
     <div className="dashboard-page">
       <div className="dashboard-header">
         <div className="dash-title">Compare Dashboard</div>
         <div className="dash-subtitle" style={{ color: "#0F0F0F" }}>
-          Comparing {unis.length} universit{unis.length === 1 ? "y" : "ies"}
+          Comparing {count} universit{count === 1 ? "y" : "ies"} · You can compare between 2 and 4 universities
         </div>
       </div>
 
+      {/* Max 4 banner */}
+      {count === 4 && (
+        <div className="dash-max-banner">
+          <span>✓ Maximum reached — you can compare up to 4 universities. Remove one to add another.</span>
+        </div>
+      )}
+
       <div className="dash-table">
 
-        {/* Header row — university cards */}
+        {/* Header row */}
         <div className="dash-table-row dash-header-row">
           <div className="dash-table-label-cell" />
-          {unis.map((u, i) => (
+          {unis.map(u => (
             <div key={u.id} className="dash-table-cell dash-uni-header">
               <img src={u.image} alt={u.name} className="dash-uni-card-img" />
               <div className="dash-uni-card-info">
@@ -115,9 +162,9 @@ export default function Dashboard() {
         {ROW_LABELS.map((label, rowIdx) => (
           <div key={label} className="dash-table-row">
             <div className="dash-table-label-cell">{label}</div>
-            {unis.map((u, i) => (
+            {unis.map(u => (
               <div key={u.id} className="dash-table-cell">
-                {rows[rowIdx][i]}
+                {rows[rowIdx][unis.indexOf(u)]}
               </div>
             ))}
           </div>

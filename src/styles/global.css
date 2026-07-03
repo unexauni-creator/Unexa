@@ -89,7 +89,7 @@ a.nav-item { text-decoration: none; }
 .close-btn { position: absolute; top: 16px; right: 16px; width: 34px; height: 34px; border-radius: 50%; background: rgba(255,255,255,0.85); border: none; font-size: 16px; cursor: pointer; display: flex; align-items: center; justify-content: center; color: #4a3f38; }
 
 /* ── Dashboard ── */
-/* ── Dashboard ── */
+
 .dashboard-page { padding: 32px; display: flex; flex-direction: column; gap: 28px; }
 .dashboard-header { display: flex; flex-direction: column; gap: 4px; }
 .dash-title { font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 28px; color: rgba(43,31,24,0.96); }
@@ -160,6 +160,47 @@ a.nav-item { text-decoration: none; }
 .dash-remove-btn { position: absolute; top: 12px; right: 12px; width: 22px; height: 22px; border-radius: 50%; background: rgba(172,136,118,0.15); border: none; cursor: pointer; font-size: 11px; color: #9e8f86; display: flex; align-items: center; justify-content: center; transition: background 0.18s; flex-shrink: 0; }
 .dash-remove-btn:hover { background: rgba(172,136,118,0.4); color: #634F44; }
 
+/* Warning banner — only 1 university */
+.dash-warning {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  background: rgba(172,136,118,0.12);
+  border: 1.5px solid rgba(172,136,118,0.35);
+  border-radius: 16px;
+  padding: 18px 20px;
+}
+.dash-warning-icon { font-size: 22px; flex-shrink: 0; }
+.dash-warning-title { font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 15px; color: rgba(43,31,24,0.96); margin-bottom: 3px; }
+.dash-warning-desc { font-family: 'Nunito', sans-serif; font-size: 13px; color: #9e8f86; }
+.dash-warning-btn { margin-left: auto; flex-shrink: 0; padding: 9px 16px; background: #AC8876; color: white; border: none; border-radius: 10px; font-family: 'Nunito', sans-serif; font-size: 13px; font-weight: 600; cursor: pointer; white-space: nowrap; transition: background 0.18s; }
+.dash-warning-btn:hover { background: #9a7664; }
+
+/* Single card preview */
+.dash-single-preview { display: flex; flex-direction: column; gap: 10px; }
+.dash-single-card { display: flex; align-items: center; gap: 14px; background: rgba(208,208,208,0.20); border-radius: 14px; padding: 14px 16px; backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
+.dash-single-img { width: 56px; height: 56px; border-radius: 10px; object-fit: cover; flex-shrink: 0; }
+.dash-single-info { flex: 1; }
+
+/* Max 4 banner */
+.dash-max-banner {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(123,158,135,0.12);
+  border: 1.5px solid rgba(123,158,135,0.3);
+  border-radius: 14px;
+  padding: 12px 18px;
+  font-family: 'Nunito', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  color: #4a8c65;
+}
+
+/* Empty state */
+.compare-empty-title { font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 16px; color: #4a3f38; margin-bottom: 6px; }
+.compare-empty-desc { font-family: 'Nunito', sans-serif; font-size: 14px; color: #9e8f86; max-width: 360px; text-align: center; line-height: 1.6; }
+
 /* Responsive */
 @media (max-width: 768px) {
   .dashboard-page { padding: 20px 16px; gap: 20px; }
@@ -168,6 +209,8 @@ a.nav-item { text-decoration: none; }
   .dash-table-cell { font-size: 12px; padding: 12px 10px; min-width: 130px; }
   .dash-uni-card-img { width: 36px; height: 36px; }
 }
+
+
 
 /* Community */
 .community-post { background: #faf8f5; border-radius: 16px; padding: 18px 20px; margin-bottom: 14px; border: 1px solid #e8e2da; }
