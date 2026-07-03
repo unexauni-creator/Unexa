@@ -6,6 +6,7 @@ const navItems = [
   { path: "/dashboard", label: "Dashboard", icon: "/chart.svg" },
   { path: "/language-tests", label: "Language test", icon: "/medal-star.svg" },
   { path: "/community", label: "Community", icon: "/messages.svg" },
+  { path: "/profile", label: "Profile", icon: "/profile.svg" },
 ];
 
 export default function Sidebar() {

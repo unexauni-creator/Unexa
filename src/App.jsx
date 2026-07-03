@@ -7,6 +7,9 @@ import LanguageTests from "./pages/LanguageTests";
 import Community from "./pages/Community";
 import UniversityDetail from "./pages/UniversityDetail";
 import "./styles/global.css";
+import Profile from "./pages/Profile";
+
+
 
 export default function App() {
   const [selectedUni, setSelectedUni] = useState(null);
@@ -23,6 +26,7 @@ export default function App() {
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/language-tests" element={<LanguageTests />} />
             <Route path="/community" element={<Community />} />
+            <Route path="/profile" element={<Profile />} />
           </Routes>
         )}
       </main>
