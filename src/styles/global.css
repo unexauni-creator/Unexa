@@ -399,37 +399,40 @@ a.nav-item { text-decoration: none; }
 /* ── Profile Page ── */
 .profile-page { display: flex; flex-direction: column; }
 
-/* Cover */
-.profile-cover { width: 100%; height: 220px; overflow: hidden; }
-.profile-cover-img { width: 100%; height: 100%; object-fit: cover; }
+/* Cover — contained with padding, not edge to edge */
+.profile-cover { 
+  margin: 24px 32px 0; 
+  height: 200px; 
+  border-radius: 20px; 
+  overflow: hidden; 
+}
+.profile-cover-img { 
+  width: 100%; 
+  height: 100%; 
+  object-fit: cover; 
+  object-position: center top;
+}
 
 /* Info row */
-.profile-info-row { display: flex; align-items: flex-start; justify-content: space-between; padding: 0 32px; margin-top: -40px; gap: 16px; }
+.profile-info-row { display: flex; align-items: flex-start; justify-content: space-between; padding: 0 32px; margin-top: -36px; gap: 16px; }
 .profile-left { display: flex; align-items: flex-start; gap: 20px; flex: 1; }
 
 /* Avatar */
 .profile-avatar-wrap { position: relative; flex-shrink: 0; }
-.profile-avatar { width: 90px; height: 90px; border-radius: 50%; object-fit: cover; border: 4px solid #f0ece6; }
-.profile-avatar-edit { position: absolute; bottom: 0; right: 0; width: 28px; height: 28px; background: #AC8876; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; cursor: pointer; }
+.profile-avatar { width: 84px; height: 84px; border-radius: 50%; object-fit: cover; border: 4px solid #f0ece6; }
+.profile-avatar-edit { position: absolute; bottom: 0; right: 0; width: 26px; height: 26px; background: #AC8876; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; cursor: pointer; }
 
 /* Info */
-.profile-info { display: flex; flex-direction: column; gap: 8px; padding-top: 44px; }
-.profile-name { font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 22px; color: rgba(43,31,24,0.96); }
-.profile-bio { font-family: 'Nunito', sans-serif; font-size: 14px; color: #6b5e56; line-height: 1.6; max-width: 480px; }
-
-/* Stats */
-.profile-stats { display: flex; align-items: center; gap: 16px; margin-top: 4px; }
-.profile-stat { display: flex; align-items: center; gap: 6px; }
-.profile-stat-num { font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 16px; color: rgba(43,31,24,0.96); }
-.profile-stat-label { font-family: 'Nunito', sans-serif; font-size: 13px; color: #9e8f86; }
-.profile-stat-divider { width: 1px; height: 16px; background: #D7D7D7; }
+.profile-info { display: flex; flex-direction: column; gap: 6px; padding-top: 42px; }
+.profile-name { font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 20px; color: rgba(43,31,24,0.96); }
+.profile-bio { font-family: 'Nunito', sans-serif; font-size: 14px; color: #6b5e56; line-height: 1.6; max-width: 460px; }
 
 /* Settings btn */
-.profile-settings-btn { margin-top: 48px; padding: 10px 20px; background: #F6F6F6; border: none; border-radius: 12px; font-family: 'Nunito', sans-serif; font-size: 14px; font-weight: 600; color: #4a3f38; cursor: pointer; flex-shrink: 0; transition: background 0.18s; }
+.profile-settings-btn { margin-top: 42px; padding: 10px 18px; background: #F6F6F6; border: none; border-radius: 12px; font-family: 'Nunito', sans-serif; font-size: 14px; font-weight: 600; color: #4a3f38; cursor: pointer; flex-shrink: 0; transition: background 0.18s; white-space: nowrap; }
 .profile-settings-btn:hover { background: #e8e2da; }
 
 /* Tabs */
-.profile-tabs { display: flex; gap: 0; padding: 24px 32px 0; border-bottom: 2px solid #e8e2da; margin-top: 16px; }
+.profile-tabs { display: flex; gap: 0; padding: 20px 32px 0; border-bottom: 2px solid #e8e2da; margin-top: 16px; }
 .profile-tab { padding: 10px 20px; font-family: 'Nunito', sans-serif; font-size: 15px; font-weight: 500; color: #9e8f86; background: none; border: none; border-bottom: 2px solid transparent; margin-bottom: -2px; cursor: pointer; transition: all 0.18s; }
 .profile-tab.active { color: #AC8876; border-bottom-color: #AC8876; font-weight: 700; }
 .profile-tab:hover { color: #4a3f38; }
@@ -448,10 +451,10 @@ a.nav-item { text-decoration: none; }
 
 /* Responsive profile */
 @media (max-width: 768px) {
-  .profile-cover { height: 160px; }
-  .profile-info-row { flex-direction: column; padding: 0 16px; margin-top: -30px; }
-  .profile-settings-btn { margin-top: 0; align-self: flex-end; }
-  .profile-left { flex-direction: column; gap: 12px; }
+  .profile-cover { margin: 16px 16px 0; height: 150px; }
+  .profile-info-row { flex-direction: column; padding: 0 16px; margin-top: -28px; }
+  .profile-settings-btn { margin-top: 8px; align-self: flex-start; }
+  .profile-left { flex-direction: column; gap: 10px; }
   .profile-info { padding-top: 0; }
   .profile-tabs { padding: 16px 16px 0; }
   .profile-content { padding: 20px 16px 48px; }

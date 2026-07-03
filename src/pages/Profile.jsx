@@ -24,7 +24,7 @@ export default function Profile() {
   return (
     <div className="profile-page">
 
-      {/* Cover image */}
+      {/* Cover image — contained, not stretched */}
       <div className="profile-cover">
         <img
           src="https://images.unsplash.com/photo-1562774053-701939374585?w=1200&q=80"
@@ -49,22 +49,6 @@ export default function Profile() {
             <div className="profile-bio">
               Passionate about art and design education. Exploring universities across Europe to find the perfect program. Currently focused on fine arts and digital media.
             </div>
-            <div className="profile-stats">
-              <div className="profile-stat">
-                <span className="profile-stat-num">{savedUniversities.length}</span>
-                <span className="profile-stat-label">Saved</span>
-              </div>
-              <div className="profile-stat-divider" />
-              <div className="profile-stat">
-                <span className="profile-stat-num">{appliedUniversities.length}</span>
-                <span className="profile-stat-label">Applied</span>
-              </div>
-              <div className="profile-stat-divider" />
-              <div className="profile-stat">
-                <span className="profile-stat-num">3</span>
-                <span className="profile-stat-label">Compared</span>
-              </div>
-            </div>
           </div>
         </div>
         <button className="profile-settings-btn">⚙️ Settings</button>
@@ -76,9 +60,8 @@ export default function Profile() {
         <button className={`profile-tab ${activeTab === "applied" ? "active" : ""}`} onClick={() => setActiveTab("applied")}>Applied</button>
       </div>
 
-      {/* Tab content */}
+      {/* Content */}
       <div className="profile-content">
-
         {activeTab === "saved" && (
           <div className="uni-grid">
             {savedUniversities.map(uni => (
@@ -120,7 +103,6 @@ export default function Profile() {
             ))}
           </div>
         )}
-
       </div>
     </div>
   );

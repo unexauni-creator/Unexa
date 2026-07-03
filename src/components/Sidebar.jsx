@@ -6,7 +6,6 @@ const navItems = [
   { path: "/dashboard", label: "Dashboard", icon: "/chart.svg" },
   { path: "/language-tests", label: "Language test", icon: "/medal-star.svg" },
   { path: "/community", label: "Community", icon: "/messages.svg" },
-  { path: "/profile", label: "Profile", icon: "/profile.svg" },
 ];
 
 export default function Sidebar() {
@@ -16,8 +15,6 @@ export default function Sidebar() {
     <>
       <aside className="sidebar">
         <div className="logo">Unexa</div>
-
-        {/* Desktop nav */}
         <nav className="nav-group">
           {navItems.map(item => (
             <NavLink
@@ -32,18 +29,17 @@ export default function Sidebar() {
           ))}
         </nav>
 
-        {/* Mobile hamburger */}
         <button className="hamburger-btn" onClick={() => setMenuOpen(!menuOpen)}>
           <img src="/Menu.svg" alt="Menu" className="hamburger-icon" />
         </button>
 
-        <div className="sidebar-bottom">
+        {/* Profile at bottom — clickable, goes to /profile */}
+        <NavLink to="/profile" className="sidebar-bottom" style={{ textDecoration: "none" }}>
           <div className="avatar-img">KD</div>
           <div className="user-name">Kateryna Dmyt...</div>
-        </div>
+        </NavLink>
       </aside>
 
-      {/* Mobile dropdown menu */}
       {menuOpen && (
         <div className="mobile-menu">
           {navItems.map(item => (
