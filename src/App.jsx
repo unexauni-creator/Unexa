@@ -6,10 +6,8 @@ import Dashboard from "./pages/Dashboard";
 import LanguageTests from "./pages/LanguageTests";
 import Community from "./pages/Community";
 import UniversityDetail from "./pages/UniversityDetail";
-import "./styles/global.css";
 import Profile from "./pages/Profile";
-
-
+import "./styles/global.css";
 
 export default function App() {
   const [selectedUni, setSelectedUni] = useState(null);

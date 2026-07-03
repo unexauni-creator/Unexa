@@ -35,9 +35,9 @@ export default function Sidebar() {
 
         {/* Profile at bottom — clickable, goes to /profile */}
         <NavLink to="/profile" className="sidebar-bottom" style={{ textDecoration: "none" }}>
-          <div className="avatar-img">KD</div>
-          <div className="user-name">Kateryna Dmyt...</div>
-        </NavLink>
+  <div className="avatar-img">KD</div>
+  <div className="user-name">Kateryna Dmyt...</div>
+</NavLink>
       </aside>
 
       {menuOpen && (
