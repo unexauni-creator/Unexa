@@ -51,7 +51,11 @@ body, #root { height: 100vh; font-family: 'DM Sans', sans-serif; background: #e2
 a.nav-item { text-decoration: none; }
 .nav-icon { width: 20px; height: 20px; flex-shrink: 0; filter: brightness(0); opacity: 0.95; }
 .nav-item.active .nav-icon, a.nav-item.active .nav-icon { filter: brightness(0) invert(1); opacity: 1; }
-.sidebar-bottom { margin-top: auto; display: flex; align-items: center; gap: 10px; }
+.sidebar-bottom { margin-top: auto; display: flex; align-items: center; gap: 10px; padding: 11px 14px; border-radius: 12px; text-decoration: none; transition: background 0.18s; cursor: pointer; }
+.sidebar-bottom:hover { background: #c9c8c8; }
+.sidebar-bottom.active { background: #AC8876; }
+.sidebar-bottom.active .user-name { color: #ffffff; }
+.sidebar-bottom.active .avatar-img { background: rgba(255,255,255,0.25); color: white; }
 .avatar-img { width: 36px; height: 36px; border-radius: 50%; background: #e8e2da; color: #7a6f68; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600; flex-shrink: 0; }
 .user-name { font-size: 13px; font-weight: 500; color: #4a3f38; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
