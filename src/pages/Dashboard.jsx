@@ -14,7 +14,7 @@ const mockUniversities = [
     minCGPA: "CGPA 3.0",
     tuition: "$8,500/yr",
     image: "https://madeinmarseille.net/actualites-marseille/2019/04/Cube-campus-aix.jpeg",
-    scores: { tuition: 72, language: 78, scholarship: 88, ranking: 90, acceptance: 65 },
+    score: 7.2,
   },
   {
     id: 2,
@@ -28,7 +28,7 @@ const mockUniversities = [
     minCGPA: "CGPA 3.2",
     tuition: "$7,200/yr",
     image: "https://upload.wikimedia.org/wikipedia/commons/8/8f/Ijba_iut_montaigne_bordeaux.jpg",
-    scores: { tuition: 85, language: 65, scholarship: 70, ranking: 75, acceptance: 80 },
+    score: 8.0,
   },
   {
     id: 3,
@@ -42,31 +42,55 @@ const mockUniversities = [
     minCGPA: "CGPA 2.8",
     tuition: "$6,000/yr",
     image: "https://upload.wikimedia.org/wikipedia/commons/thumb/2/29/Batiments_de_nuits_-Univ_Rennes_2_-_Louis_Arretche.jpg/330px-Batiments_de_nuits_-Univ_Rennes_2_-_Louis_Arretche.jpg",
-    scores: { tuition: 95, language: 90, scholarship: 60, ranking: 65, acceptance: 92 },
+    score: 6.5,
   },
 ];
 
 const METRICS = [
-  { key: "tuition", label: "Affordability" },
-  { key: "language", label: "Language Access" },
-  { key: "scholarship", label: "Scholarship" },
-  { key: "ranking", label: "Ranking" },
-  { key: "acceptance", label: "Acceptance Rate" },
+  { key: "affordability", label: "Affordability", scores: [7.2, 8.5, 9.5] },
+  { key: "scholarship", label: "Scholarship", scores: [8.8, 7.0, 6.0] },
+  { key: "language", label: "Language Access", scores: [7.8, 6.5, 9.0] },
+  { key: "ranking", label: "Academic Ranking", scores: [9.0, 7.5, 6.5] },
+  { key: "acceptance", label: "Acceptance Rate", scores: [6.5, 8.0, 9.2] },
+  { key: "campus", label: "Campus Life", scores: [8.0, 7.2, 7.0] },
 ];
 
 const COLORS = [
-  { bar: "#AC8876", track: "rgba(172,136,118,0.15)", name: "Aix-Marseille" },
-  { bar: "#7B9E87", track: "rgba(123,158,135,0.15)", name: "Bordeaux" },
-  { bar: "#7A86AC", track: "rgba(122,134,172,0.15)", name: "Rennes 2" },
+  { active: "#AC8876", light: "rgba(172,136,118,0.18)", name: "Aix-Marseille" },
+  { active: "#7B9E87", light: "rgba(123,158,135,0.18)", name: "Bordeaux" },
+  { active: "#7A86AC", light: "rgba(122,134,172,0.18)", name: "Rennes 2" },
 ];
+
+const TOTAL_BLOCKS = 10;
+
+function BlockBar({ score, color }) {
+  const filled = Math.round(score);
+  return (
+    <div className="block-bar">
+      {Array.from({ length: TOTAL_BLOCKS }).map((_, i) => (
+        <div
+          key={i}
+          className="block-cell"
+          style={{
+            background: i < filled ? color.active : color.light,
+            opacity: i < filled ? (0.3 + (i / filled) * 0.7) : 1,
+          }}
+        />
+      ))}
+      <span className="block-score" style={{ color: color.active }}>{score.toFixed(1)}</span>
+    </div>
+  );
+}
 
 export default function Dashboard() {
   const navigate = useNavigate();
   const [removed, setRemoved] = useState([]);
 
-  const unis = mockUniversities.filter(u => !removed.includes(u.id));
+  const activeIndices = mockUniversities
+    .map((u, i) => ({ u, i }))
+    .filter(({ u }) => !removed.includes(u.id));
 
-  if (unis.length === 0) {
+  if (activeIndices.length === 0) {
     return (
       <div className="dashboard-page">
         <div className="dashboard-header">
@@ -75,7 +99,7 @@ export default function Dashboard() {
         </div>
         <div className="compare-empty">
           <div className="compare-empty-icon">⚖️</div>
-          <div style={{ fontSize: 16, fontWeight: 600, color: "#4a3f38", marginBottom: 8 }}>No universities to compare</div>
+          <div style={{ fontSize: 16, fontWeight: 600, color: "#4a3f38", marginBottom: 12 }}>No universities to compare</div>
           <button className="detail-btn-primary" onClick={() => navigate("/")}>Browse Universities</button>
         </div>
       </div>
@@ -87,49 +111,35 @@ export default function Dashboard() {
       <div className="dashboard-header">
         <div className="dash-title">Compare Dashboard</div>
         <div className="dash-subtitle" style={{ color: "#0F0F0F" }}>
-          Comparing {unis.length} universit{unis.length === 1 ? "y" : "ies"}
+          How do your selected universities compare? · 0 to 10
         </div>
       </div>
 
-      {/* Bar Chart */}
+      {/* Block bar chart */}
       <div className="dash-section">
-        <div className="dash-section-title">University Metrics Overview</div>
-
-        {/* Legend */}
-        <div className="dash-legend">
-          {unis.map((u, i) => (
-            <div key={u.id} className="dash-legend-item">
-              <div className="dash-legend-dot" style={{ background: COLORS[i].bar }} />
-              <span>{COLORS[i].name}</span>
-            </div>
-          ))}
-        </div>
-
         <div className="dash-chart-box">
+          {/* Legend */}
+          <div className="dash-legend" style={{ marginBottom: 20 }}>
+            {activeIndices.map(({ u, i }) => (
+              <div key={u.id} className="dash-legend-item">
+                <div className="dash-legend-dot" style={{ background: COLORS[i].active }} />
+                <span>{COLORS[i].name}</span>
+              </div>
+            ))}
+          </div>
+
+          {/* Rows */}
           {METRICS.map(metric => (
-            <div key={metric.key} className="dash-metric-row">
+            <div key={metric.key} className="dash-block-row">
               <div className="dash-metric-label">{metric.label}</div>
-              <div className="dash-metric-bars">
-                {unis.map((u, i) => {
-                  const score = u.scores[metric.key];
-                  return (
-                    <div key={u.id} className="dash-bar-wrap">
-                      <div
-                        className="dash-bar-track"
-                        style={{ background: COLORS[i].track }}
-                      >
-                        <div
-                          className="dash-bar-fill"
-                          style={{
-                            width: `${score}%`,
-                            background: COLORS[i].bar,
-                          }}
-                        />
-                      </div>
-                      <span className="dash-bar-value">{score}</span>
-                    </div>
-                  );
-                })}
+              <div className="dash-block-bars">
+                {activeIndices.map(({ u, i }) => (
+                  <BlockBar
+                    key={u.id}
+                    score={metric.scores[i]}
+                    color={COLORS[i]}
+                  />
+                ))}
               </div>
             </div>
           ))}
@@ -139,7 +149,6 @@ export default function Dashboard() {
       {/* Detailed comparison table */}
       <div className="dash-section">
         <div className="dash-section-title">Detailed Comparison</div>
-
         <div className="dash-compare-wrap">
           <div className="dash-labels-col">
             <div className="dash-uni-header-placeholder" />
@@ -148,7 +157,7 @@ export default function Dashboard() {
             ))}
           </div>
 
-          {unis.map((u, i) => (
+          {activeIndices.map(({ u, i }) => (
             <div key={u.id} className="dash-uni-col">
               <div className="dash-uni-card-header">
                 <img src={u.image} alt={u.name} className="dash-uni-card-img" />
@@ -156,10 +165,7 @@ export default function Dashboard() {
                   <div className="dash-uni-card-name">{u.name}</div>
                   <div className="dash-uni-card-program">{u.program}</div>
                 </div>
-                <button
-                  className="dash-remove-btn"
-                  onClick={() => setRemoved(r => [...r, u.id])}
-                >✕</button>
+                <button className="dash-remove-btn" onClick={() => setRemoved(r => [...r, u.id])}>✕</button>
               </div>
               {[u.scholarship, u.submissionPeriod, u.duration, u.language, u.minLanguage, u.minCGPA, u.tuition].map((val, j) => (
                 <div key={j} className="dash-data-cell">{val}</div>
