@@ -13,15 +13,39 @@ export default function UniversityDetail({ uni, onBack }) {
     setTimeout(() => setCompareMsg(false), 5000);
   }
 
+  const socialItems = [
+    { label: "Teachers", img: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=300&q=80" },
+    { label: "Student live", img: "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=300&q=80" },
+    { label: "Dorm", img: "https://images.unsplash.com/photo-1555854877-bab0e564b8d5?w=300&q=80" },
+  ];
+
+  const schedule = [
+    { day: "Monday", classes: [] },
+    { day: "Tuesday", classes: ["08:00–11:00 · Art History", "11:30–13:30 · Design Theory", "14:00–16:00 · Digital Tools"] },
+    { day: "Wednesday", classes: ["09:00–15:00 · Studio Practice"] },
+    { day: "Thursday", classes: ["09:00–12:00 · Typography", "13:00–16:00 · Visual Culture"] },
+    { day: "Friday", classes: ["09:00–12:00 · Portfolio Dev.", "13:00–15:00 · Critique Session"] },
+    { day: "Saturday", classes: [] },
+  ];
+
+  const subjects = [
+    "Introduction to Design",
+    "Typography & Layout",
+    "Digital Illustration",
+    "Brand Identity",
+    "UX Research Methods",
+    "Motion Graphics",
+    "Portfolio Development",
+    "Final Project",
+  ];
+
   return (
     <div className="detail-page">
 
-      {/* Back button — icon only */}
       <button className="detail-back-btn" onClick={onBack}>
         <img src="/arrow-left.svg" alt="Back" className="detail-back-icon" />
       </button>
 
-      {/* Compare toast — absolute */}
       {compareMsg && (
         <div className="compare-toast">
           <div className="compare-toast-text">
@@ -34,19 +58,17 @@ export default function UniversityDetail({ uni, onBack }) {
         </div>
       )}
 
-      {/* Tabs */}
       <div className="detail-tabs">
         <button className={`detail-tab ${activeTab === "info" ? "active" : ""}`} onClick={() => setActiveTab("info")}>Informations</button>
         <button className={`detail-tab ${activeTab === "program" ? "active" : ""}`} onClick={() => setActiveTab("program")}>Program</button>
         <button className={`detail-tab ${activeTab === "scholarship" ? "active" : ""}`} onClick={() => setActiveTab("scholarship")}>Scholarship</button>
       </div>
 
-      {/* Content */}
       <div className="detail-content">
 
         {activeTab === "info" && (
           <>
-            {/* Hero section */}
+            {/* Hero */}
             <div className="detail-hero">
               <div className="detail-hero-left">
                 <div className="detail-hero-top">
@@ -127,22 +149,18 @@ export default function UniversityDetail({ uni, onBack }) {
               </div>
             </div>
 
-            {/* Teachers & Social */}
+            {/* Teachers & Social — 3D stacked cards */}
             <div className="detail-section">
               <div className="detail-section-title">Teachers & social live</div>
               <div className="detail-social-row">
-                {[
-                  { label: "Teachers", img: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=300&q=80" },
-                  { label: "Student live", img: "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=300&q=80" },
-                  { label: "Dorm", img: "https://images.unsplash.com/photo-1555854877-bab0e564b8d5?w=300&q=80" },
-                ].map(item => (
-                  <div key={item.label} className="detail-social-card">
-                    <div className="detail-social-stack">
-                      <div className="detail-social-img-back detail-social-img-back-2" />
-                      <div className="detail-social-img-back detail-social-img-back-1" />
-                      <img src={item.img} alt={item.label} className="detail-social-img-front" />
+                {socialItems.map((item, idx) => (
+                  <div key={item.label} className="social-stack-wrap">
+                    <div className="social-card social-card-back2" />
+                    <div className="social-card social-card-back1" />
+                    <div className="social-card social-card-front">
+                      <img src={item.img} alt={item.label} className="social-card-img" />
                     </div>
-                    <div className="detail-social-label">{item.label}</div>
+                    <div className="social-card-label">{item.label}</div>
                   </div>
                 ))}
               </div>
@@ -150,11 +168,40 @@ export default function UniversityDetail({ uni, onBack }) {
           </>
         )}
 
+        {/* Program tab — schedule style */}
         {activeTab === "program" && (
           <div className="detail-section">
-            <div className="detail-section-title">Program Details</div>
+            <div className="detail-section-title">Weekly Schedule</div>
+            <div className="program-schedule-grid">
+              {schedule.map(day => (
+                <div key={day.day} className="program-day-card">
+                  <div className="program-day-name">{day.day}</div>
+                  {day.classes.length === 0 ? (
+                    <div className="program-rest">
+                      <span className="program-rest-badge">Rest Day</span>
+                      <span className="program-rest-label">— No Classes</span>
+                    </div>
+                  ) : (
+                    <div className="program-classes">
+                      {day.classes.map((cls, i) => {
+                        const [time, subject] = cls.split(" · ");
+                        return (
+                          <div key={i} className="program-class-item">
+                            <span className="program-class-time">{time} :</span>
+                            <span className="program-class-name">{subject}</span>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+
+            {/* Subjects list below */}
+            <div className="detail-section-title" style={{ marginTop: 8 }}>Subjects</div>
             <div className="detail-program-list">
-              {["Introduction to Design", "Typography & Layout", "Digital Illustration", "Brand Identity", "UX Research Methods", "Motion Graphics", "Portfolio Development", "Final Project"].map((subject, i) => (
+              {subjects.map((subject, i) => (
                 <div key={i} className="detail-program-item">
                   <div className="detail-program-num">{String(i + 1).padStart(2, "0")}</div>
                   <div className="detail-program-name">{subject}</div>
@@ -165,6 +212,7 @@ export default function UniversityDetail({ uni, onBack }) {
           </div>
         )}
 
+        {/* Scholarship tab */}
         {activeTab === "scholarship" && (
           <div className="detail-section">
             <div className="detail-section-title">Available Scholarships</div>

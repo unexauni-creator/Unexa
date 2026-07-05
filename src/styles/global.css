@@ -578,3 +578,153 @@ a.nav-item { text-decoration: none; }
   .profile-content { padding: 20px 16px 48px; }
   .profile-bio { max-width: 100%; }
 }
+
+
+
+/* ── 3D Stacked Social Cards ── */
+.detail-social-row { display: flex; flex-direction: row; gap: 32px; }
+
+.social-stack-wrap {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  position: relative;
+  height: 220px;
+}
+
+.social-card {
+  position: absolute;
+  width: 80%;
+  height: 160px;
+  border-radius: 24px;
+  background: rgba(208, 208, 208, 0.25);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255,255,255,0.4);
+  overflow: hidden;
+}
+
+.social-card-back2 {
+  transform: matrix(0.98, 0.19, -0.14, 0.99, 0, 0);
+  top: 0;
+  z-index: 0;
+  background: rgba(208, 208, 208, 0.18);
+}
+
+.social-card-back1 {
+  transform: matrix(1, 0.03, -0.02, 1, 0, 0) translateY(8px);
+  top: 0;
+  z-index: 1;
+  background: rgba(208, 208, 208, 0.22);
+}
+
+.social-card-front {
+  transform: matrix(0.99, -0.08, 0.06, 1, 0, 0) translateY(16px);
+  top: 0;
+  z-index: 2;
+  background: rgba(240, 236, 230, 0.6);
+}
+
+.social-card-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 20px;
+}
+
+.social-card-label {
+  position: absolute;
+  bottom: 0;
+  font-family: 'Nunito', sans-serif;
+  font-weight: 700;
+  font-size: 15px;
+  color: rgba(43,31,24,0.96);
+  text-align: center;
+  z-index: 3;
+}
+
+/* ── Program Schedule Grid ── */
+.program-schedule-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1px;
+  background: rgba(172,136,118,0.2);
+  border-radius: 16px;
+  overflow: hidden;
+  border: 1px solid rgba(172,136,118,0.2);
+}
+
+.program-day-card {
+  background: rgba(239,239,239,0.6);
+  padding: 20px;
+  min-height: 140px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.program-day-name {
+  font-family: 'Nunito', sans-serif;
+  font-weight: 700;
+  font-size: 16px;
+  color: rgba(43,31,24,0.96);
+}
+
+.program-rest {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.program-rest-badge {
+  background: rgba(172,136,118,0.18);
+  color: #AC8876;
+  font-family: 'Nunito', sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 8px;
+}
+
+.program-rest-label {
+  font-family: 'Nunito', sans-serif;
+  font-size: 13px;
+  color: #9e8f86;
+  font-style: italic;
+}
+
+.program-classes { display: flex; flex-direction: column; gap: 8px; }
+
+.program-class-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.program-class-time {
+  background: rgba(172,136,118,0.15);
+  color: #AC8876;
+  font-family: 'Nunito', sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 6px;
+  white-space: nowrap;
+}
+
+.program-class-name {
+  font-family: 'Nunito', sans-serif;
+  font-size: 13px;
+  color: rgba(43,31,24,0.85);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .program-schedule-grid { grid-template-columns: 1fr; }
+  .social-stack-wrap { height: 180px; }
+  .social-card { height: 130px; width: 85%; }
+  .detail-social-row { gap: 16px; }
+}
