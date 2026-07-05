@@ -19,26 +19,6 @@ export default function UniversityDetail({ uni, onBack }) {
     { label: "Dorm", img: "https://images.unsplash.com/photo-1555854877-bab0e564b8d5?w=300&q=80" },
   ];
 
-  const schedule = [
-    { day: "Monday", classes: [] },
-    { day: "Tuesday", classes: ["08:00–11:00 · Art History", "11:30–13:30 · Design Theory", "14:00–16:00 · Digital Tools"] },
-    { day: "Wednesday", classes: ["09:00–15:00 · Studio Practice"] },
-    { day: "Thursday", classes: ["09:00–12:00 · Typography", "13:00–16:00 · Visual Culture"] },
-    { day: "Friday", classes: ["09:00–12:00 · Portfolio Dev.", "13:00–15:00 · Critique Session"] },
-    { day: "Saturday", classes: [] },
-  ];
-
-  const subjects = [
-    "Introduction to Design",
-    "Typography & Layout",
-    "Digital Illustration",
-    "Brand Identity",
-    "UX Research Methods",
-    "Motion Graphics",
-    "Portfolio Development",
-    "Final Project",
-  ];
-
   return (
     <div className="detail-page">
 
@@ -66,9 +46,9 @@ export default function UniversityDetail({ uni, onBack }) {
 
       <div className="detail-content">
 
+        {/* ── INFO TAB ── */}
         {activeTab === "info" && (
           <>
-            {/* Hero */}
             <div className="detail-hero">
               <div className="detail-hero-left">
                 <div className="detail-hero-top">
@@ -92,7 +72,6 @@ export default function UniversityDetail({ uni, onBack }) {
               </div>
             </div>
 
-            {/* Academic Info */}
             <div className="detail-section">
               <div className="detail-section-title">Academic Info</div>
               <div className="detail-academic-row">
@@ -119,7 +98,6 @@ export default function UniversityDetail({ uni, onBack }) {
               </div>
             </div>
 
-            {/* Documents + Language Test */}
             <div className="detail-docs-row">
               <div className="detail-docs-box">
                 <div className="detail-section-title">Required documents</div>
@@ -149,11 +127,10 @@ export default function UniversityDetail({ uni, onBack }) {
               </div>
             </div>
 
-            {/* Teachers & Social — 3D stacked cards */}
             <div className="detail-section">
               <div className="detail-section-title">Teachers & social live</div>
               <div className="detail-social-row">
-                {socialItems.map((item, idx) => (
+                {socialItems.map(item => (
                   <div key={item.label} className="social-stack-wrap">
                     <div className="social-card social-card-back2" />
                     <div className="social-card social-card-back1" />
@@ -168,51 +145,53 @@ export default function UniversityDetail({ uni, onBack }) {
           </>
         )}
 
-        {/* Program tab — schedule style */}
+        {/* ── PROGRAM TAB ── */}
         {activeTab === "program" && (
           <div className="detail-section">
-            <div className="detail-section-title">Weekly Schedule</div>
+            <div className="detail-section-title">Program by Semester</div>
             <div className="program-schedule-grid">
-              {schedule.map(day => (
-                <div key={day.day} className="program-day-card">
-                  <div className="program-day-name">{day.day}</div>
-                  {day.classes.length === 0 ? (
-                    <div className="program-rest">
-                      <span className="program-rest-badge">Rest Day</span>
-                      <span className="program-rest-label">— No Classes</span>
-                    </div>
-                  ) : (
-                    <div className="program-classes">
-                      {day.classes.map((cls, i) => {
-                        const [time, subject] = cls.split(" · ");
-                        return (
-                          <div key={i} className="program-class-item">
-                            <span className="program-class-time">{time} :</span>
-                            <span className="program-class-name">{subject}</span>
-                          </div>
-                        );
-                      })}
-                    </div>
-                  )}
-                </div>
-              ))}
-            </div>
 
-            {/* Subjects list below */}
-            <div className="detail-section-title" style={{ marginTop: 8 }}>Subjects</div>
-            <div className="detail-program-list">
-              {subjects.map((subject, i) => (
-                <div key={i} className="detail-program-item">
-                  <div className="detail-program-num">{String(i + 1).padStart(2, "0")}</div>
-                  <div className="detail-program-name">{subject}</div>
-                  <div className="detail-program-semester">Semester {Math.ceil((i + 1) / 2)}</div>
+              <div className="program-day-card">
+                <div className="program-day-name">Semester 1</div>
+                <div className="program-classes">
+                  <div className="program-class-item"><span className="program-class-time">Core</span><span className="program-class-name">Introduction to Design</span></div>
+                  <div className="program-class-item"><span className="program-class-time">Core</span><span className="program-class-name">Typography & Layout</span></div>
+                  <div className="program-class-item"><span className="program-class-time">Elective</span><span className="program-class-name">Art History</span></div>
                 </div>
-              ))}
+              </div>
+
+              <div className="program-day-card">
+                <div className="program-day-name">Semester 2</div>
+                <div className="program-classes">
+                  <div className="program-class-item"><span className="program-class-time">Core</span><span className="program-class-name">Digital Illustration</span></div>
+                  <div className="program-class-item"><span className="program-class-time">Core</span><span className="program-class-name">Brand Identity</span></div>
+                  <div className="program-class-item"><span className="program-class-time">Elective</span><span className="program-class-name">Visual Culture</span></div>
+                </div>
+              </div>
+
+              <div className="program-day-card">
+                <div className="program-day-name">Semester 3</div>
+                <div className="program-classes">
+                  <div className="program-class-item"><span className="program-class-time">Core</span><span className="program-class-name">UX Research Methods</span></div>
+                  <div className="program-class-item"><span className="program-class-time">Core</span><span className="program-class-name">Motion Graphics</span></div>
+                  <div className="program-class-item"><span className="program-class-time">Elective</span><span className="program-class-name">Design Theory</span></div>
+                </div>
+              </div>
+
+              <div className="program-day-card">
+                <div className="program-day-name">Semester 4</div>
+                <div className="program-classes">
+                  <div className="program-class-item"><span className="program-class-time">Core</span><span className="program-class-name">Portfolio Development</span></div>
+                  <div className="program-class-item"><span className="program-class-time">Core</span><span className="program-class-name">Final Project</span></div>
+                  <div className="program-class-item"><span className="program-class-time">Elective</span><span className="program-class-name">Studio Practice</span></div>
+                </div>
+              </div>
+
             </div>
           </div>
         )}
 
-        {/* Scholarship tab */}
+        {/* ── SCHOLARSHIP TAB ── */}
         {activeTab === "scholarship" && (
           <div className="detail-section">
             <div className="detail-section-title">Available Scholarships</div>
@@ -231,6 +210,7 @@ export default function UniversityDetail({ uni, onBack }) {
             ))}
           </div>
         )}
+
       </div>
     </div>
   );
