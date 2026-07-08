@@ -144,19 +144,23 @@ export default function Dashboard() {
       <div className="dash-table">
 
         {/* Header row */}
-        <div className="dash-table-row dash-header-row">
-          <div className="dash-table-label-cell" />
-          {unis.map(u => (
-            <div key={u.id} className="dash-table-cell dash-uni-header">
-              <img src={u.image} alt={u.name} className="dash-uni-card-img" />
-              <div className="dash-uni-card-info">
-                <div className="dash-uni-card-name">{u.name}</div>
-                <div className="dash-uni-card-program">{u.program}</div>
-              </div>
-              <button className="dash-remove-btn" onClick={() => setRemoved(r => [...r, u.id])}>✕</button>
-            </div>
-          ))}
-        </div>
+<div className="dash-table-row dash-header-row">
+  <div className="dash-table-label-cell dash-corner-cell">
+    <span className="dash-corner-top">Universities</span>
+    <div className="dash-corner-line" />
+    <span className="dash-corner-bottom">Criteria</span>
+  </div>
+  {unis.map(u => (
+    <div key={u.id} className="dash-table-cell dash-uni-header">
+      <img src={u.image} alt={u.name} className="dash-uni-card-img" />
+      <div className="dash-uni-card-info">
+        <div className="dash-uni-card-name">{u.name}</div>
+        <div className="dash-uni-card-program">{u.program}</div>
+      </div>
+      <button className="dash-remove-btn" onClick={() => setRemoved(r => [...r, u.id])}>✕</button>
+    </div>
+  ))}
+</div>
 
         {/* Data rows */}
         {ROW_LABELS.map((label, rowIdx) => (
