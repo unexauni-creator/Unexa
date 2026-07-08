@@ -70,7 +70,6 @@ export default function Dashboard() {
     unis.map(u => u.tuition),
   ];
 
-  // 0 universities
   if (count === 0) {
     return (
       <div className="dashboard-page">
@@ -88,7 +87,6 @@ export default function Dashboard() {
     );
   }
 
-  // 1 university — not enough
   if (count === 1) {
     return (
       <div className="dashboard-page">
@@ -96,8 +94,6 @@ export default function Dashboard() {
           <div className="dash-title">Compare Dashboard</div>
           <div className="dash-subtitle">Compare between 2 and 4 selected universities side by side</div>
         </div>
-
-        {/* Warning banner */}
         <div className="dash-warning">
           <span className="dash-warning-icon">⚠️</span>
           <div>
@@ -106,8 +102,6 @@ export default function Dashboard() {
           </div>
           <button className="dash-warning-btn" onClick={() => navigate("/")}>Add university →</button>
         </div>
-
-        {/* Show the single card as a preview */}
         <div className="dash-single-preview">
           {unis.map(u => (
             <div key={u.id} className="dash-single-card">
@@ -124,7 +118,6 @@ export default function Dashboard() {
     );
   }
 
-  // 2–4 universities — show table
   return (
     <div className="dashboard-page">
       <div className="dashboard-header">
@@ -134,7 +127,6 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* Max 4 banner */}
       {count === 4 && (
         <div className="dash-max-banner">
           <span>✓ Maximum reached — you can compare up to 4 universities. Remove one to add another.</span>
@@ -143,24 +135,26 @@ export default function Dashboard() {
 
       <div className="dash-table">
 
-        {/* Header row */}
-<div className="dash-table-row dash-header-row">
-  <div className="dash-table-label-cell dash-corner-cell">
-    <span className="dash-corner-top">Universities</span>
-    <div className="dash-corner-line" />
-    <span className="dash-corner-bottom">Criteria</span>
-  </div>
-  {unis.map(u => (
-    <div key={u.id} className="dash-table-cell dash-uni-header">
-      <img src={u.image} alt={u.name} className="dash-uni-card-img" />
-      <div className="dash-uni-card-info">
-        <div className="dash-uni-card-name">{u.name}</div>
-        <div className="dash-uni-card-program">{u.program}</div>
-      </div>
-      <button className="dash-remove-btn" onClick={() => setRemoved(r => [...r, u.id])}>✕</button>
-    </div>
-  ))}
-</div>
+        {/* Header row with SVG diagonal */}
+        <div className="dash-table-row dash-header-row">
+          <div className="dash-table-label-cell dash-corner-cell">
+            <span className="dash-corner-top">Universities</span>
+            <svg className="dash-corner-line" viewBox="0 0 200 90" preserveAspectRatio="none">
+              <line x1="0" y1="90" x2="200" y2="0" stroke="rgba(172,136,118,0.4)" strokeWidth="1"/>
+            </svg>
+            <span className="dash-corner-bottom">Criteria</span>
+          </div>
+          {unis.map(u => (
+            <div key={u.id} className="dash-table-cell dash-uni-header">
+              <img src={u.image} alt={u.name} className="dash-uni-card-img" />
+              <div className="dash-uni-card-info">
+                <div className="dash-uni-card-name">{u.name}</div>
+                <div className="dash-uni-card-program">{u.program}</div>
+              </div>
+              <button className="dash-remove-btn" onClick={() => setRemoved(r => [...r, u.id])}>✕</button>
+            </div>
+          ))}
+        </div>
 
         {/* Data rows */}
         {ROW_LABELS.map((label, rowIdx) => (
