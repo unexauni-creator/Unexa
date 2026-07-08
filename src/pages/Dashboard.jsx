@@ -135,13 +135,9 @@ export default function Dashboard() {
 
       <div className="dash-table">
 
-        {/* Header row with SVG diagonal */}
         <div className="dash-table-row dash-header-row">
           <div className="dash-table-label-cell dash-corner-cell">
             <span className="dash-corner-top">Universities</span>
-            <svg className="dash-corner-line" viewBox="0 0 200 90" preserveAspectRatio="none">
-              <line x1="0" y1="90" x2="200" y2="0" stroke="rgba(172,136,118,0.4)" strokeWidth="1"/>
-            </svg>
             <span className="dash-corner-bottom">Criteria</span>
           </div>
           {unis.map(u => (
@@ -156,7 +152,6 @@ export default function Dashboard() {
           ))}
         </div>
 
-        {/* Data rows */}
         {ROW_LABELS.map((label, rowIdx) => (
           <div key={label} className="dash-table-row">
             <div className="dash-table-label-cell">{label}</div>
@@ -167,6 +162,7 @@ export default function Dashboard() {
             ))}
           </div>
         ))}
+
       </div>
     </div>
   );
