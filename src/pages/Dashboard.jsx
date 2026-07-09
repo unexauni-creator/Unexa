@@ -44,18 +44,19 @@ const mockUniversities = [
 ];
 
 const ROW_LABELS = [
-  "Scholarship",
-  "Submission period",
-  "Duration of study",
-  "Language",
-  "Min. language",
-  "Min. CGPA",
-  "Tuition fees",
+  { label: "Scholarship", info: null },
+  { label: "Submission period", info: null },
+  { label: "Duration of study", info: null },
+  { label: "Language", info: null },
+  { label: "Min. language", info: null },
+  { label: "Min. CGPA", info: "CGPA (Cumulative Grade Point Average) is a measure of your overall academic performance. Most universities require a minimum CGPA to ensure students can handle the academic workload of the program." },
+  { label: "Tuition fees", info: null },
 ];
 
 export default function Dashboard() {
   const navigate = useNavigate();
   const [removed, setRemoved] = useState([]);
+  const [tooltip, setTooltip] = useState(null);
 
   const unis = mockUniversities.filter(u => !removed.includes(u.id));
   const count = unis.length;
@@ -135,6 +136,7 @@ export default function Dashboard() {
 
       <div className="dash-table">
 
+        {/* Header row */}
         <div className="dash-table-row dash-header-row">
           <div className="dash-table-label-cell dash-corner-cell">
             <span className="dash-corner-top">Universities</span>
@@ -152,9 +154,26 @@ export default function Dashboard() {
           ))}
         </div>
 
-        {ROW_LABELS.map((label, rowIdx) => (
-          <div key={label} className="dash-table-row">
-            <div className="dash-table-label-cell">{label}</div>
+        {/* Data rows */}
+        {ROW_LABELS.map((row, rowIdx) => (
+          <div key={row.label} className="dash-table-row">
+            <div className="dash-table-label-cell">
+              {row.label}
+              {row.info && (
+                <span className="dash-info-wrap">
+                  <button
+                    className="dash-info-btn"
+                    onClick={() => setTooltip(tooltip === row.label ? null : row.label)}
+                  >ⓘ</button>
+                  {tooltip === row.label && (
+                    <div className="dash-tooltip">
+                      <div className="dash-tooltip-text">{row.info}</div>
+                      <button className="dash-tooltip-close" onClick={() => setTooltip(null)}>✕</button>
+                    </div>
+                  )}
+                </span>
+              )}
+            </div>
             {unis.map(u => (
               <div key={u.id} className="dash-table-cell">
                 {rows[rowIdx][unis.indexOf(u)]}
