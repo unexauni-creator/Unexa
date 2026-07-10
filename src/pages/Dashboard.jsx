@@ -44,18 +44,19 @@ const mockUniversities = [
 ];
 
 const ROW_LABELS = [
-  "Scholarship",
-  "Submission period",
-  "Duration of study",
-  "Language",
-  "Min. language",
-  "Min. CGPA",
-  "Tuition fees",
+  { label: "Scholarship", info: null },
+  { label: "Submission period", info: null },
+  { label: "Duration of study", info: null },
+  { label: "Language", info: null },
+  { label: "Min. language", info: null },
+  { label: "Min. CGPA", info: "CGPA (Cumulative Grade Point Average) is a measure of your overall academic performance. Most universities require a minimum CGPA to ensure students can handle the academic workload of the program." },
+  { label: "Tuition fees", info: null },
 ];
 
 export default function Dashboard() {
   const navigate = useNavigate();
   const [removed, setRemoved] = useState([]);
+  const [tooltip, setTooltip] = useState(null);
 
   const unis = mockUniversities.filter(u => !removed.includes(u.id));
   const count = unis.length;
@@ -70,7 +71,6 @@ export default function Dashboard() {
     unis.map(u => u.tuition),
   ];
 
-  // 0 universities
   if (count === 0) {
     return (
       <div className="dashboard-page">
@@ -88,7 +88,6 @@ export default function Dashboard() {
     );
   }
 
-  // 1 university — not enough
   if (count === 1) {
     return (
       <div className="dashboard-page">
@@ -96,8 +95,6 @@ export default function Dashboard() {
           <div className="dash-title">Compare Dashboard</div>
           <div className="dash-subtitle">Compare between 2 and 4 selected universities side by side</div>
         </div>
-
-        {/* Warning banner */}
         <div className="dash-warning">
           <span className="dash-warning-icon">⚠️</span>
           <div>
@@ -106,8 +103,6 @@ export default function Dashboard() {
           </div>
           <button className="dash-warning-btn" onClick={() => navigate("/")}>Add university →</button>
         </div>
-
-        {/* Show the single card as a preview */}
         <div className="dash-single-preview">
           {unis.map(u => (
             <div key={u.id} className="dash-single-card">
@@ -124,7 +119,6 @@ export default function Dashboard() {
     );
   }
 
-  // 2–4 universities — show table
   return (
     <div className="dashboard-page">
       <div className="dashboard-header">
@@ -134,7 +128,6 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* Max 4 banner */}
       {count === 4 && (
         <div className="dash-max-banner">
           <span>✓ Maximum reached — you can compare up to 4 universities. Remove one to add another.</span>
@@ -145,7 +138,10 @@ export default function Dashboard() {
 
         {/* Header row */}
         <div className="dash-table-row dash-header-row">
-          <div className="dash-table-label-cell" />
+          <div className="dash-table-label-cell dash-corner-cell">
+            <span className="dash-corner-top">Universities</span>
+            <span className="dash-corner-bottom">Criteria</span>
+          </div>
           {unis.map(u => (
             <div key={u.id} className="dash-table-cell dash-uni-header">
               <img src={u.image} alt={u.name} className="dash-uni-card-img" />
@@ -159,9 +155,25 @@ export default function Dashboard() {
         </div>
 
         {/* Data rows */}
-        {ROW_LABELS.map((label, rowIdx) => (
-          <div key={label} className="dash-table-row">
-            <div className="dash-table-label-cell">{label}</div>
+        {ROW_LABELS.map((row, rowIdx) => (
+          <div key={row.label} className="dash-table-row">
+            <div className="dash-table-label-cell">
+              {row.label}
+              {row.info && (
+                <span className="dash-info-wrap">
+                  <button
+                    className="dash-info-btn"
+                    onClick={() => setTooltip(tooltip === row.label ? null : row.label)}
+                  >ⓘ</button>
+                  {tooltip === row.label && (
+                    <div className="dash-tooltip">
+                      <div className="dash-tooltip-text">{row.info}</div>
+                      <button className="dash-tooltip-close" onClick={() => setTooltip(null)}>✕</button>
+                    </div>
+                  )}
+                </span>
+              )}
+            </div>
             {unis.map(u => (
               <div key={u.id} className="dash-table-cell">
                 {rows[rowIdx][unis.indexOf(u)]}
@@ -169,6 +181,7 @@ export default function Dashboard() {
             ))}
           </div>
         ))}
+
       </div>
     </div>
   );
