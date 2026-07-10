@@ -141,7 +141,7 @@ export default function Dashboard() {
           <div className="dash-title">Compare Dashboard</div>
           <div className="dash-desc-block">
             <p className="dash-desc-main">Not sure which university is right for you?</p>
-            <p className="dash-desc-sub">Add universities from the Home page and compare them side by side. You can compare between 2 and 4 universities at once to make the best decision for your future.</p>
+            <p className="dash-desc-sub">Add universities from the Home page and compare them with each other. You can compare between 2 and 4 universities at once to make the best decision for your future.</p>
           </div>
         </div>
         <div className="dash-warning">
