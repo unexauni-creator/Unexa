@@ -179,7 +179,7 @@ export default function Dashboard() {
         <div className="dash-desc-block">
           <p className="dash-desc-main">Not sure which university is right for you?</p>
           <p className="dash-desc-sub">
-            Compare {count} selected universit{count === 1 ? "y" : "ies"} side by side — scholarships, tuition fees, language requirements, application deadlines and more. You can add up to 4 universities to find the one that fits you best.
+            Compare {count} selected universit{count === 1 ? "y" : "ies"}  with each other. You can add up to 4 universities to find the one that fits you best.
           </p>
         </div>
       </div>
