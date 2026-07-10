@@ -49,7 +49,7 @@ const ROW_LABELS = [
   { label: "Duration of study", info: null },
   { label: "Language", info: null },
   { label: "Min. language", info: null },
-  { label: "Min. CGPA", info: "CGPA (Cumulative Grade Point Average) is a measure of your overall academic performance. Most universities require a minimum CGPA to ensure students can handle the academic workload of the program." },
+  { label: "Min. CGPA", info: "CGPA (Cumulative Grade Point Average) is a measure of your overall academic performance. Most universities require a minimum CGPA to ensure students can handle the academic workload." },
   { label: "Tuition fees", info: null },
 ];
 
