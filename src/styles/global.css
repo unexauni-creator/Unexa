@@ -510,6 +510,62 @@ a.nav-item { text-decoration: none; }
 .dash-remove-btn { position: absolute; top: 12px; right: 12px; width: 22px; height: 22px; border-radius: 50%; background: rgba(172,136,118,0.15); border: none; cursor: pointer; font-size: 11px; color: #9e8f86; display: flex; align-items: center; justify-content: center; transition: background 0.18s; flex-shrink: 0; }
 .dash-remove-btn:hover { background: rgba(172,136,118,0.4); color: #634F44; }
 
+.dash-info-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  transition: opacity 0.18s;
+}
+.dash-info-btn:hover { opacity: 0.7; }
+
+.dash-info-icon {
+  width: 16px;
+  height: 16px;
+  filter: brightness(0) saturate(100%) invert(55%) sepia(15%) saturate(500%) hue-rotate(340deg);
+}
+
+.dash-tooltip {
+  position: fixed;
+  bottom: 32px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 320px;
+  background: #2c2420;
+  color: white;
+  border-radius: 16px;
+  padding: 16px 18px;
+  z-index: 300;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.22);
+  animation: fadeIn 0.15s ease;
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.dash-tooltip-text {
+  font-family: 'Nunito', sans-serif;
+  font-size: 13px;
+  line-height: 1.7;
+  color: rgba(255,255,255,0.9);
+  flex: 1;
+}
+
+.dash-tooltip-close {
+  background: none;
+  border: none;
+  color: rgba(255,255,255,0.5);
+  cursor: pointer;
+  font-size: 13px;
+  flex-shrink: 0;
+  padding: 0;
+  line-height: 1;
+}
+.dash-tooltip-close:hover { color: white; }
+
 /* Corner cell */
 .dash-corner-cell {
   position: relative;

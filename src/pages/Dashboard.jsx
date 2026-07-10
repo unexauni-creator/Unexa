@@ -164,7 +164,9 @@ export default function Dashboard() {
                   <button
                     className="dash-info-btn"
                     onClick={() => setTooltip(tooltip === row.label ? null : row.label)}
-                  >ⓘ</button>
+                  >
+                    <img src="/info-circle.svg" alt="info" className="dash-info-icon" />
+                  </button>
                   {tooltip === row.label && (
                     <div className="dash-tooltip">
                       <div className="dash-tooltip-text">{row.info}</div>
