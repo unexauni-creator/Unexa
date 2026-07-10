@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useState, useRef } from "react";
 
 const mockUniversities = [
   {
@@ -53,10 +53,53 @@ const ROW_LABELS = [
   { label: "Tuition fees", info: null },
 ];
 
+function InfoTooltip({ text }) {
+  const [visible, setVisible] = useState(false);
+  const [pos, setPos] = useState({ top: 0, left: 0 });
+  const btnRef = useRef(null);
+
+  function handleMouseEnter() {
+    if (btnRef.current) {
+      const rect = btnRef.current.getBoundingClientRect();
+      setPos({
+        top: rect.bottom + window.scrollY + 8,
+        left: rect.left + window.scrollX,
+      });
+    }
+    setVisible(true);
+  }
+
+  function handleMouseLeave() {
+    setVisible(false);
+  }
+
+  return (
+    <span className="dash-info-wrap">
+      <button
+        ref={btnRef}
+        className="dash-info-btn"
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}
+      >
+        <img src="/info-circle.svg" alt="info" className="dash-info-icon" />
+      </button>
+      {visible && (
+        <div
+          className="dash-tooltip"
+          style={{ top: pos.top, left: pos.left }}
+          onMouseEnter={() => setVisible(true)}
+          onMouseLeave={handleMouseLeave}
+        >
+          <div className="dash-tooltip-text">{text}</div>
+        </div>
+      )}
+    </span>
+  );
+}
+
 export default function Dashboard() {
   const navigate = useNavigate();
   const [removed, setRemoved] = useState([]);
-  const [tooltip, setTooltip] = useState(null);
 
   const unis = mockUniversities.filter(u => !removed.includes(u.id));
   const count = unis.length;
@@ -159,22 +202,7 @@ export default function Dashboard() {
           <div key={row.label} className="dash-table-row">
             <div className="dash-table-label-cell">
               {row.label}
-              {row.info && (
-                <span className="dash-info-wrap">
-                  <button
-                    className="dash-info-btn"
-                    onClick={() => setTooltip(tooltip === row.label ? null : row.label)}
-                  >
-                    <img src="/info-circle.svg" alt="info" className="dash-info-icon" />
-                  </button>
-                  {tooltip === row.label && (
-                    <div className="dash-tooltip">
-                      <div className="dash-tooltip-text">{row.info}</div>
-                      <button className="dash-tooltip-close" onClick={() => setTooltip(null)}>✕</button>
-                    </div>
-                  )}
-                </span>
-              )}
+              {row.info && <InfoTooltip text={row.info} />}
             </div>
             {unis.map(u => (
               <div key={u.id} className="dash-table-cell">
