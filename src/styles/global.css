@@ -446,9 +446,32 @@ a.nav-item { text-decoration: none; }
 
 /* ── Dashboard ── */
 .dashboard-page { padding: 32px; display: flex; flex-direction: column; gap: 28px; }
-.dashboard-header { display: flex; flex-direction: column; gap: 4px; }
+.dashboard-header { display: flex; flex-direction: column; gap: 12px; }
 .dash-title { font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 28px; color: rgba(43,31,24,0.96); }
-.dash-subtitle { font-family: 'Nunito', sans-serif; font-size: 15px; }
+
+/* Description block */
+.dash-desc-block {
+  background: rgba(208,208,208,0.20);
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  border-radius: 16px;
+  padding: 20px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.dash-desc-main {
+  font-family: 'Nunito', sans-serif;
+  font-weight: 700;
+  font-size: 16px;
+  color: rgba(43,31,24,0.96);
+}
+.dash-desc-sub {
+  font-family: 'Nunito', sans-serif;
+  font-size: 14px;
+  color: #6b5e56;
+  line-height: 1.7;
+}
 
 /* Table */
 .dash-table {
@@ -489,7 +512,8 @@ a.nav-item { text-decoration: none; }
   color: rgba(43,31,24,0.8);
   display: flex;
   align-items: center;
-  text-align: left;
+  justify-content: center;
+  text-align: center;
   border-right: 1px solid rgba(172,136,118,0.15);
 }
 .dash-table-cell:last-child { border-right: none; }
@@ -501,6 +525,8 @@ a.nav-item { text-decoration: none; }
   padding: 16px 20px;
   position: relative;
   min-height: 90px;
+  justify-content: flex-start;
+  text-align: left;
 }
 .dash-uni-card-img { width: 48px; height: 48px; border-radius: 10px; object-fit: cover; flex-shrink: 0; }
 .dash-uni-card-info { flex: 1; overflow: hidden; }
@@ -534,13 +560,12 @@ a.nav-item { text-decoration: none; }
 .dash-corner-top { font-family: 'Nunito', sans-serif; font-size: 13px; font-weight: 700; color: rgba(43,31,24,0.5); align-self: flex-end; text-align: right; }
 .dash-corner-bottom { font-family: 'Nunito', sans-serif; font-size: 13px; font-weight: 700; color: rgba(43,31,24,0.5); align-self: flex-start; }
 
-/* Info icon + tooltip — hover, fixed position outside table */
+/* Info icon + tooltip */
 .dash-info-wrap {
   display: inline-flex;
   align-items: center;
   margin-left: 6px;
 }
-
 .dash-info-btn {
   background: none;
   border: none;
@@ -552,13 +577,11 @@ a.nav-item { text-decoration: none; }
   transition: opacity 0.18s;
 }
 .dash-info-btn:hover { opacity: 0.7; }
-
 .dash-info-icon {
   width: 16px;
   height: 16px;
   filter: brightness(0) saturate(100%) invert(55%) sepia(15%) saturate(500%) hue-rotate(340deg);
 }
-
 .dash-tooltip {
   position: fixed;
   z-index: 9999;
@@ -571,7 +594,6 @@ a.nav-item { text-decoration: none; }
   animation: fadeIn 0.15s ease;
   pointer-events: auto;
 }
-
 .dash-tooltip-text {
   font-family: 'Nunito', sans-serif;
   font-size: 13px;
@@ -612,6 +634,7 @@ a.nav-item { text-decoration: none; }
   .dash-warning { flex-direction: column; align-items: flex-start; }
   .dash-warning-btn { margin-left: 0; }
   .dash-tooltip { width: 240px; }
+  .dash-desc-block { padding: 16px; }
 }
 
 /* ── Profile Page ── */

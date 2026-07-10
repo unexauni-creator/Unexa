@@ -119,12 +119,15 @@ export default function Dashboard() {
       <div className="dashboard-page">
         <div className="dashboard-header">
           <div className="dash-title">Compare Dashboard</div>
-          <div className="dash-subtitle">Compare between 2 and 4 selected universities side by side</div>
+          <div className="dash-desc-block">
+            <p className="dash-desc-main">Not sure which university is right for you?</p>
+            <p className="dash-desc-sub">Add universities from the Home page and compare them side by side — scholarships, tuition, language requirements, deadlines and more. You can compare between 2 and 4 universities at once to make the best decision for your future.</p>
+          </div>
         </div>
         <div className="compare-empty">
           <div className="compare-empty-icon">⚖️</div>
-          <div className="compare-empty-title">No universities added</div>
-          <div className="compare-empty-desc">Go to Home and open a university card, then click "Compare to others" to add it here.</div>
+          <div className="compare-empty-title">No universities added yet</div>
+          <div className="compare-empty-desc">Go to Home, open any university card and click "Compare to others" to add it here.</div>
           <button className="detail-btn-primary" style={{ marginTop: 16 }} onClick={() => navigate("/")}>Browse Universities</button>
         </div>
       </div>
@@ -136,7 +139,10 @@ export default function Dashboard() {
       <div className="dashboard-page">
         <div className="dashboard-header">
           <div className="dash-title">Compare Dashboard</div>
-          <div className="dash-subtitle">Compare between 2 and 4 selected universities side by side</div>
+          <div className="dash-desc-block">
+            <p className="dash-desc-main">Not sure which university is right for you?</p>
+            <p className="dash-desc-sub">Add universities from the Home page and compare them side by side — scholarships, tuition, language requirements, deadlines and more. You can compare between 2 and 4 universities at once to make the best decision for your future.</p>
+          </div>
         </div>
         <div className="dash-warning">
           <span className="dash-warning-icon">⚠️</span>
@@ -154,7 +160,11 @@ export default function Dashboard() {
                 <div className="dash-uni-card-name" style={{ fontSize: 15 }}>{u.name}</div>
                 <div className="dash-uni-card-program">{u.program}</div>
               </div>
-              <button className="dash-remove-btn" style={{ position: "static", marginLeft: "auto" }} onClick={() => setRemoved(r => [...r, u.id])}>✕</button>
+              <button
+                className="dash-remove-btn"
+                style={{ position: "static", marginLeft: "auto" }}
+                onClick={() => setRemoved(r => [...r, u.id])}
+              >✕</button>
             </div>
           ))}
         </div>
@@ -166,8 +176,11 @@ export default function Dashboard() {
     <div className="dashboard-page">
       <div className="dashboard-header">
         <div className="dash-title">Compare Dashboard</div>
-        <div className="dash-subtitle" style={{ color: "#0F0F0F" }}>
-          Comparing {count} universit{count === 1 ? "y" : "ies"} · You can compare between 2 and 4 universities
+        <div className="dash-desc-block">
+          <p className="dash-desc-main">Not sure which university is right for you?</p>
+          <p className="dash-desc-sub">
+            Compare {count} selected universit{count === 1 ? "y" : "ies"} side by side — scholarships, tuition fees, language requirements, application deadlines and more. You can add up to 4 universities to find the one that fits you best.
+          </p>
         </div>
       </div>
 
