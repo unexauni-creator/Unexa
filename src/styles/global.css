@@ -808,7 +808,7 @@ a.nav-item { text-decoration: none; }
 
 .filter-panel {
   background: #ffffff;
-  width: 400px;
+  width: 380px;
   max-width: 100vw;
   height: 100%;
   display: flex;
@@ -828,7 +828,6 @@ a.nav-item { text-decoration: none; }
   align-items: center;
   justify-content: space-between;
   padding: 24px 24px 20px;
-  border-bottom: 1px solid #f0ece6;
   flex-shrink: 0;
 }
 .filter-title {
@@ -838,43 +837,47 @@ a.nav-item { text-decoration: none; }
   color: rgba(43,31,24,0.96);
 }
 .filter-close-btn {
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  background: #f5f1ec;
+  background: none;
   border: none;
   cursor: pointer;
-  font-size: 14px;
-  color: #4a3f38;
+  font-size: 16px;
+  color: rgba(43,31,24,0.96);
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: background 0.18s;
+  padding: 4px;
+  transition: opacity 0.18s;
 }
-.filter-close-btn:hover { background: #e8e2da; }
+.filter-close-btn:hover { opacity: 0.6; }
 
+/* Body */
 .filter-body {
   overflow-y: auto;
   flex: 1;
+  padding: 0 24px;
   scrollbar-width: thin;
   scrollbar-color: rgba(172,136,118,0.3) transparent;
 }
 
-.filter-group { padding: 18px 24px; }
+/* Section — no divider lines */
+.filter-section {
+  padding: 16px 0;
+}
 
 .filter-group-title {
   font-family: 'Nunito', sans-serif;
   font-weight: 700;
   font-size: 15px;
   color: rgba(43,31,24,0.96);
-  margin-bottom: 12px;
+  margin-bottom: 10px;
 }
 
+/* Check item */
 .filter-check-item {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 10px 0;
+  padding: 9px 0;
   cursor: pointer;
   transition: opacity 0.15s;
 }
@@ -902,15 +905,13 @@ a.nav-item { text-decoration: none; }
   background: #2c2420;
   border-color: #2c2420;
 }
-.filter-check-tick {
-  color: white;
-  font-size: 13px;
-  font-weight: 700;
+.filter-tick-icon {
+  width: 14px;
+  height: 14px;
+  filter: brightness(0) invert(1);
 }
 
-.filter-divider { height: 1px; background: #f0ece6; margin: 0 24px; }
-
-/* Price range slider */
+/* Tuition price range */
 .filter-price-inputs {
   display: flex;
   align-items: center;
@@ -922,10 +923,12 @@ a.nav-item { text-decoration: none; }
   display: flex;
   align-items: center;
   gap: 6px;
-  background: #f5f1ec;
+  background: #ffffff;
   border-radius: 12px;
   padding: 10px 14px;
-  border: 1.5px solid #e8e2da;
+  border: none;
+  box-shadow: none;
+  background: #f5f1ec;
 }
 .filter-price-currency {
   font-family: 'Nunito', sans-serif;
@@ -950,6 +953,7 @@ a.nav-item { text-decoration: none; }
   flex-shrink: 0;
 }
 
+/* Slider */
 .filter-slider-wrap {
   position: relative;
   height: 28px;
@@ -1007,22 +1011,25 @@ a.nav-item { text-decoration: none; }
 .filter-footer {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-end;
+  gap: 10px;
   padding: 16px 24px;
-  border-top: 1px solid #f0ece6;
   flex-shrink: 0;
 }
 .filter-clear-btn {
   font-family: 'Nunito', sans-serif;
   font-size: 15px;
   font-weight: 600;
-  color: #9e8f86;
-  background: none;
+  color: #4a3f38;
+  background: #f5f1ec;
   border: none;
+  border-radius: 100px;
+  padding: 12px 24px;
   cursor: pointer;
-  padding: 8px 0;
+  transition: background 0.18s;
 }
-.filter-clear-btn:hover { color: #4a3f38; }
+.filter-clear-btn:hover { background: #e8e2da; }
+
 .filter-save-btn {
   font-family: 'Nunito', sans-serif;
   font-size: 15px;
@@ -1031,7 +1038,7 @@ a.nav-item { text-decoration: none; }
   background: #2c2420;
   border: none;
   border-radius: 100px;
-  padding: 12px 32px;
+  padding: 12px 28px;
   cursor: pointer;
   transition: background 0.18s;
 }
