@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useState, useRef } from "react";
 
 const mockUniversities = [
   {
@@ -49,14 +49,57 @@ const ROW_LABELS = [
   { label: "Duration of study", info: null },
   { label: "Language", info: null },
   { label: "Min. language", info: null },
-  { label: "Min. CGPA", info: "CGPA (Cumulative Grade Point Average) is a measure of your overall academic performance. Most universities require a minimum CGPA to ensure students can handle the academic workload of the program." },
+  { label: "Min. CGPA", info: "CGPA (Cumulative Grade Point Average) is a measure of your overall academic performance. Most universities require a minimum CGPA to ensure students can handle the academic workload." },
   { label: "Tuition fees", info: null },
 ];
+
+function InfoTooltip({ text }) {
+  const [visible, setVisible] = useState(false);
+  const [pos, setPos] = useState({ top: 0, left: 0 });
+  const btnRef = useRef(null);
+
+  function handleMouseEnter() {
+    if (btnRef.current) {
+      const rect = btnRef.current.getBoundingClientRect();
+      setPos({
+        top: rect.bottom + window.scrollY + 8,
+        left: rect.left + window.scrollX,
+      });
+    }
+    setVisible(true);
+  }
+
+  function handleMouseLeave() {
+    setVisible(false);
+  }
+
+  return (
+    <span className="dash-info-wrap">
+      <button
+        ref={btnRef}
+        className="dash-info-btn"
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}
+      >
+        <img src="/info-circle.svg" alt="info" className="dash-info-icon" />
+      </button>
+      {visible && (
+        <div
+          className="dash-tooltip"
+          style={{ top: pos.top, left: pos.left }}
+          onMouseEnter={() => setVisible(true)}
+          onMouseLeave={handleMouseLeave}
+        >
+          <div className="dash-tooltip-text">{text}</div>
+        </div>
+      )}
+    </span>
+  );
+}
 
 export default function Dashboard() {
   const navigate = useNavigate();
   const [removed, setRemoved] = useState([]);
-  const [tooltip, setTooltip] = useState(null);
 
   const unis = mockUniversities.filter(u => !removed.includes(u.id));
   const count = unis.length;
@@ -76,12 +119,15 @@ export default function Dashboard() {
       <div className="dashboard-page">
         <div className="dashboard-header">
           <div className="dash-title">Compare Dashboard</div>
-          <div className="dash-subtitle">Compare between 2 and 4 selected universities side by side</div>
+          <div className="dash-desc-block">
+            <p className="dash-desc-main">Not sure which university is right for you?</p>
+            <p className="dash-desc-sub">Add universities from the Home page and compare them with each other. You can compare between 2 and 4 universities at once to make the best decision for your future.</p>
+          </div>
         </div>
         <div className="compare-empty">
           <div className="compare-empty-icon">⚖️</div>
-          <div className="compare-empty-title">No universities added</div>
-          <div className="compare-empty-desc">Go to Home and open a university card, then click "Compare to others" to add it here.</div>
+          <div className="compare-empty-title">No universities added yet</div>
+          <div className="compare-empty-desc">Go to Home, open any university card and click "Compare to others" to add it here.</div>
           <button className="detail-btn-primary" style={{ marginTop: 16 }} onClick={() => navigate("/")}>Browse Universities</button>
         </div>
       </div>
@@ -93,7 +139,10 @@ export default function Dashboard() {
       <div className="dashboard-page">
         <div className="dashboard-header">
           <div className="dash-title">Compare Dashboard</div>
-          <div className="dash-subtitle">Compare between 2 and 4 selected universities side by side</div>
+          <div className="dash-desc-block">
+            <p className="dash-desc-main">Not sure which university is right for you?</p>
+            <p className="dash-desc-sub">Add universities from the Home page and compare them with each other. You can compare between 2 and 4 universities at once to make the best decision for your future.</p>
+          </div>
         </div>
         <div className="dash-warning">
           <span className="dash-warning-icon">⚠️</span>
@@ -111,7 +160,11 @@ export default function Dashboard() {
                 <div className="dash-uni-card-name" style={{ fontSize: 15 }}>{u.name}</div>
                 <div className="dash-uni-card-program">{u.program}</div>
               </div>
-              <button className="dash-remove-btn" style={{ position: "static", marginLeft: "auto" }} onClick={() => setRemoved(r => [...r, u.id])}>✕</button>
+              <button
+                className="dash-remove-btn"
+                style={{ position: "static", marginLeft: "auto" }}
+                onClick={() => setRemoved(r => [...r, u.id])}
+              >✕</button>
             </div>
           ))}
         </div>
@@ -123,8 +176,11 @@ export default function Dashboard() {
     <div className="dashboard-page">
       <div className="dashboard-header">
         <div className="dash-title">Compare Dashboard</div>
-        <div className="dash-subtitle" style={{ color: "#0F0F0F" }}>
-          Comparing {count} universit{count === 1 ? "y" : "ies"} · You can compare between 2 and 4 universities
+        <div className="dash-desc-block">
+          <p className="dash-desc-main">Not sure which university is right for you?</p>
+          <p className="dash-desc-sub">
+            Compare {count} selected universit{count === 1 ? "y" : "ies"}  with each other. You can add up to 4 universities to find the one that fits you best.
+          </p>
         </div>
       </div>
 
@@ -159,20 +215,7 @@ export default function Dashboard() {
           <div key={row.label} className="dash-table-row">
             <div className="dash-table-label-cell">
               {row.label}
-              {row.info && (
-                <span className="dash-info-wrap">
-                  <button
-                    className="dash-info-btn"
-                    onClick={() => setTooltip(tooltip === row.label ? null : row.label)}
-                  >ⓘ</button>
-                  {tooltip === row.label && (
-                    <div className="dash-tooltip">
-                      <div className="dash-tooltip-text">{row.info}</div>
-                      <button className="dash-tooltip-close" onClick={() => setTooltip(null)}>✕</button>
-                    </div>
-                  )}
-                </span>
-              )}
+              {row.info && <InfoTooltip text={row.info} />}
             </div>
             {unis.map(u => (
               <div key={u.id} className="dash-table-cell">
