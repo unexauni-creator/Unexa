@@ -40,11 +40,19 @@ function CheckItem({ label, checked, onChange }) {
   );
 }
 
-function FilterSection({ title, children }) {
+function CollapsibleSection({ title, children, selectedCount }) {
+  const [open, setOpen] = useState(true);
+
   return (
     <div className="filter-section">
-      <div className="filter-group-title">{title}</div>
-      {children}
+      <button className="filter-section-header" onClick={() => setOpen(o => !o)}>
+        <span className="filter-group-title">
+          {title}
+          {selectedCount > 0 && <span className="filter-section-badge">{selectedCount}</span>}
+        </span>
+        <span className={`filter-section-arrow ${open ? "open" : ""}`}>›</span>
+      </button>
+      {open && <div className="filter-section-body">{children}</div>}
     </div>
   );
 }
@@ -64,6 +72,9 @@ function FilterPanel({ filters, setFilters, onClose, onApply, onClear }) {
     <div className="filter-backdrop" onClick={onClose}>
       <div className="filter-panel" onClick={e => e.stopPropagation()}>
 
+        {/* Handle bar for mobile */}
+        <div className="filter-handle-bar" />
+
         {/* Header */}
         <div className="filter-header">
           <span className="filter-title">Filters</span>
@@ -72,19 +83,22 @@ function FilterPanel({ filters, setFilters, onClose, onApply, onClear }) {
 
         <div className="filter-body">
 
-          <FilterSection title="Country">
+          <CollapsibleSection title="Country" selectedCount={filters.countries.length}>
             {COUNTRIES.map(c => (
               <CheckItem key={c} label={c} checked={filters.countries.includes(c)} onChange={() => toggle("countries", c)} />
             ))}
-          </FilterSection>
+          </CollapsibleSection>
 
-          <FilterSection title="Degree Level">
+          <CollapsibleSection title="Degree Level" selectedCount={filters.degrees.length}>
             {DEGREES.map(d => (
               <CheckItem key={d} label={d} checked={filters.degrees.includes(d)} onChange={() => toggle("degrees", d)} />
             ))}
-          </FilterSection>
+          </CollapsibleSection>
 
-          <FilterSection title="Tuition Cost">
+          <CollapsibleSection
+            title="Tuition Cost"
+            selectedCount={filters.tuitionMin > MIN_PRICE || filters.tuitionMax < MAX_PRICE ? 1 : 0}
+          >
             <div className="filter-price-inputs">
               <div className="filter-price-box">
                 <span className="filter-price-currency">$</span>
@@ -114,34 +128,40 @@ function FilterPanel({ filters, setFilters, onClose, onApply, onClear }) {
               <div className="filter-slider-track">
                 <div className="filter-slider-range" style={{ left: `${minPct}%`, width: `${maxPct - minPct}%` }} />
               </div>
-              <input type="range" className="filter-slider filter-slider-min" min={MIN_PRICE} max={MAX_PRICE} step={500} value={filters.tuitionMin}
+              <input type="range" className="filter-slider" min={MIN_PRICE} max={MAX_PRICE} step={500} value={filters.tuitionMin}
                 onChange={e => setFilters(f => ({ ...f, tuitionMin: Math.min(Number(e.target.value), f.tuitionMax - 500) }))} />
-              <input type="range" className="filter-slider filter-slider-max" min={MIN_PRICE} max={MAX_PRICE} step={500} value={filters.tuitionMax}
+              <input type="range" className="filter-slider" min={MIN_PRICE} max={MAX_PRICE} step={500} value={filters.tuitionMax}
                 onChange={e => setFilters(f => ({ ...f, tuitionMax: Math.max(Number(e.target.value), f.tuitionMin + 500) }))} />
             </div>
-          </FilterSection>
+          </CollapsibleSection>
 
-          <FilterSection title="Language of Teaching">
+          <CollapsibleSection title="Language of Teaching" selectedCount={filters.languages.length}>
             {LANGUAGES.map(l => (
               <CheckItem key={l} label={l} checked={filters.languages.includes(l)} onChange={() => toggle("languages", l)} />
             ))}
-          </FilterSection>
+          </CollapsibleSection>
 
-          <FilterSection title="Language Certification Required">
+          <CollapsibleSection
+            title="Language Certification"
+            selectedCount={filters.certification !== null ? 1 : 0}
+          >
             <CheckItem label="Yes" checked={filters.certification === true} onChange={() => setFilters(f => ({ ...f, certification: f.certification === true ? null : true }))} />
             <CheckItem label="No" checked={filters.certification === false} onChange={() => setFilters(f => ({ ...f, certification: f.certification === false ? null : false }))} />
-          </FilterSection>
+          </CollapsibleSection>
 
-          <FilterSection title="Hybrid / Online Format">
+          <CollapsibleSection title="Format" selectedCount={filters.formats.length}>
             {FORMATS.map(f => (
               <CheckItem key={f} label={f} checked={filters.formats.includes(f)} onChange={() => toggle("formats", f)} />
             ))}
-          </FilterSection>
+          </CollapsibleSection>
 
-          <FilterSection title="Internship">
+          <CollapsibleSection
+            title="Internship"
+            selectedCount={filters.internship !== null ? 1 : 0}
+          >
             <CheckItem label="Yes" checked={filters.internship === true} onChange={() => setFilters(f => ({ ...f, internship: f.internship === true ? null : true }))} />
             <CheckItem label="No" checked={filters.internship === false} onChange={() => setFilters(f => ({ ...f, internship: f.internship === false ? null : false }))} />
-          </FilterSection>
+          </CollapsibleSection>
 
         </div>
 
@@ -199,7 +219,6 @@ export default function Home({ onSelectUni }) {
   const activeTags = [
     ...appliedFilters.countries,
     ...appliedFilters.degrees,
-    ...appliedFilters.tuitionTypes,
     ...appliedFilters.languages,
     ...appliedFilters.formats,
     ...(appliedFilters.internship !== null ? [`Internship: ${appliedFilters.internship ? "Yes" : "No"}`] : []),
