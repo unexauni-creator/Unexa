@@ -49,7 +49,7 @@ const ROW_LABELS = [
   { label: "Duration of study", info: null },
   { label: "Language", info: null },
   { label: "Min. language", info: null },
-  { label: "Min. CGPA", info: "CGPA (Cumulative Grade Point Average) is a measure of your overall academic performance. Most universities require a minimum CGPA to ensure students can handle the academic workload." },
+  { label: "Min. CGPA", info: "CGPA (Cumulative Grade Point Average) is a measure of your overall academic performance. Most universities require a minimum CGPA to ensure students can handle the academic workload of the program." },
   { label: "Tuition fees", info: null },
 ];
 
@@ -61,35 +61,19 @@ function InfoTooltip({ text }) {
   function handleMouseEnter() {
     if (btnRef.current) {
       const rect = btnRef.current.getBoundingClientRect();
-      setPos({
-        top: rect.bottom + window.scrollY + 8,
-        left: rect.left + window.scrollX,
-      });
+      setPos({ top: rect.bottom + window.scrollY + 8, left: rect.left + window.scrollX });
     }
     setVisible(true);
   }
 
-  function handleMouseLeave() {
-    setVisible(false);
-  }
-
   return (
     <span className="dash-info-wrap">
-      <button
-        ref={btnRef}
-        className="dash-info-btn"
-        onMouseEnter={handleMouseEnter}
-        onMouseLeave={handleMouseLeave}
-      >
+      <button ref={btnRef} className="dash-info-btn" onMouseEnter={handleMouseEnter} onMouseLeave={() => setVisible(false)}>
         <img src="/info-circle.svg" alt="info" className="dash-info-icon" />
       </button>
       {visible && (
-        <div
-          className="dash-tooltip"
-          style={{ top: pos.top, left: pos.left }}
-          onMouseEnter={() => setVisible(true)}
-          onMouseLeave={handleMouseLeave}
-        >
+        <div className="dash-tooltip" style={{ top: pos.top, left: pos.left }}
+          onMouseEnter={() => setVisible(true)} onMouseLeave={() => setVisible(false)}>
           <div className="dash-tooltip-text">{text}</div>
         </div>
       )}
@@ -121,7 +105,7 @@ export default function Dashboard() {
           <div className="dash-title">Compare Dashboard</div>
           <div className="dash-desc-block">
             <p className="dash-desc-main">Not sure which university is right for you?</p>
-            <p className="dash-desc-sub">Add universities from the Home page and compare them with each other. You can compare between 2 and 4 universities at once to make the best decision for your future.</p>
+            <p className="dash-desc-sub">Add universities from the Home page and compare them side by side — scholarships, tuition, language requirements, deadlines and more. You can compare between 2 and 4 universities at once to make the best decision for your future.</p>
           </div>
         </div>
         <div className="compare-empty">
@@ -141,7 +125,7 @@ export default function Dashboard() {
           <div className="dash-title">Compare Dashboard</div>
           <div className="dash-desc-block">
             <p className="dash-desc-main">Not sure which university is right for you?</p>
-            <p className="dash-desc-sub">Add universities from the Home page and compare them with each other. You can compare between 2 and 4 universities at once to make the best decision for your future.</p>
+            <p className="dash-desc-sub">Add universities from the Home page and compare them side by side — scholarships, tuition, language requirements, deadlines and more. You can compare between 2 and 4 universities at once to make the best decision for your future.</p>
           </div>
         </div>
         <div className="dash-warning">
@@ -160,11 +144,8 @@ export default function Dashboard() {
                 <div className="dash-uni-card-name" style={{ fontSize: 15 }}>{u.name}</div>
                 <div className="dash-uni-card-program">{u.program}</div>
               </div>
-              <button
-                className="dash-remove-btn"
-                style={{ position: "static", marginLeft: "auto" }}
-                onClick={() => setRemoved(r => [...r, u.id])}
-              >✕</button>
+              <button className="dash-remove-btn" style={{ position: "static", marginLeft: "auto" }}
+                onClick={() => setRemoved(r => [...r, u.id])}>✕</button>
             </div>
           ))}
         </div>
@@ -179,7 +160,7 @@ export default function Dashboard() {
         <div className="dash-desc-block">
           <p className="dash-desc-main">Not sure which university is right for you?</p>
           <p className="dash-desc-sub">
-            Compare {count} selected universit{count === 1 ? "y" : "ies"}  with each other. You can add up to 4 universities to find the one that fits you best.
+            Compare {count} selected universit{count === 1 ? "y" : "ies"} side by side — scholarships, tuition fees, language requirements, application deadlines and more. You can add up to 4 universities to find the one that fits you best.
           </p>
         </div>
       </div>
@@ -195,6 +176,7 @@ export default function Dashboard() {
         {/* Header row */}
         <div className="dash-table-row dash-header-row">
           <div className="dash-table-label-cell dash-corner-cell">
+            {/* Pure CSS diagonal line via pseudo element */}
             <span className="dash-corner-top">Universities</span>
             <span className="dash-corner-bottom">Criteria</span>
           </div>
