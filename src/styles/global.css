@@ -881,7 +881,6 @@ a.nav-item { text-decoration: none; }
   to { transform: translateX(0); opacity: 1; }
 }
 
-/* Handle bar — visible on mobile only */
 .filter-handle-bar {
   display: none;
   width: 40px;
@@ -892,7 +891,6 @@ a.nav-item { text-decoration: none; }
   flex-shrink: 0;
 }
 
-/* Header */
 .filter-header {
   display: flex;
   align-items: center;
@@ -920,7 +918,6 @@ a.nav-item { text-decoration: none; }
 }
 .filter-close-btn:hover { opacity: 0.6; }
 
-/* Body */
 .filter-body {
   overflow-y: auto;
   flex: 1;
@@ -930,7 +927,7 @@ a.nav-item { text-decoration: none; }
 }
 
 /* Collapsible section */
-.filter-section { padding: 4px 0; }
+.filter-section { padding: 2px 0; }
 
 .filter-section-header {
   width: 100%;
@@ -971,9 +968,7 @@ a.nav-item { text-decoration: none; }
   display: inline-block;
   transform: rotate(90deg);
 }
-.filter-section-arrow.open {
-  transform: rotate(-90deg);
-}
+.filter-section-arrow.open { transform: rotate(-90deg); }
 
 .filter-section-body { padding-bottom: 8px; }
 
@@ -994,7 +989,6 @@ a.nav-item { text-decoration: none; }
   color: #4a3f38;
 }
 
-/* Checkbox — bigger, brand color */
 .filter-checkbox {
   width: 28px;
   height: 28px;
@@ -1017,7 +1011,7 @@ a.nav-item { text-decoration: none; }
   filter: brightness(0) invert(1);
 }
 
-/* Tuition price range */
+/* Tuition price range — no background on inputs */
 .filter-price-inputs {
   display: flex;
   align-items: center;
@@ -1029,14 +1023,14 @@ a.nav-item { text-decoration: none; }
   display: flex;
   align-items: center;
   gap: 6px;
-  background: #f5f1ec;
+  background: none;
   border-radius: 12px;
-  padding: 10px 14px;
+  padding: 10px 0;
   border: none;
 }
 .filter-price-currency {
   font-family: 'Nunito', sans-serif;
-  font-size: 14px;
+  font-size: 15px;
   color: #9e8f86;
   flex-shrink: 0;
 }
@@ -1045,7 +1039,7 @@ a.nav-item { text-decoration: none; }
   border: none;
   outline: none;
   font-family: 'Nunito', sans-serif;
-  font-size: 15px;
+  font-size: 16px;
   font-weight: 600;
   color: rgba(43,31,24,0.96);
   width: 100%;
@@ -1057,7 +1051,6 @@ a.nav-item { text-decoration: none; }
   flex-shrink: 0;
 }
 
-/* Slider */
 .filter-slider-wrap {
   position: relative;
   height: 28px;
@@ -1111,7 +1104,7 @@ a.nav-item { text-decoration: none; }
   box-shadow: 0 2px 6px rgba(0,0,0,0.2);
 }
 
-/* Footer */
+/* Footer buttons — like image 1 style */
 .filter-footer {
   display: flex;
   align-items: center;
@@ -1127,27 +1120,28 @@ a.nav-item { text-decoration: none; }
   color: #4a3f38;
   background: #f5f1ec;
   border: none;
-  border-radius: 100px;
+  border-radius: 10px;
   padding: 12px 24px;
   cursor: pointer;
   transition: background 0.18s;
 }
 .filter-clear-btn:hover { background: #e8e2da; }
+
 .filter-save-btn {
   font-family: 'Nunito', sans-serif;
   font-size: 15px;
   font-weight: 700;
   color: white;
-  background: #2c2420;
+  background: #634F44;
   border: none;
-  border-radius: 100px;
+  border-radius: 10px;
   padding: 12px 28px;
   cursor: pointer;
   transition: background 0.18s;
 }
-.filter-save-btn:hover { background: #4a3f38; }
+.filter-save-btn:hover { background: #4e3d35; }
 
-/* Badge on filter button */
+/* Filter badge — red dot */
 .filter-trigger { position: relative; }
 .filter-badge {
   position: absolute;
@@ -1166,18 +1160,62 @@ a.nav-item { text-decoration: none; }
   font-family: 'Nunito', sans-serif;
 }
 
-/* Active filter tags */
-.filter-tags-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; margin-bottom: 4px; }
-.filter-tag { padding: 5px 14px; background: #ffffff; color: #4a3f38; border-radius: 100px; font-family: 'Nunito', sans-serif; font-size: 13px; font-weight: 600; border: 1.5px solid #e8e2da; }
-.filter-tag-clear { padding: 5px 14px; background: none; border: none; color: #4a3f38; font-family: 'Nunito', sans-serif; font-size: 13px; font-weight: 600; cursor: pointer; opacity: 0.6; }
-.filter-tag-clear:hover { opacity: 1; }
+/* Active filter tags — no stroke, with remove button */
+.filter-tags-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 16px;
+  margin-bottom: 8px;
+  align-items: center;
+}
 
-/* ── Mobile: bottom sheet ── */
+.filter-tag {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 10px 7px 14px;
+  background: #f5f1ec;
+  color: #4a3f38;
+  border-radius: 100px;
+  font-family: 'Nunito', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  border: none;
+}
+
+.filter-tag-remove {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #9e8f86;
+  font-size: 11px;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  line-height: 1;
+  transition: color 0.15s;
+}
+.filter-tag-remove:hover { color: #4a3f38; }
+
+.filter-clear-all-btn {
+  font-family: 'Nunito', sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  color: #634F44;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 7px 4px;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  transition: opacity 0.18s;
+}
+.filter-clear-all-btn:hover { opacity: 0.7; }
+
+/* Mobile bottom sheet */
 @media (max-width: 768px) {
-  .filter-backdrop {
-    align-items: flex-end;
-    justify-content: stretch;
-  }
+  .filter-backdrop { align-items: flex-end; justify-content: stretch; }
   .filter-panel {
     width: 100%;
     height: 90vh;

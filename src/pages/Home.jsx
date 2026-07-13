@@ -1,16 +1,15 @@
 import { useState } from "react";
 
 const universities = [
-  { id: 1, name: "Aix-Marseille Université", desc: "Marseille, France", country: "France", program: "Art Design", degree: "Bachelor", tuitionType: "Public", tuitionAmount: 8500, language: "French", certification: true, deadline: "March 2026", format: "On Campus", internship: true, image: "https://madeinmarseille.net/actualites-marseille/2019/04/Cube-campus-aix.jpeg" },
-  { id: 2, name: "Université Bordeaux-Montaigne", desc: "Bordeaux, France", country: "France", program: "Architecture", degree: "Master", tuitionType: "Public", tuitionAmount: 7200, language: "French", certification: true, deadline: "April 2026", format: "On Campus", internship: false, image: "https://upload.wikimedia.org/wikipedia/commons/8/8f/Ijba_iut_montaigne_bordeaux.jpg" },
-  { id: 3, name: "Université de Franche-Comté", desc: "Besançon, France", country: "France", program: "Fine Arts", degree: "Bachelor", tuitionType: "Public", tuitionAmount: 5000, language: "French", certification: false, deadline: "May 2026", format: "Hybrid", internship: true, image: "https://cdn-s-www.bienpublic.com/images/AC513A2C-88A9-456D-972D-758F6975A8A9/NW_raw/le-campus-dijonnais-de-l-universite-de-bourgogne-accueille-plus-de-30-000-etudiants-photo-d-illustration-lbp-emma-buoncristiani-1690820597.jpg" },
-  { id: 4, name: "Université Jean-Monnet-Saint-Étienne", desc: "Loire, France", country: "France", program: "Digital Media", degree: "Master", tuitionType: "Public", tuitionAmount: 6000, language: "French/English", certification: true, deadline: "March 2026", format: "On Campus", internship: true, image: "https://www.univ-st-etienne.fr/_richText-file/ametys-internal%253Asites/ujm/ametys-internal%253Acontents/plans-d-acces-2/_attribute/content/_data/Campus-Trefilerie-Pierre-Grasset.jpg" },
-  { id: 5, name: "Université de Nîmes", desc: "Nîmes, France", country: "France", program: "Fashion Design", degree: "Bachelor", tuitionType: "Public", tuitionAmount: 4500, language: "French", certification: false, deadline: "June 2026", format: "On Campus", internship: false, image: "https://upload.wikimedia.org/wikipedia/commons/1/16/Scines_nimes.jpg" },
-  { id: 6, name: "Université Rennes 2", desc: "Rennes, France", country: "France", program: "Art Design", degree: "Online Course", tuitionType: "Public", tuitionAmount: 3000, language: "French", certification: false, deadline: "April 2026", format: "Online", internship: false, image: "https://upload.wikimedia.org/wikipedia/commons/thumb/2/29/Batiments_de_nuits_-Univ_Rennes_2_-_Louis_Arretche.jpg/330px-Batiments_de_nuits_-Univ_Rennes_2_-_Louis_Arretche.jpg" },
+  { id: 1, name: "Aix-Marseille Université", desc: "Marseille, France", country: "France", program: "Art Design", degree: "Bachelor", tuitionType: "Public", tuitionAmount: 8500, language: "French", certification: true, format: "On Campus", internship: true, image: "https://madeinmarseille.net/actualites-marseille/2019/04/Cube-campus-aix.jpeg" },
+  { id: 2, name: "Université Bordeaux-Montaigne", desc: "Bordeaux, France", country: "France", program: "Architecture", degree: "Master", tuitionType: "Public", tuitionAmount: 7200, language: "French", certification: true, format: "On Campus", internship: false, image: "https://upload.wikimedia.org/wikipedia/commons/8/8f/Ijba_iut_montaigne_bordeaux.jpg" },
+  { id: 3, name: "Université de Franche-Comté", desc: "Besançon, France", country: "France", program: "Fine Arts", degree: "Bachelor", tuitionType: "Public", tuitionAmount: 5000, language: "French", certification: false, format: "Hybrid", internship: true, image: "https://cdn-s-www.bienpublic.com/images/AC513A2C-88A9-456D-972D-758F6975A8A9/NW_raw/le-campus-dijonnais-de-l-universite-de-bourgogne-accueille-plus-de-30-000-etudiants-photo-d-illustration-lbp-emma-buoncristiani-1690820597.jpg" },
+  { id: 4, name: "Université Jean-Monnet-Saint-Étienne", desc: "Loire, France", country: "France", program: "Digital Media", degree: "Master", tuitionType: "Public", tuitionAmount: 6000, language: "French/English", certification: true, format: "On Campus", internship: true, image: "https://www.univ-st-etienne.fr/_richText-file/ametys-internal%253Asites/ujm/ametys-internal%253Acontents/plans-d-acces-2/_attribute/content/_data/Campus-Trefilerie-Pierre-Grasset.jpg" },
+  { id: 5, name: "Université de Nîmes", desc: "Nîmes, France", country: "France", program: "Fashion Design", degree: "Bachelor", tuitionType: "Public", tuitionAmount: 4500, language: "French", certification: false, format: "On Campus", internship: false, image: "https://upload.wikimedia.org/wikipedia/commons/1/16/Scines_nimes.jpg" },
+  { id: 6, name: "Université Rennes 2", desc: "Rennes, France", country: "France", program: "Art Design", degree: "Online Course", tuitionType: "Public", tuitionAmount: 3000, language: "French", certification: false, format: "Online", internship: false, image: "https://upload.wikimedia.org/wikipedia/commons/thumb/2/29/Batiments_de_nuits_-Univ_Rennes_2_-_Louis_Arretche.jpg/330px-Batiments_de_nuits_-Univ_Rennes_2_-_Louis_Arretche.jpg" },
 ];
 
 const DEGREES = ["Bachelor", "Master", "Foundation Year", "Short Course", "Summer School", "Online Course"];
-const TUITION_TYPES = ["Public", "Private"];
 const LANGUAGES = ["French", "English", "French/English", "German", "Spanish"];
 const FORMATS = ["On Campus", "Hybrid", "Online"];
 const COUNTRIES = ["France", "Germany", "Spain", "Italy", "United Kingdom"];
@@ -20,7 +19,6 @@ const MAX_PRICE = 30000;
 const DEFAULT_FILTERS = {
   countries: [],
   degrees: [],
-  tuitionTypes: [],
   tuitionMin: MIN_PRICE,
   tuitionMax: MAX_PRICE,
   languages: [],
@@ -40,8 +38,8 @@ function CheckItem({ label, checked, onChange }) {
   );
 }
 
-function CollapsibleSection({ title, children, selectedCount }) {
-  const [open, setOpen] = useState(true);
+function CollapsibleSection({ title, children, selectedCount, defaultOpen = false }) {
+  const [open, setOpen] = useState(defaultOpen);
 
   return (
     <div className="filter-section">
@@ -71,11 +69,8 @@ function FilterPanel({ filters, setFilters, onClose, onApply, onClear }) {
   return (
     <div className="filter-backdrop" onClick={onClose}>
       <div className="filter-panel" onClick={e => e.stopPropagation()}>
-
-        {/* Handle bar for mobile */}
         <div className="filter-handle-bar" />
 
-        {/* Header */}
         <div className="filter-header">
           <span className="filter-title">Filters</span>
           <button className="filter-close-btn" onClick={onClose}>✕</button>
@@ -95,45 +90,41 @@ function FilterPanel({ filters, setFilters, onClose, onApply, onClear }) {
             ))}
           </CollapsibleSection>
 
-          <CollapsibleSection
-            title="Tuition Cost"
-            selectedCount={filters.tuitionMin > MIN_PRICE || filters.tuitionMax < MAX_PRICE ? 1 : 0}
-          >
-            <div className="filter-price-inputs">
-              <div className="filter-price-box">
-                <span className="filter-price-currency">$</span>
-                <input
-                  className="filter-price-input"
-                  type="number"
-                  value={filters.tuitionMin}
-                  min={MIN_PRICE}
-                  max={filters.tuitionMax}
-                  onChange={e => setFilters(f => ({ ...f, tuitionMin: Math.min(Number(e.target.value), f.tuitionMax - 500) }))}
-                />
+          {/* Tuition — no collapsible arrow, always open */}
+          <div className="filter-section">
+            <div className="filter-section-header" style={{ cursor: "default" }}>
+              <span className="filter-group-title">
+                Tuition Cost
+                {(filters.tuitionMin > MIN_PRICE || filters.tuitionMax < MAX_PRICE) && (
+                  <span className="filter-section-badge">1</span>
+                )}
+              </span>
+            </div>
+            <div className="filter-section-body">
+              <div className="filter-price-inputs">
+                <div className="filter-price-box">
+                  <span className="filter-price-currency">$</span>
+                  <input className="filter-price-input" type="number" value={filters.tuitionMin} min={MIN_PRICE} max={filters.tuitionMax}
+                    onChange={e => setFilters(f => ({ ...f, tuitionMin: Math.min(Number(e.target.value), f.tuitionMax - 500) }))} />
+                </div>
+                <div className="filter-price-sep">—</div>
+                <div className="filter-price-box">
+                  <span className="filter-price-currency">$</span>
+                  <input className="filter-price-input" type="number" value={filters.tuitionMax} min={filters.tuitionMin} max={MAX_PRICE}
+                    onChange={e => setFilters(f => ({ ...f, tuitionMax: Math.max(Number(e.target.value), f.tuitionMin + 500) }))} />
+                </div>
               </div>
-              <div className="filter-price-sep">—</div>
-              <div className="filter-price-box">
-                <span className="filter-price-currency">$</span>
-                <input
-                  className="filter-price-input"
-                  type="number"
-                  value={filters.tuitionMax}
-                  min={filters.tuitionMin}
-                  max={MAX_PRICE}
-                  onChange={e => setFilters(f => ({ ...f, tuitionMax: Math.max(Number(e.target.value), f.tuitionMin + 500) }))}
-                />
+              <div className="filter-slider-wrap">
+                <div className="filter-slider-track">
+                  <div className="filter-slider-range" style={{ left: `${minPct}%`, width: `${maxPct - minPct}%` }} />
+                </div>
+                <input type="range" className="filter-slider" min={MIN_PRICE} max={MAX_PRICE} step={500} value={filters.tuitionMin}
+                  onChange={e => setFilters(f => ({ ...f, tuitionMin: Math.min(Number(e.target.value), f.tuitionMax - 500) }))} />
+                <input type="range" className="filter-slider" min={MIN_PRICE} max={MAX_PRICE} step={500} value={filters.tuitionMax}
+                  onChange={e => setFilters(f => ({ ...f, tuitionMax: Math.max(Number(e.target.value), f.tuitionMin + 500) }))} />
               </div>
             </div>
-            <div className="filter-slider-wrap">
-              <div className="filter-slider-track">
-                <div className="filter-slider-range" style={{ left: `${minPct}%`, width: `${maxPct - minPct}%` }} />
-              </div>
-              <input type="range" className="filter-slider" min={MIN_PRICE} max={MAX_PRICE} step={500} value={filters.tuitionMin}
-                onChange={e => setFilters(f => ({ ...f, tuitionMin: Math.min(Number(e.target.value), f.tuitionMax - 500) }))} />
-              <input type="range" className="filter-slider" min={MIN_PRICE} max={MAX_PRICE} step={500} value={filters.tuitionMax}
-                onChange={e => setFilters(f => ({ ...f, tuitionMax: Math.max(Number(e.target.value), f.tuitionMin + 500) }))} />
-            </div>
-          </CollapsibleSection>
+          </div>
 
           <CollapsibleSection title="Language of Teaching" selectedCount={filters.languages.length}>
             {LANGUAGES.map(l => (
@@ -141,10 +132,7 @@ function FilterPanel({ filters, setFilters, onClose, onApply, onClear }) {
             ))}
           </CollapsibleSection>
 
-          <CollapsibleSection
-            title="Language Certification"
-            selectedCount={filters.certification !== null ? 1 : 0}
-          >
+          <CollapsibleSection title="Language Certification" selectedCount={filters.certification !== null ? 1 : 0}>
             <CheckItem label="Yes" checked={filters.certification === true} onChange={() => setFilters(f => ({ ...f, certification: f.certification === true ? null : true }))} />
             <CheckItem label="No" checked={filters.certification === false} onChange={() => setFilters(f => ({ ...f, certification: f.certification === false ? null : false }))} />
           </CollapsibleSection>
@@ -155,20 +143,16 @@ function FilterPanel({ filters, setFilters, onClose, onApply, onClear }) {
             ))}
           </CollapsibleSection>
 
-          <CollapsibleSection
-            title="Internship"
-            selectedCount={filters.internship !== null ? 1 : 0}
-          >
+          <CollapsibleSection title="Internship" selectedCount={filters.internship !== null ? 1 : 0}>
             <CheckItem label="Yes" checked={filters.internship === true} onChange={() => setFilters(f => ({ ...f, internship: f.internship === true ? null : true }))} />
             <CheckItem label="No" checked={filters.internship === false} onChange={() => setFilters(f => ({ ...f, internship: f.internship === false ? null : false }))} />
           </CollapsibleSection>
 
         </div>
 
-        {/* Footer */}
         <div className="filter-footer">
-          <button className="filter-clear-btn" onClick={onClear}>Clear</button>
-          <button className="filter-save-btn" onClick={onApply}>Save</button>
+          <button className="filter-clear-btn" onClick={onClear}>Clear all</button>
+          <button className="filter-save-btn" onClick={onApply}>Show results</button>
         </div>
       </div>
     </div>
@@ -191,10 +175,22 @@ export default function Home({ onSelectUni }) {
     setAppliedFilters(DEFAULT_FILTERS);
   }
 
+  function removeTag(key, value) {
+    if (key === "tuition") {
+      setAppliedFilters(f => ({ ...f, tuitionMin: MIN_PRICE, tuitionMax: MAX_PRICE }));
+      setFilters(f => ({ ...f, tuitionMin: MIN_PRICE, tuitionMax: MAX_PRICE }));
+    } else if (key === "certification" || key === "internship") {
+      setAppliedFilters(f => ({ ...f, [key]: null }));
+      setFilters(f => ({ ...f, [key]: null }));
+    } else {
+      setAppliedFilters(f => ({ ...f, [key]: f[key].filter(x => x !== value) }));
+      setFilters(f => ({ ...f, [key]: f[key].filter(x => x !== value) }));
+    }
+  }
+
   const activeCount = [
     appliedFilters.countries,
     appliedFilters.degrees,
-    appliedFilters.tuitionTypes,
     appliedFilters.languages,
     appliedFilters.formats,
   ].flat().length +
@@ -207,7 +203,6 @@ export default function Home({ onSelectUni }) {
     if (q && !u.name.toLowerCase().includes(q) && !u.program.toLowerCase().includes(q) && !u.country.toLowerCase().includes(q)) return false;
     if (appliedFilters.countries.length && !appliedFilters.countries.includes(u.country)) return false;
     if (appliedFilters.degrees.length && !appliedFilters.degrees.includes(u.degree)) return false;
-    if (appliedFilters.tuitionTypes.length && !appliedFilters.tuitionTypes.includes(u.tuitionType)) return false;
     if (u.tuitionAmount < appliedFilters.tuitionMin || u.tuitionAmount > appliedFilters.tuitionMax) return false;
     if (appliedFilters.languages.length && !appliedFilters.languages.includes(u.language)) return false;
     if (appliedFilters.certification !== null && u.certification !== appliedFilters.certification) return false;
@@ -216,14 +211,15 @@ export default function Home({ onSelectUni }) {
     return true;
   });
 
+  // Build tags with key+value for removal
   const activeTags = [
-    ...appliedFilters.countries,
-    ...appliedFilters.degrees,
-    ...appliedFilters.languages,
-    ...appliedFilters.formats,
-    ...(appliedFilters.internship !== null ? [`Internship: ${appliedFilters.internship ? "Yes" : "No"}`] : []),
-    ...(appliedFilters.certification !== null ? [`Certification: ${appliedFilters.certification ? "Yes" : "No"}`] : []),
-    ...(appliedFilters.tuitionMin > MIN_PRICE || appliedFilters.tuitionMax < MAX_PRICE ? [`$${appliedFilters.tuitionMin.toLocaleString()} – $${appliedFilters.tuitionMax.toLocaleString()}`] : []),
+    ...appliedFilters.countries.map(v => ({ label: v, key: "countries", value: v })),
+    ...appliedFilters.degrees.map(v => ({ label: v, key: "degrees", value: v })),
+    ...appliedFilters.languages.map(v => ({ label: v, key: "languages", value: v })),
+    ...appliedFilters.formats.map(v => ({ label: v, key: "formats", value: v })),
+    ...(appliedFilters.internship !== null ? [{ label: `Internship: ${appliedFilters.internship ? "Yes" : "No"}`, key: "internship", value: null }] : []),
+    ...(appliedFilters.certification !== null ? [{ label: `Certification: ${appliedFilters.certification ? "Yes" : "No"}`, key: "certification", value: null }] : []),
+    ...(appliedFilters.tuitionMin > MIN_PRICE || appliedFilters.tuitionMax < MAX_PRICE ? [{ label: `$${appliedFilters.tuitionMin.toLocaleString()} – $${appliedFilters.tuitionMax.toLocaleString()}`, key: "tuition", value: null }] : []),
   ];
 
   return (
@@ -250,9 +246,12 @@ export default function Home({ onSelectUni }) {
       {activeTags.length > 0 && (
         <div className="filter-tags-row">
           {activeTags.map(tag => (
-            <span key={tag} className="filter-tag">{tag}</span>
+            <span key={tag.label} className="filter-tag">
+              {tag.label}
+              <button className="filter-tag-remove" onClick={() => removeTag(tag.key, tag.value)}>✕</button>
+            </span>
           ))}
-          <button className="filter-tag-clear" onClick={clearFilters}>Clear all ✕</button>
+          <button className="filter-clear-all-btn" onClick={clearFilters}>Clear all</button>
         </div>
       )}
 
