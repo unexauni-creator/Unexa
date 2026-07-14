@@ -142,35 +142,6 @@ a.nav-item { text-decoration: none; }
   transform-origin: top left;
   transform: rotate(30deg) translateY(88px);
   pointer-events: none;
-}/* Corner cell with diagonal */
-.dash-corner-cell {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  padding: 14px 16px;
-  min-height: 90px;
-}
-.dash-corner-top {
-  font-family: 'Nunito', sans-serif;
-  font-size: 13px;
-  font-weight: 700;
-  color: rgba(43,31,24,0.5);
-  align-self: flex-end;
-}
-.dash-corner-bottom {
-  font-family: 'Nunito', sans-serif;
-  font-size: 13px;
-  font-weight: 700;
-  color: rgba(43,31,24,0.5);
-  align-self: flex-start;
-}
-.dash-corner-line {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
 }
 
 /* Every row */
@@ -208,7 +179,8 @@ a.nav-item { text-decoration: none; }
   color: rgba(43,31,24,0.8);
   display: flex;
   align-items: center;
-  text-align: left;
+  justify-content: center;
+  text-align: center;
   border-right: 1px solid rgba(172,136,118,0.15);
 }
 .dash-table-cell:last-child { border-right: none; }
@@ -221,6 +193,8 @@ a.nav-item { text-decoration: none; }
   padding: 16px 20px;
   position: relative;
   min-height: 90px;
+  justify-content: flex-start;
+  text-align: left;
 }
 .dash-uni-card-img { width: 48px; height: 48px; border-radius: 10px; object-fit: cover; flex-shrink: 0; }
 .dash-uni-card-info { flex: 1; overflow: hidden; }
@@ -267,8 +241,75 @@ a.nav-item { text-decoration: none; }
 }
 
 /* Empty state */
+.compare-empty { text-align: center; padding: 60px 20px; color: #9e8f86; display: flex; flex-direction: column; align-items: center; }
+.compare-empty-icon { font-size: 48px; margin-bottom: 16px; }
 .compare-empty-title { font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 16px; color: #4a3f38; margin-bottom: 6px; }
 .compare-empty-desc { font-family: 'Nunito', sans-serif; font-size: 14px; color: #9e8f86; max-width: 360px; text-align: center; line-height: 1.6; }
+
+/* Description block */
+.dash-desc-block {
+  background: rgba(208,208,208,0.20);
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  border-radius: 16px;
+  padding: 20px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.dash-desc-main {
+  font-family: 'Nunito', sans-serif;
+  font-weight: 700;
+  font-size: 16px;
+  color: rgba(43,31,24,0.96);
+}
+.dash-desc-sub {
+  font-family: 'Nunito', sans-serif;
+  font-size: 14px;
+  color: #6b5e56;
+  line-height: 1.7;
+}
+
+/* Info icon + tooltip */
+.dash-info-wrap {
+  display: inline-flex;
+  align-items: center;
+  margin-left: 6px;
+}
+.dash-info-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  transition: opacity 0.18s;
+}
+.dash-info-btn:hover { opacity: 0.7; }
+.dash-info-icon {
+  width: 16px;
+  height: 16px;
+  filter: brightness(0) saturate(100%) invert(55%) sepia(15%) saturate(500%) hue-rotate(340deg);
+}
+.dash-tooltip {
+  position: fixed;
+  z-index: 9999;
+  width: 300px;
+  background: #2c2420;
+  color: white;
+  border-radius: 14px;
+  padding: 14px 16px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.22);
+  animation: fadeIn 0.15s ease;
+  pointer-events: auto;
+}
+.dash-tooltip-text {
+  font-family: 'Nunito', sans-serif;
+  font-size: 13px;
+  line-height: 1.7;
+  color: rgba(255,255,255,0.9);
+}
 
 /* Responsive */
 @media (max-width: 768px) {
@@ -277,9 +318,11 @@ a.nav-item { text-decoration: none; }
   .dash-table-label-cell { min-width: 120px; width: 120px; font-size: 12px; padding: 12px 10px; }
   .dash-table-cell { font-size: 12px; padding: 12px 10px; min-width: 130px; }
   .dash-uni-card-img { width: 36px; height: 36px; }
+  .dash-warning { flex-direction: column; align-items: flex-start; }
+  .dash-warning-btn { margin-left: 0; }
+  .dash-tooltip { width: 240px; }
+  .dash-desc-block { padding: 16px; }
 }
-
-
 
 /* Community */
 .community-post { background: #faf8f5; border-radius: 16px; padding: 18px 20px; margin-bottom: 14px; border: 1px solid #e8e2da; }
@@ -350,8 +393,9 @@ a.nav-item { text-decoration: none; }
 
 /* ── University Detail Page ── */
 
-.detail-back-btn { width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; background: #F6F6F6; border: none; border-radius: 16px; cursor: pointer; margin: 24px 0 20px; transition: background 0.18s; flex-shrink: 0; }
-.detail-back-btn:hover { background: #e8e2da; }
+/* Back button — transparent background */
+.detail-back-btn { width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; background: transparent; border: none; border-radius: 16px; cursor: pointer; margin: 24px 0 20px; transition: opacity 0.18s; flex-shrink: 0; }
+.detail-back-btn:hover { opacity: 0.6; background: transparent; }
 .detail-back-icon { width: 20px; height: 20px; filter: brightness(0); }
 
 .compare-toast { position: fixed; bottom: 32px; left: 50%; transform: translateX(-50%); z-index: 200; display: flex; align-items: center; justify-content: space-between; gap: 16px; min-width: 420px; background: #2c2420; color: white; padding: 14px 20px; border-radius: 14px; animation: slideUp 0.25s ease; box-shadow: 0 8px 32px rgba(0,0,0,0.2); }
@@ -366,15 +410,29 @@ a.nav-item { text-decoration: none; }
 .detail-tab { padding: 10px 20px; font-family: 'Nunito', sans-serif; font-size: 15px; font-weight: 400; color: #000; background: rgba(208,208,208,0.2); border: none; border-radius: 10px 10px 0 0; cursor: pointer; transition: background 0.18s; }
 .detail-tab.active { background: #AC8876; color: #fff; }
 
-.detail-content { height: 844px; overflow-y: auto; flex-shrink: 0; background: rgba(208, 208, 208, 0.20); backdrop-filter: blur(24px) saturate(180%); -webkit-backdrop-filter: blur(24px) saturate(180%); border-radius: 0 24px 24px 24px; padding: 40px 20px; display: flex; flex-direction: column; gap: 32px; scrollbar-width: thin; scrollbar-color: rgba(172, 136, 118, 0.4) transparent; }
+/* Content container — hugs height instead of fixed 844px */
+.detail-content { height: auto; overflow-y: visible; flex-shrink: 0; background: rgba(208, 208, 208, 0.20); backdrop-filter: blur(24px) saturate(180%); -webkit-backdrop-filter: blur(24px) saturate(180%); border-radius: 0 24px 24px 24px; padding: 40px 20px; display: flex; flex-direction: column; gap: 32px; scrollbar-width: thin; scrollbar-color: rgba(172, 136, 118, 0.4) transparent; }
 .detail-content::-webkit-scrollbar { width: 6px; }
 .detail-content::-webkit-scrollbar-track { background: transparent; }
 .detail-content::-webkit-scrollbar-thumb { background: rgba(172, 136, 118, 0.4); border-radius: 6px; }
 
 .detail-hero { display: flex; flex-direction: row; gap: 24px; align-items: flex-start; }
 .detail-hero-left { flex: 1; display: flex; flex-direction: column; gap: 16px; }
-.detail-hero-right { width: 420px; min-width: 340px; height: 320px; flex-shrink: 0; }
-.detail-hero-img { width: 100%; height: 100%; object-fit: cover; border-radius: 12px; }
+
+/* Hero image with glass overlay card (matches home uni card style) */
+.detail-hero-right { width: 420px; min-width: 340px; height: 320px; flex-shrink: 0; position: relative; border-radius: 12px; overflow: hidden; }
+.detail-hero-img { width: 100%; height: 100%; object-fit: cover; border-radius: 12px; display: block; position: absolute; inset: 0; }
+
+.detail-hero-glass { position: absolute; bottom: 8px; left: 8px; right: 8px; padding: 16px; border-radius: 12px; display: flex; align-items: center; justify-content: space-between; gap: 8px; overflow: hidden; transform: translateZ(0); }
+.detail-hero-glass-blur { position: absolute; inset: 0; background: rgba(15, 10, 8, 0.72); backdrop-filter: blur(40px); -webkit-backdrop-filter: blur(60px); z-index: 0; border-radius: 12px; transform: translateZ(0); will-change: backdrop-filter; }
+.detail-hero-text, .detail-hero-save { position: relative; z-index: 1; }
+.detail-hero-text { display: flex; flex-direction: column; }
+.detail-hero-card-title { font-family: 'Nunito', sans-serif; font-size: 16px; font-weight: 600; color: #ffffff; margin-bottom: 4px; }
+.detail-hero-card-subtitle { font-family: 'Nunito', sans-serif; font-size: 14px; font-weight: 400; color: #ffffff; opacity: 0.85; }
+.detail-hero-save { width: 32px; height: 32px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; background: transparent; border: none; border-radius: 8px; color: #ffffff; cursor: pointer; padding: 0; transition: background 0.18s; }
+.detail-hero-save:hover { background: rgba(255, 255, 255, 0.28); }
+.detail-hero-save svg { width: 18px; height: 18px; }
+
 .detail-hero-top { display: flex; justify-content: space-between; align-items: flex-start; }
 .detail-name { font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 20px; color: rgba(43,31,24,0.96); margin-bottom: 4px; }
 .detail-university { font-family: 'Nunito', sans-serif; font-size: 16px; color: #0F0F0F; }
@@ -387,13 +445,13 @@ a.nav-item { text-decoration: none; }
 .detail-section { display: flex; flex-direction: column; gap: 16px; }
 .detail-section-title { font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 20px; color: rgba(43,31,24,0.96); }
 
-/* Required documents / Academic info cards */
+/* Required documents / Academic info cards — smaller text */
 .detail-info-row { display: flex; gap: 16px; align-items: stretch; }
 .detail-info-box { flex: 1; background: rgba(239,239,239,0.72); border-radius: 16px; padding: 20px; display: flex; flex-direction: column; gap: 16px; }
 .detail-info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-.detail-info-item { background: rgba(255,250,246,0.85); border-radius: 12px; padding: 16px; display: flex; flex-direction: column; gap: 6px; }
-.detail-info-label { font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 15px; color: rgba(43,31,24,0.96); }
-.detail-info-value { font-family: 'Nunito', sans-serif; font-size: 14px; color: #6b5e56; }
+.detail-info-item { background: rgba(255,250,246,0.85); border-radius: 12px; padding: 12px 14px; display: flex; flex-direction: column; gap: 4px; }
+.detail-info-label { font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 13px; color: rgba(43,31,24,0.96); }
+.detail-info-value { font-family: 'Nunito', sans-serif; font-size: 12px; color: #6b5e56; }
 
 .detail-program-list { display: flex; flex-direction: column; gap: 8px; }
 .detail-program-item { display: flex; align-items: center; gap: 16px; padding: 14px 16px; background: rgba(239,239,239,0.72); border-radius: 10px; }
@@ -408,7 +466,7 @@ a.nav-item { text-decoration: none; }
 
 @media (max-width: 768px) {
   .detail-page { padding: 0 16px 48px; }
-  .detail-content { height: auto; max-height: none; }
+  .detail-content { height: auto; }
   .detail-hero { flex-direction: column; }
   .detail-hero-right { width: 100%; height: 240px; min-width: unset; margin-top: 8px; }
   .detail-info-row { flex-direction: column; }
@@ -417,183 +475,6 @@ a.nav-item { text-decoration: none; }
   .detail-tab { font-size: 13px; padding: 8px 14px; white-space: nowrap; }
   .compare-toast { min-width: unset; width: calc(100% - 32px); left: 16px; transform: none; bottom: 16px; }
   .detail-back-btn { margin: 16px 0 12px; }
-}
-
-/* ── Dashboard ── */
-.dashboard-page { padding: 32px; display: flex; flex-direction: column; gap: 28px; }
-.dashboard-header { display: flex; flex-direction: column; gap: 12px; }
-.dash-title { font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 28px; color: rgba(43,31,24,0.96); }
-
-/* Description block — subtitle color matches Home page */
-.dash-desc-block {
-  background: rgba(208,208,208,0.20);
-  backdrop-filter: blur(24px) saturate(180%);
-  -webkit-backdrop-filter: blur(24px) saturate(180%);
-  border-radius: 16px;
-  padding: 20px 24px;
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-.dash-desc-main {
-  font-family: 'Nunito', sans-serif;
-  font-weight: 700;
-  font-size: 16px;
-  color: rgba(43,31,24,0.96);
-}
-.dash-desc-sub {
-  font-family: 'Nunito', sans-serif;
-  font-size: 14px;
-  color: #9e8f86;
-  line-height: 1.7;
-}
-
-/* Table */
-.dash-table {
-  background: rgba(208,208,208,0.20);
-  backdrop-filter: blur(24px) saturate(180%);
-  -webkit-backdrop-filter: blur(24px) saturate(180%);
-  border-radius: 20px;
-  overflow: hidden;
-}
-
-.dash-table-row {
-  display: flex;
-  align-items: stretch;
-  border-bottom: 1px solid rgba(172,136,118,0.15);
-}
-.dash-table-row:last-child { border-bottom: none; }
-.dash-header-row { border-bottom: 1px solid rgba(172,136,118,0.25); }
-
-/* Label column — left aligned */
-.dash-table-label-cell {
-  width: 200px;
-  min-width: 200px;
-  flex-shrink: 0;
-  padding: 16px 20px;
-  font-family: 'Nunito', sans-serif;
-  font-weight: 700;
-  font-size: 14px;
-  color: rgba(43,31,24,0.96);
-  display: flex;
-  align-items: center;
-  text-align: left;
-  justify-content: flex-start;
-  border-right: 1px solid rgba(172,136,118,0.15);
-}
-
-/* Data cells — left aligned */
-.dash-table-cell {
-  flex: 1;
-  padding: 16px 20px;
-  font-family: 'Nunito', sans-serif;
-  font-size: 14px;
-  color: rgba(43,31,24,0.8);
-  display: flex;
-  align-items: center;
-  text-align: left;
-  justify-content: flex-start;
-  border-right: 1px solid rgba(172,136,118,0.15);
-}
-.dash-table-cell:last-child { border-right: none; }
-
-/* University header cell */
-.dash-uni-header {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 16px 20px;
-  position: relative;
-  min-height: 90px;
-  justify-content: flex-start;
-}
-.dash-uni-card-img { width: 48px; height: 48px; border-radius: 10px; object-fit: cover; flex-shrink: 0; }
-.dash-uni-card-info { flex: 1; overflow: hidden; }
-.dash-uni-card-name { font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 13px; color: rgba(43,31,24,0.96); margin-bottom: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.dash-uni-card-program { font-family: 'Nunito', sans-serif; font-size: 12px; color: #9e8f86; }
-
-.dash-remove-btn { position: absolute; top: 12px; right: 12px; width: 22px; height: 22px; border-radius: 50%; background: rgba(172,136,118,0.15); border: none; cursor: pointer; font-size: 11px; color: #9e8f86; display: flex; align-items: center; justify-content: center; transition: background 0.18s; flex-shrink: 0; }
-.dash-remove-btn:hover { background: rgba(172,136,118,0.4); color: #634F44; }
-
-/* Corner cell — diagonal via CSS */
-.dash-corner-cell {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  padding: 14px 16px;
-  min-height: 90px;
-  overflow: hidden;
-}
-.dash-corner-cell::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 1px;
-  height: 170%;
-  background: rgba(172, 136, 118, 0.4);
-  transform-origin: top left;
-  transform: rotate(28deg);
-}
-.dash-corner-top {
-  font-family: 'Nunito', sans-serif;
-  font-size: 13px;
-  font-weight: 700;
-  color: rgba(43,31,24,0.5);
-  align-self: flex-end;
-  text-align: right;
-}
-.dash-corner-bottom {
-  font-family: 'Nunito', sans-serif;
-  font-size: 13px;
-  font-weight: 700;
-  color: rgba(43,31,24,0.5);
-  align-self: flex-start;
-}
-
-/* Info icon + tooltip */
-.dash-info-wrap { display: inline-flex; align-items: center; margin-left: 6px; }
-.dash-info-btn { background: none; border: none; cursor: pointer; padding: 0; line-height: 1; display: flex; align-items: center; transition: opacity 0.18s; }
-.dash-info-btn:hover { opacity: 0.7; }
-.dash-info-icon { width: 16px; height: 16px; filter: brightness(0) saturate(100%) invert(55%) sepia(15%) saturate(500%) hue-rotate(340deg); }
-.dash-tooltip { position: fixed; z-index: 9999; width: 300px; background: #2c2420; color: white; border-radius: 14px; padding: 14px 16px; box-shadow: 0 8px 32px rgba(0,0,0,0.22); animation: fadeIn 0.15s ease; pointer-events: auto; }
-.dash-tooltip-text { font-family: 'Nunito', sans-serif; font-size: 13px; line-height: 1.7; color: rgba(255,255,255,0.9); }
-
-/* Warning banner */
-.dash-warning { display: flex; align-items: center; gap: 16px; background: rgba(172,136,118,0.12); border: 1.5px solid rgba(172,136,118,0.35); border-radius: 16px; padding: 18px 20px; }
-.dash-warning-icon { font-size: 22px; flex-shrink: 0; }
-.dash-warning-title { font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 15px; color: rgba(43,31,24,0.96); margin-bottom: 3px; }
-.dash-warning-desc { font-family: 'Nunito', sans-serif; font-size: 13px; color: #9e8f86; }
-.dash-warning-btn { margin-left: auto; flex-shrink: 0; padding: 9px 16px; background: #AC8876; color: white; border: none; border-radius: 10px; font-family: 'Nunito', sans-serif; font-size: 13px; font-weight: 600; cursor: pointer; white-space: nowrap; transition: background 0.18s; }
-.dash-warning-btn:hover { background: #9a7664; }
-
-/* Single preview */
-.dash-single-preview { display: flex; flex-direction: column; gap: 10px; }
-.dash-single-card { display: flex; align-items: center; gap: 14px; background: rgba(208,208,208,0.20); border-radius: 14px; padding: 14px 16px; backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
-.dash-single-img { width: 56px; height: 56px; border-radius: 10px; object-fit: cover; flex-shrink: 0; }
-.dash-single-info { flex: 1; }
-
-/* Max 4 banner */
-.dash-max-banner { display: flex; align-items: center; gap: 10px; background: rgba(123,158,135,0.12); border: 1.5px solid rgba(123,158,135,0.3); border-radius: 14px; padding: 12px 18px; font-family: 'Nunito', sans-serif; font-size: 13px; font-weight: 600; color: #4a8c65; }
-
-/* Empty state */
-.compare-empty { text-align: center; padding: 60px 20px; color: #9e8f86; display: flex; flex-direction: column; align-items: center; }
-.compare-empty-icon { font-size: 48px; margin-bottom: 16px; }
-.compare-empty-title { font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 16px; color: #4a3f38; margin-bottom: 6px; }
-.compare-empty-desc { font-family: 'Nunito', sans-serif; font-size: 14px; color: #9e8f86; max-width: 360px; text-align: center; line-height: 1.6; }
-
-/* Responsive */
-@media (max-width: 768px) {
-  .dashboard-page { padding: 20px 16px; gap: 20px; }
-  .dash-table { overflow-x: auto; }
-  .dash-table-label-cell { min-width: 120px; width: 120px; font-size: 12px; padding: 12px 10px; }
-  .dash-table-cell { font-size: 12px; padding: 12px 10px; min-width: 130px; }
-  .dash-uni-card-img { width: 36px; height: 36px; }
-  .dash-warning { flex-direction: column; align-items: flex-start; }
-  .dash-warning-btn { margin-left: 0; }
-  .dash-tooltip { width: 240px; }
-  .dash-desc-block { padding: 16px; }
 }
 
 /* ── Profile Page ── */
