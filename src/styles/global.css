@@ -424,7 +424,7 @@ a.nav-item { text-decoration: none; }
 .dashboard-header { display: flex; flex-direction: column; gap: 12px; }
 .dash-title { font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 28px; color: rgba(43,31,24,0.96); }
 
-/* Description block */
+/* Description block — subtitle color matches Home page */
 .dash-desc-block {
   background: rgba(208,208,208,0.20);
   backdrop-filter: blur(24px) saturate(180%);
@@ -433,7 +433,7 @@ a.nav-item { text-decoration: none; }
   padding: 20px 24px;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 6px;
 }
 .dash-desc-main {
   font-family: 'Nunito', sans-serif;
@@ -444,7 +444,7 @@ a.nav-item { text-decoration: none; }
 .dash-desc-sub {
   font-family: 'Nunito', sans-serif;
   font-size: 14px;
-  color: #6b5e56;
+  color: #9e8f86;
   line-height: 1.7;
 }
 
@@ -465,6 +465,7 @@ a.nav-item { text-decoration: none; }
 .dash-table-row:last-child { border-bottom: none; }
 .dash-header-row { border-bottom: 1px solid rgba(172,136,118,0.25); }
 
+/* Label column — left aligned */
 .dash-table-label-cell {
   width: 200px;
   min-width: 200px;
@@ -476,9 +477,12 @@ a.nav-item { text-decoration: none; }
   color: rgba(43,31,24,0.96);
   display: flex;
   align-items: center;
+  text-align: left;
+  justify-content: flex-start;
   border-right: 1px solid rgba(172,136,118,0.15);
 }
 
+/* Data cells — left aligned */
 .dash-table-cell {
   flex: 1;
   padding: 16px 20px;
@@ -487,12 +491,13 @@ a.nav-item { text-decoration: none; }
   color: rgba(43,31,24,0.8);
   display: flex;
   align-items: center;
-  justify-content: center;
-  text-align: center;
+  text-align: left;
+  justify-content: flex-start;
   border-right: 1px solid rgba(172,136,118,0.15);
 }
 .dash-table-cell:last-child { border-right: none; }
 
+/* University header cell */
 .dash-uni-header {
   display: flex;
   align-items: center;
@@ -501,7 +506,6 @@ a.nav-item { text-decoration: none; }
   position: relative;
   min-height: 90px;
   justify-content: flex-start;
-  text-align: left;
 }
 .dash-uni-card-img { width: 48px; height: 48px; border-radius: 10px; object-fit: cover; flex-shrink: 0; }
 .dash-uni-card-info { flex: 1; overflow: hidden; }
@@ -511,7 +515,7 @@ a.nav-item { text-decoration: none; }
 .dash-remove-btn { position: absolute; top: 12px; right: 12px; width: 22px; height: 22px; border-radius: 50%; background: rgba(172,136,118,0.15); border: none; cursor: pointer; font-size: 11px; color: #9e8f86; display: flex; align-items: center; justify-content: center; transition: background 0.18s; flex-shrink: 0; }
 .dash-remove-btn:hover { background: rgba(172,136,118,0.4); color: #634F44; }
 
-/* Corner cell */
+/* Corner cell — diagonal via CSS */
 .dash-corner-cell {
   position: relative;
   display: flex;
@@ -532,49 +536,29 @@ a.nav-item { text-decoration: none; }
   transform-origin: top left;
   transform: rotate(28deg);
 }
-.dash-corner-top { font-family: 'Nunito', sans-serif; font-size: 13px; font-weight: 700; color: rgba(43,31,24,0.5); align-self: flex-end; text-align: right; }
-.dash-corner-bottom { font-family: 'Nunito', sans-serif; font-size: 13px; font-weight: 700; color: rgba(43,31,24,0.5); align-self: flex-start; }
-
-/* Info icon + tooltip */
-.dash-info-wrap {
-  display: inline-flex;
-  align-items: center;
-  margin-left: 6px;
-}
-.dash-info-btn {
-  background: none;
-  border: none;
-  cursor: pointer;
-  padding: 0;
-  line-height: 1;
-  display: flex;
-  align-items: center;
-  transition: opacity 0.18s;
-}
-.dash-info-btn:hover { opacity: 0.7; }
-.dash-info-icon {
-  width: 16px;
-  height: 16px;
-  filter: brightness(0) saturate(100%) invert(55%) sepia(15%) saturate(500%) hue-rotate(340deg);
-}
-.dash-tooltip {
-  position: fixed;
-  z-index: 9999;
-  width: 300px;
-  background: #2c2420;
-  color: white;
-  border-radius: 14px;
-  padding: 14px 16px;
-  box-shadow: 0 8px 32px rgba(0,0,0,0.22);
-  animation: fadeIn 0.15s ease;
-  pointer-events: auto;
-}
-.dash-tooltip-text {
+.dash-corner-top {
   font-family: 'Nunito', sans-serif;
   font-size: 13px;
-  line-height: 1.7;
-  color: rgba(255,255,255,0.9);
+  font-weight: 700;
+  color: rgba(43,31,24,0.5);
+  align-self: flex-end;
+  text-align: right;
 }
+.dash-corner-bottom {
+  font-family: 'Nunito', sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  color: rgba(43,31,24,0.5);
+  align-self: flex-start;
+}
+
+/* Info icon + tooltip */
+.dash-info-wrap { display: inline-flex; align-items: center; margin-left: 6px; }
+.dash-info-btn { background: none; border: none; cursor: pointer; padding: 0; line-height: 1; display: flex; align-items: center; transition: opacity 0.18s; }
+.dash-info-btn:hover { opacity: 0.7; }
+.dash-info-icon { width: 16px; height: 16px; filter: brightness(0) saturate(100%) invert(55%) sepia(15%) saturate(500%) hue-rotate(340deg); }
+.dash-tooltip { position: fixed; z-index: 9999; width: 300px; background: #2c2420; color: white; border-radius: 14px; padding: 14px 16px; box-shadow: 0 8px 32px rgba(0,0,0,0.22); animation: fadeIn 0.15s ease; pointer-events: auto; }
+.dash-tooltip-text { font-family: 'Nunito', sans-serif; font-size: 13px; line-height: 1.7; color: rgba(255,255,255,0.9); }
 
 /* Warning banner */
 .dash-warning { display: flex; align-items: center; gap: 16px; background: rgba(172,136,118,0.12); border: 1.5px solid rgba(172,136,118,0.35); border-radius: 16px; padding: 18px 20px; }
