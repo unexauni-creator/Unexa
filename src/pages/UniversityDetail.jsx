@@ -1,6 +1,55 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
+const DEFAULT_CURRICULUM = [
+  {
+    year: 1,
+    label: "Foundation",
+    breakLabel: "Summer Break",
+    semesters: [
+      {
+        name: "Semester 1",
+        subjects: [
+          { type: "Core", name: "Introduction to Design" },
+          { type: "Core", name: "Typography & Layout" },
+          { type: "Elective", name: "Art History" },
+        ],
+      },
+      {
+        name: "Semester 2",
+        subjects: [
+          { type: "Core", name: "Digital Illustration" },
+          { type: "Core", name: "Brand Identity" },
+          { type: "Elective", name: "Visual Culture" },
+        ],
+      },
+    ],
+  },
+  {
+    year: 2,
+    label: "Advanced",
+    breakLabel: "Summer Break",
+    semesters: [
+      {
+        name: "Semester 3",
+        subjects: [
+          { type: "Core", name: "UX Research Methods" },
+          { type: "Core", name: "Motion Graphics" },
+          { type: "Elective", name: "Design Theory" },
+        ],
+      },
+      {
+        name: "Semester 4",
+        subjects: [
+          { type: "Core", name: "Portfolio Development" },
+          { type: "Core", name: "Final Project" },
+          { type: "Elective", name: "Studio Practice" },
+        ],
+      },
+    ],
+  },
+];
+
 export default function UniversityDetail({ uni, onBack }) {
   const [activeTab, setActiveTab] = useState("info");
   const [compareMsg, setCompareMsg] = useState(false);
@@ -125,46 +174,42 @@ export default function UniversityDetail({ uni, onBack }) {
         {/* ── PROGRAM TAB ── */}
         {activeTab === "program" && (
           <div className="detail-section">
-            <div className="detail-section-title">Program by Semester</div>
-            <div className="program-schedule-grid">
+            <div className="detail-section-title">Program by Year</div>
 
-              <div className="program-day-card">
-                <div className="program-day-name">Semester 1</div>
-                <div className="program-classes">
-                  <div className="program-class-item"><span className="program-class-time">Core</span><span className="program-class-name">Introduction to Design</span></div>
-                  <div className="program-class-item"><span className="program-class-time">Core</span><span className="program-class-name">Typography & Layout</span></div>
-                  <div className="program-class-item"><span className="program-class-time">Elective</span><span className="program-class-name">Art History</span></div>
+            {(uni.curriculum || DEFAULT_CURRICULUM).map((year, yIdx, arr) => (
+              <div className="program-year-block" key={yIdx}>
+
+                <div className="program-year-header">
+                  <span className="program-year-badge">Year {year.year}</span>
+                  {year.label && <span className="program-year-label">{year.label}</span>}
                 </div>
-              </div>
 
-              <div className="program-day-card">
-                <div className="program-day-name">Semester 2</div>
-                <div className="program-classes">
-                  <div className="program-class-item"><span className="program-class-time">Core</span><span className="program-class-name">Digital Illustration</span></div>
-                  <div className="program-class-item"><span className="program-class-time">Core</span><span className="program-class-name">Brand Identity</span></div>
-                  <div className="program-class-item"><span className="program-class-time">Elective</span><span className="program-class-name">Visual Culture</span></div>
+                <div className="program-semesters-row">
+                  {year.semesters.map((sem, sIdx) => (
+                    <div className="program-semester-card" key={sIdx}>
+                      <div className="program-semester-name">{sem.name}</div>
+                      <div className="program-classes">
+                        {sem.subjects.map((subj, cIdx) => (
+                          <div className="program-class-item" key={cIdx}>
+                            <span className="program-class-time">{subj.type}</span>
+                            <span className="program-class-name">{subj.name}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  ))}
                 </div>
-              </div>
 
-              <div className="program-day-card">
-                <div className="program-day-name">Semester 3</div>
-                <div className="program-classes">
-                  <div className="program-class-item"><span className="program-class-time">Core</span><span className="program-class-name">UX Research Methods</span></div>
-                  <div className="program-class-item"><span className="program-class-time">Core</span><span className="program-class-name">Motion Graphics</span></div>
-                  <div className="program-class-item"><span className="program-class-time">Elective</span><span className="program-class-name">Design Theory</span></div>
-                </div>
-              </div>
+                {yIdx < arr.length - 1 && (
+                  <div className="program-break">
+                    <span className="program-break-line" />
+                    <span className="program-break-label">☀ {year.breakLabel || "Summer Break"}</span>
+                    <span className="program-break-line" />
+                  </div>
+                )}
 
-              <div className="program-day-card">
-                <div className="program-day-name">Semester 4</div>
-                <div className="program-classes">
-                  <div className="program-class-item"><span className="program-class-time">Core</span><span className="program-class-name">Portfolio Development</span></div>
-                  <div className="program-class-item"><span className="program-class-time">Core</span><span className="program-class-name">Final Project</span></div>
-                  <div className="program-class-item"><span className="program-class-time">Elective</span><span className="program-class-name">Studio Practice</span></div>
-                </div>
               </div>
-
-            </div>
+            ))}
           </div>
         )}
 

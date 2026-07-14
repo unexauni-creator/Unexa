@@ -945,3 +945,127 @@ a.nav-item { text-decoration: none; }
   .filter-handle-bar { display: block; }
   .notif-panel { width: 100%; }
 }
+
+/* ── Program tab — Years / Semesters / Break ── */
+
+.program-year-block {
+  margin-bottom: 8px;
+}
+
+.program-year-header {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  margin: 20px 0 14px;
+}
+
+.program-year-block:first-child .program-year-header {
+  margin-top: 4px;
+}
+
+.program-year-badge {
+  font-family: 'Nunito', sans-serif;
+  font-weight: 800;
+  font-size: 18px;
+  color: rgba(43,31,24,0.96);
+}
+
+.program-year-label {
+  font-family: 'Nunito', sans-serif;
+  font-weight: 600;
+  font-size: 13px;
+  color: #a68f7c;
+  background: rgba(239,239,239,0.72);
+  padding: 3px 12px;
+  border-radius: 20px;
+}
+
+.program-semesters-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.program-semester-card {
+  background: rgba(239,239,239,0.72);
+  border-radius: 16px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.program-semester-name {
+  font-family: 'Nunito', sans-serif;
+  font-weight: 700;
+  font-size: 16px;
+  color: rgba(43,31,24,0.96);
+}
+
+.program-classes {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.program-class-item {
+  background: rgba(255,250,246,0.85);
+  border-radius: 12px;
+  padding: 12px 14px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.program-class-time {
+  font-family: 'Nunito', sans-serif;
+  font-weight: 700;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: #b08968;
+  background: rgba(176,137,104,0.14);
+  padding: 3px 8px;
+  border-radius: 8px;
+  flex-shrink: 0;
+}
+
+.program-class-name {
+  font-family: 'Nunito', sans-serif;
+  font-size: 14px;
+  color: #6b5e56;
+}
+
+.program-break {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 26px 0 6px;
+}
+
+.program-break-line {
+  flex: 1;
+  height: 1px;
+  background: repeating-linear-gradient(
+    90deg,
+    rgba(176,137,104,0.35) 0,
+    rgba(176,137,104,0.35) 6px,
+    transparent 6px,
+    transparent 12px
+  );
+}
+
+.program-break-label {
+  font-family: 'Nunito', sans-serif;
+  font-weight: 700;
+  font-size: 13px;
+  color: #b08968;
+  background: rgba(255,250,246,0.9);
+  padding: 6px 16px;
+  border-radius: 20px;
+  white-space: nowrap;
+}
+
+@media (max-width: 768px) {
+  .program-semesters-row { grid-template-columns: 1fr; }
+}
