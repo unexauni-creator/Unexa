@@ -109,8 +109,32 @@ function buildWavePath() {
   return d;
 }
 
+// ── Real calendar year / date helpers ──
+const TODAY = new Date();
+const CURRENT_YEAR = TODAY.getFullYear();
+
+function getYearDate(yearIndex) {
+  // yearIndex is 1-5, matching the "Year 1..5" milestones
+  const d = new Date(TODAY);
+  d.setFullYear(d.getFullYear() + (yearIndex - 1));
+  return d;
+}
+
+function getCalendarYear(yearIndex) {
+  return CURRENT_YEAR + (yearIndex - 1);
+}
+
+function getMonthLabel(yearIndex) {
+  return getYearDate(yearIndex).toLocaleDateString("en-US", { month: "short" });
+}
+
+function getDaysFromToday(yearIndex) {
+  const target = getYearDate(yearIndex);
+  return Math.round((target - TODAY) / (1000 * 60 * 60 * 24));
+}
+
 export default function CareerRoadmap() {
-  const [stage, setStage] = useState("intro"); // intro | quiz | results
+  const [stage, setStage] = useState("empty"); // empty | quiz | results
   const [stepIndex, setStepIndex] = useState(0);
   const [answers, setAnswers] = useState({});
   const [activeYear, setActiveYear] = useState(0);
@@ -131,25 +155,28 @@ export default function CareerRoadmap() {
     setAnswers({});
     setStepIndex(0);
     setActiveYear(0);
-    setStage("intro");
+    setStage("empty");
   }
 
-  // ── INTRO POPUP ──
-  if (stage === "intro") {
+  // ── EMPTY STATE (shown the first time the user opens this tab) ──
+  if (stage === "empty") {
     return (
       <div className="roadmap-page">
-        <div className="roadmap-intro-backdrop">
-          <div className="roadmap-intro-card">
-            <img src="/career-guide.png" alt="" className="roadmap-intro-character" />
-            <div className="roadmap-intro-eyebrow">Career Roadmap</div>
-            <div className="roadmap-intro-title">Let's map out your next 5 years</div>
-            <p className="roadmap-intro-text">
-              Answer 5 quick questions about your interests, education, and work style. I'll turn your
-              answers into a personalized 5-year roadmap — showing what to focus on and when, whether
-              that's more study, an internship, or going freelance.
-            </p>
-            <button className="roadmap-intro-btn" onClick={() => setStage("quiz")}>Get Started</button>
-          </div>
+        <div className="roadmap-header">
+          <div className="roadmap-title">Your Career Roadmap</div>
+          <div className="roadmap-subtitle">Plan out the next 5 years, from {CURRENT_YEAR} onward.</div>
+        </div>
+
+        <div className="roadmap-empty-state">
+          <img src="/career-guide.png" alt="" className="roadmap-empty-character" />
+          <div className="roadmap-empty-eyebrow">Career Roadmap</div>
+          <div className="roadmap-empty-title">Let's map out your next 5 years</div>
+          <p className="roadmap-empty-text">
+            Answer 5 quick questions about your interests, education, and work style. I'll turn your
+            answers into a personalized 5-year roadmap — showing what to focus on and when, whether
+            that's more study, an internship, or going freelance.
+          </p>
+          <button className="roadmap-empty-btn" onClick={() => setStage("quiz")}>Get Started</button>
         </div>
       </div>
     );
@@ -188,6 +215,7 @@ export default function CareerRoadmap() {
   // ── RESULTS ──
   const milestones = generateRoadmap(answers);
   const current = milestones[activeYear];
+  const currentCalendarYear = getCalendarYear(current.year);
 
   return (
     <div className="roadmap-page">
@@ -205,7 +233,7 @@ export default function CareerRoadmap() {
             className={`roadmap-year-select-tab ${i === activeYear ? "active" : ""}`}
             onClick={() => setActiveYear(i)}
           >
-            Year {m.year}
+            {getCalendarYear(m.year)}
           </button>
         ))}
       </div>
@@ -216,6 +244,9 @@ export default function CareerRoadmap() {
           {WAVE_X.map((x, i) => (
             <g key={i}>
               <line x1={x} y1={WAVE_Y[i]} x2={x} y2={WAVE_Y[i] - 46} className="roadmap-wave-stem" />
+              <text x={x} y={WAVE_Y[i] - 56} textAnchor="middle" className="roadmap-wave-month-label">
+                {getMonthLabel(i + 1)} {getCalendarYear(i + 1)}
+              </text>
               <circle
                 cx={x}
                 cy={WAVE_Y[i]}
@@ -223,18 +254,21 @@ export default function CareerRoadmap() {
                 className={`roadmap-wave-dot ${i === activeYear ? "active" : ""}`}
                 onClick={() => setActiveYear(i)}
               />
+              <text x={x} y={WAVE_Y[i] + 28} textAnchor="middle" className="roadmap-wave-day-label">
+                Day {getDaysFromToday(i + 1)}
+              </text>
             </g>
           ))}
         </svg>
 
         <div className="roadmap-wave-callout" style={{ left: `${(WAVE_X[activeYear] / 980) * 100}%` }}>
-          <div className="roadmap-wave-callout-year">Year {current.year}</div>
+          <div className="roadmap-wave-callout-year">{currentCalendarYear}</div>
           <div className="roadmap-wave-callout-title">{current.title}</div>
         </div>
       </div>
 
       <div className="roadmap-explain-block">
-        <div className="roadmap-explain-eyebrow">Career stage · Year {current.year}</div>
+        <div className="roadmap-explain-eyebrow">Career stage · {currentCalendarYear}</div>
         <div className="roadmap-explain-title">{current.title}</div>
         <p className="roadmap-explain-text">{current.description}</p>
       </div>
