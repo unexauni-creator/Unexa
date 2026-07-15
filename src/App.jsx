@@ -7,7 +7,7 @@ import CareerRoadmap from "./pages/CareerRoadmap";
 import Community from "./pages/Community";
 import UniversityDetail from "./pages/UniversityDetail";
 import Profile from "./pages/Profile";
-import "./styles/global.css";
+import "./styles/base.css";
 
 export default function App() {
   const [selectedUni, setSelectedUni] = useState(null);
