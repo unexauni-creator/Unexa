@@ -75,7 +75,6 @@ function generateRoadmap(answers) {
   const studyYears = Math.min(STUDY_YEARS[answers.timeline] ?? 1, 4);
   const field = FIELD_INFO[answers.field];
   const work = WORKSTYLE_INFO[answers.workStyle];
-  const skillStart = Math.max(1, studyYears);
   const expStart = Math.max(2, studyYears + 1);
 
   return [1, 2, 3, 4, 5].map(year => {
@@ -97,7 +96,6 @@ function generateRoadmap(answers) {
   });
 }
 
-// Wave path geometry — 5 evenly spaced points, alternating up/down like the reference roadmap
 const WAVE_X = [90, 290, 490, 690, 890];
 const WAVE_Y = [140, 90, 140, 90, 140];
 
@@ -157,33 +155,30 @@ export default function CareerRoadmap() {
     );
   }
 
-  // ── QUIZ ──
+  // ── QUIZ POPUP ──
   if (stage === "quiz") {
     return (
       <div className="roadmap-page">
-        <div className="roadmap-header">
-          <div className="roadmap-title">Career Roadmap</div>
-          <div className="roadmap-subtitle">Answer a few quick questions and get a personalized 5-year career plan.</div>
-        </div>
+        <div className="roadmap-intro-backdrop">
+          <div className="roadmap-quiz-popup">
+            <div className="roadmap-progress-dots">
+              {QUESTIONS.map((_, i) => (
+                <span key={i} className={`roadmap-dot ${i === stepIndex ? "active" : ""} ${i < stepIndex ? "done" : ""}`} />
+              ))}
+            </div>
 
-        <div className="roadmap-progress-dots">
-          {QUESTIONS.map((_, i) => (
-            <span key={i} className={`roadmap-dot ${i === stepIndex ? "active" : ""} ${i < stepIndex ? "done" : ""}`} />
-          ))}
-        </div>
-
-        <div className="roadmap-quiz-card">
-          <div className="roadmap-quiz-question">{currentQuestion.question}</div>
-          <div className="roadmap-quiz-options">
-            {currentQuestion.options.map(opt => (
-              <button
-                key={opt.value}
-                className={`roadmap-quiz-option ${answers[currentQuestion.key] === opt.value ? "selected" : ""}`}
-                onClick={() => handleSelect(opt.value)}
-              >
-                {opt.label}
-              </button>
-            ))}
+            <div className="roadmap-quiz-question">{currentQuestion.question}</div>
+            <div className="roadmap-quiz-options">
+              {currentQuestion.options.map(opt => (
+                <button
+                  key={opt.value}
+                  className={`roadmap-quiz-option ${answers[currentQuestion.key] === opt.value ? "selected" : ""}`}
+                  onClick={() => handleSelect(opt.value)}
+                >
+                  {opt.label}
+                </button>
+              ))}
+            </div>
           </div>
         </div>
       </div>
@@ -203,13 +198,19 @@ export default function CareerRoadmap() {
         </div>
       </div>
 
-      <div className="roadmap-wave-card">
-        <button
-          className="roadmap-wave-nav roadmap-wave-nav-left"
-          onClick={() => setActiveYear(a => Math.max(0, a - 1))}
-          disabled={activeYear === 0}
-        >‹</button>
+      <div className="roadmap-year-select-tabs">
+        {milestones.map((m, i) => (
+          <button
+            key={i}
+            className={`roadmap-year-select-tab ${i === activeYear ? "active" : ""}`}
+            onClick={() => setActiveYear(i)}
+          >
+            Year {m.year}
+          </button>
+        ))}
+      </div>
 
+      <div className="roadmap-wave-card">
         <svg className="roadmap-wave-svg" viewBox="0 0 980 220" preserveAspectRatio="xMidYMid meet">
           <path d={buildWavePath()} className="roadmap-wave-path" fill="none" strokeWidth="4" />
           {WAVE_X.map((x, i) => (
@@ -226,27 +227,9 @@ export default function CareerRoadmap() {
           ))}
         </svg>
 
-        <button
-          className="roadmap-wave-nav roadmap-wave-nav-right"
-          onClick={() => setActiveYear(a => Math.min(milestones.length - 1, a + 1))}
-          disabled={activeYear === milestones.length - 1}
-        >›</button>
-
         <div className="roadmap-wave-callout" style={{ left: `${(WAVE_X[activeYear] / 980) * 100}%` }}>
           <div className="roadmap-wave-callout-year">Year {current.year}</div>
           <div className="roadmap-wave-callout-title">{current.title}</div>
-        </div>
-
-        <div className="roadmap-year-tabs">
-          {milestones.map((m, i) => (
-            <button
-              key={i}
-              className={`roadmap-year-tab ${i === activeYear ? "active" : ""}`}
-              onClick={() => setActiveYear(i)}
-            >
-              Year {m.year}
-            </button>
-          ))}
         </div>
       </div>
 
