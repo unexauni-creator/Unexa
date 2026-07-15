@@ -102,10 +102,9 @@ export default function Dashboard() {
     return (
       <div className="dashboard-page">
         <div className="dashboard-header">
-          <div className="dash-title">Compare Dashboard</div>
+          <div className="dash-title">Dashboard</div>
           <div className="dash-desc-block">
-            <p className="dash-desc-main">Not sure which university is right for you?</p>
-            <p className="dash-desc-sub">Add universities from the Home page and compare them side by side — scholarships, tuition, language requirements, deadlines and more. You can compare between 2 and 4 universities at once to make the best decision for your future.</p>
+            <p className="dash-desc-sub">Compare selected universities side by side. You can add up to 4 universities to find the one that fits you best.</p>
           </div>
         </div>
         <div className="compare-empty">
@@ -122,10 +121,9 @@ export default function Dashboard() {
     return (
       <div className="dashboard-page">
         <div className="dashboard-header">
-          <div className="dash-title">Compare Dashboard</div>
+          <div className="dash-title">Dashboard</div>
           <div className="dash-desc-block">
-            <p className="dash-desc-main">Not sure which university is right for you?</p>
-            <p className="dash-desc-sub">Add universities from the Home page and compare them side by side — scholarships, tuition, language requirements, deadlines and more. You can compare between 2 and 4 universities at once to make the best decision for your future.</p>
+            <p className="dash-desc-sub">Compare selected universities side by side. You can add up to 4 universities to find the one that fits you best.</p>
           </div>
         </div>
         <div className="dash-warning">
@@ -145,7 +143,9 @@ export default function Dashboard() {
                 <div className="dash-uni-card-program">{u.program}</div>
               </div>
               <button className="dash-remove-btn" style={{ position: "static", marginLeft: "auto" }}
-                onClick={() => setRemoved(r => [...r, u.id])}>✕</button>
+                onClick={() => setRemoved(r => [...r, u.id])}>
+                <img src="/close-circle.svg" alt="Remove" className="dash-remove-icon" />
+              </button>
             </div>
           ))}
         </div>
@@ -156,11 +156,10 @@ export default function Dashboard() {
   return (
     <div className="dashboard-page">
       <div className="dashboard-header">
-        <div className="dash-title">Compare Dashboard</div>
+        <div className="dash-title">Dashboard</div>
         <div className="dash-desc-block">
-          <p className="dash-desc-main">Not sure which university is right for you?</p>
           <p className="dash-desc-sub">
-            Compare {count} selected universit{count === 1 ? "y" : "ies"} side by side — scholarships, tuition fees, language requirements, application deadlines and more. You can add up to 4 universities to find the one that fits you best.
+            Compare {count} selected universities side by side. You can add up to 4 universities to find the one that fits you best.
           </p>
         </div>
       </div>
@@ -176,7 +175,6 @@ export default function Dashboard() {
         {/* Header row */}
         <div className="dash-table-row dash-header-row">
           <div className="dash-table-label-cell dash-corner-cell">
-            {/* Pure CSS diagonal line via pseudo element */}
             <span className="dash-corner-top">Universities</span>
             <span className="dash-corner-bottom">Criteria</span>
           </div>
@@ -187,7 +185,9 @@ export default function Dashboard() {
                 <div className="dash-uni-card-name">{u.name}</div>
                 <div className="dash-uni-card-program">{u.program}</div>
               </div>
-              <button className="dash-remove-btn" onClick={() => setRemoved(r => [...r, u.id])}>✕</button>
+              <button className="dash-remove-btn" onClick={() => setRemoved(r => [...r, u.id])}>
+                <img src="/close-circle.svg" alt="Remove" className="dash-remove-icon" />
+              </button>
             </div>
           ))}
         </div>
