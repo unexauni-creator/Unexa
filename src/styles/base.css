@@ -1,0 +1,26 @@
+@import url('https://fonts.googleapis.com/css2?family=Anta&family=Nunito:wght@400;500;600&family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap');
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body, #root { height: 100vh; font-family: 'DM Sans', sans-serif; background: #e2e0e0; }
+.app { display: flex; height: 100vh; overflow: hidden; background: url('/MacBook%20Air%20-%2013.png') center/cover no-repeat; }
+.main { flex: 1; overflow-y: auto; background: transparent; scrollbar-gutter: stable; }
+.page-title { font-family: 'DM Serif Display', serif; font-size: 32px; color: #2c2420; margin-bottom: 6px; }
+.page-subtitle { font-size: 15px; color: #9e8f86; margin-bottom: 28px; line-height: 1.5; }
+.page-header { margin-bottom: 28px; }
+
+/* Shared keyframes used across multiple components */
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes slideUp { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes slideInRight { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+@keyframes slideInBottom { from { transform: translateY(100%); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+/* Scrollbar */
+.main::-webkit-scrollbar { width: 10px; }
+.main::-webkit-scrollbar-track { background: transparent; }
+.main::-webkit-scrollbar-thumb { background-color: rgba(172, 136, 118, 0); border-radius: 8px; border: 2px solid transparent; background-clip: padding-box; transition: background-color 0.5s ease; }
+.main.is-scrolling::-webkit-scrollbar-thumb { background-color: rgba(172, 136, 118, 1); background-clip: padding-box; }
+
+@media (max-width: 768px) {
+  .app { flex-direction: column; }
+  .main { overflow-y: auto; }
+}

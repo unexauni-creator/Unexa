@@ -1,0 +1,72 @@
+.detail-back-btn { width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; background: transparent; border: none; border-radius: 16px; cursor: pointer; margin: 24px 0 20px; transition: opacity 0.18s; flex-shrink: 0; }
+.detail-back-btn:hover { opacity: 0.6; background: transparent; }
+.detail-back-icon { width: 20px; height: 20px; filter: brightness(0); }
+
+.compare-toast { position: fixed; bottom: 32px; left: 50%; transform: translateX(-50%); z-index: 200; display: flex; align-items: center; justify-content: space-between; gap: 16px; min-width: 420px; background: #2c2420; color: white; padding: 14px 20px; border-radius: 14px; animation: slideUp 0.25s ease; box-shadow: 0 8px 32px rgba(0,0,0,0.2); }
+.compare-toast-text { display: flex; flex-direction: column; gap: 2px; }
+.compare-toast-text span:first-child { font-family: 'Nunito', sans-serif; font-weight: 600; font-size: 14px; }
+.compare-toast-sub { font-family: 'Nunito', sans-serif; font-size: 12px; opacity: 0.75; }
+.compare-toast-btn { background: #AC8876; color: white; border: none; border-radius: 8px; padding: 8px 16px; font-family: 'Nunito', sans-serif; font-size: 13px; font-weight: 600; cursor: pointer; white-space: nowrap; flex-shrink: 0; }
+.compare-toast-btn:hover { background: #9a7664; }
+
+.detail-page { padding: 0 32px 48px; display: flex; flex-direction: column; }
+.detail-tabs { display: flex; gap: 0; margin-bottom: 0; flex-shrink: 0; }
+.detail-tab { padding: 10px 20px; font-family: 'Nunito', sans-serif; font-size: 15px; font-weight: 400; color: #000; background: rgba(208,208,208,0.2); border: none; border-radius: 10px 10px 0 0; cursor: pointer; transition: background 0.18s; }
+.detail-tab.active { background: #AC8876; color: #fff; }
+
+.detail-content { height: auto; overflow-y: visible; flex-shrink: 0; background: rgba(208, 208, 208, 0.20); backdrop-filter: blur(24px) saturate(180%); -webkit-backdrop-filter: blur(24px) saturate(180%); border-radius: 0 24px 24px 24px; padding: 40px 20px; display: flex; flex-direction: column; gap: 32px; scrollbar-width: thin; scrollbar-color: rgba(172, 136, 118, 0.4) transparent; }
+.detail-content::-webkit-scrollbar { width: 6px; }
+.detail-content::-webkit-scrollbar-track { background: transparent; }
+.detail-content::-webkit-scrollbar-thumb { background: rgba(172, 136, 118, 0.4); border-radius: 6px; }
+
+.detail-hero { display: flex; flex-direction: row; gap: 24px; align-items: flex-start; }
+.detail-hero-left { flex: 1; display: flex; flex-direction: column; gap: 16px; }
+
+.detail-hero-right { width: 420px; min-width: 340px; height: 320px; flex-shrink: 0; position: relative; border-radius: 12px; overflow: hidden; }
+.detail-hero-img { width: 100%; height: 100%; object-fit: cover; border-radius: 12px; display: block; position: absolute; inset: 0; }
+.detail-hero-glass { position: absolute; bottom: 8px; left: 8px; right: 8px; padding: 16px; border-radius: 12px; display: flex; align-items: center; justify-content: space-between; gap: 8px; overflow: hidden; transform: translateZ(0); }
+.detail-hero-glass-blur { position: absolute; inset: 0; background: rgba(15, 10, 8, 0.72); backdrop-filter: blur(40px); -webkit-backdrop-filter: blur(60px); z-index: 0; border-radius: 12px; transform: translateZ(0); will-change: backdrop-filter; }
+.detail-hero-text, .detail-hero-save { position: relative; z-index: 1; }
+.detail-hero-text { display: flex; flex-direction: column; }
+.detail-hero-card-title { font-family: 'Nunito', sans-serif; font-size: 16px; font-weight: 600; color: #ffffff; margin-bottom: 4px; }
+.detail-hero-card-subtitle { font-family: 'Nunito', sans-serif; font-size: 14px; font-weight: 400; color: #ffffff; opacity: 0.85; }
+.detail-hero-save { width: 32px; height: 32px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; background: transparent; border: none; border-radius: 8px; color: #ffffff; cursor: pointer; padding: 0; transition: background 0.18s; }
+.detail-hero-save:hover { background: rgba(255, 255, 255, 0.28); }
+.detail-hero-save svg { width: 18px; height: 18px; }
+
+.detail-hero-top { display: flex; justify-content: space-between; align-items: flex-start; }
+.detail-name { font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 20px; color: rgba(43,31,24,0.96); margin-bottom: 4px; }
+.detail-university { font-family: 'Nunito', sans-serif; font-size: 16px; color: #0F0F0F; }
+.detail-desc { font-family: 'Nunito', sans-serif; font-size: 16px; color: #0F0F0F; line-height: 150%; }
+.detail-btn-group { display: flex; align-items: center; gap: 16px; }
+.detail-btn-primary { padding: 8px 14px; background: #634F44; color: #F5F5F5; border: none; border-radius: 8px; font-family: 'Nunito', sans-serif; font-size: 14px; cursor: pointer; transition: background 0.18s; }
+.detail-btn-primary:hover { background: #4e3d35; }
+.detail-btn-ghost { padding: 8px 14px; background: transparent; color: #303030; border: none; font-family: 'Nunito', sans-serif; font-size: 14px; cursor: pointer; }
+
+.detail-section { display: flex; flex-direction: column; gap: 16px; }
+.detail-section-title { font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 20px; color: rgba(43,31,24,0.96); }
+
+.detail-info-row { display: flex; gap: 16px; align-items: stretch; }
+.detail-info-box { flex: 1; background: rgba(239,239,239,0.72); border-radius: 16px; padding: 20px; display: flex; flex-direction: column; gap: 16px; }
+.detail-info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.detail-info-item { background: rgba(255,250,246,0.85); border-radius: 12px; padding: 12px 14px; display: flex; flex-direction: column; gap: 4px; }
+.detail-info-label { font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 13px; color: rgba(43,31,24,0.96); }
+.detail-info-value { font-family: 'Nunito', sans-serif; font-size: 12px; color: #6b5e56; }
+
+.detail-scholarship-card { display: flex; justify-content: space-between; align-items: center; padding: 20px; background: rgba(239,239,239,0.72); border-radius: 12px; margin-bottom: 10px; }
+.detail-scholarship-name { font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 16px; color: rgba(43,31,24,0.96); margin-bottom: 4px; }
+.detail-scholarship-req { font-family: 'Nunito', sans-serif; font-size: 14px; color: #9e8f86; }
+.detail-scholarship-amount { font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 18px; color: #AC8876; }
+
+@media (max-width: 768px) {
+  .detail-page { padding: 0 16px 48px; }
+  .detail-content { height: auto; }
+  .detail-hero { flex-direction: column; }
+  .detail-hero-right { width: 100%; height: 240px; min-width: unset; margin-top: 8px; }
+  .detail-info-row { flex-direction: column; }
+  .detail-info-grid { grid-template-columns: 1fr 1fr; }
+  .detail-tabs { overflow-x: auto; }
+  .detail-tab { font-size: 13px; padding: 8px 14px; white-space: nowrap; }
+  .compare-toast { min-width: unset; width: calc(100% - 32px); left: 16px; transform: none; bottom: 16px; }
+  .detail-back-btn { margin: 16px 0 12px; }
+}

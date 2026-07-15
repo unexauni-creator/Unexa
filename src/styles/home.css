@@ -1,0 +1,45 @@
+.home-header { padding: 40px 32px; }
+.home-title { font-family: 'Nunito', sans-serif; font-weight: 600; font-size: 32px; color: #0F0F0F; margin-bottom: 4px; }
+.home-desc { font-family: 'Nunito', sans-serif; font-weight: 400; font-size: 16px; line-height: 150%; color: #0F0F0F; max-width: 439px; }
+
+.home-search { position: relative; width: 298px; }
+.home-search-input { width: 100%; padding: 12px 44px 12px 12px; border-radius: 16px; border: none; background: #F6F6F6; font-family: 'Nunito', sans-serif; font-size: 14px; color: #2c2420; outline: none; }
+.home-search-input::placeholder { color: #9e8f86; }
+.home-search-icon-svg { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); width: 18px; height: 18px; pointer-events: none; filter: brightness(0); opacity: 0.95; }
+.home-search-row { display: flex; align-items: center; gap: 12px; margin-top: 32px; }
+.home-icon-buttons { display: flex; gap: 8px; }
+.home-icon-btn { width: 44px; height: 44px; border-radius: 16px; background: #F6F6F6; border: none; outline: none; padding: 12px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 16px; box-shadow: none; -webkit-appearance: none; }
+.home-icon-btn img { width: 20px; height: 20px; filter: brightness(0); opacity: 0.95; }
+
+/* Search dropdown */
+.search-dropdown {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  right: 0;
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.12);
+  z-index: 100;
+  overflow: hidden;
+  animation: fadeIn 0.15s ease;
+  padding: 8px 0;
+}
+.search-dropdown-label { font-family: 'Nunito', sans-serif; font-size: 12px; font-weight: 700; color: #9e8f86; text-transform: uppercase; letter-spacing: 0.06em; padding: 8px 16px 4px; }
+.search-dropdown-item { display: flex; align-items: center; gap: 12px; padding: 11px 16px; cursor: pointer; font-family: 'Nunito', sans-serif; font-size: 15px; color: #4a3f38; transition: background 0.15s; }
+.search-dropdown-item:hover { background: #f5f1ec; }
+.search-dropdown-item strong { color: rgba(43,31,24,0.96); }
+.search-dropdown-icon { font-size: 15px; flex-shrink: 0; }
+
+@media (max-width: 768px) {
+  .home-header { padding: 24px 20px; }
+  .home-title { font-size: 24px; }
+  .home-desc { font-size: 14px; }
+  .home-search { width: 100%; flex: 1; }
+  .home-search-row { flex-wrap: nowrap; align-items: center; gap: 8px; }
+  .home-icon-buttons { flex-shrink: 0; display: flex; gap: 8px; }
+}
+
+@media (min-width: 769px) and (max-width: 1024px) {
+  .home-header { padding: 28px 24px; }
+}
