@@ -92,7 +92,7 @@ a.nav-item { text-decoration: none; }
 
 .dashboard-page { padding: 32px; display: flex; flex-direction: column; gap: 28px; }
 .dashboard-header { display: flex; flex-direction: column; gap: 4px; }
-.dash-title { font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 28px; color: rgba(43,31,24,0.96); }
+.dash-title { font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 28px; color: #0F0F0F; }
 .dash-subtitle { font-family: 'Nunito', sans-serif; font-size: 15px; }
 
 /* Table */
@@ -200,8 +200,27 @@ a.nav-item { text-decoration: none; }
 .dash-uni-card-info { flex: 1; overflow: hidden; }
 .dash-uni-card-name { font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 13px; color: rgba(43,31,24,0.96); margin-bottom: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .dash-uni-card-program { font-family: 'Nunito', sans-serif; font-size: 12px; color: #9e8f86; }
-.dash-remove-btn { position: absolute; top: 12px; right: 12px; width: 22px; height: 22px; border-radius: 50%; background: rgba(172,136,118,0.15); border: none; cursor: pointer; font-size: 11px; color: #9e8f86; display: flex; align-items: center; justify-content: center; transition: background 0.18s; flex-shrink: 0; }
-.dash-remove-btn:hover { background: rgba(172,136,118,0.4); color: #634F44; }
+
+/* Remove button — now uses close-circle.svg icon */
+.dash-remove-btn {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.18s;
+  flex-shrink: 0;
+  padding: 0;
+}
+.dash-remove-btn:hover { opacity: 0.6; }
+.dash-remove-icon { width: 22px; height: 22px; }
 
 /* Warning banner — only 1 university */
 .dash-warning {
@@ -246,13 +265,8 @@ a.nav-item { text-decoration: none; }
 .compare-empty-title { font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 16px; color: #4a3f38; margin-bottom: 6px; }
 .compare-empty-desc { font-family: 'Nunito', sans-serif; font-size: 14px; color: #9e8f86; max-width: 360px; text-align: center; line-height: 1.6; }
 
-/* Description block */
+/* Description block — no background fill, plain text like reference */
 .dash-desc-block {
-  background: rgba(208,208,208,0.20);
-  backdrop-filter: blur(24px) saturate(180%);
-  -webkit-backdrop-filter: blur(24px) saturate(180%);
-  border-radius: 16px;
-  padding: 20px 24px;
   display: flex;
   flex-direction: column;
   gap: 8px;
@@ -261,12 +275,12 @@ a.nav-item { text-decoration: none; }
   font-family: 'Nunito', sans-serif;
   font-weight: 700;
   font-size: 16px;
-  color: rgba(43,31,24,0.96);
+  color: #0F0F0F;
 }
 .dash-desc-sub {
   font-family: 'Nunito', sans-serif;
   font-size: 14px;
-  color: #6b5e56;
+  color: #0F0F0F;
   line-height: 1.7;
 }
 
@@ -321,7 +335,7 @@ a.nav-item { text-decoration: none; }
   .dash-warning { flex-direction: column; align-items: flex-start; }
   .dash-warning-btn { margin-left: 0; }
   .dash-tooltip { width: 240px; }
-  .dash-desc-block { padding: 16px; }
+  .dash-desc-block { padding: 0; }
 }
 
 /* Community */
