@@ -3,7 +3,7 @@ import { Routes, Route } from "react-router-dom";
 import Sidebar from "./components/Sidebar";
 import Home from "./pages/Home";
 import Dashboard from "./pages/Dashboard";
-import LanguageTests from "./pages/LanguageTests";
+import CareerRoadmap from "./pages/CareerRoadmap";
 import Community from "./pages/Community";
 import UniversityDetail from "./pages/UniversityDetail";
 import Profile from "./pages/Profile";
@@ -22,7 +22,7 @@ export default function App() {
           <Routes>
             <Route path="/" element={<Home onSelectUni={setSelectedUni} />} />
             <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/language-tests" element={<LanguageTests />} />
+          <Route path="/career-roadmap" element={<CareerRoadmap />} />
             <Route path="/community" element={<Community />} />
             <Route path="/profile" element={<Profile />} />
           </Routes>
