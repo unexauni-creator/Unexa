@@ -55,18 +55,18 @@ const QUESTIONS = [
 ];
 
 const FIELD_INFO = {
-  art: { skill: "Portfolio & Design Skills", edu: "Design Foundation Studies", color: "#AC8876" },
-  tech: { skill: "Technical & Coding Skills", edu: "Technical Foundation Studies", color: "#AC8876" },
-  business: { skill: "Business & Strategy Skills", edu: "Business Foundation Studies", color: "#AC8876" },
-  science: { skill: "Research & Lab Skills", edu: "Research Foundation Studies", color: "#AC8876" },
-  education: { skill: "Teaching & Mentorship Skills", edu: "Pedagogy Foundation Studies", color: "#AC8876" },
+  art: { skill: "Portfolio & Design Skills", edu: "Design Foundation Studies" },
+  tech: { skill: "Technical & Coding Skills", edu: "Technical Foundation Studies" },
+  business: { skill: "Business & Strategy Skills", edu: "Business Foundation Studies" },
+  science: { skill: "Research & Lab Skills", edu: "Research Foundation Studies" },
+  education: { skill: "Teaching & Mentorship Skills", edu: "Pedagogy Foundation Studies" },
 };
 
 const WORKSTYLE_INFO = {
-  company: { label: "Corporate Career Growth", color: "#9B8AA5" },
-  startup: { label: "Startup / Scale-up Growth", color: "#9B8AA5" },
-  freelance: { label: "Freelance Client Growth", color: "#9B8AA5" },
-  unsure: { label: "Exploring Opportunities", color: "#9B8AA5" },
+  company: { label: "Corporate Career Growth" },
+  startup: { label: "Startup / Scale-up Growth" },
+  freelance: { label: "Freelance Client Growth" },
+  unsure: { label: "Exploring Opportunities" },
 };
 
 const STUDY_YEARS = { readyNow: 0, oneTwo: 2, threeFour: 3, exploring: 1 };
@@ -75,152 +75,188 @@ function generateRoadmap(answers) {
   const studyYears = Math.min(STUDY_YEARS[answers.timeline] ?? 1, 4);
   const field = FIELD_INFO[answers.field];
   const work = WORKSTYLE_INFO[answers.workStyle];
-
-  const tracks = [];
-
-  if (studyYears > 0) {
-    tracks.push({ label: field.edu, color: field.color, startYear: 1, endYear: studyYears });
-  }
-
   const skillStart = Math.max(1, studyYears);
-  const skillEnd = Math.min(5, skillStart + 2);
-  tracks.push({ label: field.skill, color: "#7B9E87", startYear: skillStart, endYear: skillEnd });
-
   const expStart = Math.max(2, studyYears + 1);
-  tracks.push({ label: "Internship / Junior Experience", color: "#C4956A", startYear: expStart, endYear: Math.min(5, expStart + 1) });
 
-  const growthStart = Math.max(3, expStart);
-  tracks.push({ label: work.label, color: work.color, startYear: growthStart, endYear: 5 });
-
-  const yearBreakdown = [1, 2, 3, 4, 5].map(year => {
+  return [1, 2, 3, 4, 5].map(year => {
     let title, description;
     if (year <= studyYears) {
-      title = `Year ${year} — Building the Foundation`;
+      title = "Building the Foundation";
       description = `Focus on ${field.edu.toLowerCase()}. This is the time to build core knowledge before stepping into real-world work.`;
     } else if (year <= expStart) {
-      title = `Year ${year} — First Steps into the Field`;
+      title = "First Steps into the Field";
       description = `Start applying your skills through internships or entry-level roles while sharpening your ${field.skill.toLowerCase()}.`;
     } else if (year < 5) {
-      title = `Year ${year} — Gaining Momentum`;
+      title = "Gaining Momentum";
       description = `Deepen your experience and start shaping your path toward ${work.label.toLowerCase()}, keeping ${answers.priority} in mind.`;
     } else {
-      title = `Year ${year} — Establishing Your Career`;
+      title = "Establishing Your Career";
       description = `By now you should have a clear direction in ${work.label.toLowerCase()}, with a portfolio of experience that reflects your priorities.`;
     }
     return { year, title, description };
   });
+}
 
-  return { tracks, yearBreakdown };
+// Wave path geometry — 5 evenly spaced points, alternating up/down like the reference roadmap
+const WAVE_X = [90, 290, 490, 690, 890];
+const WAVE_Y = [140, 90, 140, 90, 140];
+
+function buildWavePath() {
+  let d = `M ${WAVE_X[0]} ${WAVE_Y[0]}`;
+  for (let i = 0; i < WAVE_X.length - 1; i++) {
+    const x1 = WAVE_X[i] + (WAVE_X[i + 1] - WAVE_X[i]) / 2;
+    const x2 = x1;
+    d += ` C ${x1} ${WAVE_Y[i]}, ${x2} ${WAVE_Y[i + 1]}, ${WAVE_X[i + 1]} ${WAVE_Y[i + 1]}`;
+  }
+  return d;
 }
 
 export default function CareerRoadmap() {
+  const [stage, setStage] = useState("intro"); // intro | quiz | results
   const [stepIndex, setStepIndex] = useState(0);
   const [answers, setAnswers] = useState({});
-  const [showResults, setShowResults] = useState(false);
+  const [activeYear, setActiveYear] = useState(0);
 
   const currentQuestion = QUESTIONS[stepIndex];
 
   function handleSelect(value) {
     const updated = { ...answers, [currentQuestion.key]: value };
     setAnswers(updated);
-
     if (stepIndex < QUESTIONS.length - 1) {
       setTimeout(() => setStepIndex(stepIndex + 1), 220);
     } else {
-      setTimeout(() => setShowResults(true), 220);
+      setTimeout(() => { setActiveYear(0); setStage("results"); }, 220);
     }
   }
 
   function handleRetake() {
     setAnswers({});
     setStepIndex(0);
-    setShowResults(false);
+    setActiveYear(0);
+    setStage("intro");
   }
 
-  if (showResults) {
-    const { tracks, yearBreakdown } = generateRoadmap(answers);
-    const years = [1, 2, 3, 4, 5];
-
+  // ── INTRO POPUP ──
+  if (stage === "intro") {
     return (
       <div className="roadmap-page">
-        <div className="roadmap-header">
-          <div className="roadmap-title">Your 5-Year Career Roadmap</div>
-          <div className="roadmap-subtitle">
-            Based on your interest in {FIELD_INFO[answers.field]?.skill.toLowerCase()} and preference for {WORKSTYLE_INFO[answers.workStyle]?.label.toLowerCase()}.
+        <div className="roadmap-intro-backdrop">
+          <div className="roadmap-intro-card">
+            <img src="/career-guide.png" alt="" className="roadmap-intro-character" />
+            <div className="roadmap-intro-eyebrow">Career Roadmap</div>
+            <div className="roadmap-intro-title">Let's map out your next 5 years</div>
+            <p className="roadmap-intro-text">
+              Answer 5 quick questions about your interests, education, and work style. I'll turn your
+              answers into a personalized 5-year roadmap — showing what to focus on and when, whether
+              that's more study, an internship, or going freelance.
+            </p>
+            <button className="roadmap-intro-btn" onClick={() => setStage("quiz")}>Get Started</button>
           </div>
         </div>
-
-        <div className="roadmap-gantt">
-          <div className="roadmap-gantt-years">
-            <div className="roadmap-gantt-label-spacer" />
-            {years.map(y => (
-              <div className="roadmap-gantt-year-col" key={y}>Year {y}</div>
-            ))}
-          </div>
-
-          {tracks.map((t, i) => (
-            <div className="roadmap-gantt-row" key={i}>
-              <div className="roadmap-gantt-label">{t.label}</div>
-              <div className="roadmap-gantt-track">
-                <div
-                  className="roadmap-gantt-bar"
-                  style={{
-                    left: `${((t.startYear - 1) / 5) * 100}%`,
-                    width: `${((t.endYear - t.startYear + 1) / 5) * 100}%`,
-                    background: t.color,
-                  }}
-                >
-                  {t.label}
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-
-        <div className="roadmap-breakdown">
-          {yearBreakdown.map(yb => (
-            <div className="roadmap-year-card" key={yb.year}>
-              <div className="roadmap-year-num">{yb.year}</div>
-              <div className="roadmap-year-content">
-                <div className="roadmap-year-title">{yb.title}</div>
-                <div className="roadmap-year-desc">{yb.description}</div>
-              </div>
-            </div>
-          ))}
-        </div>
-
-        <button className="roadmap-retake-btn" onClick={handleRetake}>Retake the test</button>
       </div>
     );
   }
 
+  // ── QUIZ ──
+  if (stage === "quiz") {
+    return (
+      <div className="roadmap-page">
+        <div className="roadmap-header">
+          <div className="roadmap-title">Career Roadmap</div>
+          <div className="roadmap-subtitle">Answer a few quick questions and get a personalized 5-year career plan.</div>
+        </div>
+
+        <div className="roadmap-progress-dots">
+          {QUESTIONS.map((_, i) => (
+            <span key={i} className={`roadmap-dot ${i === stepIndex ? "active" : ""} ${i < stepIndex ? "done" : ""}`} />
+          ))}
+        </div>
+
+        <div className="roadmap-quiz-card">
+          <div className="roadmap-quiz-question">{currentQuestion.question}</div>
+          <div className="roadmap-quiz-options">
+            {currentQuestion.options.map(opt => (
+              <button
+                key={opt.value}
+                className={`roadmap-quiz-option ${answers[currentQuestion.key] === opt.value ? "selected" : ""}`}
+                onClick={() => handleSelect(opt.value)}
+              >
+                {opt.label}
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // ── RESULTS ──
+  const milestones = generateRoadmap(answers);
+  const current = milestones[activeYear];
+
   return (
     <div className="roadmap-page">
       <div className="roadmap-header">
-        <div className="roadmap-title">Career Roadmap</div>
-        <div className="roadmap-subtitle">Answer a few quick questions and get a personalized 5-year career plan.</div>
+        <div className="roadmap-title">Your 5-Year Career Roadmap</div>
+        <div className="roadmap-subtitle">
+          Based on your interest in {FIELD_INFO[answers.field]?.skill.toLowerCase()} and preference for {WORKSTYLE_INFO[answers.workStyle]?.label.toLowerCase()}.
+        </div>
       </div>
 
-      <div className="roadmap-progress-dots">
-        {QUESTIONS.map((_, i) => (
-          <span key={i} className={`roadmap-dot ${i === stepIndex ? "active" : ""} ${i < stepIndex ? "done" : ""}`} />
-        ))}
-      </div>
+      <div className="roadmap-wave-card">
+        <button
+          className="roadmap-wave-nav roadmap-wave-nav-left"
+          onClick={() => setActiveYear(a => Math.max(0, a - 1))}
+          disabled={activeYear === 0}
+        >‹</button>
 
-      <div className="roadmap-quiz-card">
-        <div className="roadmap-quiz-question">{currentQuestion.question}</div>
-        <div className="roadmap-quiz-options">
-          {currentQuestion.options.map(opt => (
+        <svg className="roadmap-wave-svg" viewBox="0 0 980 220" preserveAspectRatio="xMidYMid meet">
+          <path d={buildWavePath()} className="roadmap-wave-path" fill="none" strokeWidth="4" />
+          {WAVE_X.map((x, i) => (
+            <g key={i}>
+              <line x1={x} y1={WAVE_Y[i]} x2={x} y2={WAVE_Y[i] - 46} className="roadmap-wave-stem" />
+              <circle
+                cx={x}
+                cy={WAVE_Y[i]}
+                r={i === activeYear ? 10 : 7}
+                className={`roadmap-wave-dot ${i === activeYear ? "active" : ""}`}
+                onClick={() => setActiveYear(i)}
+              />
+            </g>
+          ))}
+        </svg>
+
+        <button
+          className="roadmap-wave-nav roadmap-wave-nav-right"
+          onClick={() => setActiveYear(a => Math.min(milestones.length - 1, a + 1))}
+          disabled={activeYear === milestones.length - 1}
+        >›</button>
+
+        <div className="roadmap-wave-callout" style={{ left: `${(WAVE_X[activeYear] / 980) * 100}%` }}>
+          <div className="roadmap-wave-callout-year">Year {current.year}</div>
+          <div className="roadmap-wave-callout-title">{current.title}</div>
+        </div>
+
+        <div className="roadmap-year-tabs">
+          {milestones.map((m, i) => (
             <button
-              key={opt.value}
-              className={`roadmap-quiz-option ${answers[currentQuestion.key] === opt.value ? "selected" : ""}`}
-              onClick={() => handleSelect(opt.value)}
+              key={i}
+              className={`roadmap-year-tab ${i === activeYear ? "active" : ""}`}
+              onClick={() => setActiveYear(i)}
             >
-              {opt.label}
+              Year {m.year}
             </button>
           ))}
         </div>
       </div>
+
+      <div className="roadmap-explain-block">
+        <div className="roadmap-explain-eyebrow">Career stage · Year {current.year}</div>
+        <div className="roadmap-explain-title">{current.title}</div>
+        <p className="roadmap-explain-text">{current.description}</p>
+      </div>
+
+      <button className="roadmap-retake-btn" onClick={handleRetake}>Retake the test</button>
     </div>
   );
 }

@@ -1073,11 +1073,84 @@ a.nav-item { text-decoration: none; }
 
 /* ── Career Roadmap ── */
 
-.roadmap-page { padding: 32px; display: flex; flex-direction: column; gap: 28px; max-width: 960px; }
+.roadmap-page { padding: 32px; display: flex; flex-direction: column; gap: 28px; max-width: 980px; }
 
 .roadmap-header { display: flex; flex-direction: column; gap: 6px; }
 .roadmap-title { font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 28px; color: rgba(43,31,24,0.96); }
 .roadmap-subtitle { font-family: 'Nunito', sans-serif; font-size: 15px; color: #9e8f86; }
+
+/* Intro popup */
+.roadmap-intro-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(30,22,16,0.35);
+  backdrop-filter: blur(6px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 200;
+  padding: 24px;
+}
+
+.roadmap-intro-card {
+  background: #faf8f5;
+  border-radius: 24px;
+  max-width: 460px;
+  width: 100%;
+  padding: 40px 36px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 10px;
+  box-shadow: 0 32px 80px rgba(0,0,0,0.22);
+  animation: slideUp 0.25s cubic-bezier(.22,.68,0,1.2);
+}
+
+.roadmap-intro-character {
+  width: 96px;
+  height: 96px;
+  object-fit: contain;
+  margin-bottom: 8px;
+}
+
+.roadmap-intro-eyebrow {
+  font-family: 'Nunito', sans-serif;
+  font-weight: 700;
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #C4956A;
+}
+
+.roadmap-intro-title {
+  font-family: 'Nunito', sans-serif;
+  font-weight: 700;
+  font-size: 22px;
+  color: rgba(43,31,24,0.96);
+}
+
+.roadmap-intro-text {
+  font-family: 'Nunito', sans-serif;
+  font-size: 14px;
+  color: #6b5e56;
+  line-height: 1.7;
+  margin-bottom: 8px;
+}
+
+.roadmap-intro-btn {
+  padding: 13px 32px;
+  background: #634F44;
+  color: #F5F5F5;
+  border: none;
+  border-radius: 12px;
+  font-family: 'Nunito', sans-serif;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.18s;
+}
+.roadmap-intro-btn:hover { background: #4e3d35; }
 
 /* Quiz */
 .roadmap-progress-dots { display: flex; gap: 8px; }
@@ -1115,97 +1188,129 @@ a.nav-item { text-decoration: none; }
 .roadmap-quiz-option:hover { border-color: #C4956A; }
 .roadmap-quiz-option.selected { background: #AC8876; color: white; border-color: #AC8876; }
 
-/* Gantt-style roadmap chart */
-.roadmap-gantt {
+/* Wave roadmap graphic */
+.roadmap-wave-card {
+  position: relative;
   background: rgba(239,239,239,0.72);
-  border-radius: 20px;
-  padding: 24px;
-  overflow-x: auto;
-}
-
-.roadmap-gantt-years {
-  display: grid;
-  grid-template-columns: 220px repeat(5, 1fr);
-  margin-bottom: 8px;
-}
-.roadmap-gantt-label-spacer { }
-.roadmap-gantt-year-col {
-  font-family: 'Nunito', sans-serif;
-  font-weight: 700;
-  font-size: 13px;
-  color: #9e8f86;
-  text-align: center;
-  padding-bottom: 8px;
-  border-bottom: 1px solid rgba(172,136,118,0.25);
-}
-
-.roadmap-gantt-row {
-  display: grid;
-  grid-template-columns: 220px 1fr;
+  border-radius: 24px;
+  padding: 32px 60px 24px;
+  display: flex;
+  flex-direction: column;
   align-items: center;
-  min-height: 52px;
-  border-bottom: 1px solid rgba(172,136,118,0.12);
-}
-.roadmap-gantt-row:last-child { border-bottom: none; }
-
-.roadmap-gantt-label {
-  font-family: 'Nunito', sans-serif;
-  font-weight: 600;
-  font-size: 13px;
-  color: rgba(43,31,24,0.85);
-  padding-right: 16px;
+  gap: 8px;
 }
 
-.roadmap-gantt-track { position: relative; height: 34px; }
+.roadmap-wave-svg { width: 100%; height: auto; overflow: visible; }
 
-.roadmap-gantt-bar {
+.roadmap-wave-path { stroke: #C4956A; opacity: 0.5; }
+
+.roadmap-wave-stem { stroke: rgba(172,136,118,0.3); stroke-width: 1.5; stroke-dasharray: 3 3; }
+
+.roadmap-wave-dot {
+  fill: #ffffff;
+  stroke: #AC8876;
+  stroke-width: 3;
+  cursor: pointer;
+  transition: r 0.15s;
+}
+.roadmap-wave-dot.active { fill: #AC8876; stroke: #634F44; }
+
+.roadmap-wave-nav {
   position: absolute;
-  top: 0;
-  height: 34px;
-  border-radius: 10px;
-  display: flex;
-  align-items: center;
-  padding: 0 12px;
-  font-family: 'Nunito', sans-serif;
-  font-weight: 700;
-  font-size: 12px;
-  color: white;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.12);
-}
-
-/* Year-by-year breakdown */
-.roadmap-breakdown { display: flex; flex-direction: column; gap: 12px; }
-
-.roadmap-year-card {
-  display: flex;
-  gap: 16px;
-  background: rgba(239,239,239,0.72);
-  border-radius: 16px;
-  padding: 18px 20px;
-  align-items: flex-start;
-}
-
-.roadmap-year-num {
-  width: 36px;
-  height: 36px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
-  background: #AC8876;
-  color: white;
-  font-family: 'Nunito', sans-serif;
-  font-weight: 700;
-  font-size: 15px;
+  border: none;
+  background: rgba(255,250,246,0.9);
+  color: #634F44;
+  font-size: 20px;
+  cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  flex-shrink: 0;
+  transition: background 0.18s;
+  z-index: 2;
+}
+.roadmap-wave-nav:hover { background: #f0e6db; }
+.roadmap-wave-nav:disabled { opacity: 0.3; cursor: default; }
+.roadmap-wave-nav-left { left: 12px; }
+.roadmap-wave-nav-right { right: 12px; }
+
+.roadmap-wave-callout {
+  position: absolute;
+  top: 10px;
+  transform: translateX(-50%);
+  background: #634F44;
+  color: white;
+  padding: 8px 16px;
+  border-radius: 12px;
+  text-align: center;
+  white-space: nowrap;
+  pointer-events: none;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.18);
+}
+.roadmap-wave-callout-year { font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 11px; opacity: 0.75; }
+.roadmap-wave-callout-title { font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 14px; }
+
+.roadmap-year-tabs {
+  display: flex;
+  gap: 24px;
+  margin-top: 12px;
+  padding-top: 16px;
+  border-top: 1px solid rgba(172,136,118,0.2);
+  width: 100%;
+  justify-content: center;
 }
 
-.roadmap-year-content { flex: 1; }
-.roadmap-year-title { font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 15px; color: rgba(43,31,24,0.96); margin-bottom: 4px; }
-.roadmap-year-desc { font-family: 'Nunito', sans-serif; font-size: 14px; color: #6b5e56; line-height: 1.6; }
+.roadmap-year-tab {
+  background: none;
+  border: none;
+  font-family: 'Nunito', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  color: #9e8f86;
+  cursor: pointer;
+  padding-bottom: 6px;
+  border-bottom: 2px solid transparent;
+  transition: all 0.18s;
+}
+.roadmap-year-tab.active { color: #634F44; border-bottom-color: #AC8876; font-weight: 700; }
+
+/* Explanation block below graphic */
+.roadmap-explain-block {
+  background: rgba(239,239,239,0.72);
+  border-radius: 20px;
+  padding: 28px 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.roadmap-explain-eyebrow {
+  font-family: 'Nunito', sans-serif;
+  font-weight: 700;
+  font-size: 12px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: #C4956A;
+}
+
+.roadmap-explain-title {
+  font-family: 'Nunito', sans-serif;
+  font-weight: 700;
+  font-size: 22px;
+  color: rgba(43,31,24,0.96);
+}
+
+.roadmap-explain-text {
+  font-family: 'Nunito', sans-serif;
+  font-size: 15px;
+  color: #6b5e56;
+  line-height: 1.7;
+  max-width: 640px;
+}
 
 .roadmap-retake-btn {
   align-self: flex-start;
@@ -1226,7 +1331,11 @@ a.nav-item { text-decoration: none; }
   .roadmap-page { padding: 20px 16px; }
   .roadmap-quiz-card { padding: 24px 20px; }
   .roadmap-quiz-question { font-size: 18px; }
-  .roadmap-gantt { padding: 16px; }
-  .roadmap-gantt-years, .roadmap-gantt-row { grid-template-columns: 140px 1fr; }
-  .roadmap-gantt-year-col { font-size: 11px; }
+  .roadmap-wave-card { padding: 24px 16px 20px; }
+  .roadmap-wave-nav { width: 32px; height: 32px; font-size: 16px; }
+  .roadmap-wave-nav-left { left: 4px; }
+  .roadmap-wave-nav-right { right: 4px; }
+  .roadmap-year-tabs { gap: 12px; flex-wrap: wrap; }
+  .roadmap-explain-block { padding: 20px; }
+  .roadmap-intro-card { padding: 28px 24px; }
 }
