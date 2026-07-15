@@ -4,7 +4,7 @@ import { NavLink } from "react-router-dom";
 const navItems = [
   { path: "/", label: "Home", icon: "/home.svg" },
   { path: "/dashboard", label: "Dashboard", icon: "/chart.svg" },
-  { path: "/language-tests", label: "Career Roadmap", icon: "/medal-star.svg" },
+  { path: "/career-roadmap", label: "", icon: "/medal-star.svg" },
   { path: "/community", label: "Community", icon: "/messages.svg" },
 ];
 
