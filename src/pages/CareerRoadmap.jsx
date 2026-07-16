@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState } from "react";
 
 const MILESTONES = [
   {
@@ -55,39 +55,6 @@ function buildWavePath(points) {
   return d;
 }
 
-function lerp(a, b, t) { return a + (b - a) * t; }
-
-// Smoothly tween between the previous year's curve and the target year's curve
-function useAnimatedPoints(targetPoints, duration = 380) {
-  const [displayed, setDisplayed] = useState(targetPoints);
-  const fromRef = useRef(targetPoints);
-  const rafRef = useRef(null);
-
-  useEffect(() => {
-    const from = fromRef.current;
-    const to = targetPoints;
-    const start = performance.now();
-
-    function tick(now) {
-      const t = Math.min(1, (now - start) / duration);
-      const eased = 1 - Math.pow(1 - t, 3); // ease-out cubic
-      setDisplayed(from.map((v, i) => lerp(v, to[i], eased)));
-      if (t < 1) {
-        rafRef.current = requestAnimationFrame(tick);
-      } else {
-        fromRef.current = to;
-      }
-    }
-
-    cancelAnimationFrame(rafRef.current);
-    rafRef.current = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(rafRef.current);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [targetPoints]);
-
-  return displayed;
-}
-
 const TODAY = new Date();
 const CURRENT_YEAR = TODAY.getFullYear();
 
@@ -100,8 +67,7 @@ export default function CareerRoadmap() {
   const [activeMonth, setActiveMonth] = useState(0);
 
   const current = MILESTONES[activeYear];
-  const targetPoints = getYearPoints(activeYear);
-  const points = useAnimatedPoints(targetPoints);
+  const points = getYearPoints(activeYear);
 
   function handleYearChange(i) {
     setActiveYear(i);
