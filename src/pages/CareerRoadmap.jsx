@@ -29,19 +29,15 @@ const MILESTONES = [
 ];
 
 const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-const MARKER_INDICES = [0, 5, 11]; // first, 6th, last month
+const MARKER_INDICES = [0, 2, 4, 6, 8, 10]; // 6 markers: Jan, Mar, May, Jul, Sep, Nov
 
 const CHART_LEFT = 90;
 const CHART_RIGHT = 890;
 const CHART_STEP = (CHART_RIGHT - CHART_LEFT) / (MONTHS.length - 1);
 const WAVE_X = MONTHS.map((_, i) => CHART_LEFT + i * CHART_STEP);
 
-// This is what ties the curve to the selected year — a NEW set of 12
-// points is generated every time activeYear changes, so the shape of the
-// graph itself is different for each year, and always spans that year's
-// own Jan–Dec.
 function getYearPoints(yearIndex) {
-  const baseY = 170 - yearIndex * 14; // later years sit a bit higher overall
+  const baseY = 170 - yearIndex * 14;
   return MONTHS.map((_, m) => {
     const trend = (m / (MONTHS.length - 1)) * 50;
     const wobble = Math.sin((m / (MONTHS.length - 1)) * Math.PI * 2.4 + yearIndex) * 22;
@@ -72,9 +68,6 @@ export default function CareerRoadmap() {
 
   const current = MILESTONES[activeYear];
   const currentCalendarYear = getCalendarYear(activeYear);
-
-  // Recomputed on every render based on activeYear — this line is what
-  // makes the graph reshape when you click a different year tab.
   const points = getYearPoints(activeYear);
 
   function handleYearChange(i) {
@@ -121,7 +114,13 @@ export default function CareerRoadmap() {
               ))}
             </svg>
 
-            <div className="roadmap-wave-callout" style={{ left: `${(WAVE_X[activeMonth] / 980) * 100}%` }}>
+            <div
+              className="roadmap-wave-callout"
+              style={{
+                left: `${(WAVE_X[activeMonth] / 980) * 100}%`,
+                top: `${(points[activeMonth] / 260) * 100}%`,
+              }}
+            >
               <div className="roadmap-wave-callout-year">{MONTHS[activeMonth]} {currentCalendarYear}</div>
               <div className="roadmap-wave-callout-title">{current.title}</div>
             </div>

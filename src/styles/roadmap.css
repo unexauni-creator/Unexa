@@ -4,12 +4,10 @@
 .roadmap-title { font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 28px; color: rgba(43,31,24,0.96); }
 .roadmap-subtitle { font-family: 'Nunito', sans-serif; font-size: 15px; color: #0F0F0F; line-height: 1.6; }
 
-/* Tabs — identical to .detail-tabs / .detail-tab from university page */
 .roadmap-tabs { display: flex; gap: 0; margin-bottom: 0; flex-shrink: 0; }
 .roadmap-tab { padding: 10px 20px; font-family: 'Nunito', sans-serif; font-size: 15px; font-weight: 400; color: #000; background: rgba(208,208,208,0.2); border: none; border-radius: 10px 10px 0 0; cursor: pointer; transition: background 0.18s; }
 .roadmap-tab.active { background: #AC8876; color: #fff; }
 
-/* Content container — identical to .detail-content from university page, fills width */
 .roadmap-content {
   width: 100%;
   background: rgba(208, 208, 208, 0.20);
@@ -24,7 +22,6 @@
 
 .roadmap-top-row { display: flex; align-items: stretch; gap: 24px; }
 
-/* Graph box — background, houses the SVG curve, callout, and month axis */
 .roadmap-wave-box {
   flex: 1;
   min-width: 0;
@@ -42,11 +39,10 @@
 .roadmap-wave-dot { fill: #ffffff; stroke: #AC8876; stroke-width: 3; cursor: pointer; transition: r 0.15s; }
 .roadmap-wave-dot.active { fill: #AC8876; stroke: #634F44; }
 
-/* Callout tooltip above the active marker */
 .roadmap-wave-callout {
   position: absolute;
-  top: 12px;
-  transform: translateX(-50%);
+  transform: translate(-50%, -100%);
+  margin-top: -14px;
   background: #634F44;
   color: white;
   padding: 8px 16px;
@@ -59,7 +55,6 @@
 .roadmap-wave-callout-year { font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 11px; opacity: 0.75; }
 .roadmap-wave-callout-title { font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 14px; }
 
-/* Month axis — all 12 months shown, only Jan/Jun/Dec are bold markers */
 .roadmap-wave-month-axis { position: relative; height: 20px; }
 .roadmap-wave-month-item {
   position: absolute;
@@ -74,7 +69,6 @@
 .roadmap-wave-month-item.marker { color: #9e8f86; font-weight: 600; cursor: pointer; }
 .roadmap-wave-month-item.active { color: #634F44; font-weight: 700; }
 
-/* Side card — "Career Focus" box */
 .roadmap-side-card {
   flex: 0 0 220px;
   background: rgba(239,239,239,0.72);
@@ -91,7 +85,6 @@
 .roadmap-side-icon { font-size: 44px; }
 .roadmap-side-stage { font-family: 'Nunito', sans-serif; font-weight: 600; font-size: 14px; color: #6b5e56; }
 
-/* Bottom info card */
 .roadmap-bottom-card {
   background: rgba(239,239,239,0.72);
   border-radius: 16px;
