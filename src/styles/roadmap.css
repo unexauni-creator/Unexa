@@ -24,7 +24,7 @@
 
 .roadmap-top-row { display: flex; align-items: stretch; gap: 24px; }
 
-/* Graph gets its own background box, matches image reference */
+/* Graph box — background, houses the SVG curve, callout, and month axis */
 .roadmap-wave-box {
   flex: 1;
   min-width: 0;
@@ -42,6 +42,7 @@
 .roadmap-wave-dot { fill: #ffffff; stroke: #AC8876; stroke-width: 3; cursor: pointer; transition: r 0.15s; }
 .roadmap-wave-dot.active { fill: #AC8876; stroke: #634F44; }
 
+/* Callout tooltip above the active marker */
 .roadmap-wave-callout {
   position: absolute;
   top: 12px;
@@ -58,20 +59,22 @@
 .roadmap-wave-callout-year { font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 11px; opacity: 0.75; }
 .roadmap-wave-callout-title { font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 14px; }
 
+/* Month axis — all 12 months shown, only Jan/Jun/Dec are bold markers */
 .roadmap-wave-month-axis { position: relative; height: 20px; }
 .roadmap-wave-month-item {
   position: absolute;
   transform: translateX(-50%);
   font-family: 'Nunito', sans-serif;
-  font-weight: 600;
-  font-size: 13px;
-  color: #9e8f86;
-  cursor: pointer;
+  font-weight: 500;
+  font-size: 12px;
+  color: #c4b8ae;
   white-space: nowrap;
   transition: color 0.15s;
 }
+.roadmap-wave-month-item.marker { color: #9e8f86; font-weight: 600; cursor: pointer; }
 .roadmap-wave-month-item.active { color: #634F44; font-weight: 700; }
-/* Side card — matches "Take a language Test" reference box */
+
+/* Side card — "Career Focus" box */
 .roadmap-side-card {
   flex: 0 0 220px;
   background: rgba(239,239,239,0.72);
@@ -88,7 +91,7 @@
 .roadmap-side-icon { font-size: 44px; }
 .roadmap-side-stage { font-family: 'Nunito', sans-serif; font-weight: 600; font-size: 14px; color: #6b5e56; }
 
-/* Bottom info card — matches "Visa" reference box */
+/* Bottom info card */
 .roadmap-bottom-card {
   background: rgba(239,239,239,0.72);
   border-radius: 16px;
@@ -108,7 +111,7 @@
   .roadmap-content { padding: 24px 16px; gap: 20px; }
   .roadmap-top-row { flex-direction: column; }
   .roadmap-side-card { flex: 1; }
-  .roadmap-wave-box { padding: 20px 16px 16px; }
-  .roadmap-wave-svg { height: 180px; }
+  .roadmap-wave-box { padding: 44px 16px 16px; }
+  .roadmap-wave-svg { height: 170px; }
   .roadmap-wave-month-item { font-size: 10px; }
 }
