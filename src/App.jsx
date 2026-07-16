@@ -8,6 +8,7 @@ import Community from "./pages/Community";
 import UniversityDetail from "./pages/UniversityDetail";
 import Profile from "./pages/Profile";
 import "./styles/base.css";
+import "./styles/community.css";
 
 export default function App() {
   const [selectedUni, setSelectedUni] = useState(null);
