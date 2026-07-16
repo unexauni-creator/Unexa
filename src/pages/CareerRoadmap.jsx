@@ -28,37 +28,53 @@ const MILESTONES = [
   },
 ];
 
-const WAVE_X = [90, 290, 490, 690, 890];
-const WAVE_Y = [170, 110, 170, 110, 170];
+const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
-function buildWavePath() {
-  let d = `M ${WAVE_X[0]} ${WAVE_Y[0]}`;
+const CHART_LEFT = 40;
+const CHART_RIGHT = 940;
+const CHART_STEP = (CHART_RIGHT - CHART_LEFT) / (MONTHS.length - 1);
+const WAVE_X = MONTHS.map((_, i) => CHART_LEFT + i * CHART_STEP);
+
+// Each year's 12 monthly points: overall upward trend within the year,
+// plus each subsequent year starts a bit higher than the previous one ended.
+function getYearPoints(yearIndex) {
+  const baseY = 200 - yearIndex * 22; // later years sit higher up (smaller y)
+  return MONTHS.map((_, m) => {
+    const trend = (m / (MONTHS.length - 1)) * 55; // rises across the year
+    const wobble = Math.sin((m / (MONTHS.length - 1)) * Math.PI * 2.4 + yearIndex) * 10;
+    return baseY - trend + wobble;
+  });
+}
+
+function buildWavePath(points) {
+  let d = `M ${WAVE_X[0]} ${points[0]}`;
   for (let i = 0; i < WAVE_X.length - 1; i++) {
     const x1 = WAVE_X[i] + (WAVE_X[i + 1] - WAVE_X[i]) / 2;
     const x2 = x1;
-    d += ` C ${x1} ${WAVE_Y[i]}, ${x2} ${WAVE_Y[i + 1]}, ${WAVE_X[i + 1]} ${WAVE_Y[i + 1]}`;
+    d += ` C ${x1} ${points[i]}, ${x2} ${points[i + 1]}, ${WAVE_X[i + 1]} ${points[i + 1]}`;
   }
   return d;
 }
 
 const TODAY = new Date();
 const CURRENT_YEAR = TODAY.getFullYear();
+const CURRENT_MONTH = TODAY.getMonth();
 
 function getCalendarYear(yearIndex) {
   return CURRENT_YEAR + yearIndex;
 }
 
-function getMonthLabel(yearIndex) {
-  const d = new Date(TODAY);
-  d.setFullYear(d.getFullYear() + yearIndex);
-  return d.toLocaleDateString("en-US", { month: "short" });
-}
-
 export default function CareerRoadmap() {
   const [activeYear, setActiveYear] = useState(0);
+  const [activeMonth, setActiveMonth] = useState(activeYear === 0 ? CURRENT_MONTH : 0);
 
   const current = MILESTONES[activeYear];
-  const currentCalendarYear = getCalendarYear(activeYear);
+  const points = getYearPoints(activeYear);
+
+  function handleYearChange(i) {
+    setActiveYear(i);
+    setActiveMonth(i === 0 ? CURRENT_MONTH : 0);
+  }
 
   return (
     <div className="roadmap-page">
@@ -72,7 +88,7 @@ export default function CareerRoadmap() {
           <button
             key={i}
             className={`roadmap-tab ${i === activeYear ? "active" : ""}`}
-            onClick={() => setActiveYear(i)}
+            onClick={() => handleYearChange(i)}
           >
             {getCalendarYear(i)}
           </button>
@@ -84,27 +100,27 @@ export default function CareerRoadmap() {
         <div className="roadmap-top-row">
           <div className="roadmap-wave-box">
             <svg className="roadmap-wave-svg" viewBox="0 0 980 260" preserveAspectRatio="xMidYMid meet">
-              <path d={buildWavePath()} className="roadmap-wave-path" fill="none" strokeWidth="4" />
+              <path d={buildWavePath(points)} className="roadmap-wave-path" fill="none" strokeWidth="4" />
               {WAVE_X.map((x, i) => (
                 <circle
                   key={i}
                   cx={x}
-                  cy={WAVE_Y[i]}
-                  r={i === activeYear ? 11 : 7}
-                  className={`roadmap-wave-dot ${i === activeYear ? "active" : ""}`}
-                  onClick={() => setActiveYear(i)}
+                  cy={points[i]}
+                  r={i === activeMonth ? 9 : 5}
+                  className={`roadmap-wave-dot ${i === activeMonth ? "active" : ""}`}
+                  onClick={() => setActiveMonth(i)}
                 />
               ))}
             </svg>
             <div className="roadmap-wave-month-axis">
-              {WAVE_X.map((x, i) => (
+              {MONTHS.map((m, i) => (
                 <span
                   key={i}
-                  className={`roadmap-wave-month-item ${i === activeYear ? "active" : ""}`}
-                  style={{ left: `${(x / 980) * 100}%` }}
-                  onClick={() => setActiveYear(i)}
+                  className={`roadmap-wave-month-item ${i === activeMonth ? "active" : ""}`}
+                  style={{ left: `${(WAVE_X[i] / 980) * 100}%` }}
+                  onClick={() => setActiveMonth(i)}
                 >
-                  {getMonthLabel(i)} {getCalendarYear(i)}
+                  {m}
                 </span>
               ))}
             </div>
