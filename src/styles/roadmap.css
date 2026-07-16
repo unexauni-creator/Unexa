@@ -3,22 +3,39 @@
 .roadmap-title { font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 28px; color: rgba(43,31,24,0.96); }
 .roadmap-subtitle { font-family: 'Nunito', sans-serif; font-size: 15px; color: #9e8f86; }
 
-.roadmap-quiz-inline { display: flex; justify-content: center; }
-.roadmap-quiz-card { background: #faf8f5; border-radius: 24px; max-width: 560px; width: 100%; padding: 40px 40px 36px; display: flex; flex-direction: column; gap: 24px; box-shadow: 0 12px 40px rgba(0,0,0,0.08); animation: slideUp 0.25s cubic-bezier(.22,.68,0,1.2); }
-.roadmap-progress-dots { display: flex; gap: 8px; justify-content: center; }
-.roadmap-dot { width: 32px; height: 4px; border-radius: 4px; background: #e8e2da; transition: background 0.2s; }
+/* Quiz card — flat, matches app card style (no white popup / shadow) */
+.roadmap-quiz-inline { display: flex; }
+.roadmap-quiz-card {
+  background: rgba(239,239,239,0.72);
+  border-radius: 20px;
+  max-width: 640px;
+  width: 100%;
+  padding: 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+.roadmap-progress-dots { display: flex; gap: 8px; }
+.roadmap-dot { width: 32px; height: 4px; border-radius: 4px; background: rgba(172,136,118,0.2); transition: background 0.2s; }
 .roadmap-dot.done { background: #C4956A; }
 .roadmap-dot.active { background: #AC8876; }
-.roadmap-quiz-question { font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 20px; color: rgba(43,31,24,0.96); text-align: center; }
-.roadmap-quiz-options { display: flex; flex-direction: column; gap: 12px; }
-.roadmap-quiz-option { text-align: left; padding: 15px 20px; background: rgba(239,239,239,0.72); border: 1.5px solid transparent; border-radius: 14px; font-family: 'Nunito', sans-serif; font-size: 15px; font-weight: 600; color: #4a3f38; cursor: pointer; transition: all 0.18s; }
+.roadmap-quiz-question { font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 20px; color: rgba(43,31,24,0.96); text-align: left; }
+.roadmap-quiz-options { display: flex; flex-direction: column; gap: 10px; }
+.roadmap-quiz-option {
+  text-align: left;
+  padding: 14px 18px;
+  background: rgba(255,250,246,0.85);
+  border: 1.5px solid transparent;
+  border-radius: 12px;
+  font-family: 'Nunito', sans-serif;
+  font-size: 15px;
+  font-weight: 600;
+  color: #4a3f38;
+  cursor: pointer;
+  transition: all 0.18s;
+}
 .roadmap-quiz-option:hover { border-color: #C4956A; }
 .roadmap-quiz-option.selected { background: #AC8876; color: white; border-color: #AC8876; }
-
-@keyframes slideUp {
-  from { opacity: 0; transform: translateY(16px); }
-  to { opacity: 1; transform: translateY(0); }
-}
 
 .roadmap-year-select-tabs { display: flex; gap: 0; flex-shrink: 0; }
 .roadmap-year-select-tab { padding: 10px 22px; font-family: 'Nunito', sans-serif; font-size: 15px; font-weight: 400; color: #000; background: rgba(208,208,208,0.2); border: none; border-radius: 10px 10px 0 0; cursor: pointer; transition: background 0.18s; }
@@ -54,7 +71,7 @@
 
 @media (max-width: 768px) {
   .roadmap-page { padding: 20px 16px; }
-  .roadmap-quiz-card { padding: 28px 24px; }
+  .roadmap-quiz-card { padding: 22px; }
   .roadmap-quiz-question { font-size: 17px; }
   .roadmap-main-row { flex-direction: column; }
   .roadmap-wave-card { padding: 44px 16px 24px 64px; }
