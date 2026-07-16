@@ -1,67 +1,98 @@
-.roadmap-page { padding: 32px; display: flex; flex-direction: column; gap: 20px; max-width: 980px; }
-.roadmap-header { display: flex; flex-direction: column; gap: 6px; }
+.roadmap-page { padding: 0 32px 48px; display: flex; flex-direction: column; }
+
+.roadmap-header { padding: 24px 0 20px; display: flex; flex-direction: column; gap: 6px; }
 .roadmap-title { font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 28px; color: rgba(43,31,24,0.96); }
 .roadmap-subtitle { font-family: 'Nunito', sans-serif; font-size: 15px; color: #0F0F0F; line-height: 1.6; }
 
-.roadmap-year-select-tabs { display: flex; gap: 0; flex-shrink: 0; }
-.roadmap-year-select-tab { padding: 10px 22px; font-family: 'Nunito', sans-serif; font-size: 15px; font-weight: 400; color: #000; background: rgba(208,208,208,0.2); border: none; border-radius: 10px 10px 0 0; cursor: pointer; transition: background 0.18s; }
-.roadmap-year-select-tab.active { background: #AC8876; color: #fff; }
+/* Tabs — identical to .detail-tabs / .detail-tab from university page */
+.roadmap-tabs { display: flex; gap: 0; margin-bottom: 0; flex-shrink: 0; }
+.roadmap-tab { padding: 10px 20px; font-family: 'Nunito', sans-serif; font-size: 15px; font-weight: 400; color: #000; background: rgba(208,208,208,0.2); border: none; border-radius: 10px 10px 0 0; cursor: pointer; transition: background 0.18s; }
+.roadmap-tab.active { background: #AC8876; color: #fff; }
 
-/* Single container — graph + side card on top, info card below, like the reference */
-.roadmap-card {
-  background: rgba(239,239,239,0.72);
-  border-radius: 0 20px 20px 20px;
-  padding: 32px;
+/* Content container — identical to .detail-content from university page, fills width */
+.roadmap-content {
+  width: 100%;
+  background: rgba(208, 208, 208, 0.20);
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  border-radius: 0 24px 24px 24px;
+  padding: 40px 20px;
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 32px;
 }
 
-.roadmap-card-top { display: flex; align-items: stretch; gap: 24px; }
+.roadmap-top-row { display: flex; align-items: stretch; gap: 24px; }
 
-.roadmap-wave-box { flex: 1; min-width: 0; display: flex; align-items: center; padding: 40px 8px 8px; }
-.roadmap-wave-svg { width: 100%; height: auto; overflow: visible; }
+/* Graph gets its own background box, matches image reference */
+.roadmap-wave-box {
+  flex: 1;
+  min-width: 0;
+  background: rgba(239,239,239,0.72);
+  border-radius: 16px;
+  padding: 32px 32px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.roadmap-wave-svg { width: 100%; height: 220px; overflow: visible; }
 .roadmap-wave-path { stroke: #C4956A; opacity: 0.6; }
-.roadmap-wave-stem { stroke: rgba(172,136,118,0.3); stroke-width: 1.5; stroke-dasharray: 3 3; }
-.roadmap-wave-month-label { font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 11px; fill: #8a7a70; }
 .roadmap-wave-dot { fill: #ffffff; stroke: #AC8876; stroke-width: 3; cursor: pointer; transition: r 0.15s; }
 .roadmap-wave-dot.active { fill: #AC8876; stroke: #634F44; }
 
-/* Side card — matches "Take a language Test" box from reference */
+/* Month axis at the bottom of the graph, like the reference chart */
+.roadmap-wave-month-axis { position: relative; height: 20px; }
+.roadmap-wave-month-item {
+  position: absolute;
+  transform: translateX(-50%);
+  font-family: 'Nunito', sans-serif;
+  font-weight: 600;
+  font-size: 13px;
+  color: #9e8f86;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: color 0.15s;
+}
+.roadmap-wave-month-item.active { color: #634F44; font-weight: 700; }
+
+/* Side card — matches "Take a language Test" reference box */
 .roadmap-side-card {
-  flex: 0 0 200px;
-  background: rgba(255,250,246,0.85);
-  border-radius: 14px;
-  padding: 20px;
+  flex: 0 0 220px;
+  background: rgba(239,239,239,0.72);
+  border-radius: 16px;
+  padding: 24px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 12px;
+  justify-content: center;
+  gap: 14px;
   text-align: center;
 }
-.roadmap-side-title { font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 15px; color: rgba(43,31,24,0.96); }
-.roadmap-side-icon { font-size: 40px; }
-.roadmap-side-stage { font-family: 'Nunito', sans-serif; font-weight: 600; font-size: 13px; color: #6b5e56; }
+.roadmap-side-title { font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 16px; color: rgba(43,31,24,0.96); }
+.roadmap-side-icon { font-size: 44px; }
+.roadmap-side-stage { font-family: 'Nunito', sans-serif; font-weight: 600; font-size: 14px; color: #6b5e56; }
 
-/* Bottom info card — matches "Visa" box from reference */
-.roadmap-card-bottom {
-  background: rgba(255,250,246,0.85);
-  border-radius: 12px;
-  padding: 16px 18px;
+/* Bottom info card — matches "Visa" reference box */
+.roadmap-bottom-card {
+  background: rgba(239,239,239,0.72);
+  border-radius: 16px;
+  padding: 20px 24px;
   display: flex;
   flex-direction: column;
-  gap: 4px;
-  max-width: 420px;
+  gap: 6px;
+  max-width: 480px;
 }
-.roadmap-bottom-label { font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 15px; color: rgba(43,31,24,0.96); }
-.roadmap-bottom-value { font-family: 'Nunito', sans-serif; font-size: 13px; color: #6b5e56; line-height: 1.5; }
+.roadmap-bottom-label { font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 16px; color: rgba(43,31,24,0.96); }
+.roadmap-bottom-value { font-family: 'Nunito', sans-serif; font-size: 14px; color: #6b5e56; line-height: 1.6; }
 
 @media (max-width: 768px) {
-  .roadmap-page { padding: 20px 16px; }
-  .roadmap-year-select-tabs { overflow-x: auto; }
-  .roadmap-year-select-tab { font-size: 13px; padding: 8px 14px; white-space: nowrap; }
-  .roadmap-card { padding: 20px; }
-  .roadmap-card-top { flex-direction: column; }
+  .roadmap-page { padding: 0 16px 48px; }
+  .roadmap-tabs { overflow-x: auto; }
+  .roadmap-tab { font-size: 13px; padding: 8px 14px; white-space: nowrap; }
+  .roadmap-content { padding: 24px 16px; gap: 20px; }
+  .roadmap-top-row { flex-direction: column; }
   .roadmap-side-card { flex: 1; }
-  .roadmap-wave-box { padding: 24px 4px 4px; }
+  .roadmap-wave-box { padding: 20px 16px 16px; }
+  .roadmap-wave-svg { height: 180px; }
+  .roadmap-wave-month-item { font-size: 10px; }
 }

@@ -29,7 +29,7 @@ const MILESTONES = [
 ];
 
 const WAVE_X = [90, 290, 490, 690, 890];
-const WAVE_Y = [140, 90, 140, 90, 140];
+const WAVE_Y = [170, 110, 170, 110, 170];
 
 function buildWavePath() {
   let d = `M ${WAVE_X[0]} ${WAVE_Y[0]}`;
@@ -67,11 +67,11 @@ export default function CareerRoadmap() {
         <div className="roadmap-subtitle">Discover your career path with Unexa<br />Everything you need in one place</div>
       </div>
 
-      <div className="roadmap-year-select-tabs">
+      <div className="roadmap-tabs">
         {MILESTONES.map((_, i) => (
           <button
             key={i}
-            className={`roadmap-year-select-tab ${i === activeYear ? "active" : ""}`}
+            className={`roadmap-tab ${i === activeYear ? "active" : ""}`}
             onClick={() => setActiveYear(i)}
           >
             {getCalendarYear(i)}
@@ -79,27 +79,35 @@ export default function CareerRoadmap() {
         ))}
       </div>
 
-      <div className="roadmap-card">
-        <div className="roadmap-card-top">
+      <div className="roadmap-content">
+
+        <div className="roadmap-top-row">
           <div className="roadmap-wave-box">
-            <svg className="roadmap-wave-svg" viewBox="0 0 980 220" preserveAspectRatio="xMidYMid meet">
+            <svg className="roadmap-wave-svg" viewBox="0 0 980 260" preserveAspectRatio="xMidYMid meet">
               <path d={buildWavePath()} className="roadmap-wave-path" fill="none" strokeWidth="4" />
               {WAVE_X.map((x, i) => (
-                <g key={i}>
-                  <line x1={x} y1={WAVE_Y[i]} x2={x} y2={WAVE_Y[i] - 40} className="roadmap-wave-stem" />
-                  <text x={x} y={WAVE_Y[i] - 50} textAnchor="middle" className="roadmap-wave-month-label">
-                    {getMonthLabel(i)} {getCalendarYear(i)}
-                  </text>
-                  <circle
-                    cx={x}
-                    cy={WAVE_Y[i]}
-                    r={i === activeYear ? 10 : 7}
-                    className={`roadmap-wave-dot ${i === activeYear ? "active" : ""}`}
-                    onClick={() => setActiveYear(i)}
-                  />
-                </g>
+                <circle
+                  key={i}
+                  cx={x}
+                  cy={WAVE_Y[i]}
+                  r={i === activeYear ? 11 : 7}
+                  className={`roadmap-wave-dot ${i === activeYear ? "active" : ""}`}
+                  onClick={() => setActiveYear(i)}
+                />
               ))}
             </svg>
+            <div className="roadmap-wave-month-axis">
+              {WAVE_X.map((x, i) => (
+                <span
+                  key={i}
+                  className={`roadmap-wave-month-item ${i === activeYear ? "active" : ""}`}
+                  style={{ left: `${(x / 980) * 100}%` }}
+                  onClick={() => setActiveYear(i)}
+                >
+                  {getMonthLabel(i)} {getCalendarYear(i)}
+                </span>
+              ))}
+            </div>
           </div>
 
           <div className="roadmap-side-card">
@@ -109,10 +117,11 @@ export default function CareerRoadmap() {
           </div>
         </div>
 
-        <div className="roadmap-card-bottom">
+        <div className="roadmap-bottom-card">
           <div className="roadmap-bottom-label">{current.title}</div>
           <div className="roadmap-bottom-value">{current.description}</div>
         </div>
+
       </div>
     </div>
   );
