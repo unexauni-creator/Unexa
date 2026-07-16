@@ -41,6 +41,19 @@ const mockUniversities = [
     tuition: "$6,000/yr",
     image: "https://upload.wikimedia.org/wikipedia/commons/thumb/2/29/Batiments_de_nuits_-Univ_Rennes_2_-_Louis_Arretche.jpg/330px-Batiments_de_nuits_-Univ_Rennes_2_-_Louis_Arretche.jpg",
   },
+  {
+    id: 4,
+    name: "Université de Nîmes",
+    program: "Graphic Design",
+    scholarship: "Regional Grant",
+    submissionPeriod: "May 2026",
+    duration: "36 months",
+    language: "English / French",
+    minLanguage: "IELTS 6.0 / DELF B1",
+    minCGPA: "CGPA 2.9",
+    tuition: "$5,400/yr",
+    image: "https://upload.wikimedia.org/wikipedia/commons/1/16/Scines_nimes.jpg",
+  },
 ];
 
 const ROW_LABELS = [
@@ -104,7 +117,11 @@ export default function Dashboard() {
         <div className="dashboard-header">
           <div className="dash-title">Dashboard</div>
           <div className="dash-desc-block">
-            <p className="dash-desc-sub">Compare selected universities side by side. You can add up to 4 universities to find the one that fits you best.</p>
+            <p className="dash-desc-sub">
+              Compare selected universities side by side.
+              <br />
+              You can add up to 4 universities to find the one that fits you best.
+            </p>
           </div>
         </div>
         <div className="compare-empty">
@@ -123,7 +140,11 @@ export default function Dashboard() {
         <div className="dashboard-header">
           <div className="dash-title">Dashboard</div>
           <div className="dash-desc-block">
-            <p className="dash-desc-sub">Compare selected universities side by side. You can add up to 4 universities to find the one that fits you best.</p>
+            <p className="dash-desc-sub">
+              Compare selected universities side by side.
+              <br />
+              You can add up to 4 universities to find the one that fits you best.
+            </p>
           </div>
         </div>
         <div className="dash-warning">
@@ -159,7 +180,9 @@ export default function Dashboard() {
         <div className="dash-title">Dashboard</div>
         <div className="dash-desc-block">
           <p className="dash-desc-sub">
-            Compare {count} selected universities side by side. You can add up to 4 universities to find the one that fits you best.
+            Compare {count} selected universities side by side.
+            <br />
+            You can add up to 4 universities to find the one that fits you best.
           </p>
         </div>
       </div>
@@ -175,6 +198,7 @@ export default function Dashboard() {
         {/* Header row */}
         <div className="dash-table-row dash-header-row">
           <div className="dash-table-label-cell dash-corner-cell">
+            <div className="dash-corner-line" />
             <span className="dash-corner-top">Universities</span>
             <span className="dash-corner-bottom">Criteria</span>
           </div>
