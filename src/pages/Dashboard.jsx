@@ -198,6 +198,9 @@ export default function Dashboard() {
         {/* Header row */}
         <div className="dash-table-row dash-header-row">
           <div className="dash-table-label-cell dash-corner-cell">
+            <svg className="dash-corner-svg" preserveAspectRatio="none" viewBox="0 0 100 100">
+              <line x1="0" y1="0" x2="100" y2="100" vectorEffect="non-scaling-stroke" />
+            </svg>
             <span className="dash-corner-top">Universities</span>
             <span className="dash-corner-bottom">Criteria</span>
           </div>
