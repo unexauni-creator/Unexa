@@ -198,7 +198,6 @@ export default function Dashboard() {
         {/* Header row */}
         <div className="dash-table-row dash-header-row">
           <div className="dash-table-label-cell dash-corner-cell">
-            <div className="dash-corner-line" />
             <span className="dash-corner-top">Universities</span>
             <span className="dash-corner-bottom">Criteria</span>
           </div>
