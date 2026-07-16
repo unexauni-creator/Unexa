@@ -165,7 +165,7 @@ export default function Dashboard() {
               </div>
               <button className="dash-remove-btn" style={{ position: "static", marginLeft: "auto" }}
                 onClick={() => setRemoved(r => [...r, u.id])}>
-                <img src="/close-circle.svg" alt="Remove" className="dash-remove-icon" />
+                <span className="dash-remove-icon" />
               </button>
             </div>
           ))}
@@ -210,7 +210,7 @@ export default function Dashboard() {
                 <div className="dash-uni-card-program">{u.program}</div>
               </div>
               <button className="dash-remove-btn" onClick={() => setRemoved(r => [...r, u.id])}>
-                <img src="/close-circle.svg" alt="Remove" className="dash-remove-icon" />
+                <span className="dash-remove-icon" />
               </button>
             </div>
           ))}

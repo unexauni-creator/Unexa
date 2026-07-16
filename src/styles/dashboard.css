@@ -8,7 +8,7 @@
 .dash-corner-cell { position: relative; overflow: hidden; display: flex; flex-direction: column; justify-content: space-between; padding: 14px 16px; min-height: 90px; }
 .dash-corner-top { position: relative; z-index: 1; font-family: 'Nunito', sans-serif; font-size: 13px; font-weight: 700; color: rgba(43,31,24,0.5); align-self: flex-end; text-align: right; }
 .dash-corner-bottom { position: relative; z-index: 1; font-family: 'Nunito', sans-serif; font-size: 13px; font-weight: 700; color: rgba(43,31,24,0.5); align-self: flex-start; }
-.dash-corner-line { position: absolute; top: 0; left: -10%; width: 140%; height: 1px; background: rgba(172,136,118,0.35); transform-origin: top left; transform: rotate(20deg) translateY(46px); pointer-events: none; }
+.dash-corner-line { position: absolute; top: 50%; left: -10%; width: 140%; height: 1px; background: rgba(172,136,118,0.35); transform: translateY(-50%) rotate(-15deg); pointer-events: none; }
 
 .dash-table-row { display: flex; align-items: stretch; border-bottom: 1px solid rgba(172,136,118,0.15); }
 .dash-table-row:last-child { border-bottom: none; }
@@ -19,15 +19,22 @@
 .dash-table-cell { flex: 1; padding: 16px 20px; font-family: 'Nunito', sans-serif; font-size: 14px; color: rgba(43,31,24,0.8); display: flex; align-items: center; justify-content: flex-start; text-align: left; border-right: 1px solid rgba(172,136,118,0.15); }
 .dash-table-cell:last-child { border-right: none; }
 
-.dash-uni-header { display: flex; align-items: center; gap: 12px; padding: 16px 20px; position: relative; min-height: 90px; justify-content: flex-start; text-align: left; }
+.dash-uni-header { display: flex; align-items: center; gap: 12px; padding: 16px 44px 16px 20px; position: relative; min-height: 90px; justify-content: flex-start; text-align: left; }
 .dash-uni-card-img { width: 48px; height: 48px; border-radius: 10px; object-fit: cover; flex-shrink: 0; }
 .dash-uni-card-info { flex: 1; overflow: hidden; }
 .dash-uni-card-name { font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 13px; color: rgba(43,31,24,0.96); margin-bottom: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .dash-uni-card-program { font-family: 'Nunito', sans-serif; font-size: 12px; color: #9e8f86; }
 
-.dash-remove-btn { position: absolute; top: 12px; right: 12px; width: 22px; height: 22px; border-radius: 50%; background: transparent; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: opacity 0.18s; flex-shrink: 0; padding: 0; }
+.dash-remove-btn { position: absolute; top: 14px; right: 14px; width: 22px; height: 22px; border-radius: 50%; background: transparent; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: opacity 0.18s; flex-shrink: 0; padding: 0; }
 .dash-remove-btn:hover { opacity: 0.6; }
-.dash-remove-icon { width: 22px; height: 22px; filter: brightness(0) saturate(100%); opacity: 0.75; }
+.dash-remove-icon {
+  width: 22px;
+  height: 22px;
+  display: inline-block;
+  background-color: #DBD5D2;
+  -webkit-mask: url('/close-circle.svg') center / contain no-repeat;
+  mask: url('/close-circle.svg') center / contain no-repeat;
+}
 
 .dash-warning { display: flex; align-items: center; gap: 16px; background: rgba(172,136,118,0.12); border: 1.5px solid rgba(172,136,118,0.35); border-radius: 16px; padding: 18px 20px; }
 .dash-warning-icon { font-size: 22px; flex-shrink: 0; }
@@ -41,7 +48,7 @@
 .dash-single-img { width: 56px; height: 56px; border-radius: 10px; object-fit: cover; flex-shrink: 0; }
 .dash-single-info { flex: 1; }
 
-.dash-max-banner { display: flex; align-items: center; gap: 10px; background: rgba(123,158,135,0.12); border: 1.5px solid rgba(123,158,135,0.3); border-radius: 14px; padding: 12px 18px; font-family: 'Nunito', sans-serif; font-size: 13px; font-weight: 600; color: #4a8c65; }
+.dash-max-banner { display: inline-flex; align-self: flex-start; width: fit-content; align-items: center; gap: 10px; background: rgba(123,158,135,0.12); border: 1.5px solid rgba(123,158,135,0.3); border-radius: 14px; padding: 12px 18px; font-family: 'Nunito', sans-serif; font-size: 13px; font-weight: 600; color: #4a8c65; white-space: nowrap; }
 
 .compare-empty { text-align: center; padding: 60px 20px; color: #9e8f86; display: flex; flex-direction: column; align-items: center; }
 .compare-empty-icon { font-size: 48px; margin-bottom: 16px; }
