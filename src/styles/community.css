@@ -1,0 +1,124 @@
+/* ── Community ── */
+
+.community-header { padding: 40px 32px; }
+.community-title { font-family: 'Nunito', sans-serif; font-weight: 600; font-size: 32px; color: #0F0F0F; margin-bottom: 4px; }
+.community-desc { font-family: 'Nunito', sans-serif; font-weight: 400; font-size: 16px; line-height: 150%; color: #0F0F0F; max-width: 439px; }
+
+.community-search-row { display: flex; align-items: center; gap: 12px; margin-top: 32px; }
+
+.community-tabs { display: flex; gap: 0; margin-top: 28px; flex-shrink: 0; }
+.community-tab {
+  padding: 10px 20px;
+  font-family: 'Nunito', sans-serif;
+  font-size: 15px;
+  font-weight: 400;
+  color: #000;
+  background: rgba(208,208,208,0.2);
+  border: none;
+  border-radius: 10px 10px 0 0;
+  cursor: pointer;
+  transition: background 0.18s;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.community-tab.active { background: #AC8876; color: #fff; }
+.community-tab-count {
+  background: rgba(0,0,0,0.12);
+  color: inherit;
+  border-radius: 100px;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 1px 7px;
+  font-family: 'Nunito', sans-serif;
+}
+.community-tab.active .community-tab-count { background: rgba(255,255,255,0.25); }
+
+.community-content {
+  background: rgba(208, 208, 208, 0.20);
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  border-radius: 0 24px 24px 24px;
+  padding: 32px 20px;
+}
+
+.community-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+
+.community-card {
+  width: 100%;
+  aspect-ratio: 316/247;
+  border-radius: 16px;
+  position: relative;
+  overflow: hidden;
+}
+.community-card-img { width: 100%; height: 100%; object-fit: cover; border-radius: 16px; display: block; position: absolute; inset: 0; }
+
+.community-card-glass {
+  position: absolute;
+  bottom: 8px;
+  left: 8px;
+  right: 8px;
+  padding: 16px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  overflow: hidden;
+  transform: translateZ(0);
+}
+.community-card-glass-blur {
+  position: absolute;
+  inset: 0;
+  background: rgba(15, 10, 8, 0.72);
+  backdrop-filter: blur(40px);
+  -webkit-backdrop-filter: blur(60px);
+  z-index: 0;
+  border-radius: 12px;
+}
+.community-card-glass .community-card-text,
+.community-card-glass .community-card-join-btn { position: relative; z-index: 1; }
+
+.community-card-text { display: flex; flex-direction: column; }
+.community-card-title { font-family: 'Nunito', sans-serif; font-size: 16px; font-weight: 600; color: #ffffff; margin-bottom: 4px; }
+.community-card-subtitle { font-family: 'Nunito', sans-serif; font-size: 14px; font-weight: 400; color: #ffffff; opacity: 0.85; }
+.community-card-members { font-family: 'Nunito', sans-serif; font-size: 12px; font-weight: 400; color: #ffffff; opacity: 0.7; margin-top: 2px; }
+
+.community-card-join-btn {
+  flex-shrink: 0;
+  padding: 8px 16px;
+  background: #AC8876;
+  color: #ffffff;
+  border: none;
+  border-radius: 10px;
+  font-family: 'Nunito', sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.18s;
+  white-space: nowrap;
+}
+.community-card-join-btn:hover { background: #9a7664; }
+.community-card-join-btn.joined { background: rgba(255,255,255,0.18); color: #fff; }
+.community-card-join-btn.joined:hover { background: rgba(255,255,255,0.28); }
+
+.community-empty { text-align: center; padding: 60px 20px; color: #9e8f86; display: flex; flex-direction: column; align-items: center; }
+.community-empty-icon { font-size: 48px; margin-bottom: 16px; }
+.community-empty-title { font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 16px; color: #4a3f38; margin-bottom: 6px; }
+.community-empty-desc { font-family: 'Nunito', sans-serif; font-size: 14px; color: #9e8f86; max-width: 360px; text-align: center; line-height: 1.6; }
+
+@media (max-width: 768px) {
+  .community-header { padding: 24px 20px; }
+  .community-title { font-size: 24px; }
+  .community-desc { font-size: 14px; }
+  .community-search-row { flex-wrap: nowrap; gap: 8px; }
+  .community-tabs { overflow-x: auto; }
+  .community-tab { font-size: 13px; padding: 8px 14px; white-space: nowrap; }
+  .community-content { padding: 20px 16px; }
+  .community-grid { grid-template-columns: 1fr; gap: 12px; }
+  .community-card { aspect-ratio: 16/9; }
+}
+
+@media (min-width: 769px) and (max-width: 1024px) {
+  .community-grid { grid-template-columns: repeat(2, 1fr); }
+}
