@@ -36,25 +36,23 @@
   gap: 12px;
 }
 .roadmap-wave-svg { width: 100%; height: 220px; overflow: visible; }
-.roadmap-wave-path { stroke: #C4956A; opacity: 0.6; }
+.roadmap-wave-path { stroke: #C4956A; opacity: 0.6; transition: opacity 0.2s; }
 .roadmap-wave-dot { fill: #ffffff; stroke: #AC8876; stroke-width: 3; cursor: pointer; transition: r 0.15s; }
 .roadmap-wave-dot.active { fill: #AC8876; stroke: #634F44; }
 
-/* Month axis at the bottom of the graph, like the reference chart */
 .roadmap-wave-month-axis { position: relative; height: 20px; }
 .roadmap-wave-month-item {
   position: absolute;
   transform: translateX(-50%);
   font-family: 'Nunito', sans-serif;
-  font-weight: 600;
+  font-weight: 500;
   font-size: 12px;
-  color: #9e8f86;
-  cursor: pointer;
+  color: #c4b8ae;
   white-space: nowrap;
   transition: color 0.15s;
 }
+.roadmap-wave-month-item.marker { color: #9e8f86; font-weight: 600; cursor: pointer; }
 .roadmap-wave-month-item.active { color: #634F44; font-weight: 700; }
-
 /* Side card — matches "Take a language Test" reference box */
 .roadmap-side-card {
   flex: 0 0 220px;

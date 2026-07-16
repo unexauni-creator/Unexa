@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 
 const MILESTONES = [
   {
@@ -29,18 +29,17 @@ const MILESTONES = [
 ];
 
 const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+const MARKER_INDICES = [0, 5, 11]; // first, 6th, last month
 
 const CHART_LEFT = 40;
 const CHART_RIGHT = 940;
 const CHART_STEP = (CHART_RIGHT - CHART_LEFT) / (MONTHS.length - 1);
 const WAVE_X = MONTHS.map((_, i) => CHART_LEFT + i * CHART_STEP);
 
-// Each year's 12 monthly points: overall upward trend within the year,
-// plus each subsequent year starts a bit higher than the previous one ended.
 function getYearPoints(yearIndex) {
-  const baseY = 200 - yearIndex * 22; // later years sit higher up (smaller y)
+  const baseY = 200 - yearIndex * 22;
   return MONTHS.map((_, m) => {
-    const trend = (m / (MONTHS.length - 1)) * 55; // rises across the year
+    const trend = (m / (MONTHS.length - 1)) * 55;
     const wobble = Math.sin((m / (MONTHS.length - 1)) * Math.PI * 2.4 + yearIndex) * 10;
     return baseY - trend + wobble;
   });
@@ -56,9 +55,41 @@ function buildWavePath(points) {
   return d;
 }
 
+function lerp(a, b, t) { return a + (b - a) * t; }
+
+// Smoothly tween between the previous year's curve and the target year's curve
+function useAnimatedPoints(targetPoints, duration = 380) {
+  const [displayed, setDisplayed] = useState(targetPoints);
+  const fromRef = useRef(targetPoints);
+  const rafRef = useRef(null);
+
+  useEffect(() => {
+    const from = fromRef.current;
+    const to = targetPoints;
+    const start = performance.now();
+
+    function tick(now) {
+      const t = Math.min(1, (now - start) / duration);
+      const eased = 1 - Math.pow(1 - t, 3); // ease-out cubic
+      setDisplayed(from.map((v, i) => lerp(v, to[i], eased)));
+      if (t < 1) {
+        rafRef.current = requestAnimationFrame(tick);
+      } else {
+        fromRef.current = to;
+      }
+    }
+
+    cancelAnimationFrame(rafRef.current);
+    rafRef.current = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(rafRef.current);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [targetPoints]);
+
+  return displayed;
+}
+
 const TODAY = new Date();
 const CURRENT_YEAR = TODAY.getFullYear();
-const CURRENT_MONTH = TODAY.getMonth();
 
 function getCalendarYear(yearIndex) {
   return CURRENT_YEAR + yearIndex;
@@ -66,14 +97,15 @@ function getCalendarYear(yearIndex) {
 
 export default function CareerRoadmap() {
   const [activeYear, setActiveYear] = useState(0);
-  const [activeMonth, setActiveMonth] = useState(activeYear === 0 ? CURRENT_MONTH : 0);
+  const [activeMonth, setActiveMonth] = useState(0);
 
   const current = MILESTONES[activeYear];
-  const points = getYearPoints(activeYear);
+  const targetPoints = getYearPoints(activeYear);
+  const points = useAnimatedPoints(targetPoints);
 
   function handleYearChange(i) {
     setActiveYear(i);
-    setActiveMonth(i === 0 ? CURRENT_MONTH : 0);
+    setActiveMonth(0);
   }
 
   return (
@@ -101,12 +133,12 @@ export default function CareerRoadmap() {
           <div className="roadmap-wave-box">
             <svg className="roadmap-wave-svg" viewBox="0 0 980 260" preserveAspectRatio="xMidYMid meet">
               <path d={buildWavePath(points)} className="roadmap-wave-path" fill="none" strokeWidth="4" />
-              {WAVE_X.map((x, i) => (
+              {MARKER_INDICES.map(i => (
                 <circle
                   key={i}
-                  cx={x}
+                  cx={WAVE_X[i]}
                   cy={points[i]}
-                  r={i === activeMonth ? 9 : 5}
+                  r={i === activeMonth ? 9 : 6}
                   className={`roadmap-wave-dot ${i === activeMonth ? "active" : ""}`}
                   onClick={() => setActiveMonth(i)}
                 />
@@ -116,9 +148,9 @@ export default function CareerRoadmap() {
               {MONTHS.map((m, i) => (
                 <span
                   key={i}
-                  className={`roadmap-wave-month-item ${i === activeMonth ? "active" : ""}`}
+                  className={`roadmap-wave-month-item ${MARKER_INDICES.includes(i) ? "marker" : ""} ${i === activeMonth ? "active" : ""}`}
                   style={{ left: `${(WAVE_X[i] / 980) * 100}%` }}
-                  onClick={() => setActiveMonth(i)}
+                  onClick={() => MARKER_INDICES.includes(i) && setActiveMonth(i)}
                 >
                   {m}
                 </span>
