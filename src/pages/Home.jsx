@@ -207,7 +207,6 @@ function SearchDropdown({ search, setSearch, onSelect, recentSearches, setRecent
           <div className="search-dropdown-label">Recent</div>
           {recentSearches.map(r => (
             <div key={r} className="search-dropdown-item" onClick={() => handleSelect(r)}>
-              <span className="search-dropdown-icon">🕐</span>
               <span>{r}</span>
             </div>
           ))}
@@ -236,6 +235,8 @@ export default function Home({ onSelectUni }) {
   const [showNotif, setShowNotif] = useState(false);
   const [filters, setFilters] = useState(DEFAULT_FILTERS);
   const [appliedFilters, setAppliedFilters] = useState(DEFAULT_FILTERS);
+  const [savedUnis, setSavedUnis] = useState([]);
+  const [toast, setToast] = useState(null);
   const searchRef = useRef(null);
 
   useEffect(() => {
@@ -248,8 +249,26 @@ export default function Home({ onSelectUni }) {
     return () => document.removeEventListener("mousedown", handleClick);
   }, []);
 
+  useEffect(() => {
+    if (!toast) return;
+    const t = setTimeout(() => setToast(null), 2600);
+    return () => clearTimeout(t);
+  }, [toast]);
+
   function applyFilters() { setAppliedFilters({ ...filters }); setShowFilter(false); }
   function clearFilters() { setFilters(DEFAULT_FILTERS); setAppliedFilters(DEFAULT_FILTERS); }
+
+  function toggleSave(e, uni) {
+    e.stopPropagation();
+    setSavedUnis(prev => {
+      const isSaved = prev.includes(uni.id);
+      if (isSaved) {
+        return prev.filter(id => id !== uni.id);
+      }
+      setToast(`${uni.name} saved to profile`);
+      return [...prev, uni.id];
+    });
+  }
 
   function removeTag(key, value) {
     if (key === "tuition") {
@@ -299,7 +318,7 @@ export default function Home({ onSelectUni }) {
       <p className="home-desc">Discover design and art universities with Unexa. Everything you need in one place</p>
 
       <div className="home-search-row">
-        <div className="home-search" ref={searchRef} style={{ position: "relative" }}>
+        <div className={`home-search ${searchFocused ? "active" : ""}`} ref={searchRef} style={{ position: "relative" }}>
           <input
             type="text"
             placeholder="Search ......"
@@ -308,7 +327,21 @@ export default function Home({ onSelectUni }) {
             onChange={e => setSearch(e.target.value)}
             onFocus={() => setSearchFocused(true)}
           />
-          <img src="/search-normal.svg" alt="" className="home-search-icon-svg" />
+          {search.length > 0 ? (
+            <button
+              type="button"
+              className="home-search-clear-btn"
+              onClick={() => setSearch("")}
+              aria-label="Clear search"
+            >
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+                <line x1="18" y1="6" x2="6" y2="18" />
+                <line x1="6" y1="6" x2="18" y2="18" />
+              </svg>
+            </button>
+          ) : (
+            <img src="/search-normal.svg" alt="" className="home-search-icon-svg" />
+          )}
           {searchFocused && (
             <SearchDropdown
               search={search}
@@ -344,23 +377,30 @@ export default function Home({ onSelectUni }) {
       )}
 
       <div className="uni-grid">
-        {filtered.length > 0 ? filtered.map(uni => (
-          <div key={uni.id} className="uni-card-new" onClick={() => onSelectUni(uni)}>
-            <img src={uni.image} alt={uni.name} className="uni-card-img" />
-            <div className="uni-card-glass">
-              <div className="uni-card-glass-blur" />
-              <div className="uni-card-text">
-                <div className="uni-card-title">{uni.name}</div>
-                <div className="uni-card-subtitle">{uni.desc}</div>
+        {filtered.length > 0 ? filtered.map(uni => {
+          const isSaved = savedUnis.includes(uni.id);
+          return (
+            <div key={uni.id} className="uni-card-new" onClick={() => onSelectUni(uni)}>
+              <img src={uni.image} alt={uni.name} className="uni-card-img" />
+              <div className="uni-card-glass">
+                <div className="uni-card-glass-blur" />
+                <div className="uni-card-text">
+                  <div className="uni-card-title">{uni.name}</div>
+                  <div className="uni-card-subtitle">{uni.desc}</div>
+                </div>
+                <button
+                  className={`uni-card-save ${isSaved ? "saved" : ""}`}
+                  onClick={e => toggleSave(e, uni)}
+                  aria-label={isSaved ? "Remove from profile" : "Save to profile"}
+                >
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill={isSaved ? "currentColor" : "none"} stroke="currentColor" strokeWidth="2">
+                    <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" />
+                  </svg>
+                </button>
               </div>
-              <button className="uni-card-save" onClick={e => e.stopPropagation()}>
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2">
-                  <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" />
-                </svg>
-              </button>
             </div>
-          </div>
-        )) : (
+          );
+        }) : (
           <div style={{ gridColumn: "1/-1", textAlign: "center", padding: "48px 0" }}>
             <div style={{ fontSize: 36, marginBottom: 12 }}>🔍</div>
             <div style={{ fontFamily: "Nunito", fontWeight: 600, fontSize: 16, color: "#4a3f38" }}>No universities match your filters</div>
@@ -376,6 +416,15 @@ export default function Home({ onSelectUni }) {
       )}
 
       {showNotif && <NotificationPanel onClose={() => setShowNotif(false)} />}
+
+      {toast && (
+        <div className="save-toast">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <polyline points="20 6 9 17 4 12" />
+          </svg>
+          {toast}
+        </div>
+      )}
     </div>
   );
 }
