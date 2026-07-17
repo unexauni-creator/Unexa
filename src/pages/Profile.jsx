@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 
 const appliedUniversities = [
   { id: 4, name: "Université de Nîmes", desc: "Nîmes, France", status: "In Review", image: "https://upload.wikimedia.org/wikipedia/commons/1/16/Scines_nimes.jpg" },
@@ -12,31 +12,72 @@ const STATUS_COLORS = {
   "Rejected": { bg: "rgba(200,100,100,0.15)", color: "#c05050" },
 };
 
-export default function Profile({ savedUniversities, onToggleSave }) {
+const DEFAULT_COVER = "https://images.unsplash.com/photo-1562774053-701939374585?w=1200&q=80";
+const DEFAULT_AVATAR = "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200&q=80";
+
+export default function Profile({ savedUniversities, onToggleSave, avatarUrl, coverUrl, onAvatarChange, onCoverChange }) {
   const [activeTab, setActiveTab] = useState("saved");
+  const avatarInputRef = useRef(null);
+  const coverInputRef = useRef(null);
+
+  function handleFileSelect(e, onChange) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => onChange(reader.result);
+    reader.readAsDataURL(file);
+    e.target.value = "";
+  }
 
   return (
     <div className="profile-page">
 
-      {/* Cover image — contained, not stretched */}
-      <div className="profile-cover">
+      {/* Cover image — click/hover to change */}
+      <div className="profile-cover" onClick={() => coverInputRef.current?.click()}>
         <img
-          src="https://images.unsplash.com/photo-1562774053-701939374585?w=1200&q=80"
+          src={coverUrl || DEFAULT_COVER}
           alt="Cover"
           className="profile-cover-img"
+        />
+        <div className="profile-cover-overlay">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" />
+            <circle cx="12" cy="13" r="4" />
+          </svg>
+          <span>Change cover photo</span>
+        </div>
+        <input
+          ref={coverInputRef}
+          type="file"
+          accept="image/*"
+          style={{ display: "none" }}
+          onChange={e => handleFileSelect(e, onCoverChange)}
         />
       </div>
 
       {/* Profile info */}
       <div className="profile-info-row">
         <div className="profile-left">
-          <div className="profile-avatar-wrap">
+          <div className="profile-avatar-wrap" onClick={() => avatarInputRef.current?.click()}>
             <img
-              src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200&q=80"
+              src={avatarUrl || DEFAULT_AVATAR}
               alt="Avatar"
               className="profile-avatar"
             />
+            <div className="profile-avatar-overlay">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" />
+                <circle cx="12" cy="13" r="4" />
+              </svg>
+            </div>
             <div className="profile-avatar-edit">📷</div>
+            <input
+              ref={avatarInputRef}
+              type="file"
+              accept="image/*"
+              style={{ display: "none" }}
+              onChange={e => handleFileSelect(e, onAvatarChange)}
+            />
           </div>
           <div className="profile-info">
             <div className="profile-name">Kateryna Dmytrenko</div>
@@ -54,7 +95,7 @@ export default function Profile({ savedUniversities, onToggleSave }) {
         </button>
       </div>
 
-      {/* Tabs */}
+      {/* Tabs — pill style */}
       <div className="profile-tabs">
         <button className={`profile-tab ${activeTab === "saved" ? "active" : ""}`} onClick={() => setActiveTab("saved")}>
           Saved Universities

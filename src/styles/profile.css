@@ -1,13 +1,45 @@
 .profile-page { display: flex; flex-direction: column; }
 
-.profile-cover { margin: 24px 32px 0; height: 200px; border-radius: 20px; overflow: hidden; }
+.profile-cover { position: relative; margin: 24px 32px 0; height: 200px; border-radius: 20px; overflow: hidden; cursor: pointer; }
 .profile-cover-img { width: 100%; height: 100%; object-fit: cover; object-position: center top; }
+.profile-cover-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(20,16,12,0.45);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  color: #ffffff;
+  font-family: 'Nunito', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  opacity: 0;
+  transition: opacity 0.18s;
+}
+.profile-cover:hover .profile-cover-overlay { opacity: 1; }
 
 .profile-info-row { display: flex; align-items: flex-start; justify-content: space-between; padding: 0 32px; margin-top: -36px; gap: 16px; }
 .profile-left { display: flex; align-items: flex-start; gap: 20px; flex: 1; }
 
-.profile-avatar-wrap { position: relative; flex-shrink: 0; }
-.profile-avatar { width: 84px; height: 84px; border-radius: 50%; object-fit: cover; border: 4px solid #f0ece6; }
+.profile-avatar-wrap { position: relative; flex-shrink: 0; cursor: pointer; }
+.profile-avatar { width: 84px; height: 84px; border-radius: 50%; object-fit: cover; border: 4px solid #f0ece6; display: block; transition: filter 0.18s; }
+.profile-avatar-wrap:hover .profile-avatar { filter: brightness(0.7); }
+.profile-avatar-overlay {
+  position: absolute;
+  inset: 4px;
+  border-radius: 50%;
+  background: rgba(20,16,12,0.35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  opacity: 0;
+  transition: opacity 0.18s;
+  pointer-events: none;
+}
+.profile-avatar-wrap:hover .profile-avatar-overlay { opacity: 1; }
 .profile-avatar-edit { position: absolute; bottom: 0; right: 0; width: 26px; height: 26px; background: #AC8876; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; cursor: pointer; }
 
 .profile-info { display: flex; flex-direction: column; gap: 6px; padding-top: 42px; }
@@ -35,10 +67,34 @@
 .profile-settings-btn:hover { background: #4e3d35; }
 .profile-settings-icon { width: 16px; height: 16px; color: #F5F5F5; flex-shrink: 0; }
 
-.profile-tabs { display: flex; gap: 0; padding: 20px 32px 0; border-bottom: 2px solid #e8e2da; margin-top: 16px; }
-.profile-tab { padding: 10px 20px; font-family: 'Nunito', sans-serif; font-size: 15px; font-weight: 500; color: #9e8f86; background: none; border: none; border-bottom: 2px solid transparent; margin-bottom: -2px; cursor: pointer; transition: all 0.18s; }
-.profile-tab.active { color: #AC8876; border-bottom-color: #AC8876; font-weight: 700; }
-.profile-tab:hover { color: #4a3f38; }
+/* Pill-style tabs, matching UniversityDetail's Informations/Program tabs */
+.profile-tabs { display: flex; gap: 0; padding: 20px 32px 0; margin-top: 16px; }
+.profile-tab {
+  padding: 10px 20px;
+  font-family: 'Nunito', sans-serif;
+  font-size: 15px;
+  font-weight: 400;
+  color: #000;
+  background: rgba(208,208,208,0.2);
+  border: none;
+  border-radius: 10px 10px 0 0;
+  cursor: pointer;
+  transition: background 0.18s;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.profile-tab.active { background: #AC8876; color: #fff; }
+.profile-tab .community-tab-count {
+  background: rgba(0,0,0,0.12);
+  color: inherit;
+  border-radius: 100px;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 1px 7px;
+  font-family: 'Nunito', sans-serif;
+}
+.profile-tab.active .community-tab-count { background: rgba(255,255,255,0.25); }
 
 .profile-content { padding: 24px 32px 48px; }
 
