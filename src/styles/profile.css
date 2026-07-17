@@ -1,9 +1,9 @@
 .profile-page { display: flex; flex-direction: column; }
 
 /* Cover */
-.profile-cover { position: relative; margin: 24px 32px 0; height: 200px; border-radius: 20px; overflow: hidden; background: #e4e4e4; }
+.profile-cover { position: relative; margin: 24px 32px 0; height: 200px; border-radius: 20px; overflow: hidden; background: #EFEFEF; }
 .profile-cover-img { width: 100%; height: 100%; object-fit: cover; object-position: center top; display: block; }
-.profile-cover-empty { background: #e4e4e4; }
+.profile-cover-empty { background: #EFEFEF; }
 
 .profile-cover-actions {
   position: absolute;
@@ -40,9 +40,9 @@
 }
 .profile-cover-empty .profile-photo-action-btn:hover { background: #634F44; }
 
-/* Info row — avatar overlaps the banner slightly, but text sits comfortably below it */
-.profile-info-row { display: flex; align-items: flex-start; justify-content: space-between; padding: 0 32px; margin-top: -32px; gap: 16px; }
-.profile-left { display: flex; align-items: flex-start; gap: 20px; flex: 1; }
+/* Info row — avatar and text share the same vertical center */
+.profile-info-row { display: flex; align-items: center; justify-content: space-between; padding: 0 32px; margin-top: -32px; gap: 16px; }
+.profile-left { display: flex; align-items: center; gap: 20px; flex: 1; }
 
 /* Avatar */
 .profile-avatar-wrap {
@@ -66,7 +66,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #e4e4e4;
+  background: #EFEFEF;
   color: #7a6f68;
   font-family: 'Nunito', sans-serif;
   font-weight: 700;
@@ -104,8 +104,7 @@
 .profile-avatar-action-btn:hover { background: rgba(255,255,255,0.35); }
 .profile-avatar-action-remove:hover { background: rgba(200,70,60,0.75); }
 
-/* Text sits below the avatar overlap zone, clear of the banner */
-.profile-info { display: flex; flex-direction: column; gap: 6px; padding-top: 56px; }
+.profile-info { display: flex; flex-direction: column; gap: 6px; }
 .profile-name { font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 20px; color: rgba(43,31,24,0.96); }
 .profile-bio { font-family: 'Nunito', sans-serif; font-size: 14px; color: #6b5e56; line-height: 1.6; max-width: 460px; }
 
@@ -125,7 +124,6 @@
   line-height: 1;
   cursor: pointer;
   transition: background 0.18s;
-  margin-top: 56px;
 }
 .profile-settings-btn:hover { background: #4e3d35; }
 .profile-settings-icon { width: 16px; height: 16px; color: #F5F5F5; flex-shrink: 0; }
@@ -175,9 +173,8 @@
   .profile-photo-action-btn { padding: 7px 10px; font-size: 12px; }
   .profile-info-row { flex-direction: column; padding: 0 16px; margin-top: -24px; }
   .profile-settings-btn { margin-top: 8px; align-self: flex-start; }
-  .profile-left { flex-direction: column; gap: 10px; }
+  .profile-left { flex-direction: column; align-items: flex-start; gap: 10px; }
   .profile-avatar-actions { opacity: 1; }
-  .profile-info { padding-top: 12px; }
   .profile-tabs { padding: 16px 16px 0; }
   .profile-content { padding: 20px 16px 48px; }
   .profile-bio { max-width: 100%; }
