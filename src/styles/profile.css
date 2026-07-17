@@ -14,8 +14,23 @@
 .profile-name { font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 20px; color: rgba(43,31,24,0.96); }
 .profile-bio { font-family: 'Nunito', sans-serif; font-size: 14px; color: #6b5e56; line-height: 1.6; max-width: 460px; }
 
-.profile-settings-btn { margin-top: 42px; padding: 10px 18px; background: #F6F6F6; border: none; border-radius: 12px; font-family: 'Nunito', sans-serif; font-size: 14px; font-weight: 600; color: #4a3f38; cursor: pointer; flex-shrink: 0; transition: background 0.18s; white-space: nowrap; }
-.profile-settings-btn:hover { background: #e8e2da; }
+.profile-settings-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 22px;
+  background: #634F44;
+  color: #F5F5F5;
+  border: none;
+  border-radius: 12px;
+  font-family: 'Nunito', sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.18s;
+}
+.profile-settings-btn:hover { background: #4e3d35; }
+.profile-settings-icon { width: 16px; height: 16px; filter: brightness(0) invert(1); }
 
 .profile-tabs { display: flex; gap: 0; padding: 20px 32px 0; border-bottom: 2px solid #e8e2da; margin-top: 16px; }
 .profile-tab { padding: 10px 20px; font-family: 'Nunito', sans-serif; font-size: 15px; font-weight: 500; color: #9e8f86; background: none; border: none; border-bottom: 2px solid transparent; margin-bottom: -2px; cursor: pointer; transition: all 0.18s; }

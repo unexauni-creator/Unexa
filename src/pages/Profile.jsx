@@ -45,7 +45,10 @@ export default function Profile({ savedUniversities, onToggleSave }) {
             </div>
           </div>
         </div>
-        <button className="profile-settings-btn">⚙️ Settings</button>
+      <button className="profile-settings-btn">
+  <img src="/setting-2.svg" alt="" className="profile-settings-icon" />
+  Settings
+</button>
       </div>
 
       {/* Tabs */}

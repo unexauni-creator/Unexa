@@ -227,6 +227,24 @@ function SearchDropdown({ search, setSearch, onSelect, recentSearches, setRecent
   );
 }
 
+function SearchEmptyState({ query }) {
+  return (
+    <div className="search-empty-state">
+      <div className="search-empty-icon">
+        <svg width="72" height="72" viewBox="0 0 72 72" fill="none">
+          <circle cx="42" cy="30" r="26" fill="#EFE6DB" />
+          <circle cx="30" cy="26" r="13" fill="#FAF8F5" stroke="#AC8876" strokeWidth="3.5" />
+          <line x1="39.5" y1="35.5" x2="49" y2="45" stroke="#AC8876" strokeWidth="4.5" strokeLinecap="round" />
+        </svg>
+      </div>
+      <div className="search-empty-title">
+        Sorry, we couldn't find any matches for <strong>{query}</strong>
+      </div>
+      <div className="search-empty-desc">Please try searching with another term.</div>
+    </div>
+  );
+}
+
 export default function Home({ onSelectUni, savedUniversities, onToggleSave }) {
   const [search, setSearch] = useState("");
   const [searchFocused, setSearchFocused] = useState(false);
@@ -396,7 +414,11 @@ export default function Home({ onSelectUni, savedUniversities, onToggleSave }) {
               </div>
             </div>
           );
-        }) : (
+        }) : search.trim().length > 0 ? (
+          <div style={{ gridColumn: "1/-1" }}>
+            <SearchEmptyState query={search} />
+          </div>
+        ) : (
           <div style={{ gridColumn: "1/-1", textAlign: "center", padding: "48px 0" }}>
             <div style={{ fontSize: 36, marginBottom: 12 }}>🔍</div>
             <div style={{ fontFamily: "Nunito", fontWeight: 600, fontSize: 16, color: "#4a3f38" }}>No universities match your filters</div>
