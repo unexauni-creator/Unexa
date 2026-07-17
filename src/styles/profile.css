@@ -40,11 +40,11 @@
 }
 .profile-cover-empty .profile-photo-action-btn:hover { background: #634F44; }
 
-/* Info row — sits fully BELOW the banner now, no overlap, nothing can hide behind it */
+/* Info row */
 .profile-info-row { display: flex; align-items: center; justify-content: space-between; padding: 24px 32px 0; gap: 16px; }
 .profile-left { display: flex; align-items: center; gap: 20px; flex: 1; }
 
-/* Avatar — wrapper clips as a safety net in case the img itself doesn't */
+/* Avatar */
 .profile-avatar-wrap {
   position: relative;
   flex-shrink: 0;
@@ -170,6 +170,150 @@
 .profile-applied-desc { font-family: 'Nunito', sans-serif; font-size: 13px; color: #9e8f86; }
 .profile-applied-status { padding: 6px 14px; border-radius: 10px; font-family: 'Nunito', sans-serif; font-size: 13px; font-weight: 600; flex-shrink: 0; }
 
+/* ── Settings panel (modal, matches Home's filter-panel look) ── */
+.settings-panel {
+  background: #faf8f5;
+  border-radius: 24px;
+  width: 100%;
+  max-width: 780px;
+  max-height: 82vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 32px 80px rgba(0,0,0,0.22);
+  animation: slideUp 0.25s cubic-bezier(.22,.68,0,1.2);
+  overflow: hidden;
+}
+
+.settings-header { display: flex; align-items: center; justify-content: space-between; padding: 20px 24px; border-bottom: 1px solid rgba(172,136,118,0.15); flex-shrink: 0; }
+
+.settings-body { display: flex; flex: 1; min-height: 0; }
+
+.settings-nav {
+  width: 200px;
+  min-width: 200px;
+  flex-shrink: 0;
+  border-right: 1px solid rgba(172,136,118,0.15);
+  padding: 16px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  overflow-y: auto;
+}
+.settings-nav-item {
+  text-align: left;
+  padding: 11px 14px;
+  border-radius: 10px;
+  border: none;
+  background: none;
+  font-family: 'Nunito', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  color: #6b5e56;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+.settings-nav-item:hover { background: rgba(172,136,118,0.1); color: #4a3f38; }
+.settings-nav-item.active { background: #AC8876; color: #ffffff; }
+
+.settings-content { flex: 1; padding: 24px 28px; overflow-y: auto; }
+.settings-section-title { font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 20px; color: rgba(43,31,24,0.96); margin-bottom: 4px; }
+.settings-section-desc { font-family: 'Nunito', sans-serif; font-size: 13px; color: #9e8f86; margin-bottom: 24px; }
+
+.settings-field { display: flex; align-items: flex-start; justify-content: space-between; gap: 24px; padding: 18px 0; border-bottom: 1px solid rgba(172,136,118,0.12); }
+.settings-field:last-child { border-bottom: none; }
+.settings-field-row { align-items: center; }
+.settings-field-picture { align-items: center; }
+
+.settings-field-label-block { flex: 1; min-width: 0; }
+.settings-field-label { font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 14px; color: rgba(43,31,24,0.9); margin-bottom: 3px; }
+.settings-field-hint { font-family: 'Nunito', sans-serif; font-size: 12px; color: #9e8f86; line-height: 1.5; }
+
+.settings-input {
+  width: 260px;
+  max-width: 100%;
+  padding: 10px 14px;
+  border-radius: 10px;
+  border: 1.5px solid rgba(172,136,118,0.25);
+  background: #ffffff;
+  font-family: 'Nunito', sans-serif;
+  font-size: 14px;
+  color: #2c2420;
+  outline: none;
+  transition: border-color 0.15s;
+  flex-shrink: 0;
+}
+.settings-input:focus { border-color: #AC8876; }
+.settings-textarea { resize: vertical; font-family: 'Nunito', sans-serif; }
+
+.settings-avatar-wrap {
+  position: relative;
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  overflow: hidden;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+.settings-avatar-img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.settings-avatar-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #EFEFEF;
+  color: #7a6f68;
+  font-family: 'Nunito', sans-serif;
+  font-weight: 700;
+  font-size: 18px;
+}
+.settings-avatar-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(20,16,12,0.45);
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.15s;
+}
+.settings-avatar-wrap:hover .settings-avatar-overlay { opacity: 1; }
+
+.settings-toggle {
+  width: 42px;
+  height: 24px;
+  border-radius: 100px;
+  background: rgba(172,136,118,0.25);
+  border: none;
+  cursor: pointer;
+  position: relative;
+  flex-shrink: 0;
+  transition: background 0.18s;
+}
+.settings-toggle.on { background: #AC8876; }
+.settings-toggle-knob {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #ffffff;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.25);
+  transition: transform 0.18s;
+}
+.settings-toggle.on .settings-toggle-knob { transform: translateX(18px); }
+
+.settings-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  padding: 16px 24px;
+  border-top: 1px solid rgba(172,136,118,0.15);
+  flex-shrink: 0;
+}
+
 @media (max-width: 768px) {
   .profile-cover { margin: 16px 16px 0; height: 150px; }
   .profile-cover-actions { opacity: 1; bottom: 12px; right: 12px; }
@@ -181,4 +325,11 @@
   .profile-tabs { padding: 16px 16px 0; }
   .profile-content { padding: 20px 16px 48px; }
   .profile-bio { max-width: 100%; }
+
+  .settings-panel { max-height: 90vh; }
+  .settings-body { flex-direction: column; }
+  .settings-nav { width: 100%; min-width: unset; flex-direction: row; overflow-x: auto; border-right: none; border-bottom: 1px solid rgba(172,136,118,0.15); }
+  .settings-nav-item { white-space: nowrap; }
+  .settings-field { flex-direction: column; align-items: flex-start; gap: 10px; }
+  .settings-input { width: 100%; }
 }

@@ -12,8 +12,229 @@ const STATUS_COLORS = {
   "Rejected": { bg: "rgba(200,100,100,0.15)", color: "#c05050" },
 };
 
+const SETTINGS_SECTIONS = [
+  { id: "profile", label: "Profile" },
+  { id: "notifications", label: "Notifications" },
+  { id: "security", label: "Security & Access" },
+  { id: "language", label: "Language & Region" },
+];
+
+function ToggleSwitch({ checked, onChange }) {
+  return (
+    <button
+      type="button"
+      className={`settings-toggle ${checked ? "on" : ""}`}
+      onClick={() => onChange(!checked)}
+      role="switch"
+      aria-checked={checked}
+    >
+      <span className="settings-toggle-knob" />
+    </button>
+  );
+}
+
+function SettingsPanel({ onClose, avatarUrl, onAvatarChange, name, setName, bio, setBio }) {
+  const [activeSection, setActiveSection] = useState("profile");
+  const [email, setEmail] = useState("kateryna.dmytrenko@example.com");
+  const [phone, setPhone] = useState("");
+  const [notifNewUni, setNotifNewUni] = useState(true);
+  const [notifDeadlines, setNotifDeadlines] = useState(true);
+  const [notifTips, setNotifTips] = useState(false);
+  const [language, setLanguage] = useState("English");
+  const avatarInputRef = useRef(null);
+
+  function handleAvatarSelect(e) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => onAvatarChange(reader.result);
+    reader.readAsDataURL(file);
+    e.target.value = "";
+  }
+
+  return (
+    <div className="filter-backdrop" onClick={onClose}>
+      <div className="settings-panel" onClick={e => e.stopPropagation()}>
+        <div className="settings-header">
+          <span className="filter-title">Settings</span>
+          <button className="filter-close-btn" onClick={onClose}>✕</button>
+        </div>
+
+        <div className="settings-body">
+          <div className="settings-nav">
+            {SETTINGS_SECTIONS.map(s => (
+              <button
+                key={s.id}
+                className={`settings-nav-item ${activeSection === s.id ? "active" : ""}`}
+                onClick={() => setActiveSection(s.id)}
+              >
+                {s.label}
+              </button>
+            ))}
+          </div>
+
+          <div className="settings-content">
+            {activeSection === "profile" && (
+              <>
+                <div className="settings-section-title">Profile</div>
+                <p className="settings-section-desc">This is how others will see you across Unexa.</p>
+
+                <div className="settings-field settings-field-picture">
+                  <div className="settings-field-label-block">
+                    <div className="settings-field-label">Profile picture</div>
+                    <div className="settings-field-hint">Set or change your profile picture</div>
+                  </div>
+                  <div className="settings-avatar-wrap" onClick={() => avatarInputRef.current?.click()}>
+                    {avatarUrl ? (
+                      <img src={avatarUrl} alt="Avatar" className="settings-avatar-img" />
+                    ) : (
+                      <div className="settings-avatar-placeholder">KD</div>
+                    )}
+                    <div className="settings-avatar-overlay">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M12 20h9" />
+                        <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4Z" />
+                      </svg>
+                    </div>
+                    <input
+                      ref={avatarInputRef}
+                      type="file"
+                      accept="image/*"
+                      style={{ display: "none" }}
+                      onChange={handleAvatarSelect}
+                    />
+                  </div>
+                </div>
+
+                <div className="settings-field">
+                  <div className="settings-field-label-block">
+                    <div className="settings-field-label">Full name</div>
+                  </div>
+                  <input className="settings-input" value={name} onChange={e => setName(e.target.value)} />
+                </div>
+
+                <div className="settings-field">
+                  <div className="settings-field-label-block">
+                    <div className="settings-field-label">Bio</div>
+                    <div className="settings-field-hint">A short line about you and what you're looking for</div>
+                  </div>
+                  <textarea className="settings-input settings-textarea" value={bio} onChange={e => setBio(e.target.value)} rows={3} />
+                </div>
+
+                <div className="settings-field">
+                  <div className="settings-field-label-block">
+                    <div className="settings-field-label">Email</div>
+                  </div>
+                  <input className="settings-input" type="email" value={email} onChange={e => setEmail(e.target.value)} />
+                </div>
+
+                <div className="settings-field">
+                  <div className="settings-field-label-block">
+                    <div className="settings-field-label">Phone number</div>
+                    <div className="settings-field-hint">Optional</div>
+                  </div>
+                  <input className="settings-input" type="tel" placeholder="+33 6 12 34 56 78" value={phone} onChange={e => setPhone(e.target.value)} />
+                </div>
+              </>
+            )}
+
+            {activeSection === "notifications" && (
+              <>
+                <div className="settings-section-title">Notifications</div>
+                <p className="settings-section-desc">Choose what you want to hear about.</p>
+
+                <div className="settings-field settings-field-row">
+                  <div className="settings-field-label-block">
+                    <div className="settings-field-label">New universities</div>
+                    <div className="settings-field-hint">Get notified when a new university joins Unexa</div>
+                  </div>
+                  <ToggleSwitch checked={notifNewUni} onChange={setNotifNewUni} />
+                </div>
+
+                <div className="settings-field settings-field-row">
+                  <div className="settings-field-label-block">
+                    <div className="settings-field-label">Application deadlines</div>
+                    <div className="settings-field-hint">Reminders before saved programs close applications</div>
+                  </div>
+                  <ToggleSwitch checked={notifDeadlines} onChange={setNotifDeadlines} />
+                </div>
+
+                <div className="settings-field settings-field-row">
+                  <div className="settings-field-label-block">
+                    <div className="settings-field-label">Tips & suggestions</div>
+                    <div className="settings-field-hint">Occasional tips to improve your profile and matches</div>
+                  </div>
+                  <ToggleSwitch checked={notifTips} onChange={setNotifTips} />
+                </div>
+              </>
+            )}
+
+            {activeSection === "security" && (
+              <>
+                <div className="settings-section-title">Security & Access</div>
+                <p className="settings-section-desc">Manage your password and account access.</p>
+
+                <div className="settings-field">
+                  <div className="settings-field-label-block">
+                    <div className="settings-field-label">Current password</div>
+                  </div>
+                  <input className="settings-input" type="password" placeholder="••••••••" />
+                </div>
+
+                <div className="settings-field">
+                  <div className="settings-field-label-block">
+                    <div className="settings-field-label">New password</div>
+                  </div>
+                  <input className="settings-input" type="password" placeholder="••••••••" />
+                </div>
+
+                <div className="settings-field settings-field-row">
+                  <div className="settings-field-label-block">
+                    <div className="settings-field-label">Two-factor authentication</div>
+                    <div className="settings-field-hint">Add an extra layer of security to your account</div>
+                  </div>
+                  <ToggleSwitch checked={false} onChange={() => {}} />
+                </div>
+              </>
+            )}
+
+            {activeSection === "language" && (
+              <>
+                <div className="settings-section-title">Language & Region</div>
+                <p className="settings-section-desc">Choose the language you'd like Unexa displayed in.</p>
+
+                <div className="settings-field">
+                  <div className="settings-field-label-block">
+                    <div className="settings-field-label">Display language</div>
+                  </div>
+                  <select className="settings-input" value={language} onChange={e => setLanguage(e.target.value)}>
+                    <option>English</option>
+                    <option>Українська</option>
+                    <option>Español</option>
+                    <option>Français</option>
+                  </select>
+                </div>
+              </>
+            )}
+          </div>
+        </div>
+
+        <div className="settings-footer">
+          <button className="filter-clear-btn" onClick={onClose}>Cancel</button>
+          <button className="filter-save-btn" onClick={onClose}>Save changes</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function Profile({ savedUniversities, onToggleSave, avatarUrl, coverUrl, onAvatarChange, onCoverChange }) {
   const [activeTab, setActiveTab] = useState("saved");
+  const [showSettings, setShowSettings] = useState(false);
+  const [name, setName] = useState("Kateryna Dmytrenko");
+  const [bio, setBio] = useState(
+    "Passionate about art and design education. Exploring universities across Europe to find the perfect program. Currently focused on fine arts and digital media."
+  );
   const avatarInputRef = useRef(null);
   const coverInputRef = useRef(null);
 
@@ -105,18 +326,16 @@ export default function Profile({ savedUniversities, onToggleSave, avatarUrl, co
             />
           </div>
           <div className="profile-info">
-            <div className="profile-name">Kateryna Dmytrenko</div>
-            <div className="profile-bio">
-              Passionate about art and design education. Exploring universities across Europe to find the perfect program. Currently focused on fine arts and digital media.
-            </div>
+            <div className="profile-name">{name}</div>
+            <div className="profile-bio">{bio}</div>
           </div>
         </div>
-        <button className="profile-settings-btn">
+        <button className="profile-settings-btn" onClick={() => setShowSettings(true)}>
+          Settings
           <svg className="profile-settings-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <circle cx="12" cy="12" r="3" />
             <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
           </svg>
-          Settings
         </button>
       </div>
 
@@ -185,6 +404,18 @@ export default function Profile({ savedUniversities, onToggleSave, avatarUrl, co
           </div>
         )}
       </div>
+
+      {showSettings && (
+        <SettingsPanel
+          onClose={() => setShowSettings(false)}
+          avatarUrl={avatarUrl}
+          onAvatarChange={onAvatarChange}
+          name={name}
+          setName={setName}
+          bio={bio}
+          setBio={setBio}
+        />
+      )}
     </div>
   );
 }
