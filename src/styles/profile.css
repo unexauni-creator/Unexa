@@ -17,6 +17,7 @@
 .profile-settings-btn {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 8px;
   padding: 12px 22px;
   background: #634F44;
@@ -26,8 +27,10 @@
   font-family: 'Nunito', sans-serif;
   font-size: 14px;
   font-weight: 700;
+  line-height: 1;
   cursor: pointer;
   transition: background 0.18s;
+  margin-top: 42px;
 }
 .profile-settings-btn:hover { background: #4e3d35; }
 .profile-settings-icon { width: 16px; height: 16px; color: #F5F5F5; flex-shrink: 0; }
