@@ -227,7 +227,7 @@ function SearchDropdown({ search, setSearch, onSelect, recentSearches, setRecent
   );
 }
 
-export default function Home({ onSelectUni }) {
+export default function Home({ onSelectUni, savedUniversities, onToggleSave }) {
   const [search, setSearch] = useState("");
   const [searchFocused, setSearchFocused] = useState(false);
   const [recentSearches, setRecentSearches] = useState(["Art Design", "France", "Master"]);
@@ -235,7 +235,6 @@ export default function Home({ onSelectUni }) {
   const [showNotif, setShowNotif] = useState(false);
   const [filters, setFilters] = useState(DEFAULT_FILTERS);
   const [appliedFilters, setAppliedFilters] = useState(DEFAULT_FILTERS);
-  const [savedUnis, setSavedUnis] = useState([]);
   const [toast, setToast] = useState(null);
   const searchRef = useRef(null);
 
@@ -260,14 +259,11 @@ export default function Home({ onSelectUni }) {
 
   function toggleSave(e, uni) {
     e.stopPropagation();
-    setSavedUnis(prev => {
-      const isSaved = prev.includes(uni.id);
-      if (isSaved) {
-        return prev.filter(id => id !== uni.id);
-      }
+    const isSaved = savedUniversities.some(u => u.id === uni.id);
+    onToggleSave(uni);
+    if (!isSaved) {
       setToast(`${uni.name} saved to profile`);
-      return [...prev, uni.id];
-    });
+    }
   }
 
   function removeTag(key, value) {
@@ -378,7 +374,7 @@ export default function Home({ onSelectUni }) {
 
       <div className="uni-grid">
         {filtered.length > 0 ? filtered.map(uni => {
-          const isSaved = savedUnis.includes(uni.id);
+          const isSaved = savedUniversities.some(u => u.id === uni.id);
           return (
             <div key={uni.id} className="uni-card-new" onClick={() => onSelectUni(uni)}>
               <img src={uni.image} alt={uni.name} className="uni-card-img" />

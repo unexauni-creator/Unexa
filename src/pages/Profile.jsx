@@ -1,11 +1,5 @@
 import { useState } from "react";
 
-const savedUniversities = [
-  { id: 1, name: "Aix-Marseille Université", desc: "Marseille, France", image: "https://madeinmarseille.net/actualites-marseille/2019/04/Cube-campus-aix.jpeg" },
-  { id: 2, name: "Université Bordeaux-Montaigne", desc: "Bordeaux, France", image: "https://upload.wikimedia.org/wikipedia/commons/8/8f/Ijba_iut_montaigne_bordeaux.jpg" },
-  { id: 3, name: "Université Rennes 2", desc: "Rennes, France", image: "https://upload.wikimedia.org/wikipedia/commons/thumb/2/29/Batiments_de_nuits_-Univ_Rennes_2_-_Louis_Arretche.jpg/330px-Batiments_de_nuits_-Univ_Rennes_2_-_Louis_Arretche.jpg" },
-];
-
 const appliedUniversities = [
   { id: 4, name: "Université de Nîmes", desc: "Nîmes, France", status: "In Review", image: "https://upload.wikimedia.org/wikipedia/commons/1/16/Scines_nimes.jpg" },
   { id: 5, name: "Université Jean-Monnet", desc: "Loire, France", status: "Submitted", image: "https://www.univ-st-etienne.fr/_richText-file/ametys-internal%253Asites/ujm/ametys-internal%253Acontents/plans-d-acces-2/_attribute/content/_data/Campus-Trefilerie-Pierre-Grasset.jpg" },
@@ -18,7 +12,7 @@ const STATUS_COLORS = {
   "Rejected": { bg: "rgba(200,100,100,0.15)", color: "#c05050" },
 };
 
-export default function Profile() {
+export default function Profile({ savedUniversities, onToggleSave }) {
   const [activeTab, setActiveTab] = useState("saved");
 
   return (
@@ -56,32 +50,47 @@ export default function Profile() {
 
       {/* Tabs */}
       <div className="profile-tabs">
-        <button className={`profile-tab ${activeTab === "saved" ? "active" : ""}`} onClick={() => setActiveTab("saved")}>Saved Universities</button>
+        <button className={`profile-tab ${activeTab === "saved" ? "active" : ""}`} onClick={() => setActiveTab("saved")}>
+          Saved Universities
+          {savedUniversities.length > 0 && <span className="community-tab-count">{savedUniversities.length}</span>}
+        </button>
         <button className={`profile-tab ${activeTab === "applied" ? "active" : ""}`} onClick={() => setActiveTab("applied")}>Applied</button>
       </div>
 
       {/* Content */}
       <div className="profile-content">
         {activeTab === "saved" && (
-          <div className="uni-grid">
-            {savedUniversities.map(uni => (
-              <div key={uni.id} className="uni-card-new">
-                <img src={uni.image} alt={uni.name} className="uni-card-img" />
-                <div className="uni-card-glass">
-                  <div className="uni-card-glass-blur" />
-                  <div className="uni-card-text">
-                    <div className="uni-card-title">{uni.name}</div>
-                    <div className="uni-card-subtitle">{uni.desc}</div>
+          savedUniversities.length > 0 ? (
+            <div className="uni-grid">
+              {savedUniversities.map(uni => (
+                <div key={uni.id} className="uni-card-new">
+                  <img src={uni.image} alt={uni.name} className="uni-card-img" />
+                  <div className="uni-card-glass">
+                    <div className="uni-card-glass-blur" />
+                    <div className="uni-card-text">
+                      <div className="uni-card-title">{uni.name}</div>
+                      <div className="uni-card-subtitle">{uni.desc}</div>
+                    </div>
+                    <button
+                      className="uni-card-save saved"
+                      onClick={e => { e.stopPropagation(); onToggleSave(uni); }}
+                      aria-label="Remove from profile"
+                    >
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" strokeWidth="2">
+                        <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" />
+                      </svg>
+                    </button>
                   </div>
-                  <button className="uni-card-save">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="white" stroke="white" strokeWidth="2">
-                      <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" />
-                    </svg>
-                  </button>
                 </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          ) : (
+            <div className="compare-empty">
+              <div className="compare-empty-icon">🔖</div>
+              <div className="compare-empty-title">No saved universities yet</div>
+              <div className="compare-empty-desc">Go to Home and tap the bookmark icon on any university card to save it here.</div>
+            </div>
+          )
         )}
 
         {activeTab === "applied" && (
