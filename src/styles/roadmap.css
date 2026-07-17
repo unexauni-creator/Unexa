@@ -28,41 +28,41 @@
   position: relative;
   background: rgba(239,239,239,0.72);
   border-radius: 16px;
-  padding: 56px 32px 20px;
+  padding: 64px 32px 24px;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 16px;
 }
-.roadmap-wave-svg { width: 100%; height: 200px; overflow: visible; }
+.roadmap-wave-svg { width: 100%; height: 280px; overflow: visible; }
 .roadmap-wave-path { stroke: #C4956A; opacity: 0.6; }
 .roadmap-wave-stem { stroke: rgba(172,136,118,0.3); stroke-width: 1.5; stroke-dasharray: 3 3; }
 .roadmap-wave-dot { fill: #ffffff; stroke: #AC8876; stroke-width: 3; cursor: pointer; transition: r 0.15s; }
 .roadmap-wave-dot.active { fill: #AC8876; stroke: #634F44; }
 
+/* Left is now clamped between 12% and 88% in JS, so this never overflows */
 .roadmap-wave-callout {
   position: absolute;
-  transform: translate(-50%, -100%);
-  margin-top: -14px;
+  top: 24px;
+  transform: translateX(-50%);
   background: #634F44;
   color: white;
-  padding: 8px 16px;
-  border-radius: 12px;
+  padding: 12px 20px;
+  border-radius: 14px;
   text-align: center;
   white-space: nowrap;
   pointer-events: none;
-  box-shadow: 0 6px 18px rgba(0,0,0,0.18);
-  max-width: calc(100vw - 64px);
+  box-shadow: 0 8px 22px rgba(0,0,0,0.2);
 }
-.roadmap-wave-callout-year { font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 11px; opacity: 0.75; }
-.roadmap-wave-callout-title { font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 14px; white-space: normal; }
+.roadmap-wave-callout-year { font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 13px; opacity: 0.75; }
+.roadmap-wave-callout-title { font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 17px; }
 
-.roadmap-wave-month-axis { position: relative; height: 20px; }
+.roadmap-wave-month-axis { position: relative; height: 24px; }
 .roadmap-wave-month-item {
   position: absolute;
   transform: translateX(-50%);
   font-family: 'Nunito', sans-serif;
   font-weight: 500;
-  font-size: 12px;
+  font-size: 14px;
   color: #c4b8ae;
   white-space: nowrap;
   transition: color 0.15s;
@@ -71,40 +71,41 @@
 .roadmap-wave-month-item.active { color: #634F44; font-weight: 700; }
 
 .roadmap-side-card {
-  flex: 0 0 220px;
+  flex: 0 0 240px;
   background: rgba(239,239,239,0.72);
   border-radius: 16px;
-  padding: 24px;
+  padding: 28px;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 14px;
+  gap: 16px;
   text-align: center;
 }
-.roadmap-side-title { font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 16px; color: rgba(43,31,24,0.96); }
-.roadmap-side-icon { font-size: 44px; }
-.roadmap-side-stage { font-family: 'Nunito', sans-serif; font-weight: 600; font-size: 14px; color: #6b5e56; }
+.roadmap-side-title { font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 18px; color: rgba(43,31,24,0.96); }
+.roadmap-side-icon { font-size: 52px; }
+.roadmap-side-stage { font-family: 'Nunito', sans-serif; font-weight: 600; font-size: 15px; color: #6b5e56; }
 
 .roadmap-bottom-card {
   background: rgba(239,239,239,0.72);
   border-radius: 16px;
-  padding: 20px 24px;
+  padding: 24px 28px;
   display: flex;
   flex-direction: column;
-  gap: 6px;
-  max-width: 480px;
+  gap: 8px;
+  max-width: 560px;
 }
-.roadmap-bottom-label { font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 16px; color: rgba(43,31,24,0.96); }
-.roadmap-bottom-value { font-family: 'Nunito', sans-serif; font-size: 14px; color: #6b5e56; line-height: 1.6; }
+.roadmap-bottom-label { font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 18px; color: rgba(43,31,24,0.96); }
+.roadmap-bottom-value { font-family: 'Nunito', sans-serif; font-size: 15px; color: #6b5e56; line-height: 1.7; }
 
 /* ── Tablet ── */
 @media (min-width: 769px) and (max-width: 1024px) {
   .roadmap-page { padding: 0 24px 40px; }
   .roadmap-top-row { gap: 16px; }
-  .roadmap-side-card { flex: 0 0 180px; padding: 20px; }
-  .roadmap-side-icon { font-size: 36px; }
-  .roadmap-wave-box { padding: 52px 24px 18px; }
+  .roadmap-side-card { flex: 0 0 200px; padding: 22px; }
+  .roadmap-side-icon { font-size: 40px; }
+  .roadmap-wave-box { padding: 56px 24px 20px; }
+  .roadmap-wave-svg { height: 240px; }
 }
 
 /* ── Mobile ── */
@@ -124,20 +125,20 @@
 
   .roadmap-top-row { flex-direction: column; gap: 16px; }
 
-  .roadmap-wave-box { padding: 40px 12px 14px; border-radius: 14px; }
-  .roadmap-wave-svg { height: 150px; }
+  .roadmap-wave-box { padding: 48px 12px 16px; border-radius: 14px; }
+  .roadmap-wave-svg { height: 190px; }
 
   /* Hide non-marker month labels — 12 labels don't fit on narrow screens */
   .roadmap-wave-month-item:not(.marker) { display: none; }
-  .roadmap-wave-month-item { font-size: 10px; }
+  .roadmap-wave-month-item { font-size: 11px; }
 
-  .roadmap-wave-callout { padding: 6px 12px; }
+  .roadmap-wave-callout { padding: 8px 14px; top: 12px; }
   .roadmap-wave-callout-year { font-size: 10px; }
-  .roadmap-wave-callout-title { font-size: 12px; }
+  .roadmap-wave-callout-title { font-size: 13px; }
 
   .roadmap-side-card { flex: 1; flex-direction: row; padding: 16px; gap: 12px; text-align: left; justify-content: flex-start; }
   .roadmap-side-title { font-size: 14px; }
-  .roadmap-side-icon { font-size: 28px; }
+  .roadmap-side-icon { font-size: 30px; }
   .roadmap-side-stage { font-size: 13px; }
 
   .roadmap-bottom-card { padding: 16px 18px; max-width: 100%; }
@@ -148,7 +149,7 @@
 /* ── Small mobile ── */
 @media (max-width: 420px) {
   .roadmap-title { font-size: 20px; }
-  .roadmap-wave-svg { height: 130px; }
-  .roadmap-wave-box { padding: 36px 8px 12px; }
+  .roadmap-wave-svg { height: 160px; }
+  .roadmap-wave-box { padding: 44px 8px 14px; }
   .roadmap-side-card { flex-direction: column; text-align: center; align-items: center; }
 }

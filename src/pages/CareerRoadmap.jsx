@@ -62,6 +62,12 @@ function getCalendarYear(yearIndex) {
   return CURRENT_YEAR + yearIndex;
 }
 
+// Clamp the callout's horizontal position so it never overflows the box,
+// regardless of which dot (even the first/last) is active.
+function clampPercent(pct, min = 12, max = 88) {
+  return Math.min(max, Math.max(min, pct));
+}
+
 export default function CareerRoadmap() {
   const [activeYear, setActiveYear] = useState(0);
   const [activeMonth, setActiveMonth] = useState(0);
@@ -74,6 +80,9 @@ export default function CareerRoadmap() {
     setActiveYear(i);
     setActiveMonth(0);
   }
+
+  const rawPct = (WAVE_X[activeMonth] / 980) * 100;
+  const calloutLeftPct = clampPercent(rawPct);
 
   return (
     <div className="roadmap-page">
@@ -106,7 +115,7 @@ export default function CareerRoadmap() {
                   <circle
                     cx={WAVE_X[i]}
                     cy={points[i]}
-                    r={i === activeMonth ? 11 : 7}
+                    r={i === activeMonth ? 12 : 8}
                     className={`roadmap-wave-dot ${i === activeMonth ? "active" : ""}`}
                     onClick={() => setActiveMonth(i)}
                   />
@@ -116,10 +125,7 @@ export default function CareerRoadmap() {
 
             <div
               className="roadmap-wave-callout"
-              style={{
-                left: `${(WAVE_X[activeMonth] / 980) * 100}%`,
-                top: `${(points[activeMonth] / 260) * 100}%`,
-              }}
+              style={{ left: `${calloutLeftPct}%` }}
             >
               <div className="roadmap-wave-callout-year">{MONTHS[activeMonth]} {currentCalendarYear}</div>
               <div className="roadmap-wave-callout-title">{current.title}</div>
