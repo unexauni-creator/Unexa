@@ -30,7 +30,7 @@
   transition: background 0.18s;
 }
 .profile-settings-btn:hover { background: #4e3d35; }
-.profile-settings-icon { width: 16px; height: 16px; filter: brightness(0) invert(1); }
+.profile-settings-icon { width: 16px; height: 16px; color: #F5F5F5; flex-shrink: 0; }
 
 .profile-tabs { display: flex; gap: 0; padding: 20px 32px 0; border-bottom: 2px solid #e8e2da; margin-top: 16px; }
 .profile-tab { padding: 10px 20px; font-family: 'Nunito', sans-serif; font-size: 15px; font-weight: 500; color: #9e8f86; background: none; border: none; border-bottom: 2px solid transparent; margin-bottom: -2px; cursor: pointer; transition: all 0.18s; }
