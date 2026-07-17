@@ -14,10 +14,26 @@
 .detail-tab { padding: 10px 20px; font-family: 'Nunito', sans-serif; font-size: 15px; font-weight: 400; color: #000; background: rgba(208,208,208,0.2); border: none; border-radius: 10px 10px 0 0; cursor: pointer; transition: background 0.18s; }
 .detail-tab.active { background: #AC8876; color: #fff; }
 
-.detail-content { height: auto; overflow-y: visible; flex-shrink: 0; background: rgba(208, 208, 208, 0.20); backdrop-filter: blur(24px) saturate(180%); -webkit-backdrop-filter: blur(24px) saturate(180%); border-radius: 0 24px 24px 24px; padding: 40px 20px; display: flex; flex-direction: column; gap: 32px; scrollbar-width: thin; scrollbar-color: rgba(172, 136, 118, 0.4) transparent; }
+.detail-content {
+  height: 780px;
+  overflow-y: auto;
+  flex-shrink: 0;
+  background: rgba(208, 208, 208, 0.20);
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  border-radius: 0 24px 24px 24px;
+  padding: 40px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(172, 136, 118, 0.4) transparent;
+}
 .detail-content::-webkit-scrollbar { width: 6px; }
 .detail-content::-webkit-scrollbar-track { background: transparent; }
 .detail-content::-webkit-scrollbar-thumb { background: rgba(172, 136, 118, 0.4); border-radius: 6px; }
+
+.detail-hero-save.saved { color: #ffffff; }
 
 .detail-hero { display: flex; flex-direction: row; gap: 24px; align-items: flex-start; }
 .detail-hero-left { flex: 1; display: flex; flex-direction: column; gap: 16px; }

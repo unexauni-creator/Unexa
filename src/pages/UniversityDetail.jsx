@@ -50,16 +50,23 @@ const DEFAULT_CURRICULUM = [
   },
 ];
 
-export default function UniversityDetail({ uni, onBack }) {
+export default function UniversityDetail({ uni, onBack, savedUniversities = [], onToggleSave }) {
   const [activeTab, setActiveTab] = useState("info");
   const [compareMsg, setCompareMsg] = useState(false);
   const navigate = useNavigate();
 
   if (!uni) return null;
 
+  const isSaved = savedUniversities.some(u => u.id === uni.id);
+
   function handleCompare() {
     setCompareMsg(true);
     setTimeout(() => setCompareMsg(false), 5000);
+  }
+
+  function handleToggleSave(e) {
+    e.stopPropagation();
+    onToggleSave?.(uni);
   }
 
   return (
@@ -114,8 +121,12 @@ export default function UniversityDetail({ uni, onBack }) {
                     <div className="detail-hero-card-title">{uni.name}</div>
                     <div className="detail-hero-card-subtitle">{uni.desc}</div>
                   </div>
-                  <button className="detail-hero-save" onClick={e => e.stopPropagation()}>
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2">
+                  <button
+                    className={`detail-hero-save ${isSaved ? "saved" : ""}`}
+                    onClick={handleToggleSave}
+                    aria-label={isSaved ? "Remove from profile" : "Save to profile"}
+                  >
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill={isSaved ? "currentColor" : "none"} stroke="currentColor" strokeWidth="2">
                       <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" />
                     </svg>
                   </button>

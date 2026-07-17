@@ -83,8 +83,7 @@
   transition: background 0.18s, transform 0.12s;
 }
 .uni-card-save:hover { background: rgba(255,255,255,0.22); transform: scale(1.06); }
-.uni-card-save.saved { background: #AC8876; }
-.uni-card-save.saved:hover { background: #9a7664; }
+.uni-card-save.saved { color: #ffffff; }
 
 /* Toast confirmation */
 .save-toast {
