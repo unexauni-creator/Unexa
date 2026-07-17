@@ -1,45 +1,54 @@
 .profile-page { display: flex; flex-direction: column; }
 
 /* Cover */
-.profile-cover { position: relative; margin: 24px 32px 0; height: 200px; border-radius: 20px; overflow: hidden; cursor: pointer; background: #e8e2da; }
+.profile-cover { position: relative; margin: 24px 32px 0; height: 200px; border-radius: 20px; overflow: hidden; background: #e8e2da; }
 .profile-cover-img { width: 100%; height: 100%; object-fit: cover; object-position: center top; display: block; }
-
 .profile-cover-empty { background: #e8e2da; }
-.profile-cover-empty .profile-cover-overlay {
-  opacity: 1;
-  background: transparent;
-  color: #9e8f86;
-}
-.profile-cover-empty:hover { background: #ded6cb; }
-.profile-cover-empty:hover .profile-cover-overlay { color: #634F44; }
 
-.profile-cover-overlay {
+.profile-cover-actions {
   position: absolute;
-  inset: 0;
-  background: rgba(20,16,12,0.45);
+  bottom: 16px;
+  right: 16px;
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
   gap: 8px;
-  color: #ffffff;
-  font-family: 'Nunito', sans-serif;
-  font-size: 14px;
-  font-weight: 600;
   opacity: 0;
-  transition: opacity 0.18s, color 0.18s;
+  transition: opacity 0.18s;
 }
-.profile-cover:not(.profile-cover-empty):hover .profile-cover-overlay { opacity: 1; }
+.profile-cover:hover .profile-cover-actions,
+.profile-cover-empty .profile-cover-actions { opacity: 1; }
 
-/* Info row */
-.profile-info-row { display: flex; align-items: flex-start; justify-content: space-between; padding: 0 32px; margin-top: -36px; gap: 16px; }
-.profile-left { display: flex; align-items: flex-start; gap: 20px; flex: 1; }
+.profile-photo-action-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  background: rgba(20,16,12,0.65);
+  color: #ffffff;
+  border: none;
+  border-radius: 10px;
+  font-family: 'Nunito', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.18s;
+  backdrop-filter: blur(6px);
+}
+.profile-photo-action-btn:hover { background: rgba(20,16,12,0.85); }
+.profile-photo-action-remove:hover { background: rgba(180,60,50,0.85); }
 
-/* Avatar — fixed 84x84 box for both photo and placeholder, so they render identically */
+.profile-cover-empty .profile-photo-action-btn {
+  background: rgba(99,79,68,0.9);
+}
+.profile-cover-empty .profile-photo-action-btn:hover { background: #634F44; }
+
+/* Info row — more breathing room below the banner */
+.profile-info-row { display: flex; align-items: flex-start; justify-content: space-between; padding: 0 32px; margin-top: -20px; gap: 16px; }
+.profile-left { display: flex; align-items: flex-end; gap: 20px; flex: 1; }
+
+/* Avatar — no border/stroke, hover reveals change/remove buttons */
 .profile-avatar-wrap {
   position: relative;
   flex-shrink: 0;
-  cursor: pointer;
   width: 84px;
   height: 84px;
 }
@@ -48,14 +57,9 @@
   width: 84px;
   height: 84px;
   border-radius: 50%;
-  border: 4px solid #f0ece6;
   box-sizing: border-box;
   display: block;
   overflow: hidden;
-  transition: filter 0.18s;
-}
-.profile-avatar img.profile-avatar-img,
-img.profile-avatar {
   object-fit: cover;
 }
 
@@ -71,40 +75,37 @@ img.profile-avatar {
   line-height: 1;
 }
 
-.profile-avatar-wrap:hover .profile-avatar { filter: brightness(0.7); }
-
-.profile-avatar-overlay {
+.profile-avatar-actions {
   position: absolute;
-  inset: 4px;
+  inset: 0;
   border-radius: 50%;
-  background: rgba(20,16,12,0.35);
+  background: rgba(20,16,12,0.5);
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #ffffff;
+  gap: 6px;
   opacity: 0;
   transition: opacity 0.18s;
-  pointer-events: none;
 }
-.profile-avatar-wrap:hover .profile-avatar-overlay { opacity: 1; }
+.profile-avatar-wrap:hover .profile-avatar-actions { opacity: 1; }
 
-.profile-avatar-edit {
-  position: absolute;
-  bottom: -2px;
-  right: -2px;
+.profile-avatar-action-btn {
   width: 26px;
   height: 26px;
-  background: #AC8876;
   border-radius: 50%;
+  background: rgba(255,255,255,0.2);
+  color: #ffffff;
+  border: none;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 11px;
   cursor: pointer;
-  border: 2px solid #f0ece6;
+  transition: background 0.18s;
 }
+.profile-avatar-action-btn:hover { background: rgba(255,255,255,0.35); }
+.profile-avatar-action-remove:hover { background: rgba(200,70,60,0.75); }
 
-.profile-info { display: flex; flex-direction: column; gap: 6px; padding-top: 42px; }
+.profile-info { display: flex; flex-direction: column; gap: 6px; padding-bottom: 4px; }
 .profile-name { font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 20px; color: rgba(43,31,24,0.96); }
 .profile-bio { font-family: 'Nunito', sans-serif; font-size: 14px; color: #6b5e56; line-height: 1.6; max-width: 460px; }
 
@@ -124,13 +125,13 @@ img.profile-avatar {
   line-height: 1;
   cursor: pointer;
   transition: background 0.18s;
-  margin-top: 42px;
+  margin-top: 20px;
 }
 .profile-settings-btn:hover { background: #4e3d35; }
 .profile-settings-icon { width: 16px; height: 16px; color: #F5F5F5; flex-shrink: 0; }
 
-/* Pill-style tabs, matching UniversityDetail's Informations/Program tabs */
-.profile-tabs { display: flex; gap: 0; padding: 20px 32px 0; margin-top: 16px; }
+/* Tabs */
+.profile-tabs { display: flex; gap: 0; padding: 24px 32px 0; margin-top: 16px; }
 .profile-tab {
   padding: 10px 20px;
   font-family: 'Nunito', sans-serif;
@@ -170,10 +171,13 @@ img.profile-avatar {
 
 @media (max-width: 768px) {
   .profile-cover { margin: 16px 16px 0; height: 150px; }
-  .profile-info-row { flex-direction: column; padding: 0 16px; margin-top: -28px; }
+  .profile-cover-actions { opacity: 1; bottom: 12px; right: 12px; }
+  .profile-photo-action-btn { padding: 7px 10px; font-size: 12px; }
+  .profile-info-row { flex-direction: column; padding: 0 16px; margin-top: -16px; }
   .profile-settings-btn { margin-top: 8px; align-self: flex-start; }
-  .profile-left { flex-direction: column; gap: 10px; }
-  .profile-info { padding-top: 0; }
+  .profile-left { flex-direction: column; gap: 10px; align-items: flex-start; }
+  .profile-avatar-actions { opacity: 1; }
+  .profile-info { padding-bottom: 0; }
   .profile-tabs { padding: 16px 16px 0; }
   .profile-content { padding: 20px 16px 48px; }
   .profile-bio { max-width: 100%; }

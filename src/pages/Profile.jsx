@@ -29,19 +29,29 @@ export default function Profile({ savedUniversities, onToggleSave, avatarUrl, co
   return (
     <div className="profile-page">
 
-      {/* Cover — plain placeholder until a photo is uploaded, works from camera or gallery on mobile */}
-      <div
-        className={`profile-cover ${!coverUrl ? "profile-cover-empty" : ""}`}
-        onClick={() => coverInputRef.current?.click()}
-      >
+      {/* Cover */}
+      <div className={`profile-cover ${!coverUrl ? "profile-cover-empty" : ""}`}>
         {coverUrl && <img src={coverUrl} alt="Cover" className="profile-cover-img" />}
-        <div className="profile-cover-overlay">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" />
-            <circle cx="12" cy="13" r="4" />
-          </svg>
-          <span>{coverUrl ? "Change cover photo" : "Add cover photo"}</span>
+
+        <div className="profile-cover-actions">
+          <button className="profile-photo-action-btn" onClick={() => coverInputRef.current?.click()}>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M12 20h9" />
+              <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4Z" />
+            </svg>
+            {coverUrl ? "Change cover" : "Add cover photo"}
+          </button>
+          {coverUrl && (
+            <button className="profile-photo-action-btn profile-photo-action-remove" onClick={() => onCoverChange(null)}>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="3 6 5 6 21 6" />
+                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+              </svg>
+              Remove
+            </button>
+          )}
         </div>
+
         <input
           ref={coverInputRef}
           type="file"
@@ -54,19 +64,38 @@ export default function Profile({ savedUniversities, onToggleSave, avatarUrl, co
       {/* Profile info */}
       <div className="profile-info-row">
         <div className="profile-left">
-          <div className="profile-avatar-wrap" onClick={() => avatarInputRef.current?.click()}>
+          <div className="profile-avatar-wrap">
             {avatarUrl ? (
               <img src={avatarUrl} alt="Avatar" className="profile-avatar" />
             ) : (
               <div className="profile-avatar profile-avatar-placeholder">KD</div>
             )}
-            <div className="profile-avatar-overlay">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" />
-                <circle cx="12" cy="13" r="4" />
-              </svg>
+
+            <div className="profile-avatar-actions">
+              <button
+                className="profile-avatar-action-btn"
+                onClick={() => avatarInputRef.current?.click()}
+                aria-label="Change photo"
+              >
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M12 20h9" />
+                  <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4Z" />
+                </svg>
+              </button>
+              {avatarUrl && (
+                <button
+                  className="profile-avatar-action-btn profile-avatar-action-remove"
+                  onClick={() => onAvatarChange(null)}
+                  aria-label="Remove photo"
+                >
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <polyline points="3 6 5 6 21 6" />
+                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+                  </svg>
+                </button>
+              )}
             </div>
-            <div className="profile-avatar-edit">📷</div>
+
             <input
               ref={avatarInputRef}
               type="file"
@@ -91,7 +120,7 @@ export default function Profile({ savedUniversities, onToggleSave, avatarUrl, co
         </button>
       </div>
 
-      {/* Tabs — pill style */}
+      {/* Tabs */}
       <div className="profile-tabs">
         <button className={`profile-tab ${activeTab === "saved" ? "active" : ""}`} onClick={() => setActiveTab("saved")}>
           Saved Universities
