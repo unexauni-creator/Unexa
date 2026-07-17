@@ -12,9 +12,6 @@ const STATUS_COLORS = {
   "Rejected": { bg: "rgba(200,100,100,0.15)", color: "#c05050" },
 };
 
-const DEFAULT_COVER = "https://images.unsplash.com/photo-1562774053-701939374585?w=1200&q=80";
-const DEFAULT_AVATAR = "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200&q=80";
-
 export default function Profile({ savedUniversities, onToggleSave, avatarUrl, coverUrl, onAvatarChange, onCoverChange }) {
   const [activeTab, setActiveTab] = useState("saved");
   const avatarInputRef = useRef(null);
@@ -32,19 +29,18 @@ export default function Profile({ savedUniversities, onToggleSave, avatarUrl, co
   return (
     <div className="profile-page">
 
-      {/* Cover image — click/hover to change */}
-      <div className="profile-cover" onClick={() => coverInputRef.current?.click()}>
-        <img
-          src={coverUrl || DEFAULT_COVER}
-          alt="Cover"
-          className="profile-cover-img"
-        />
+      {/* Cover — plain placeholder until a photo is uploaded, works from camera or gallery on mobile */}
+      <div
+        className={`profile-cover ${!coverUrl ? "profile-cover-empty" : ""}`}
+        onClick={() => coverInputRef.current?.click()}
+      >
+        {coverUrl && <img src={coverUrl} alt="Cover" className="profile-cover-img" />}
         <div className="profile-cover-overlay">
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" />
             <circle cx="12" cy="13" r="4" />
           </svg>
-          <span>Change cover photo</span>
+          <span>{coverUrl ? "Change cover photo" : "Add cover photo"}</span>
         </div>
         <input
           ref={coverInputRef}
@@ -59,11 +55,11 @@ export default function Profile({ savedUniversities, onToggleSave, avatarUrl, co
       <div className="profile-info-row">
         <div className="profile-left">
           <div className="profile-avatar-wrap" onClick={() => avatarInputRef.current?.click()}>
-            <img
-              src={avatarUrl || DEFAULT_AVATAR}
-              alt="Avatar"
-              className="profile-avatar"
-            />
+            {avatarUrl ? (
+              <img src={avatarUrl} alt="Avatar" className="profile-avatar" />
+            ) : (
+              <div className="profile-avatar profile-avatar-placeholder">KD</div>
+            )}
             <div className="profile-avatar-overlay">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" />

@@ -1,3 +1,6 @@
+.avatar-img-photo {
+  object-fit: cover;
+}
 .sidebar { width: 240px; min-width: 240px; background: #D5D5D5; border-right: 1px solid #e8e2da; display: flex; flex-direction: column; padding: 48px 32px; }
 .logo { font-family: 'Anta', sans-serif; font-size: 24px; color: #2c2420; margin-bottom: 48px; }
 .nav-group { display: flex; flex-direction: column; gap: 24px; }

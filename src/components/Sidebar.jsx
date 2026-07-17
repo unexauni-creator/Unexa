@@ -8,7 +8,7 @@ const navItems = [
   { path: "/community", label: "Community", icon: "/messages.svg" },
 ];
 
-export default function Sidebar() {
+export default function Sidebar({ avatarUrl, userInitials = "KD", userName = "Kateryna Dmyt..." }) {
   const [menuOpen, setMenuOpen] = useState(false);
 
   return (
@@ -35,9 +35,13 @@ export default function Sidebar() {
 
         {/* Profile at bottom — clickable, goes to /profile */}
         <NavLink to="/profile" className="sidebar-bottom" style={{ textDecoration: "none" }}>
-  <div className="avatar-img">KD</div>
-  <div className="user-name">Kateryna Dmyt...</div>
-</NavLink>
+          {avatarUrl ? (
+            <img src={avatarUrl} alt="" className="avatar-img avatar-img-photo" />
+          ) : (
+            <div className="avatar-img">{userInitials}</div>
+          )}
+          <div className="user-name">{userName}</div>
+        </NavLink>
       </aside>
 
       {menuOpen && (
@@ -54,6 +58,14 @@ export default function Sidebar() {
               <span>{item.label}</span>
             </NavLink>
           ))}
+          <NavLink to="/profile" className="mobile-nav-item" onClick={() => setMenuOpen(false)}>
+            {avatarUrl ? (
+              <img src={avatarUrl} alt="" className="avatar-img avatar-img-photo" style={{ width: 20, height: 20 }} />
+            ) : (
+              <div className="avatar-img" style={{ width: 20, height: 20, fontSize: 9 }}>{userInitials}</div>
+            )}
+            <span>{userName}</span>
+          </NavLink>
         </div>
       )}
     </>
