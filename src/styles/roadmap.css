@@ -51,9 +51,10 @@
   white-space: nowrap;
   pointer-events: none;
   box-shadow: 0 6px 18px rgba(0,0,0,0.18);
+  max-width: calc(100vw - 64px);
 }
 .roadmap-wave-callout-year { font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 11px; opacity: 0.75; }
-.roadmap-wave-callout-title { font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 14px; }
+.roadmap-wave-callout-title { font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 14px; white-space: normal; }
 
 .roadmap-wave-month-axis { position: relative; height: 20px; }
 .roadmap-wave-month-item {
@@ -97,14 +98,57 @@
 .roadmap-bottom-label { font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 16px; color: rgba(43,31,24,0.96); }
 .roadmap-bottom-value { font-family: 'Nunito', sans-serif; font-size: 14px; color: #6b5e56; line-height: 1.6; }
 
+/* ── Tablet ── */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .roadmap-page { padding: 0 24px 40px; }
+  .roadmap-top-row { gap: 16px; }
+  .roadmap-side-card { flex: 0 0 180px; padding: 20px; }
+  .roadmap-side-icon { font-size: 36px; }
+  .roadmap-wave-box { padding: 52px 24px 18px; }
+}
+
+/* ── Mobile ── */
 @media (max-width: 768px) {
   .roadmap-page { padding: 0 16px 48px; }
-  .roadmap-tabs { overflow-x: auto; }
-  .roadmap-tab { font-size: 13px; padding: 8px 14px; white-space: nowrap; }
-  .roadmap-content { padding: 24px 16px; gap: 20px; }
-  .roadmap-top-row { flex-direction: column; }
-  .roadmap-side-card { flex: 1; }
-  .roadmap-wave-box { padding: 44px 16px 16px; }
-  .roadmap-wave-svg { height: 170px; }
+
+  .roadmap-header { padding: 16px 0 16px; }
+  .roadmap-title { font-size: 22px; }
+  .roadmap-subtitle { font-size: 13px; }
+  .roadmap-subtitle br { display: none; }
+
+  .roadmap-tabs { overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
+  .roadmap-tabs::-webkit-scrollbar { display: none; }
+  .roadmap-tab { font-size: 13px; padding: 8px 14px; white-space: nowrap; flex-shrink: 0; }
+
+  .roadmap-content { padding: 20px 14px; gap: 16px; border-radius: 0 18px 18px 18px; }
+
+  .roadmap-top-row { flex-direction: column; gap: 16px; }
+
+  .roadmap-wave-box { padding: 40px 12px 14px; border-radius: 14px; }
+  .roadmap-wave-svg { height: 150px; }
+
+  /* Hide non-marker month labels — 12 labels don't fit on narrow screens */
+  .roadmap-wave-month-item:not(.marker) { display: none; }
   .roadmap-wave-month-item { font-size: 10px; }
+
+  .roadmap-wave-callout { padding: 6px 12px; }
+  .roadmap-wave-callout-year { font-size: 10px; }
+  .roadmap-wave-callout-title { font-size: 12px; }
+
+  .roadmap-side-card { flex: 1; flex-direction: row; padding: 16px; gap: 12px; text-align: left; justify-content: flex-start; }
+  .roadmap-side-title { font-size: 14px; }
+  .roadmap-side-icon { font-size: 28px; }
+  .roadmap-side-stage { font-size: 13px; }
+
+  .roadmap-bottom-card { padding: 16px 18px; max-width: 100%; }
+  .roadmap-bottom-label { font-size: 15px; }
+  .roadmap-bottom-value { font-size: 13px; }
+}
+
+/* ── Small mobile ── */
+@media (max-width: 420px) {
+  .roadmap-title { font-size: 20px; }
+  .roadmap-wave-svg { height: 130px; }
+  .roadmap-wave-box { padding: 36px 8px 12px; }
+  .roadmap-side-card { flex-direction: column; text-align: center; align-items: center; }
 }
