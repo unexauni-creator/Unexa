@@ -51,13 +51,21 @@ export default function App() {
 
   useEffect(() => {
     try {
-      if (avatarUrl) localStorage.setItem(AVATAR_KEY, avatarUrl);
+      if (avatarUrl) {
+        localStorage.setItem(AVATAR_KEY, avatarUrl);
+      } else {
+        localStorage.removeItem(AVATAR_KEY);
+      }
     } catch {}
   }, [avatarUrl]);
 
   useEffect(() => {
     try {
-      if (coverUrl) localStorage.setItem(COVER_KEY, coverUrl);
+      if (coverUrl) {
+        localStorage.setItem(COVER_KEY, coverUrl);
+      } else {
+        localStorage.removeItem(COVER_KEY);
+      }
     } catch {}
   }, [coverUrl]);
 
@@ -81,7 +89,12 @@ export default function App() {
       <Sidebar avatarUrl={avatarUrl} userInitials="KD" userName="Kateryna Dmyt..." />
       <main className="main">
         {selectedUni ? (
-          <UniversityDetail uni={selectedUni} onBack={() => setSelectedUni(null)} />
+          <UniversityDetail
+            uni={selectedUni}
+            onBack={() => setSelectedUni(null)}
+            savedUniversities={savedUniversities}
+            onToggleSave={toggleSaveUni}
+          />
         ) : (
           <Routes>
             <Route
