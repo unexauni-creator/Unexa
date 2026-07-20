@@ -33,7 +33,7 @@ function ToggleSwitch({ checked, onChange }) {
   );
 }
 
-function SettingsPanel({ onClose, avatarUrl, onAvatarChange, name, setName, bio, setBio }) {
+function SettingsPanel({ onClose, avatarUrl, onAvatarChange, coverUrl, onCoverChange, name, setName, bio, setBio }) {
   const [activeSection, setActiveSection] = useState("profile");
   const [email, setEmail] = useState("kateryna.dmytrenko@example.com");
   const [phone, setPhone] = useState("");
@@ -42,6 +42,7 @@ function SettingsPanel({ onClose, avatarUrl, onAvatarChange, name, setName, bio,
   const [notifTips, setNotifTips] = useState(false);
   const [language, setLanguage] = useState("English");
   const avatarInputRef = useRef(null);
+  const bannerInputRef = useRef(null);
 
   function handleAvatarSelect(e) {
     const file = e.target.files?.[0];
@@ -52,12 +53,40 @@ function SettingsPanel({ onClose, avatarUrl, onAvatarChange, name, setName, bio,
     e.target.value = "";
   }
 
+  function handleBannerSelect(e) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => onCoverChange(reader.result);
+    reader.readAsDataURL(file);
+    e.target.value = "";
+  }
+
   return (
-    <div className="filter-backdrop" onClick={onClose}>
+    <div className="settings-backdrop" onClick={onClose}>
       <div className="settings-panel" onClick={e => e.stopPropagation()}>
         <div className="settings-header">
           <span className="filter-title">Settings</span>
           <button className="filter-close-btn" onClick={onClose}>✕</button>
+        </div>
+
+        {/* Banner */}
+        <div className={`settings-banner ${!coverUrl ? "settings-banner-empty" : ""}`} onClick={() => bannerInputRef.current?.click()}>
+          {coverUrl && <img src={coverUrl} alt="Cover" className="settings-banner-img" />}
+          <div className="settings-banner-action">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M12 20h9" />
+              <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4Z" />
+            </svg>
+            {coverUrl ? "Change banner" : "Add banner"}
+          </div>
+          <input
+            ref={bannerInputRef}
+            type="file"
+            accept="image/*"
+            style={{ display: "none" }}
+            onChange={handleBannerSelect}
+          />
         </div>
 
         <div className="settings-body">
@@ -410,6 +439,8 @@ export default function Profile({ savedUniversities, onToggleSave, avatarUrl, co
           onClose={() => setShowSettings(false)}
           avatarUrl={avatarUrl}
           onAvatarChange={onAvatarChange}
+          coverUrl={coverUrl}
+          onCoverChange={onCoverChange}
           name={name}
           setName={setName}
           bio={bio}
