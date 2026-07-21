@@ -31,8 +31,8 @@ const MILESTONES = [
 const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 const MARKER_INDICES = [0, 2, 4, 6, 8, 10]; // 6 clickable month markers: Jan, Mar, May, Jul, Sep, Nov
 
-const CHART_LEFT = 90;
-const CHART_RIGHT = 890;
+const CHART_LEFT = 0;
+const CHART_RIGHT = 980;
 const CHART_STEP = (CHART_RIGHT - CHART_LEFT) / (MONTHS.length - 1);
 const WAVE_X = MONTHS.map((_, i) => CHART_LEFT + i * CHART_STEP);
 
