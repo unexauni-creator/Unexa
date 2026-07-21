@@ -12,6 +12,7 @@ import Profile from "./pages/Profile";
 import "./styles/base.css";
 import "./styles/community.css";
 import "./styles/landing.css";
+import "./styles/profile.css";
 
 const SAVED_UNIS_KEY = "unexa_saved_universities";
 const AVATAR_KEY = "unexa_profile_avatar";
