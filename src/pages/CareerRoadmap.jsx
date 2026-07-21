@@ -29,28 +29,44 @@ const MILESTONES = [
 ];
 
 const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-const MARKER_INDICES = [0, 2, 4, 6, 8, 10]; // 6 markers: Jan, Mar, May, Jul, Sep, Nov
+const MARKER_INDICES = [0, 2, 4, 6, 8, 10]; // 6 clickable month markers: Jan, Mar, May, Jul, Sep, Nov
 
 const CHART_LEFT = 90;
 const CHART_RIGHT = 890;
 const CHART_STEP = (CHART_RIGHT - CHART_LEFT) / (MONTHS.length - 1);
 const WAVE_X = MONTHS.map((_, i) => CHART_LEFT + i * CHART_STEP);
 
+// Finer curve resolution: 4 points per month (48 total across the year)
+// so the wave has noticeably more steps/detail than one point per month.
+const STEPS_PER_MONTH = 4;
+const TOTAL_STEPS = (MONTHS.length - 1) * STEPS_PER_MONTH + 1;
+const FINE_X = Array.from({ length: TOTAL_STEPS }, (_, i) => {
+  const t = i / (TOTAL_STEPS - 1);
+  return CHART_LEFT + t * (CHART_RIGHT - CHART_LEFT);
+});
+
 function getYearPoints(yearIndex) {
   const baseY = 170 - yearIndex * 14;
-  return MONTHS.map((_, m) => {
-    const trend = (m / (MONTHS.length - 1)) * 50;
-    const wobble = Math.sin((m / (MONTHS.length - 1)) * Math.PI * 2.4 + yearIndex) * 22;
-    return baseY - trend + wobble;
+  return FINE_X.map((_, i) => {
+    const t = i / (TOTAL_STEPS - 1);
+    const trend = t * 50;
+    const wobble = Math.sin(t * Math.PI * 2.4 + yearIndex) * 22;
+    const microStep = Math.sin(t * Math.PI * 16 + yearIndex * 2) * 3; // extra small steps
+    return baseY - trend + wobble + microStep;
   });
 }
 
+// Map a month index (0-11) to its corresponding index in the fine point array
+function monthToFineIndex(monthIndex) {
+  return monthIndex * STEPS_PER_MONTH;
+}
+
 function buildWavePath(points) {
-  let d = `M ${WAVE_X[0]} ${points[0]}`;
-  for (let i = 0; i < WAVE_X.length - 1; i++) {
-    const x1 = WAVE_X[i] + (WAVE_X[i + 1] - WAVE_X[i]) / 2;
+  let d = `M ${FINE_X[0]} ${points[0]}`;
+  for (let i = 0; i < FINE_X.length - 1; i++) {
+    const x1 = FINE_X[i] + (FINE_X[i + 1] - FINE_X[i]) / 2;
     const x2 = x1;
-    d += ` C ${x1} ${points[i]}, ${x2} ${points[i + 1]}, ${WAVE_X[i + 1]} ${points[i + 1]}`;
+    d += ` C ${x1} ${points[i]}, ${x2} ${points[i + 1]}, ${FINE_X[i + 1]} ${points[i + 1]}`;
   }
   return d;
 }
@@ -62,8 +78,6 @@ function getCalendarYear(yearIndex) {
   return CURRENT_YEAR + yearIndex;
 }
 
-// Clamp the callout's horizontal position so it never overflows the box,
-// regardless of which dot (even the first/last) is active.
 function clampPercent(pct, min = 12, max = 88) {
   return Math.min(max, Math.max(min, pct));
 }
@@ -71,6 +85,7 @@ function clampPercent(pct, min = 12, max = 88) {
 export default function CareerRoadmap() {
   const [activeYear, setActiveYear] = useState(0);
   const [activeMonth, setActiveMonth] = useState(0);
+  const [hoveredMonth, setHoveredMonth] = useState(null);
 
   const current = MILESTONES[activeYear];
   const currentCalendarYear = getCalendarYear(activeYear);
@@ -79,9 +94,12 @@ export default function CareerRoadmap() {
   function handleYearChange(i) {
     setActiveYear(i);
     setActiveMonth(0);
+    setHoveredMonth(null);
   }
 
-  const rawPct = (WAVE_X[activeMonth] / 980) * 100;
+  const calloutMonth = hoveredMonth;
+  const calloutFineIdx = calloutMonth !== null ? monthToFineIndex(calloutMonth) : null;
+  const rawPct = calloutMonth !== null ? (WAVE_X[calloutMonth] / 980) * 100 : 0;
   const calloutLeftPct = clampPercent(rawPct);
 
   return (
@@ -107,28 +125,48 @@ export default function CareerRoadmap() {
 
         <div className="roadmap-top-row">
           <div className="roadmap-wave-box">
-            <svg className="roadmap-wave-svg" viewBox="0 0 980 260" preserveAspectRatio="xMidYMid meet">
-              <path d={buildWavePath(points)} className="roadmap-wave-path" fill="none" strokeWidth="4" />
-              {MARKER_INDICES.map(i => (
-                <g key={i}>
-                  <line x1={WAVE_X[i]} y1={points[i]} x2={WAVE_X[i]} y2={points[i] - 40} className="roadmap-wave-stem" />
-                  <circle
-                    cx={WAVE_X[i]}
-                    cy={points[i]}
-                    r={i === activeMonth ? 12 : 8}
-                    className={`roadmap-wave-dot ${i === activeMonth ? "active" : ""}`}
-                    onClick={() => setActiveMonth(i)}
-                  />
-                </g>
-              ))}
-            </svg>
 
-            <div
-              className="roadmap-wave-callout"
-              style={{ left: `${calloutLeftPct}%` }}
-            >
-              <div className="roadmap-wave-callout-year">{MONTHS[activeMonth]} {currentCalendarYear}</div>
-              <div className="roadmap-wave-callout-title">{current.title}</div>
+            <div className="roadmap-wave-top">
+              <div className="roadmap-wave-top-title">Your Career Roadmap</div>
+              <button className="roadmap-test-btn" onClick={() => alert("Career quiz coming soon!")}>
+                Take the test
+              </button>
+            </div>
+
+            <div className="roadmap-wave-graph-wrap">
+              <svg className="roadmap-wave-svg" viewBox="0 0 980 180" preserveAspectRatio="xMidYMid meet">
+                <path d={buildWavePath(points)} className="roadmap-wave-path" fill="none" strokeWidth="4" />
+                {MARKER_INDICES.map(i => {
+                  const fineIdx = monthToFineIndex(i);
+                  return (
+                    <g
+                      key={i}
+                      onMouseEnter={() => setHoveredMonth(i)}
+                      onMouseLeave={() => setHoveredMonth(null)}
+                      onClick={() => setActiveMonth(i)}
+                      style={{ cursor: "pointer" }}
+                    >
+                      <line x1={WAVE_X[i]} y1={points[fineIdx]} x2={WAVE_X[i]} y2={points[fineIdx] - 30} className="roadmap-wave-stem" />
+                      <circle
+                        cx={WAVE_X[i]}
+                        cy={points[fineIdx]}
+                        r={i === activeMonth ? 11 : 7}
+                        className={`roadmap-wave-dot ${i === activeMonth ? "active" : ""} ${i === hoveredMonth ? "hovered" : ""}`}
+                      />
+                    </g>
+                  );
+                })}
+              </svg>
+
+              {calloutMonth !== null && (
+                <div
+                  className="roadmap-wave-callout"
+                  style={{ left: `${calloutLeftPct}%` }}
+                >
+                  <div className="roadmap-wave-callout-year">{MONTHS[calloutMonth]} {currentCalendarYear}</div>
+                  <div className="roadmap-wave-callout-title">{current.title}</div>
+                </div>
+              )}
             </div>
 
             <div className="roadmap-wave-month-axis">
@@ -137,6 +175,8 @@ export default function CareerRoadmap() {
                   key={i}
                   className={`roadmap-wave-month-item ${MARKER_INDICES.includes(i) ? "marker" : ""} ${i === activeMonth ? "active" : ""}`}
                   style={{ left: `${(WAVE_X[i] / 980) * 100}%` }}
+                  onMouseEnter={() => MARKER_INDICES.includes(i) && setHoveredMonth(i)}
+                  onMouseLeave={() => setHoveredMonth(null)}
                   onClick={() => MARKER_INDICES.includes(i) && setActiveMonth(i)}
                 >
                   {m}
@@ -146,9 +186,19 @@ export default function CareerRoadmap() {
           </div>
 
           <div className="roadmap-side-card">
-            <div className="roadmap-side-title">Career Focus</div>
-            <div className="roadmap-side-icon">🎯</div>
+            <div className="roadmap-side-header">
+              <span className="roadmap-side-icon">🎯</span>
+              <div className="roadmap-side-title">Career Focus</div>
+            </div>
+
             <div className="roadmap-side-stage">{current.stage}</div>
+
+            <div className="roadmap-side-progress">
+              {MILESTONES.map((_, i) => (
+                <span key={i} className={`roadmap-side-progress-dot ${i <= activeYear ? "filled" : ""} ${i === activeYear ? "current" : ""}`} />
+              ))}
+            </div>
+            <div className="roadmap-side-progress-label">Year {activeYear + 1} of {MILESTONES.length}</div>
           </div>
         </div>
 
