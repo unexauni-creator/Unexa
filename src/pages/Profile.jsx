@@ -96,12 +96,6 @@ function SettingsPage({ onClose, avatarUrl, onAvatarChange, coverUrl, onCoverCha
         ) : (
           <div className="settings-avatar-overlap-placeholder">KD</div>
         )}
-        <div className="settings-avatar-camera-badge">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" />
-            <circle cx="12" cy="13" r="4" />
-          </svg>
-        </div>
         <input
           ref={avatarInputRef}
           type="file"
@@ -111,153 +105,150 @@ function SettingsPage({ onClose, avatarUrl, onAvatarChange, coverUrl, onCoverCha
         />
       </div>
 
-      <div className="settings-page-body">
-        <div className="settings-page-nav">
-          {SETTINGS_SECTIONS.map(s => (
-            <button
-              key={s.id}
-              className={`settings-nav-item ${activeSection === s.id ? "active" : ""}`}
-              onClick={() => setActiveSection(s.id)}
-            >
-              {s.label}
-            </button>
-          ))}
-          <div className="settings-nav-spacer" />
-          <button className="settings-nav-logout" onClick={onLogout}>
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
-              <polyline points="16 17 21 12 16 7" />
-              <line x1="21" y1="12" x2="9" y2="12" />
-            </svg>
-            Log out
+      <div className="settings-page-nav">
+        {SETTINGS_SECTIONS.map(s => (
+          <button
+            key={s.id}
+            className={`settings-nav-item ${activeSection === s.id ? "active" : ""}`}
+            onClick={() => setActiveSection(s.id)}
+          >
+            {s.label}
           </button>
-        </div>
+        ))}
+        <button className="settings-nav-logout" onClick={onLogout}>
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+            <polyline points="16 17 21 12 16 7" />
+            <line x1="21" y1="12" x2="9" y2="12" />
+          </svg>
+          Log out
+        </button>
+      </div>
 
-        <div className="settings-page-content">
-          {activeSection === "profile" && (
-            <>
-              <div className="settings-field">
-                <div className="settings-field-label-block">
-                  <div className="settings-field-label">Full name</div>
-                </div>
-                <input className="settings-input" value={name} onChange={e => setName(e.target.value)} />
+      <div className="settings-page-content">
+        {activeSection === "profile" && (
+          <>
+            <div className="settings-field">
+              <div className="settings-field-label-block">
+                <div className="settings-field-label">Full name</div>
               </div>
+              <input className="settings-input" value={name} onChange={e => setName(e.target.value)} />
+            </div>
 
-              <div className="settings-field">
-                <div className="settings-field-label-block">
-                  <div className="settings-field-label">Email</div>
-                </div>
-                <input className="settings-input" type="email" value={email} onChange={e => setEmail(e.target.value)} />
+            <div className="settings-field">
+              <div className="settings-field-label-block">
+                <div className="settings-field-label">Email</div>
               </div>
+              <input className="settings-input" type="email" value={email} onChange={e => setEmail(e.target.value)} />
+            </div>
 
-              <div className="settings-field">
-                <div className="settings-field-label-block">
-                  <div className="settings-field-label">Bio</div>
-                  <div className="settings-field-hint">A short line about you and what you're looking for</div>
-                </div>
-                <textarea className="settings-input settings-textarea" value={bio} onChange={e => setBio(e.target.value)} rows={4} />
+            <div className="settings-field">
+              <div className="settings-field-label-block">
+                <div className="settings-field-label">Bio</div>
+                <div className="settings-field-hint">A short line about you and what you're looking for</div>
               </div>
+              <textarea className="settings-input settings-textarea" value={bio} onChange={e => setBio(e.target.value)} rows={4} />
+            </div>
 
-              <div className="settings-field">
-                <div className="settings-field-label-block">
-                  <div className="settings-field-label">Phone number</div>
-                  <div className="settings-field-hint">Optional</div>
-                </div>
-                <input className="settings-input" type="tel" placeholder="+33 6 12 34 56 78" value={phone} onChange={e => setPhone(e.target.value)} />
+            <div className="settings-field">
+              <div className="settings-field-label-block">
+                <div className="settings-field-label">Phone number</div>
+                <div className="settings-field-hint">Optional</div>
               </div>
+              <input className="settings-input" type="tel" placeholder="+33 6 12 34 56 78" value={phone} onChange={e => setPhone(e.target.value)} />
+            </div>
 
-              <div className="settings-page-actions">
-                <button className="filter-clear-btn" onClick={onClose}>Cancel</button>
-                <button className="filter-save-btn" onClick={onClose}>Save</button>
-              </div>
-            </>
-          )}
+            <div className="settings-page-actions">
+              <button className="filter-clear-btn" onClick={onClose}>Cancel</button>
+              <button className="filter-save-btn" onClick={onClose}>Save</button>
+            </div>
+          </>
+        )}
 
-          {activeSection === "notifications" && (
-            <>
-              <div className="settings-field settings-field-row">
-                <div className="settings-field-label-block">
-                  <div className="settings-field-label">New universities</div>
-                  <div className="settings-field-hint">Get notified when a new university joins Unexa</div>
-                </div>
-                <ToggleSwitch checked={notifNewUni} onChange={setNotifNewUni} />
+        {activeSection === "notifications" && (
+          <>
+            <div className="settings-field settings-field-row">
+              <div className="settings-field-label-block">
+                <div className="settings-field-label">New universities</div>
+                <div className="settings-field-hint">Get notified when a new university joins Unexa</div>
               </div>
+              <ToggleSwitch checked={notifNewUni} onChange={setNotifNewUni} />
+            </div>
 
-              <div className="settings-field settings-field-row">
-                <div className="settings-field-label-block">
-                  <div className="settings-field-label">Application deadlines</div>
-                  <div className="settings-field-hint">Reminders before saved programs close applications</div>
-                </div>
-                <ToggleSwitch checked={notifDeadlines} onChange={setNotifDeadlines} />
+            <div className="settings-field settings-field-row">
+              <div className="settings-field-label-block">
+                <div className="settings-field-label">Application deadlines</div>
+                <div className="settings-field-hint">Reminders before saved programs close applications</div>
               </div>
+              <ToggleSwitch checked={notifDeadlines} onChange={setNotifDeadlines} />
+            </div>
 
-              <div className="settings-field settings-field-row">
-                <div className="settings-field-label-block">
-                  <div className="settings-field-label">Tips & suggestions</div>
-                  <div className="settings-field-hint">Occasional tips to improve your profile and matches</div>
-                </div>
-                <ToggleSwitch checked={notifTips} onChange={setNotifTips} />
+            <div className="settings-field settings-field-row">
+              <div className="settings-field-label-block">
+                <div className="settings-field-label">Tips & suggestions</div>
+                <div className="settings-field-hint">Occasional tips to improve your profile and matches</div>
               </div>
+              <ToggleSwitch checked={notifTips} onChange={setNotifTips} />
+            </div>
 
-              <div className="settings-page-actions">
-                <button className="filter-clear-btn" onClick={onClose}>Cancel</button>
-                <button className="filter-save-btn" onClick={onClose}>Save</button>
-              </div>
-            </>
-          )}
+            <div className="settings-page-actions">
+              <button className="filter-clear-btn" onClick={onClose}>Cancel</button>
+              <button className="filter-save-btn" onClick={onClose}>Save</button>
+            </div>
+          </>
+        )}
 
-          {activeSection === "security" && (
-            <>
-              <div className="settings-field">
-                <div className="settings-field-label-block">
-                  <div className="settings-field-label">Current password</div>
-                </div>
-                <input className="settings-input" type="password" placeholder="••••••••" />
+        {activeSection === "security" && (
+          <>
+            <div className="settings-field">
+              <div className="settings-field-label-block">
+                <div className="settings-field-label">Current password</div>
               </div>
+              <input className="settings-input" type="password" placeholder="••••••••" />
+            </div>
 
-              <div className="settings-field">
-                <div className="settings-field-label-block">
-                  <div className="settings-field-label">New password</div>
-                </div>
-                <input className="settings-input" type="password" placeholder="••••••••" />
+            <div className="settings-field">
+              <div className="settings-field-label-block">
+                <div className="settings-field-label">New password</div>
               </div>
+              <input className="settings-input" type="password" placeholder="••••••••" />
+            </div>
 
-              <div className="settings-field settings-field-row">
-                <div className="settings-field-label-block">
-                  <div className="settings-field-label">Two-factor authentication</div>
-                  <div className="settings-field-hint">Add an extra layer of security to your account</div>
-                </div>
-                <ToggleSwitch checked={false} onChange={() => {}} />
+            <div className="settings-field settings-field-row">
+              <div className="settings-field-label-block">
+                <div className="settings-field-label">Two-factor authentication</div>
+                <div className="settings-field-hint">Add an extra layer of security to your account</div>
               </div>
+              <ToggleSwitch checked={false} onChange={() => {}} />
+            </div>
 
-              <div className="settings-page-actions">
-                <button className="filter-clear-btn" onClick={onClose}>Cancel</button>
-                <button className="filter-save-btn" onClick={onClose}>Save</button>
-              </div>
-            </>
-          )}
+            <div className="settings-page-actions">
+              <button className="filter-clear-btn" onClick={onClose}>Cancel</button>
+              <button className="filter-save-btn" onClick={onClose}>Save</button>
+            </div>
+          </>
+        )}
 
-          {activeSection === "language" && (
-            <>
-              <div className="settings-field">
-                <div className="settings-field-label-block">
-                  <div className="settings-field-label">Display language</div>
-                </div>
-                <select className="settings-input" value={language} onChange={e => setLanguage(e.target.value)}>
-                  <option>English</option>
-                  <option>Українська</option>
-                  <option>Español</option>
-                  <option>Français</option>
-                </select>
+        {activeSection === "language" && (
+          <>
+            <div className="settings-field">
+              <div className="settings-field-label-block">
+                <div className="settings-field-label">Display language</div>
               </div>
+              <select className="settings-input" value={language} onChange={e => setLanguage(e.target.value)}>
+                <option>English</option>
+                <option>Українська</option>
+                <option>Español</option>
+                <option>Français</option>
+              </select>
+            </div>
 
-              <div className="settings-page-actions">
-                <button className="filter-clear-btn" onClick={onClose}>Cancel</button>
-                <button className="filter-save-btn" onClick={onClose}>Save</button>
-              </div>
-            </>
-          )}
-        </div>
+            <div className="settings-page-actions">
+              <button className="filter-clear-btn" onClick={onClose}>Cancel</button>
+              <button className="filter-save-btn" onClick={onClose}>Save</button>
+            </div>
+          </>
+        )}
       </div>
     </div>
   );
