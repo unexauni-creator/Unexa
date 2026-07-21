@@ -33,7 +33,7 @@ function ToggleSwitch({ checked, onChange }) {
   );
 }
 
-function SettingsPanel({ onClose, avatarUrl, onAvatarChange, coverUrl, onCoverChange, name, setName, bio, setBio }) {
+function SettingsPanel({ onClose, avatarUrl, onAvatarChange, coverUrl, onCoverChange, name, setName, bio, setBio, onLogout }) {
   const [activeSection, setActiveSection] = useState("profile");
   const [email, setEmail] = useState("kateryna.dmytrenko@example.com");
   const [phone, setPhone] = useState("");
@@ -70,7 +70,6 @@ function SettingsPanel({ onClose, avatarUrl, onAvatarChange, coverUrl, onCoverCh
           <button className="filter-close-btn" onClick={onClose}>✕</button>
         </div>
 
-        {/* Banner */}
         <div className={`settings-banner ${!coverUrl ? "settings-banner-empty" : ""}`} onClick={() => bannerInputRef.current?.click()}>
           {coverUrl && <img src={coverUrl} alt="Cover" className="settings-banner-img" />}
           <div className="settings-banner-action">
@@ -100,6 +99,10 @@ function SettingsPanel({ onClose, avatarUrl, onAvatarChange, coverUrl, onCoverCh
                 {s.label}
               </button>
             ))}
+            <div className="settings-nav-spacer" />
+            <button className="settings-nav-logout" onClick={onLogout}>
+              Log out
+            </button>
           </div>
 
           <div className="settings-content">
@@ -257,10 +260,10 @@ function SettingsPanel({ onClose, avatarUrl, onAvatarChange, coverUrl, onCoverCh
   );
 }
 
-export default function Profile({ savedUniversities, onToggleSave, avatarUrl, coverUrl, onAvatarChange, onCoverChange }) {
+export default function Profile({ savedUniversities, onToggleSave, avatarUrl, coverUrl, onAvatarChange, onCoverChange, userName, onLogout }) {
   const [activeTab, setActiveTab] = useState("saved");
   const [showSettings, setShowSettings] = useState(false);
-  const [name, setName] = useState("Kateryna Dmytrenko");
+  const [name, setName] = useState(userName || "Kateryna Dmytrenko");
   const [bio, setBio] = useState(
     "Passionate about art and design education. Exploring universities across Europe to find the perfect program. Currently focused on fine arts and digital media."
   );
@@ -279,7 +282,6 @@ export default function Profile({ savedUniversities, onToggleSave, avatarUrl, co
   return (
     <div className="profile-page">
 
-      {/* Cover */}
       <div className={`profile-cover ${!coverUrl ? "profile-cover-empty" : ""}`}>
         {coverUrl && <img src={coverUrl} alt="Cover" className="profile-cover-img" />}
 
@@ -311,7 +313,6 @@ export default function Profile({ savedUniversities, onToggleSave, avatarUrl, co
         />
       </div>
 
-      {/* Profile info */}
       <div className="profile-info-row">
         <div className="profile-left">
           <div className="profile-avatar-wrap">
@@ -359,16 +360,18 @@ export default function Profile({ savedUniversities, onToggleSave, avatarUrl, co
             <div className="profile-bio">{bio}</div>
           </div>
         </div>
-        <button className="profile-settings-btn" onClick={() => setShowSettings(true)}>
-          Settings
-          <svg className="profile-settings-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <circle cx="12" cy="12" r="3" />
-            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
-          </svg>
-        </button>
+        <div className="profile-header-actions">
+          <button className="profile-settings-btn" onClick={() => setShowSettings(true)}>
+            Settings
+            <svg className="profile-settings-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="12" cy="12" r="3" />
+              <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
+            </svg>
+          </button>
+          <button className="profile-logout-btn" onClick={onLogout}>Log out</button>
+        </div>
       </div>
 
-      {/* Tabs */}
       <div className="profile-tabs">
         <button className={`profile-tab ${activeTab === "saved" ? "active" : ""}`} onClick={() => setActiveTab("saved")}>
           Saved Universities
@@ -377,7 +380,6 @@ export default function Profile({ savedUniversities, onToggleSave, avatarUrl, co
         <button className={`profile-tab ${activeTab === "applied" ? "active" : ""}`} onClick={() => setActiveTab("applied")}>Applied</button>
       </div>
 
-      {/* Content */}
       <div className="profile-content">
         {activeTab === "saved" && (
           savedUniversities.length > 0 ? (
@@ -445,6 +447,7 @@ export default function Profile({ savedUniversities, onToggleSave, avatarUrl, co
           setName={setName}
           bio={bio}
           setBio={setBio}
+          onLogout={onLogout}
         />
       )}
     </div>

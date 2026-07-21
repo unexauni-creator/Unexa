@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
-import { Routes, Route, useLocation } from "react-router-dom";
+import { Routes, Route, useLocation, useNavigate } from "react-router-dom";
 import Sidebar from "./components/Sidebar";
+import Landing from "./pages/Landing";
+import Login from "./pages/Login";
 import Home from "./pages/Home";
 import Dashboard from "./pages/Dashboard";
 import CareerRoadmap from "./pages/CareerRoadmap";
@@ -9,14 +11,26 @@ import UniversityDetail from "./pages/UniversityDetail";
 import Profile from "./pages/Profile";
 import "./styles/base.css";
 import "./styles/community.css";
+import "./styles/landing.css";
 
 const SAVED_UNIS_KEY = "unexa_saved_universities";
 const AVATAR_KEY = "unexa_profile_avatar";
 const COVER_KEY = "unexa_profile_cover";
+const AUTH_KEY = "unexa_auth_user";
 
 export default function App() {
   const [selectedUni, setSelectedUni] = useState(null);
   const location = useLocation();
+  const navigate = useNavigate();
+
+  const [authUser, setAuthUser] = useState(() => {
+    try {
+      const stored = localStorage.getItem(AUTH_KEY);
+      return stored ? JSON.parse(stored) : null;
+    } catch {
+      return null;
+    }
+  });
 
   const [savedUniversities, setSavedUniversities] = useState(() => {
     try {
@@ -69,9 +83,6 @@ export default function App() {
     } catch {}
   }, [coverUrl]);
 
-  // Selecting a university never changes the URL itself — only sidebar
-  // navigation (NavLink) does. So any time the route changes, it means the
-  // person navigated away via the sidebar, and the detail overlay should close.
   useEffect(() => {
     setSelectedUni(null);
   }, [location.pathname]);
@@ -84,9 +95,39 @@ export default function App() {
     );
   }
 
+  function handleLogin(user) {
+    setAuthUser(user);
+    try {
+      localStorage.setItem(AUTH_KEY, JSON.stringify(user));
+    } catch {}
+  }
+
+  function handleLogout() {
+    setAuthUser(null);
+    try {
+      localStorage.removeItem(AUTH_KEY);
+    } catch {}
+    navigate("/landing");
+  }
+
+  // ── Logged out: only Landing and Login are reachable ──
+  if (!authUser) {
+    return (
+      <Routes>
+        <Route path="/login" element={<Login onLogin={handleLogin} />} />
+        <Route path="*" element={<Landing />} />
+      </Routes>
+    );
+  }
+
+  // ── Logged in: full app ──
+  const userInitials = authUser.name
+    ? authUser.name.split(" ").map(w => w[0]).slice(0, 2).join("").toUpperCase()
+    : "U";
+
   return (
     <div className="app">
-      <Sidebar avatarUrl={avatarUrl} userInitials="KD" userName="Kateryna Dmyt..." />
+      <Sidebar avatarUrl={avatarUrl} userInitials={userInitials} userName={authUser.name} />
       <main className="main">
         {selectedUni ? (
           <UniversityDetail
@@ -120,9 +161,12 @@ export default function App() {
                   coverUrl={coverUrl}
                   onAvatarChange={setAvatarUrl}
                   onCoverChange={setCoverUrl}
+                  userName={authUser.name}
+                  onLogout={handleLogout}
                 />
               }
             />
+            <Route path="*" element={<Home onSelectUni={setSelectedUni} savedUniversities={savedUniversities} onToggleSave={toggleSaveUni} />} />
           </Routes>
         )}
       </main>
