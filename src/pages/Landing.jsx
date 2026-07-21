@@ -29,6 +29,38 @@ const HERO_IMAGES = [
   "https://upload.wikimedia.org/wikipedia/commons/thumb/2/29/Batiments_de_nuits_-Univ_Rennes_2_-_Louis_Arretche.jpg/330px-Batiments_de_nuits_-Univ_Rennes_2_-_Louis_Arretche.jpg",
 ];
 
+const JOURNEY = [
+  {
+    mark: "①",
+    title: "Browse the map",
+    desc: "Explore 50+ design and art programs across Europe, filtered by country, tuition, and language.",
+  },
+  {
+    mark: "②",
+    title: "Shortlist & compare",
+    desc: "Pin up to 4 favorites to your dashboard and line up deadlines, scholarships, and requirements.",
+  },
+  {
+    mark: "③",
+    title: "Get your roadmap",
+    desc: "Receive a personalized 5-year plan so you know exactly what to prepare, and when.",
+  },
+];
+
+const UNIVERSITIES = [
+  { code: "CH", name: "ECAL", loc: "Lausanne, Switzerland", tag: "Product Design", color: "#B5654F" },
+  { code: "NL", name: "Design Academy Eindhoven", loc: "Eindhoven, Netherlands", tag: "Contextual Design", color: "#7C9070" },
+  { code: "UK", name: "Central Saint Martins", loc: "London, United Kingdom", tag: "Fashion & Textiles", color: "#AC8876" },
+  { code: "IT", name: "Politecnico di Milano", loc: "Milan, Italy", tag: "Communication Design", color: "#C4956A" },
+];
+
+const STATS = [
+  { number: "50+", label: "Universities", caption: "Design & art programs tracked across Europe" },
+  { number: "12", label: "Countries", caption: "From Lisbon to Helsinki" },
+  { number: "300+", label: "Scholarships", caption: "Funding options mapped to each program" },
+  { number: "5 yr", label: "Roadmaps", caption: "A plan built around your timeline" },
+];
+
 export default function Landing() {
   const navigate = useNavigate();
 
@@ -42,6 +74,7 @@ export default function Landing() {
         </div>
       </header>
 
+      {/* ── Hero ── */}
       <section className="landing-hero">
         <div className="landing-hero-text">
           <div className="landing-hero-eyebrow">Design & Art Education, Simplified</div>
@@ -95,6 +128,7 @@ export default function Landing() {
         </div>
       </section>
 
+      {/* ── Features ── */}
       <section className="landing-features">
         {FEATURES.map(f => (
           <div className="landing-feature-card" key={f.title}>
@@ -105,8 +139,100 @@ export default function Landing() {
         ))}
       </section>
 
+      {/* ── How it works ── */}
+      <section className="landing-journey">
+        <div className="landing-section-head">
+          <span className="landing-eyebrow">The Journey</span>
+          <h2 className="landing-section-title">From shortlist to acceptance letter</h2>
+        </div>
+        <div className="landing-journey-path">
+          {JOURNEY.map(step => (
+            <div className="landing-journey-step" key={step.title}>
+              <div className="landing-journey-connector" />
+              <div className="landing-journey-stamp">{step.mark}</div>
+              <div className="landing-journey-step-title">{step.title}</div>
+              <div className="landing-journey-step-desc">{step.desc}</div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* ── Featured universities ── */}
+      <section className="landing-universities">
+        <div className="landing-section-head">
+          <span className="landing-eyebrow">Where Students Are Headed</span>
+          <h2 className="landing-section-title">A few favorites on the map</h2>
+          <p className="landing-section-desc">
+            A small sample of the design and art programs students are comparing on Unexa right now.
+          </p>
+        </div>
+        <div className="landing-uni-grid">
+          {UNIVERSITIES.map(u => (
+            <div className="landing-uni-card" key={u.name}>
+              <div className="landing-uni-flag" style={{ background: u.color }}>{u.code}</div>
+              <div>
+                <div className="landing-uni-name">{u.name}</div>
+                <div className="landing-uni-loc">{u.loc}</div>
+              </div>
+              <div className="landing-uni-tag">{u.tag}</div>
+              <button className="landing-uni-link" onClick={() => navigate("/login?mode=signup")}>
+                View program →
+              </button>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* ── Stats ── */}
+      <section className="landing-stats">
+        <div className="landing-stats-row">
+          {STATS.map(s => (
+            <div className="landing-stat" key={s.label}>
+              <div className="landing-stat-circle">
+                <div className="landing-stat-number">{s.number}</div>
+                <div className="landing-stat-label">{s.label}</div>
+              </div>
+              <div className="landing-stat-caption">{s.caption}</div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* ── Testimonial ── */}
+      <section className="landing-testimonial">
+        <div className="landing-testimonial-card">
+          <div className="landing-testimonial-mark">”</div>
+          <p className="landing-testimonial-quote">
+            I had eleven tabs open comparing tuition and deadlines before I found Unexa.
+            Having it all in one dashboard is what actually got my applications in on time.
+          </p>
+          <div className="landing-testimonial-name">Elena M.</div>
+          <div className="landing-testimonial-role">Product Design applicant, ECAL</div>
+        </div>
+      </section>
+
+      {/* ── CTA ── */}
+      <section className="landing-cta">
+        <div className="landing-cta-panel">
+          <div className="landing-cta-ring" />
+          <h2 className="landing-cta-title">Your program is out there.</h2>
+          <p className="landing-cta-desc">
+            Start browsing design and art universities across Europe, and build the roadmap that gets you there.
+          </p>
+          <button className="landing-cta-btn" onClick={() => navigate("/login?mode=signup")}>
+            Get started free
+          </button>
+        </div>
+      </section>
+
       <footer className="landing-footer">
-        <span>© {new Date().getFullYear()} Unexa. All rights reserved.</span>
+        <div className="landing-footer-logo">Unexa</div>
+        <div className="landing-footer-links">
+          <a href="#">About</a>
+          <a href="#">Universities</a>
+          <a href="#">Contact</a>
+        </div>
+        <span className="landing-footer-copy">© {new Date().getFullYear()} Unexa. All rights reserved.</span>
       </footer>
     </div>
   );
