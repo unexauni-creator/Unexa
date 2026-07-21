@@ -1,3 +1,8 @@
+@media (max-width: 768px) {
+  .dash-narrow-wrap { max-width: 100%; }
+  .dash-table-cell { width: 220px; min-width: 220px; }
+}
+
 .dashboard-page { padding: 32px; display: flex; flex-direction: column; gap: 28px; }
 .dashboard-header { display: flex; flex-direction: column; gap: 4px; }
 .dash-title { font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 28px; color: #0F0F0F; }
@@ -76,4 +81,62 @@
   .dash-warning-btn { margin-left: 0; }
   .dash-tooltip { width: 240px; }
   .dash-desc-block { padding: 0; }
+}
+
+/* Table now hugs its content width instead of stretching to fill the page.
+   Fixed per-column width means 2 universities stay compact; 4 universities
+   scroll horizontally inside .dash-table-scroll rather than stretching cells. */
+.dash-table-scroll {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.dash-table {
+  display: inline-flex;
+  flex-direction: column;
+  width: fit-content;
+  min-width: 0;
+  background: rgba(208,208,208,0.20);
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  border-radius: 20px;
+  overflow: hidden;
+}
+
+.dash-table-label-cell {
+  width: 200px;
+  min-width: 200px;
+  flex-shrink: 0;
+  padding: 16px 20px;
+  font-family: 'Nunito', sans-serif;
+  font-weight: 700;
+  font-size: 14px;
+  color: rgba(43,31,24,0.96);
+  display: flex;
+  align-items: center;
+  border-right: 1px solid rgba(172,136,118,0.15);
+}
+
+.dash-table-cell {
+  width: 260px;
+  min-width: 260px;
+  flex: none;
+  padding: 16px 20px;
+  font-family: 'Nunito', sans-serif;
+  font-size: 14px;
+  color: rgba(43,31,24,0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  border-right: 1px solid rgba(172,136,118,0.15);
+}
+.dash-table-cell:last-child { border-right: none; }
+
+/* Narrow wrapper for the 1-university state — no longer stretches full width */
+.dash-narrow-wrap {
+  max-width: 640px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
 }
