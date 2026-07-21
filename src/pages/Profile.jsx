@@ -13,10 +13,10 @@ const STATUS_COLORS = {
 };
 
 const SETTINGS_SECTIONS = [
-  { id: "profile", label: "Profile" },
+  { id: "profile", label: "Edit profile" },
   { id: "notifications", label: "Notifications" },
-  { id: "security", label: "Security & Access" },
-  { id: "language", label: "Language & Region" },
+  { id: "security", label: "Security" },
+  { id: "language", label: "Languages" },
 ];
 
 function ToggleSwitch({ checked, onChange }) {
@@ -33,7 +33,7 @@ function ToggleSwitch({ checked, onChange }) {
   );
 }
 
-function SettingsPanel({ onClose, avatarUrl, onAvatarChange, coverUrl, onCoverChange, name, setName, bio, setBio, onLogout }) {
+function SettingsPage({ onClose, avatarUrl, onAvatarChange, coverUrl, onCoverChange, name, setName, bio, setBio, onLogout }) {
   const [activeSection, setActiveSection] = useState("profile");
   const [email, setEmail] = useState("kateryna.dmytrenko@example.com");
   const [phone, setPhone] = useState("");
@@ -63,197 +63,200 @@ function SettingsPanel({ onClose, avatarUrl, onAvatarChange, coverUrl, onCoverCh
   }
 
   return (
-    <div className="settings-backdrop" onClick={onClose}>
-      <div className="settings-panel" onClick={e => e.stopPropagation()}>
-        <div className="settings-header">
-          <span className="filter-title">Settings</span>
-          <button className="filter-close-btn" onClick={onClose}>✕</button>
-        </div>
+    <div className="settings-page">
+      <button className="settings-back-btn" onClick={onClose}>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <line x1="19" y1="12" x2="5" y2="12" />
+          <polyline points="12 19 5 12 12 5" />
+        </svg>
+        Back to profile
+      </button>
 
-        <div className={`settings-banner ${!coverUrl ? "settings-banner-empty" : ""}`} onClick={() => bannerInputRef.current?.click()}>
-          {coverUrl && <img src={coverUrl} alt="Cover" className="settings-banner-img" />}
-          <div className="settings-banner-action">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M12 20h9" />
-              <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4Z" />
-            </svg>
-            {coverUrl ? "Change banner" : "Add banner"}
-          </div>
-          <input
-            ref={bannerInputRef}
-            type="file"
-            accept="image/*"
-            style={{ display: "none" }}
-            onChange={handleBannerSelect}
-          />
+      <div className={`settings-banner ${!coverUrl ? "settings-banner-empty" : ""}`} onClick={() => bannerInputRef.current?.click()}>
+        {coverUrl && <img src={coverUrl} alt="Cover" className="settings-banner-img" />}
+        <div className="settings-banner-action">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M12 20h9" />
+            <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4Z" />
+          </svg>
+          {coverUrl ? "Change banner" : "Add banner"}
         </div>
+        <input
+          ref={bannerInputRef}
+          type="file"
+          accept="image/*"
+          style={{ display: "none" }}
+          onChange={handleBannerSelect}
+        />
+      </div>
 
-        <div className="settings-body">
-          <div className="settings-nav">
-            {SETTINGS_SECTIONS.map(s => (
-              <button
-                key={s.id}
-                className={`settings-nav-item ${activeSection === s.id ? "active" : ""}`}
-                onClick={() => setActiveSection(s.id)}
-              >
-                {s.label}
-              </button>
-            ))}
-            <div className="settings-nav-spacer" />
-            <button className="settings-nav-logout" onClick={onLogout}>
-              Log out
+      <div className="settings-avatar-overlap-wrap" onClick={() => avatarInputRef.current?.click()}>
+        {avatarUrl ? (
+          <img src={avatarUrl} alt="Avatar" className="settings-avatar-overlap-img" />
+        ) : (
+          <div className="settings-avatar-overlap-placeholder">KD</div>
+        )}
+        <div className="settings-avatar-camera-badge">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" />
+            <circle cx="12" cy="13" r="4" />
+          </svg>
+        </div>
+        <input
+          ref={avatarInputRef}
+          type="file"
+          accept="image/*"
+          style={{ display: "none" }}
+          onChange={handleAvatarSelect}
+        />
+      </div>
+
+      <div className="settings-page-body">
+        <div className="settings-page-nav">
+          {SETTINGS_SECTIONS.map(s => (
+            <button
+              key={s.id}
+              className={`settings-nav-item ${activeSection === s.id ? "active" : ""}`}
+              onClick={() => setActiveSection(s.id)}
+            >
+              {s.label}
             </button>
-          </div>
-
-          <div className="settings-content">
-            {activeSection === "profile" && (
-              <>
-                <div className="settings-section-title">Profile</div>
-                <p className="settings-section-desc">This is how others will see you across Unexa.</p>
-
-                <div className="settings-field settings-field-picture">
-                  <div className="settings-field-label-block">
-                    <div className="settings-field-label">Profile picture</div>
-                    <div className="settings-field-hint">Set or change your profile picture</div>
-                  </div>
-                  <div className="settings-avatar-wrap" onClick={() => avatarInputRef.current?.click()}>
-                    {avatarUrl ? (
-                      <img src={avatarUrl} alt="Avatar" className="settings-avatar-img" />
-                    ) : (
-                      <div className="settings-avatar-placeholder">KD</div>
-                    )}
-                    <div className="settings-avatar-overlay">
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                        <path d="M12 20h9" />
-                        <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4Z" />
-                      </svg>
-                    </div>
-                    <input
-                      ref={avatarInputRef}
-                      type="file"
-                      accept="image/*"
-                      style={{ display: "none" }}
-                      onChange={handleAvatarSelect}
-                    />
-                  </div>
-                </div>
-
-                <div className="settings-field">
-                  <div className="settings-field-label-block">
-                    <div className="settings-field-label">Full name</div>
-                  </div>
-                  <input className="settings-input" value={name} onChange={e => setName(e.target.value)} />
-                </div>
-
-                <div className="settings-field">
-                  <div className="settings-field-label-block">
-                    <div className="settings-field-label">Bio</div>
-                    <div className="settings-field-hint">A short line about you and what you're looking for</div>
-                  </div>
-                  <textarea className="settings-input settings-textarea" value={bio} onChange={e => setBio(e.target.value)} rows={3} />
-                </div>
-
-                <div className="settings-field">
-                  <div className="settings-field-label-block">
-                    <div className="settings-field-label">Email</div>
-                  </div>
-                  <input className="settings-input" type="email" value={email} onChange={e => setEmail(e.target.value)} />
-                </div>
-
-                <div className="settings-field">
-                  <div className="settings-field-label-block">
-                    <div className="settings-field-label">Phone number</div>
-                    <div className="settings-field-hint">Optional</div>
-                  </div>
-                  <input className="settings-input" type="tel" placeholder="+33 6 12 34 56 78" value={phone} onChange={e => setPhone(e.target.value)} />
-                </div>
-              </>
-            )}
-
-            {activeSection === "notifications" && (
-              <>
-                <div className="settings-section-title">Notifications</div>
-                <p className="settings-section-desc">Choose what you want to hear about.</p>
-
-                <div className="settings-field settings-field-row">
-                  <div className="settings-field-label-block">
-                    <div className="settings-field-label">New universities</div>
-                    <div className="settings-field-hint">Get notified when a new university joins Unexa</div>
-                  </div>
-                  <ToggleSwitch checked={notifNewUni} onChange={setNotifNewUni} />
-                </div>
-
-                <div className="settings-field settings-field-row">
-                  <div className="settings-field-label-block">
-                    <div className="settings-field-label">Application deadlines</div>
-                    <div className="settings-field-hint">Reminders before saved programs close applications</div>
-                  </div>
-                  <ToggleSwitch checked={notifDeadlines} onChange={setNotifDeadlines} />
-                </div>
-
-                <div className="settings-field settings-field-row">
-                  <div className="settings-field-label-block">
-                    <div className="settings-field-label">Tips & suggestions</div>
-                    <div className="settings-field-hint">Occasional tips to improve your profile and matches</div>
-                  </div>
-                  <ToggleSwitch checked={notifTips} onChange={setNotifTips} />
-                </div>
-              </>
-            )}
-
-            {activeSection === "security" && (
-              <>
-                <div className="settings-section-title">Security & Access</div>
-                <p className="settings-section-desc">Manage your password and account access.</p>
-
-                <div className="settings-field">
-                  <div className="settings-field-label-block">
-                    <div className="settings-field-label">Current password</div>
-                  </div>
-                  <input className="settings-input" type="password" placeholder="••••••••" />
-                </div>
-
-                <div className="settings-field">
-                  <div className="settings-field-label-block">
-                    <div className="settings-field-label">New password</div>
-                  </div>
-                  <input className="settings-input" type="password" placeholder="••••••••" />
-                </div>
-
-                <div className="settings-field settings-field-row">
-                  <div className="settings-field-label-block">
-                    <div className="settings-field-label">Two-factor authentication</div>
-                    <div className="settings-field-hint">Add an extra layer of security to your account</div>
-                  </div>
-                  <ToggleSwitch checked={false} onChange={() => {}} />
-                </div>
-              </>
-            )}
-
-            {activeSection === "language" && (
-              <>
-                <div className="settings-section-title">Language & Region</div>
-                <p className="settings-section-desc">Choose the language you'd like Unexa displayed in.</p>
-
-                <div className="settings-field">
-                  <div className="settings-field-label-block">
-                    <div className="settings-field-label">Display language</div>
-                  </div>
-                  <select className="settings-input" value={language} onChange={e => setLanguage(e.target.value)}>
-                    <option>English</option>
-                    <option>Українська</option>
-                    <option>Español</option>
-                    <option>Français</option>
-                  </select>
-                </div>
-              </>
-            )}
-          </div>
+          ))}
+          <div className="settings-nav-spacer" />
+          <button className="settings-nav-logout" onClick={onLogout}>
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+              <polyline points="16 17 21 12 16 7" />
+              <line x1="21" y1="12" x2="9" y2="12" />
+            </svg>
+            Log out
+          </button>
         </div>
 
-        <div className="settings-footer">
-          <button className="filter-clear-btn" onClick={onClose}>Cancel</button>
-          <button className="filter-save-btn" onClick={onClose}>Save changes</button>
+        <div className="settings-page-content">
+          {activeSection === "profile" && (
+            <>
+              <div className="settings-field">
+                <div className="settings-field-label-block">
+                  <div className="settings-field-label">Full name</div>
+                </div>
+                <input className="settings-input" value={name} onChange={e => setName(e.target.value)} />
+              </div>
+
+              <div className="settings-field">
+                <div className="settings-field-label-block">
+                  <div className="settings-field-label">Email</div>
+                </div>
+                <input className="settings-input" type="email" value={email} onChange={e => setEmail(e.target.value)} />
+              </div>
+
+              <div className="settings-field">
+                <div className="settings-field-label-block">
+                  <div className="settings-field-label">Bio</div>
+                  <div className="settings-field-hint">A short line about you and what you're looking for</div>
+                </div>
+                <textarea className="settings-input settings-textarea" value={bio} onChange={e => setBio(e.target.value)} rows={4} />
+              </div>
+
+              <div className="settings-field">
+                <div className="settings-field-label-block">
+                  <div className="settings-field-label">Phone number</div>
+                  <div className="settings-field-hint">Optional</div>
+                </div>
+                <input className="settings-input" type="tel" placeholder="+33 6 12 34 56 78" value={phone} onChange={e => setPhone(e.target.value)} />
+              </div>
+
+              <div className="settings-page-actions">
+                <button className="filter-clear-btn" onClick={onClose}>Cancel</button>
+                <button className="filter-save-btn" onClick={onClose}>Save</button>
+              </div>
+            </>
+          )}
+
+          {activeSection === "notifications" && (
+            <>
+              <div className="settings-field settings-field-row">
+                <div className="settings-field-label-block">
+                  <div className="settings-field-label">New universities</div>
+                  <div className="settings-field-hint">Get notified when a new university joins Unexa</div>
+                </div>
+                <ToggleSwitch checked={notifNewUni} onChange={setNotifNewUni} />
+              </div>
+
+              <div className="settings-field settings-field-row">
+                <div className="settings-field-label-block">
+                  <div className="settings-field-label">Application deadlines</div>
+                  <div className="settings-field-hint">Reminders before saved programs close applications</div>
+                </div>
+                <ToggleSwitch checked={notifDeadlines} onChange={setNotifDeadlines} />
+              </div>
+
+              <div className="settings-field settings-field-row">
+                <div className="settings-field-label-block">
+                  <div className="settings-field-label">Tips & suggestions</div>
+                  <div className="settings-field-hint">Occasional tips to improve your profile and matches</div>
+                </div>
+                <ToggleSwitch checked={notifTips} onChange={setNotifTips} />
+              </div>
+
+              <div className="settings-page-actions">
+                <button className="filter-clear-btn" onClick={onClose}>Cancel</button>
+                <button className="filter-save-btn" onClick={onClose}>Save</button>
+              </div>
+            </>
+          )}
+
+          {activeSection === "security" && (
+            <>
+              <div className="settings-field">
+                <div className="settings-field-label-block">
+                  <div className="settings-field-label">Current password</div>
+                </div>
+                <input className="settings-input" type="password" placeholder="••••••••" />
+              </div>
+
+              <div className="settings-field">
+                <div className="settings-field-label-block">
+                  <div className="settings-field-label">New password</div>
+                </div>
+                <input className="settings-input" type="password" placeholder="••••••••" />
+              </div>
+
+              <div className="settings-field settings-field-row">
+                <div className="settings-field-label-block">
+                  <div className="settings-field-label">Two-factor authentication</div>
+                  <div className="settings-field-hint">Add an extra layer of security to your account</div>
+                </div>
+                <ToggleSwitch checked={false} onChange={() => {}} />
+              </div>
+
+              <div className="settings-page-actions">
+                <button className="filter-clear-btn" onClick={onClose}>Cancel</button>
+                <button className="filter-save-btn" onClick={onClose}>Save</button>
+              </div>
+            </>
+          )}
+
+          {activeSection === "language" && (
+            <>
+              <div className="settings-field">
+                <div className="settings-field-label-block">
+                  <div className="settings-field-label">Display language</div>
+                </div>
+                <select className="settings-input" value={language} onChange={e => setLanguage(e.target.value)}>
+                  <option>English</option>
+                  <option>Українська</option>
+                  <option>Español</option>
+                  <option>Français</option>
+                </select>
+              </div>
+
+              <div className="settings-page-actions">
+                <button className="filter-clear-btn" onClick={onClose}>Cancel</button>
+                <button className="filter-save-btn" onClick={onClose}>Save</button>
+              </div>
+            </>
+          )}
         </div>
       </div>
     </div>
@@ -277,6 +280,23 @@ export default function Profile({ savedUniversities, onToggleSave, avatarUrl, co
     reader.onload = () => onChange(reader.result);
     reader.readAsDataURL(file);
     e.target.value = "";
+  }
+
+  if (showSettings) {
+    return (
+      <SettingsPage
+        onClose={() => setShowSettings(false)}
+        avatarUrl={avatarUrl}
+        onAvatarChange={onAvatarChange}
+        coverUrl={coverUrl}
+        onCoverChange={onCoverChange}
+        name={name}
+        setName={setName}
+        bio={bio}
+        setBio={setBio}
+        onLogout={onLogout}
+      />
+    );
   }
 
   return (
@@ -360,16 +380,13 @@ export default function Profile({ savedUniversities, onToggleSave, avatarUrl, co
             <div className="profile-bio">{bio}</div>
           </div>
         </div>
-        <div className="profile-header-actions">
-          <button className="profile-settings-btn" onClick={() => setShowSettings(true)}>
-            Settings
-            <svg className="profile-settings-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <circle cx="12" cy="12" r="3" />
-              <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
-            </svg>
-          </button>
-          <button className="profile-logout-btn" onClick={onLogout}>Log out</button>
-        </div>
+        <button className="profile-settings-btn" onClick={() => setShowSettings(true)}>
+          Settings
+          <svg className="profile-settings-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <circle cx="12" cy="12" r="3" />
+            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
+          </svg>
+        </button>
       </div>
 
       <div className="profile-tabs">
@@ -435,21 +452,6 @@ export default function Profile({ savedUniversities, onToggleSave, avatarUrl, co
           </div>
         )}
       </div>
-
-      {showSettings && (
-        <SettingsPanel
-          onClose={() => setShowSettings(false)}
-          avatarUrl={avatarUrl}
-          onAvatarChange={onAvatarChange}
-          coverUrl={coverUrl}
-          onCoverChange={onCoverChange}
-          name={name}
-          setName={setName}
-          bio={bio}
-          setBio={setBio}
-          onLogout={onLogout}
-        />
-      )}
     </div>
   );
 }
