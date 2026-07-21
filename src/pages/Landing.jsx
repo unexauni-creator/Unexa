@@ -71,7 +71,7 @@ export default function Landing() {
               <p className="landing-hero-trust-text"><strong>5,000+ students</strong> planning their future with Unexa</p>
             </div>
 
-            <div className="landing-hero-cta-block">
+           <div className="landing-hero-cta-block">
               <p className="landing-hero-desc">
                 Discover design and art universities across Europe, compare programs side by side, and build a roadmap tailored to you.
               </p>
