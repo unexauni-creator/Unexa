@@ -56,7 +56,10 @@
 }
 .roadmap-test-btn:hover { background: #4e3d35; }
 
-.roadmap-wave-graph-wrap { position: relative; }
+/* Graph and month axis both live inside the same fixed-width wrapper so
+   their horizontal positions always line up regardless of the SVG's
+   internal scaling behavior. */
+.roadmap-wave-graph-wrap { position: relative; width: 100%; }
 .roadmap-wave-svg { width: 100%; height: 150px; overflow: visible; display: block; }
 .roadmap-wave-path { stroke: #C4956A; opacity: 0.6; }
 .roadmap-wave-stem { stroke: rgba(172,136,118,0.3); stroke-width: 1.5; stroke-dasharray: 3 3; }
@@ -84,7 +87,9 @@
 .roadmap-wave-callout-year { font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 12px; opacity: 0.75; }
 .roadmap-wave-callout-title { font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 15px; }
 
-.roadmap-wave-month-axis { position: relative; height: 22px; margin-top: 8px; }
+/* Month axis: same width/left-offset logic as the SVG wrapper so labels
+   always land under their matching point on the curve. */
+.roadmap-wave-month-axis { position: relative; height: 22px; margin-top: 8px; width: 100%; }
 .roadmap-wave-month-item {
   position: absolute;
   transform: translateX(-50%);
@@ -98,7 +103,7 @@
 .roadmap-wave-month-item.marker { color: #9e8f86; font-weight: 600; cursor: pointer; }
 .roadmap-wave-month-item.active { color: #634F44; font-weight: 700; }
 
-/* Career Focus side card — redesigned */
+/* Career Focus side card */
 .roadmap-side-card {
   flex: 0 0 240px;
   background: rgba(239,239,239,0.72);

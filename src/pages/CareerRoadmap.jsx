@@ -98,7 +98,6 @@ export default function CareerRoadmap() {
   }
 
   const calloutMonth = hoveredMonth;
-  const calloutFineIdx = calloutMonth !== null ? monthToFineIndex(calloutMonth) : null;
   const rawPct = calloutMonth !== null ? (WAVE_X[calloutMonth] / 980) * 100 : 0;
   const calloutLeftPct = clampPercent(rawPct);
 
@@ -134,7 +133,7 @@ export default function CareerRoadmap() {
             </div>
 
             <div className="roadmap-wave-graph-wrap">
-              <svg className="roadmap-wave-svg" viewBox="0 0 980 180" preserveAspectRatio="xMidYMid meet">
+              <svg className="roadmap-wave-svg" viewBox="0 0 980 180" preserveAspectRatio="none">
                 <path d={buildWavePath(points)} className="roadmap-wave-path" fill="none" strokeWidth="4" />
                 {MARKER_INDICES.map(i => {
                   const fineIdx = monthToFineIndex(i);
