@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from "react";
-import { supabase } from "./lib/supabase";
-import { mapSpecialty } from "./lib/mapSpecialty";
+import { supabase } from "./lib/supabase.js";
+import { mapSpecialty } from "./lib/mapSpecialty.js";
 
 const SUGGESTIONS = ["Art Design", "Architecture", "Fine Arts", "Digital Media", "Fashion Design", "France", "Master", "Bachelor", "Online Course"];
 const DEGREES = ["Bachelor", "Master", "Foundation Year", "Short Course", "Summer School", "Online Course"];
