@@ -1,19 +1,12 @@
 import { useState, useRef, useEffect } from "react";
-
-const universities = [
-  { id: 1, name: "Aix-Marseille Université", desc: "Marseille, France", country: "France", program: "Art Design", degree: "Bachelor", tuitionType: "Public", tuitionAmount: 8500, language: "French", certification: true, format: "On Campus", internship: true, image: "https://madeinmarseille.net/actualites-marseille/2019/04/Cube-campus-aix.jpeg" },
-  { id: 2, name: "Université Bordeaux-Montaigne", desc: "Bordeaux, France", country: "France", program: "Architecture", degree: "Master", tuitionType: "Public", tuitionAmount: 7200, language: "French", certification: true, format: "On Campus", internship: false, image: "https://upload.wikimedia.org/wikipedia/commons/8/8f/Ijba_iut_montaigne_bordeaux.jpg" },
-  { id: 3, name: "Université de Franche-Comté", desc: "Besançon, France", country: "France", program: "Fine Arts", degree: "Bachelor", tuitionType: "Public", tuitionAmount: 5000, language: "French", certification: false, format: "Hybrid", internship: true, image: "https://cdn-s-www.bienpublic.com/images/AC513A2C-88A9-456D-972D-758F6975A8A9/NW_raw/le-campus-dijonnais-de-l-universite-de-bourgogne-accueille-plus-de-30-000-etudiants-photo-d-illustration-lbp-emma-buoncristiani-1690820597.jpg" },
-  { id: 4, name: "Université Jean-Monnet-Saint-Étienne", desc: "Loire, France", country: "France", program: "Digital Media", degree: "Master", tuitionType: "Public", tuitionAmount: 6000, language: "French/English", certification: true, format: "On Campus", internship: true, image: "https://www.univ-st-etienne.fr/_richText-file/ametys-internal%253Asites/ujm/ametys-internal%253Acontents/plans-d-acces-2/_attribute/content/_data/Campus-Trefilerie-Pierre-Grasset.jpg" },
-  { id: 5, name: "Université de Nîmes", desc: "Nîmes, France", country: "France", program: "Fashion Design", degree: "Bachelor", tuitionType: "Public", tuitionAmount: 4500, language: "French", certification: false, format: "On Campus", internship: false, image: "https://upload.wikimedia.org/wikipedia/commons/1/16/Scines_nimes.jpg" },
-  { id: 6, name: "Université Rennes 2", desc: "Rennes, France", country: "France", program: "Art Design", degree: "Online Course", tuitionType: "Public", tuitionAmount: 3000, language: "French", certification: false, format: "Online", internship: false, image: "https://upload.wikimedia.org/wikipedia/commons/thumb/2/29/Batiments_de_nuits_-Univ_Rennes_2_-_Louis_Arretche.jpg/330px-Batiments_de_nuits_-Univ_Rennes_2_-_Louis_Arretche.jpg" },
-];
+import { supabase } from "./lib/supabaseClient";
+import { mapSpecialty } from "./lib/mapSpecialty";
 
 const SUGGESTIONS = ["Art Design", "Architecture", "Fine Arts", "Digital Media", "Fashion Design", "France", "Master", "Bachelor", "Online Course"];
 const DEGREES = ["Bachelor", "Master", "Foundation Year", "Short Course", "Summer School", "Online Course"];
 const LANGUAGES = ["French", "English", "French/English", "German", "Spanish"];
 const FORMATS = ["On Campus", "Hybrid", "Online"];
-const COUNTRIES = ["France", "Germany", "Spain", "Italy", "United Kingdom"];
+const COUNTRIES = ["France", "Germany", "Spain", "Italy", "United Kingdom", "South Korea", "China", "Japan", "Canada"];
 const MIN_PRICE = 0;
 const MAX_PRICE = 30000;
 
@@ -246,6 +239,10 @@ function SearchEmptyState({ query }) {
 }
 
 export default function Home({ onSelectUni, savedUniversities, onToggleSave }) {
+  const [universities, setUniversities] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState(null);
+
   const [search, setSearch] = useState("");
   const [searchFocused, setSearchFocused] = useState(false);
   const [recentSearches, setRecentSearches] = useState(["Art Design", "France", "Master"]);
@@ -255,6 +252,32 @@ export default function Home({ onSelectUni, savedUniversities, onToggleSave }) {
   const [appliedFilters, setAppliedFilters] = useState(DEFAULT_FILTERS);
   const [toast, setToast] = useState(null);
   const searchRef = useRef(null);
+
+  // Fetch specialties + their parent university in one query
+  useEffect(() => {
+    let cancelled = false;
+
+    async function fetchUniversities() {
+      setLoading(true);
+      const { data, error } = await supabase
+        .from("specialties")
+        .select("*, universities(*)");
+
+      if (cancelled) return;
+
+      if (error) {
+        console.error("Помилка завантаження університетів:", error);
+        setLoadError(error.message);
+      } else {
+        setUniversities(data.map(mapSpecialty));
+        setLoadError(null);
+      }
+      setLoading(false);
+    }
+
+    fetchUniversities();
+    return () => { cancelled = true; };
+  }, []);
 
   useEffect(() => {
     function handleClick(e) {
@@ -305,7 +328,7 @@ export default function Home({ onSelectUni, savedUniversities, onToggleSave }) {
 
   const filtered = universities.filter(u => {
     const q = search.toLowerCase();
-    if (q && !u.name.toLowerCase().includes(q) && !u.program.toLowerCase().includes(q) && !u.country.toLowerCase().includes(q)) return false;
+    if (q && !u.name?.toLowerCase().includes(q) && !u.program?.toLowerCase().includes(q) && !u.country?.toLowerCase().includes(q)) return false;
     if (appliedFilters.countries.length && !appliedFilters.countries.includes(u.country)) return false;
     if (appliedFilters.degrees.length && !appliedFilters.degrees.includes(u.degree)) return false;
     if (u.tuitionAmount < appliedFilters.tuitionMin || u.tuitionAmount > appliedFilters.tuitionMax) return false;
@@ -390,42 +413,56 @@ export default function Home({ onSelectUni, savedUniversities, onToggleSave }) {
         </div>
       )}
 
-      <div className="uni-grid">
-        {filtered.length > 0 ? filtered.map(uni => {
-          const isSaved = savedUniversities.some(u => u.id === uni.id);
-          return (
-            <div key={uni.id} className="uni-card-new" onClick={() => onSelectUni(uni)}>
-              <img src={uni.image} alt={uni.name} className="uni-card-img" />
-              <div className="uni-card-glass">
-                <div className="uni-card-glass-blur" />
-                <div className="uni-card-text">
-                  <div className="uni-card-title">{uni.name}</div>
-                  <div className="uni-card-subtitle">{uni.desc}</div>
+      {loading && (
+        <div style={{ textAlign: "center", padding: "48px 0", fontFamily: "Nunito", color: "#8a7c70" }}>
+          Loading universities...
+        </div>
+      )}
+
+      {!loading && loadError && (
+        <div style={{ textAlign: "center", padding: "48px 0", fontFamily: "Nunito", color: "#c05050" }}>
+          Couldn't load universities: {loadError}
+        </div>
+      )}
+
+      {!loading && !loadError && (
+        <div className="uni-grid">
+          {filtered.length > 0 ? filtered.map(uni => {
+            const isSaved = savedUniversities.some(u => u.id === uni.id);
+            return (
+              <div key={uni.id} className="uni-card-new" onClick={() => onSelectUni(uni)}>
+                <img src={uni.image} alt={uni.name} className="uni-card-img" />
+                <div className="uni-card-glass">
+                  <div className="uni-card-glass-blur" />
+                  <div className="uni-card-text">
+                    <div className="uni-card-title">{uni.name}</div>
+                    <div className="uni-card-subtitle">{uni.desc}</div>
+                  </div>
+                  <button
+                    className={`uni-card-save ${isSaved ? "saved" : ""}`}
+                    onClick={e => toggleSave(e, uni)}
+                    aria-label={isSaved ? "Remove from profile" : "Save to profile"}
+                  >
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill={isSaved ? "currentColor" : "none"} stroke="currentColor" strokeWidth="2">
+                      <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" />
+                    </svg>
+                  </button>
                 </div>
-                <button
-                  className={`uni-card-save ${isSaved ? "saved" : ""}`}
-                  onClick={e => toggleSave(e, uni)}
-                  aria-label={isSaved ? "Remove from profile" : "Save to profile"}
-                >
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill={isSaved ? "currentColor" : "none"} stroke="currentColor" strokeWidth="2">
-                    <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" />
-                  </svg>
-                </button>
               </div>
+            );
+          }) : search.trim().length > 0 ? (
+            <div style={{ gridColumn: "1/-1" }}>
+              <SearchEmptyState query={search} />
             </div>
-          );
-        }) : search.trim().length > 0 ? (
-          <div style={{ gridColumn: "1/-1" }}>
-            <SearchEmptyState query={search} />
-          </div>
-        ) : (
-          <div style={{ gridColumn: "1/-1", textAlign: "center", padding: "48px 0" }}>
-            <div style={{ fontSize: 36, marginBottom: 12 }}>🔍</div>
-            <div style={{ fontFamily: "Nunito", fontWeight: 600, fontSize: 16, color: "#4a3f38" }}>No universities match your filters</div>
-            <button className="filter-clear-btn" style={{ marginTop: 12 }} onClick={clearFilters}>Clear filters</button>
-          </div>
-        )}
-      </div>
+          ) : (
+            <div style={{ gridColumn: "1/-1", textAlign: "center", padding: "48px 0" }}>
+              <div style={{ fontSize: 36, marginBottom: 12 }}>🔍</div>
+              <div style={{ fontFamily: "Nunito", fontWeight: 600, fontSize: 16, color: "#4a3f38" }}>No universities match your filters</div>
+              <button className="filter-clear-btn" style={{ marginTop: 12 }} onClick={clearFilters}>Clear filters</button>
+            </div>
+          )}
+        </div>
+      )}
 
       {showFilter && (
         <FilterPanel filters={filters} setFilters={setFilters}
