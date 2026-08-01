@@ -435,8 +435,8 @@ export default function Home({ onSelectUni, savedUniversities, onToggleSave }) {
                 <div className="uni-card-glass">
                   <div className="uni-card-glass-blur" />
                   <div className="uni-card-text">
-                    <div className="uni-card-title">{uni.name}</div>
-                    <div className="uni-card-subtitle">{uni.desc}</div>
+                    <div className="uni-card-title">{uni.program}</div>
+                    <div className="uni-card-subtitle">{uni.name}</div>
                   </div>
                   <button
                     className={`uni-card-save ${isSaved ? "saved" : ""}`}
