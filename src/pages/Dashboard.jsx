@@ -1,69 +1,14 @@
 import { useNavigate } from "react-router-dom";
 import { useState, useRef } from "react";
 
-const mockUniversities = [
-  {
-    id: 1,
-    name: "Aix-Marseille Université",
-    program: "Graphic Design",
-    scholarship: "Merit Award",
-    submissionPeriod: "September 2026",
-    duration: "36 months",
-    language: "English / French",
-    minLanguage: "IELTS 6.0 / DELF B2",
-    minCGPA: "CGPA 3.0",
-    tuition: "$8,500/yr",
-    image: "https://madeinmarseille.net/actualites-marseille/2019/04/Cube-campus-aix.jpeg",
-  },
-  {
-    id: 2,
-    name: "Université Bordeaux",
-    program: "Graphic Design",
-    scholarship: "International Grant",
-    submissionPeriod: "April 2026",
-    duration: "36 months",
-    language: "English / French",
-    minLanguage: "IELTS 6.5 / DELF B2",
-    minCGPA: "CGPA 3.2",
-    tuition: "$7,200/yr",
-    image: "https://upload.wikimedia.org/wikipedia/commons/8/8f/Ijba_iut_montaigne_bordeaux.jpg",
-  },
-  {
-    id: 3,
-    name: "Université Rennes 2",
-    program: "Graphic Design",
-    scholarship: "Need-Based Aid",
-    submissionPeriod: "April 2026",
-    duration: "36 months",
-    language: "English / French",
-    minLanguage: "IELTS 5.5 / DELF B1",
-    minCGPA: "CGPA 2.8",
-    tuition: "$6,000/yr",
-    image: "https://upload.wikimedia.org/wikipedia/commons/thumb/2/29/Batiments_de_nuits_-Univ_Rennes_2_-_Louis_Arretche.jpg/330px-Batiments_de_nuits_-Univ_Rennes_2_-_Louis_Arretche.jpg",
-  },
-  {
-    id: 4,
-    name: "Université de Nîmes",
-    program: "Graphic Design",
-    scholarship: "Regional Grant",
-    submissionPeriod: "May 2026",
-    duration: "36 months",
-    language: "English / French",
-    minLanguage: "IELTS 6.0 / DELF B1",
-    minCGPA: "CGPA 2.9",
-    tuition: "$5,400/yr",
-    image: "https://upload.wikimedia.org/wikipedia/commons/1/16/Scines_nimes.jpg",
-  },
-];
-
 const ROW_LABELS = [
-  { label: "Scholarship", info: null },
-  { label: "Submission period", info: null },
-  { label: "Duration of study", info: null },
-  { label: "Language", info: null },
-  { label: "Min. language", info: null },
-  { label: "Min. CGPA", info: "CGPA (Cumulative Grade Point Average) is a measure of your overall academic performance. Most universities require a minimum CGPA to ensure students can handle the academic workload of the program." },
-  { label: "Tuition fees", info: null },
+  { key: "scholarshipsText", label: "Scholarship", info: null },
+  { key: "submissionPeriod", label: "Submission period", info: null },
+  { key: "duration", label: "Duration of study", info: null },
+  { key: "language", label: "Language", info: null },
+  { key: "minLanguageLevel", label: "Min. language", info: null },
+  { key: "minCGPA", label: "Min. CGPA", info: "CGPA (Cumulative Grade Point Average) is a measure of your overall academic performance. Most universities require a minimum CGPA to ensure students can handle the academic workload of the program." },
+  { key: "tuition", label: "Tuition fees", info: null },
 ];
 
 function InfoTooltip({ text }) {
@@ -94,30 +39,15 @@ function InfoTooltip({ text }) {
   );
 }
 
-export default function Dashboard() {
+export default function Dashboard({ comparedUniversities = [], onRemove, maxCompare = 4 }) {
   const navigate = useNavigate();
 
-  // Empty by default — nothing is added to the comparison until the person
-  // explicitly adds a university via "Compare to others" on a detail page.
-  // (mockUniversities stays as demo data for wiring up that flow later.)
-  const [addedIds, setAddedIds] = useState([]);
-
-  const unis = mockUniversities.filter(u => addedIds.includes(u.id));
+  const unis = comparedUniversities;
   const count = unis.length;
 
   function removeUni(id) {
-    setAddedIds(prev => prev.filter(x => x !== id));
+    onRemove?.(id);
   }
-
-  const rows = [
-    unis.map(u => u.scholarship),
-    unis.map(u => u.submissionPeriod),
-    unis.map(u => u.duration),
-    unis.map(u => u.language),
-    unis.map(u => u.minLanguage),
-    unis.map(u => u.minCGPA),
-    unis.map(u => u.tuition),
-  ];
 
   if (count === 0) {
     return (
@@ -128,7 +58,7 @@ export default function Dashboard() {
             <p className="dash-desc-sub">
               Compare selected universities side by side.
               <br />
-              You can add up to 4 universities to find the one that fits you best.
+              You can add up to {maxCompare} universities to find the one that fits you best.
             </p>
           </div>
         </div>
@@ -151,7 +81,7 @@ export default function Dashboard() {
             <p className="dash-desc-sub">
               Compare selected universities side by side.
               <br />
-              You can add up to 4 universities to find the one that fits you best.
+              You can add up to {maxCompare} universities to find the one that fits you best.
             </p>
           </div>
         </div>
@@ -192,14 +122,14 @@ export default function Dashboard() {
           <p className="dash-desc-sub">
             Compare {count} selected universities side by side.
             <br />
-            You can add up to 4 universities to find the one that fits you best.
+            You can add up to {maxCompare} universities to find the one that fits you best.
           </p>
         </div>
       </div>
 
-      {count === 4 && (
+      {count === maxCompare && (
         <div className="dash-max-banner">
-          <span>✓ Maximum reached — you can compare up to 4 universities. Remove one to add another.</span>
+          <span>✓ Maximum reached — you can compare up to {maxCompare} universities. Remove one to add another.</span>
         </div>
       )}
 
@@ -230,15 +160,15 @@ export default function Dashboard() {
           </div>
 
           {/* Data rows */}
-          {ROW_LABELS.map((row, rowIdx) => (
-            <div key={row.label} className="dash-table-row">
+          {ROW_LABELS.map(row => (
+            <div key={row.key} className="dash-table-row">
               <div className="dash-table-label-cell">
                 {row.label}
                 {row.info && <InfoTooltip text={row.info} />}
               </div>
               {unis.map(u => (
                 <div key={u.id} className="dash-table-cell">
-                  {rows[rowIdx][unis.indexOf(u)]}
+                  {u[row.key] || "—"}
                 </div>
               ))}
             </div>

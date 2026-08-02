@@ -1,180 +1,229 @@
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useState, useRef } from "react";
 
-const ROW_LABELS = [
-  { key: "scholarshipsText", label: "Scholarship", info: null },
-  { key: "submissionPeriod", label: "Submission period", info: null },
-  { key: "duration", label: "Duration of study", info: null },
-  { key: "language", label: "Language", info: null },
-  { key: "minLanguageLevel", label: "Min. language", info: null },
-  { key: "minCGPA", label: "Min. CGPA", info: "CGPA (Cumulative Grade Point Average) is a measure of your overall academic performance. Most universities require a minimum CGPA to ensure students can handle the academic workload of the program." },
-  { key: "tuition", label: "Tuition fees", info: null },
-];
-
-function InfoTooltip({ text }) {
-  const [visible, setVisible] = useState(false);
-  const [pos, setPos] = useState({ top: 0, left: 0 });
-  const btnRef = useRef(null);
-
-  function handleMouseEnter() {
-    if (btnRef.current) {
-      const rect = btnRef.current.getBoundingClientRect();
-      setPos({ top: rect.bottom + window.scrollY + 8, left: rect.left + window.scrollX });
-    }
-    setVisible(true);
-  }
-
-  return (
-    <span className="dash-info-wrap">
-      <button ref={btnRef} className="dash-info-btn" onMouseEnter={handleMouseEnter} onMouseLeave={() => setVisible(false)}>
-        <img src="/info-circle.svg" alt="info" className="dash-info-icon" />
-      </button>
-      {visible && (
-        <div className="dash-tooltip" style={{ top: pos.top, left: pos.left }}
-          onMouseEnter={() => setVisible(true)} onMouseLeave={() => setVisible(false)}>
-          <div className="dash-tooltip-text">{text}</div>
-        </div>
-      )}
-    </span>
-  );
+// Розбиває "Merit Scholarship (GPA above 3.5), Grant X" на окремі пункти,
+// не ламаючи текст усередині дужок
+function parseScholarships(text) {
+  if (!text) return [];
+  return text
+    .split(/,\s*(?![^(]*\))/)
+    .map(s => s.trim())
+    .filter(Boolean)
+    .map(entry => {
+      const match = entry.match(/^(.+?)\s*\((.+)\)$/);
+      if (match) {
+        return { name: match[1].trim(), detail: match[2].trim() };
+      }
+      return { name: entry, detail: null };
+    });
 }
 
-export default function Dashboard({ comparedUniversities = [], onRemove, maxCompare = 4 }) {
+export default function UniversityDetail({ uni, onBack, savedUniversities = [], onToggleSave, comparedUniversities = [], onAddToCompare }) {
+  const [activeTab, setActiveTab] = useState("info");
+  const [compareMsg, setCompareMsg] = useState(null); // null | "added" | "exists" | "full"
   const navigate = useNavigate();
 
-  const unis = comparedUniversities;
-  const count = unis.length;
+  if (!uni) return null;
 
-  function removeUni(id) {
-    onRemove?.(id);
+  const isSaved = savedUniversities.some(u => u.id === uni.id);
+  const isCompared = comparedUniversities.some(u => u.id === uni.id);
+  const scholarships = parseScholarships(uni.scholarshipsText);
+
+  function handleCompare() {
+    const result = onAddToCompare?.(uni);
+    setCompareMsg(result);
+    setTimeout(() => setCompareMsg(null), 5000);
   }
 
-  if (count === 0) {
-    return (
-      <div className="dashboard-page">
-        <div className="dashboard-header">
-          <div className="dash-title">Dashboard</div>
-          <div className="dash-desc-block">
-            <p className="dash-desc-sub">
-              Compare selected universities side by side.
-              <br />
-              You can add up to {maxCompare} universities to find the one that fits you best.
-            </p>
-          </div>
-        </div>
-        <div className="compare-empty">
-          <div className="compare-empty-icon">⚖️</div>
-          <div className="compare-empty-title">No universities added</div>
-          <div className="compare-empty-desc">Go to Home and open a university card, then click "Compare to others" to add it here.</div>
-          <button className="detail-btn-primary" style={{ marginTop: 16 }} onClick={() => navigate("/")}>Browse Universities</button>
-        </div>
-      </div>
-    );
-  }
-
-  if (count === 1) {
-    return (
-      <div className="dashboard-page">
-        <div className="dashboard-header">
-          <div className="dash-title">Dashboard</div>
-          <div className="dash-desc-block">
-            <p className="dash-desc-sub">
-              Compare selected universities side by side.
-              <br />
-              You can add up to {maxCompare} universities to find the one that fits you best.
-            </p>
-          </div>
-        </div>
-        <div className="dash-narrow-wrap">
-          <div className="dash-warning">
-            <span className="dash-warning-icon">⚠️</span>
-            <div>
-              <div className="dash-warning-title">Add at least one more university</div>
-              <div className="dash-warning-desc">You need a minimum of 2 universities to start comparing. Go back to Home and add another one.</div>
-            </div>
-            <button className="dash-warning-btn" onClick={() => navigate("/")}>Add university →</button>
-          </div>
-          <div className="dash-single-preview">
-            {unis.map(u => (
-              <div key={u.id} className="dash-single-card">
-                <img src={u.image} alt={u.name} className="dash-single-img" />
-                <div className="dash-single-info">
-                  <div className="dash-uni-card-name" style={{ fontSize: 15 }}>{u.name}</div>
-                  <div className="dash-uni-card-program">{u.program}</div>
-                </div>
-                <button className="dash-remove-btn" style={{ position: "static", marginLeft: "auto" }}
-                  onClick={() => removeUni(u.id)}>
-                  <span className="dash-remove-icon" />
-                </button>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-    );
+  function handleToggleSave(e) {
+    e.stopPropagation();
+    onToggleSave?.(uni);
   }
 
   return (
-    <div className="dashboard-page">
-      <div className="dashboard-header">
-        <div className="dash-title">Dashboard</div>
-        <div className="dash-desc-block">
-          <p className="dash-desc-sub">
-            Compare {count} selected universities side by side.
-            <br />
-            You can add up to {maxCompare} universities to find the one that fits you best.
-          </p>
-        </div>
-      </div>
+    <div className="detail-page">
 
-      {count === maxCompare && (
-        <div className="dash-max-banner">
-          <span>✓ Maximum reached — you can compare up to {maxCompare} universities. Remove one to add another.</span>
+      <button className="detail-back-btn" onClick={onBack}>
+        <img src="/arrow-left.svg" alt="Back" className="detail-back-icon" />
+      </button>
+
+      {compareMsg && (
+        <div className="compare-toast">
+          <div className="compare-toast-text">
+            {compareMsg === "added" && <span>✓ Added to Dashboard!</span>}
+            {compareMsg === "exists" && <span>Already in your Dashboard</span>}
+            {compareMsg === "full" && <span>Dashboard is full (max 4) — remove one first</span>}
+            {compareMsg !== "full" && (
+              <span className="compare-toast-sub">If you want to compare this university go to Dashboard</span>
+            )}
+          </div>
+          <button className="compare-toast-btn" onClick={() => { setCompareMsg(null); navigate("/dashboard"); }}>
+            See →
+          </button>
         </div>
       )}
 
-      <div className="dash-table-scroll">
-        <div className="dash-table" style={{ "--uni-count": count }}>
+      <div className="detail-tabs">
+        <button className={`detail-tab ${activeTab === "info" ? "active" : ""}`} onClick={() => setActiveTab("info")}>Informations</button>
+        <button className={`detail-tab ${activeTab === "program" ? "active" : ""}`} onClick={() => setActiveTab("program")}>Program</button>
+        <button className={`detail-tab ${activeTab === "scholarship" ? "active" : ""}`} onClick={() => setActiveTab("scholarship")}>Scholarship</button>
+      </div>
 
-          {/* Header row */}
-          <div className="dash-table-row dash-header-row">
-            <div className="dash-table-label-cell dash-corner-cell">
-              <svg className="dash-corner-svg" preserveAspectRatio="none" viewBox="0 0 100 100">
-                <line x1="0" y1="0" x2="100" y2="100" vectorEffect="non-scaling-stroke" />
-              </svg>
-              <span className="dash-corner-top">Universities</span>
-              <span className="dash-corner-bottom">Criteria</span>
-            </div>
-            {unis.map(u => (
-              <div key={u.id} className="dash-table-cell dash-uni-header">
-                <img src={u.image} alt={u.name} className="dash-uni-card-img" />
-                <div className="dash-uni-card-info">
-                  <div className="dash-uni-card-name">{u.name}</div>
-                  <div className="dash-uni-card-program">{u.program}</div>
+      <div className="detail-content">
+
+        {/* ── INFO TAB ── */}
+        {activeTab === "info" && (
+          <>
+            <div className="detail-hero">
+              <div className="detail-hero-left">
+                <div className="detail-hero-top">
+                  <div>
+                    <div className="detail-name">{uni.name}</div>
+                    <div className="detail-university">{uni.desc}</div>
+                  </div>
                 </div>
-                <button className="dash-remove-btn" onClick={() => removeUni(u.id)}>
-                  <span className="dash-remove-icon" />
-                </button>
+                <p className="detail-desc">{uni.description || "No description available yet."}</p>
+                <div className="detail-btn-group">
+                  <button className="detail-btn-primary" onClick={() => window.open(uni.website || "#", "_blank")}>Official Website</button>
+                  <button className="detail-btn-ghost" onClick={handleCompare}>
+                    {isCompared ? "✓ Added to compare" : "Compare to others"}
+                  </button>
+                </div>
               </div>
-            ))}
+              <div className="detail-hero-right">
+                <img src={uni.image} alt={uni.name} className="detail-hero-img" />
+                <div className="detail-hero-glass">
+                  <div className="detail-hero-glass-blur" />
+                  <div className="detail-hero-text">
+                    <div className="detail-hero-card-title">{uni.name}</div>
+                    <div className="detail-hero-card-subtitle">{uni.desc}</div>
+                  </div>
+                  <button
+                    className={`detail-hero-save ${isSaved ? "saved" : ""}`}
+                    onClick={handleToggleSave}
+                    aria-label={isSaved ? "Remove from profile" : "Save to profile"}
+                  >
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill={isSaved ? "currentColor" : "none"} stroke="currentColor" strokeWidth="2">
+                      <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" />
+                    </svg>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div className="detail-info-row">
+              <div className="detail-info-box">
+                <div className="detail-section-title">Required documents</div>
+                <div className="detail-info-grid">
+                  <div className="detail-info-item">
+                    <div className="detail-info-label">Language</div>
+                    <div className="detail-info-value">{uni.documents?.language || "Not specified"}</div>
+                  </div>
+                  <div className="detail-info-item">
+                    <div className="detail-info-label">Diploma</div>
+                    <div className="detail-info-value">{uni.documents?.diploma || "Not specified"}</div>
+                  </div>
+                  <div className="detail-info-item">
+                    <div className="detail-info-label">Visa</div>
+                    <div className="detail-info-value">{uni.documents?.visa || "Not specified"}</div>
+                  </div>
+                  <div className="detail-info-item">
+                    <div className="detail-info-label">Bank statement</div>
+                    <div className="detail-info-value">{uni.documents?.bankStatement || "Not specified"}</div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="detail-info-box">
+                <div className="detail-section-title">Academic info</div>
+                <div className="detail-info-grid">
+                  <div className="detail-info-item">
+                    <div className="detail-info-label">Duration</div>
+                    <div className="detail-info-value">{uni.duration || "Not specified"}</div>
+                  </div>
+                  <div className="detail-info-item">
+                    <div className="detail-info-label">Tuition Fee</div>
+                    <div className="detail-info-value">{uni.tuition || "Not specified"}</div>
+                  </div>
+                  <div className="detail-info-item">
+                    <div className="detail-info-label">Language</div>
+                    <div className="detail-info-value">{uni.language || "Not specified"}</div>
+                  </div>
+                  <div className="detail-info-item">
+                    <div className="detail-info-label">Study Mode</div>
+                    <div className="detail-info-value">{uni.studyMode || "Not specified"}</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {(uni.submissionPeriod || uni.minLanguageLevel || uni.minCGPA) && (
+              <div className="detail-info-row">
+                <div className="detail-info-box" style={{ flex: 1 }}>
+                  <div className="detail-section-title">Candidate requirements</div>
+                  <div className="detail-info-grid">
+                    <div className="detail-info-item">
+                      <div className="detail-info-label">Submission period</div>
+                      <div className="detail-info-value">{uni.submissionPeriod || "Not specified"}</div>
+                    </div>
+                    <div className="detail-info-item">
+                      <div className="detail-info-label">Min. language level</div>
+                      <div className="detail-info-value">{uni.minLanguageLevel || "Not specified"}</div>
+                    </div>
+                    <div className="detail-info-item">
+                      <div className="detail-info-label">Min. CGPA</div>
+                      <div className="detail-info-value">{uni.minCGPA || "Not specified"}</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+          </>
+        )}
+
+        {/* ── PROGRAM TAB ── */}
+        {activeTab === "program" && (
+          <div className="detail-section">
+            <div className="detail-section-title">Program Overview</div>
+            {uni.curriculumSummary ? (
+              <div className="detail-info-box">
+                <p className="detail-desc" style={{ margin: 0, lineHeight: 1.7 }}>
+                  {uni.curriculumSummary}
+                </p>
+              </div>
+            ) : (
+              <div className="detail-info-box">
+                <p className="detail-desc" style={{ margin: 0 }}>
+                  Detailed program information for this specialty hasn't been added yet.
+                </p>
+              </div>
+            )}
           </div>
+        )}
 
-          {/* Data rows */}
-          {ROW_LABELS.map(row => (
-            <div key={row.key} className="dash-table-row">
-              <div className="dash-table-label-cell">
-                {row.label}
-                {row.info && <InfoTooltip text={row.info} />}
-              </div>
-              {unis.map(u => (
-                <div key={u.id} className="dash-table-cell">
-                  {u[row.key] || "—"}
+        {/* ── SCHOLARSHIP TAB ── */}
+        {activeTab === "scholarship" && (
+          <div className="detail-section">
+            <div className="detail-section-title">Available Scholarships</div>
+            {scholarships.length > 0 ? (
+              scholarships.map((s, i) => (
+                <div key={i} className="detail-scholarship-card">
+                  <div>
+                    <div className="detail-scholarship-name">{s.name}</div>
+                    {s.detail && <div className="detail-scholarship-req">{s.detail}</div>}
+                  </div>
                 </div>
-              ))}
-            </div>
-          ))}
+              ))
+            ) : (
+              <div className="detail-info-box">
+                <p className="detail-desc" style={{ margin: 0 }}>
+                  No scholarship information available for this specialty yet.
+                </p>
+              </div>
+            )}
+          </div>
+        )}
 
-        </div>
       </div>
     </div>
   );
