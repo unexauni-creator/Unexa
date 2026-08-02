@@ -15,9 +15,11 @@ import "./styles/landing.css";
 import "./styles/profile.css";
 
 const SAVED_UNIS_KEY = "unexa_saved_universities";
+const COMPARED_UNIS_KEY = "unexa_compared_universities";
 const AVATAR_KEY = "unexa_profile_avatar";
 const COVER_KEY = "unexa_profile_cover";
 const AUTH_KEY = "unexa_auth_user";
+const MAX_COMPARE = 4;
 
 export default function App() {
   const [selectedUni, setSelectedUni] = useState(null);
@@ -36,6 +38,15 @@ export default function App() {
   const [savedUniversities, setSavedUniversities] = useState(() => {
     try {
       const stored = localStorage.getItem(SAVED_UNIS_KEY);
+      return stored ? JSON.parse(stored) : [];
+    } catch {
+      return [];
+    }
+  });
+
+  const [comparedUniversities, setComparedUniversities] = useState(() => {
+    try {
+      const stored = localStorage.getItem(COMPARED_UNIS_KEY);
       return stored ? JSON.parse(stored) : [];
     } catch {
       return [];
@@ -63,6 +74,12 @@ export default function App() {
       localStorage.setItem(SAVED_UNIS_KEY, JSON.stringify(savedUniversities));
     } catch {}
   }, [savedUniversities]);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem(COMPARED_UNIS_KEY, JSON.stringify(comparedUniversities));
+    } catch {}
+  }, [comparedUniversities]);
 
   useEffect(() => {
     try {
@@ -94,6 +111,27 @@ export default function App() {
         ? prev.filter(u => u.id !== uni.id)
         : [...prev, uni]
     );
+  }
+
+  // Returns "added" | "exists" | "full" so the caller (UniversityDetail) can react
+  function addToCompare(uni) {
+    let result = "added";
+    setComparedUniversities(prev => {
+      if (prev.some(u => u.id === uni.id)) {
+        result = "exists";
+        return prev;
+      }
+      if (prev.length >= MAX_COMPARE) {
+        result = "full";
+        return prev;
+      }
+      return [...prev, uni];
+    });
+    return result;
+  }
+
+  function removeFromCompare(id) {
+    setComparedUniversities(prev => prev.filter(u => u.id !== id));
   }
 
   function handleLogin(user) {
@@ -136,6 +174,8 @@ export default function App() {
             onBack={() => setSelectedUni(null)}
             savedUniversities={savedUniversities}
             onToggleSave={toggleSaveUni}
+            comparedUniversities={comparedUniversities}
+            onAddToCompare={addToCompare}
           />
         ) : (
           <Routes>
@@ -149,7 +189,16 @@ export default function App() {
                 />
               }
             />
-            <Route path="/dashboard" element={<Dashboard />} />
+            <Route
+              path="/dashboard"
+              element={
+                <Dashboard
+                  comparedUniversities={comparedUniversities}
+                  onRemove={removeFromCompare}
+                  maxCompare={MAX_COMPARE}
+                />
+              }
+            />
             <Route path="/career-roadmap" element={<CareerRoadmap />} />
             <Route path="/community" element={<Community />} />
             <Route

@@ -1,249 +1,180 @@
-import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useState, useRef } from "react";
 
-const DEFAULT_CURRICULUM = [
-  {
-    year: 1,
-    label: "Foundation",
-    breakLabel: "Summer Break",
-    semesters: [
-      {
-        name: "Semester 1",
-        subjects: [
-          { type: "Core", name: "Introduction to Design" },
-          { type: "Core", name: "Typography & Layout" },
-          { type: "Elective", name: "Art History" },
-        ],
-      },
-      {
-        name: "Semester 2",
-        subjects: [
-          { type: "Core", name: "Digital Illustration" },
-          { type: "Core", name: "Brand Identity" },
-          { type: "Elective", name: "Visual Culture" },
-        ],
-      },
-    ],
-  },
-  {
-    year: 2,
-    label: "Advanced",
-    breakLabel: "Summer Break",
-    semesters: [
-      {
-        name: "Semester 3",
-        subjects: [
-          { type: "Core", name: "UX Research Methods" },
-          { type: "Core", name: "Motion Graphics" },
-          { type: "Elective", name: "Design Theory" },
-        ],
-      },
-      {
-        name: "Semester 4",
-        subjects: [
-          { type: "Core", name: "Portfolio Development" },
-          { type: "Core", name: "Final Project" },
-          { type: "Elective", name: "Studio Practice" },
-        ],
-      },
-    ],
-  },
+const ROW_LABELS = [
+  { key: "scholarshipsText", label: "Scholarship", info: null },
+  { key: "submissionPeriod", label: "Submission period", info: null },
+  { key: "duration", label: "Duration of study", info: null },
+  { key: "language", label: "Language", info: null },
+  { key: "minLanguageLevel", label: "Min. language", info: null },
+  { key: "minCGPA", label: "Min. CGPA", info: "CGPA (Cumulative Grade Point Average) is a measure of your overall academic performance. Most universities require a minimum CGPA to ensure students can handle the academic workload of the program." },
+  { key: "tuition", label: "Tuition fees", info: null },
 ];
 
-export default function UniversityDetail({ uni, onBack, savedUniversities = [], onToggleSave }) {
-  const [activeTab, setActiveTab] = useState("info");
-  const [compareMsg, setCompareMsg] = useState(false);
-  const navigate = useNavigate();
+function InfoTooltip({ text }) {
+  const [visible, setVisible] = useState(false);
+  const [pos, setPos] = useState({ top: 0, left: 0 });
+  const btnRef = useRef(null);
 
-  if (!uni) return null;
-
-  const isSaved = savedUniversities.some(u => u.id === uni.id);
-
-  function handleCompare() {
-    setCompareMsg(true);
-    setTimeout(() => setCompareMsg(false), 5000);
-  }
-
-  function handleToggleSave(e) {
-    e.stopPropagation();
-    onToggleSave?.(uni);
+  function handleMouseEnter() {
+    if (btnRef.current) {
+      const rect = btnRef.current.getBoundingClientRect();
+      setPos({ top: rect.bottom + window.scrollY + 8, left: rect.left + window.scrollX });
+    }
+    setVisible(true);
   }
 
   return (
-    <div className="detail-page">
-
-      <button className="detail-back-btn" onClick={onBack}>
-        <img src="/arrow-left.svg" alt="Back" className="detail-back-icon" />
+    <span className="dash-info-wrap">
+      <button ref={btnRef} className="dash-info-btn" onMouseEnter={handleMouseEnter} onMouseLeave={() => setVisible(false)}>
+        <img src="/info-circle.svg" alt="info" className="dash-info-icon" />
       </button>
+      {visible && (
+        <div className="dash-tooltip" style={{ top: pos.top, left: pos.left }}
+          onMouseEnter={() => setVisible(true)} onMouseLeave={() => setVisible(false)}>
+          <div className="dash-tooltip-text">{text}</div>
+        </div>
+      )}
+    </span>
+  );
+}
 
-      {compareMsg && (
-        <div className="compare-toast">
-          <div className="compare-toast-text">
-            <span>✓ Added to Dashboard!</span>
-            <span className="compare-toast-sub">If you want to compare this university go to Dashboard</span>
+export default function Dashboard({ comparedUniversities = [], onRemove, maxCompare = 4 }) {
+  const navigate = useNavigate();
+
+  const unis = comparedUniversities;
+  const count = unis.length;
+
+  function removeUni(id) {
+    onRemove?.(id);
+  }
+
+  if (count === 0) {
+    return (
+      <div className="dashboard-page">
+        <div className="dashboard-header">
+          <div className="dash-title">Dashboard</div>
+          <div className="dash-desc-block">
+            <p className="dash-desc-sub">
+              Compare selected universities side by side.
+              <br />
+              You can add up to {maxCompare} universities to find the one that fits you best.
+            </p>
           </div>
-          <button className="compare-toast-btn" onClick={() => { setCompareMsg(false); navigate("/dashboard"); }}>
-            See →
-          </button>
+        </div>
+        <div className="compare-empty">
+          <div className="compare-empty-icon">⚖️</div>
+          <div className="compare-empty-title">No universities added</div>
+          <div className="compare-empty-desc">Go to Home and open a university card, then click "Compare to others" to add it here.</div>
+          <button className="detail-btn-primary" style={{ marginTop: 16 }} onClick={() => navigate("/")}>Browse Universities</button>
+        </div>
+      </div>
+    );
+  }
+
+  if (count === 1) {
+    return (
+      <div className="dashboard-page">
+        <div className="dashboard-header">
+          <div className="dash-title">Dashboard</div>
+          <div className="dash-desc-block">
+            <p className="dash-desc-sub">
+              Compare selected universities side by side.
+              <br />
+              You can add up to {maxCompare} universities to find the one that fits you best.
+            </p>
+          </div>
+        </div>
+        <div className="dash-narrow-wrap">
+          <div className="dash-warning">
+            <span className="dash-warning-icon">⚠️</span>
+            <div>
+              <div className="dash-warning-title">Add at least one more university</div>
+              <div className="dash-warning-desc">You need a minimum of 2 universities to start comparing. Go back to Home and add another one.</div>
+            </div>
+            <button className="dash-warning-btn" onClick={() => navigate("/")}>Add university →</button>
+          </div>
+          <div className="dash-single-preview">
+            {unis.map(u => (
+              <div key={u.id} className="dash-single-card">
+                <img src={u.image} alt={u.name} className="dash-single-img" />
+                <div className="dash-single-info">
+                  <div className="dash-uni-card-name" style={{ fontSize: 15 }}>{u.name}</div>
+                  <div className="dash-uni-card-program">{u.program}</div>
+                </div>
+                <button className="dash-remove-btn" style={{ position: "static", marginLeft: "auto" }}
+                  onClick={() => removeUni(u.id)}>
+                  <span className="dash-remove-icon" />
+                </button>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="dashboard-page">
+      <div className="dashboard-header">
+        <div className="dash-title">Dashboard</div>
+        <div className="dash-desc-block">
+          <p className="dash-desc-sub">
+            Compare {count} selected universities side by side.
+            <br />
+            You can add up to {maxCompare} universities to find the one that fits you best.
+          </p>
+        </div>
+      </div>
+
+      {count === maxCompare && (
+        <div className="dash-max-banner">
+          <span>✓ Maximum reached — you can compare up to {maxCompare} universities. Remove one to add another.</span>
         </div>
       )}
 
-      <div className="detail-tabs">
-        <button className={`detail-tab ${activeTab === "info" ? "active" : ""}`} onClick={() => setActiveTab("info")}>Informations</button>
-        <button className={`detail-tab ${activeTab === "program" ? "active" : ""}`} onClick={() => setActiveTab("program")}>Program</button>
-        <button className={`detail-tab ${activeTab === "scholarship" ? "active" : ""}`} onClick={() => setActiveTab("scholarship")}>Scholarship</button>
-      </div>
+      <div className="dash-table-scroll">
+        <div className="dash-table" style={{ "--uni-count": count }}>
 
-      <div className="detail-content">
-
-        {/* ── INFO TAB ── */}
-        {activeTab === "info" && (
-          <>
-            <div className="detail-hero">
-              <div className="detail-hero-left">
-                <div className="detail-hero-top">
-                  <div>
-                    <div className="detail-name">{uni.name}</div>
-                    <div className="detail-university">{uni.desc}</div>
-                  </div>
-                </div>
-                <p className="detail-desc">{uni.description || "It was founded in 1946 and is known for strong programs in engineering, business, design, medicine, and technology. The university has a large international community, offers many English-taught courses, and collaborates with hundreds of universities worldwide."}</p>
-                <div className="detail-btn-group">
-                  <button className="detail-btn-primary" onClick={() => window.open(uni.website || "https://www.univ-amu.fr/", "_blank")}>Official Website</button>
-                  <button className="detail-btn-ghost" onClick={handleCompare}>Compare to others</button>
-                </div>
-              </div>
-              <div className="detail-hero-right">
-                <img src={uni.image} alt={uni.name} className="detail-hero-img" />
-                <div className="detail-hero-glass">
-                  <div className="detail-hero-glass-blur" />
-                  <div className="detail-hero-text">
-                    <div className="detail-hero-card-title">{uni.name}</div>
-                    <div className="detail-hero-card-subtitle">{uni.desc}</div>
-                  </div>
-                  <button
-                    className={`detail-hero-save ${isSaved ? "saved" : ""}`}
-                    onClick={handleToggleSave}
-                    aria-label={isSaved ? "Remove from profile" : "Save to profile"}
-                  >
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill={isSaved ? "currentColor" : "none"} stroke="currentColor" strokeWidth="2">
-                      <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" />
-                    </svg>
-                  </button>
-                </div>
-              </div>
+          {/* Header row */}
+          <div className="dash-table-row dash-header-row">
+            <div className="dash-table-label-cell dash-corner-cell">
+              <svg className="dash-corner-svg" preserveAspectRatio="none" viewBox="0 0 100 100">
+                <line x1="0" y1="0" x2="100" y2="100" vectorEffect="non-scaling-stroke" />
+              </svg>
+              <span className="dash-corner-top">Universities</span>
+              <span className="dash-corner-bottom">Criteria</span>
             </div>
-
-            <div className="detail-info-row">
-              <div className="detail-info-box">
-                <div className="detail-section-title">Required documents</div>
-                <div className="detail-info-grid">
-                  <div className="detail-info-item">
-                    <div className="detail-info-label">Language</div>
-                    <div className="detail-info-value">TOPIK Level 3 (B2)</div>
-                  </div>
-                  <div className="detail-info-item">
-                    <div className="detail-info-label">High school diploma</div>
-                    <div className="detail-info-value">Translated to Korean</div>
-                  </div>
-                  <div className="detail-info-item">
-                    <div className="detail-info-label">Visa</div>
-                    <div className="detail-info-value">D-4 visa for language study</div>
-                  </div>
-                  <div className="detail-info-item">
-                    <div className="detail-info-label">Bank statement</div>
-                    <div className="detail-info-value">Minimum 20,000 USD/year</div>
-                  </div>
+            {unis.map(u => (
+              <div key={u.id} className="dash-table-cell dash-uni-header">
+                <img src={u.image} alt={u.name} className="dash-uni-card-img" />
+                <div className="dash-uni-card-info">
+                  <div className="dash-uni-card-name">{u.name}</div>
+                  <div className="dash-uni-card-program">{u.program}</div>
                 </div>
-              </div>
-
-              <div className="detail-info-box">
-                <div className="detail-section-title">Academic info</div>
-                <div className="detail-info-grid">
-                  <div className="detail-info-item">
-                    <div className="detail-info-label">Duration</div>
-                    <div className="detail-info-value">{uni.duration || "4 Years"}</div>
-                  </div>
-                  <div className="detail-info-item">
-                    <div className="detail-info-label">Tuition Fee</div>
-                    <div className="detail-info-value">{uni.tuition || "$4,500 / year"}</div>
-                  </div>
-                  <div className="detail-info-item">
-                    <div className="detail-info-label">Language</div>
-                    <div className="detail-info-value">{uni.language || "Korean"}</div>
-                  </div>
-                  <div className="detail-info-item">
-                    <div className="detail-info-label">Study Mode</div>
-                    <div className="detail-info-value">{uni.studyMode || "Campus"}</div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </>
-        )}
-
-        {/* ── PROGRAM TAB ── */}
-        {activeTab === "program" && (
-          <div className="detail-section">
-            <div className="detail-section-title">Program by Year</div>
-
-            {(uni.curriculum || DEFAULT_CURRICULUM).map((year, yIdx, arr) => (
-              <div className="program-year-block" key={yIdx}>
-
-                <div className="program-year-header">
-                  <span className="program-year-badge">Year {year.year}</span>
-                  {year.label && <span className="program-year-label">{year.label}</span>}
-                </div>
-
-                <div className="program-semesters-row">
-                  {year.semesters.map((sem, sIdx) => (
-                    <div className="program-semester-card" key={sIdx}>
-                      <div className="program-semester-name">{sem.name}</div>
-                      <div className="program-classes">
-                        {sem.subjects.map((subj, cIdx) => (
-                          <div className="program-class-item" key={cIdx}>
-                            <span className="program-class-time">{subj.type}</span>
-                            <span className="program-class-name">{subj.name}</span>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-
-                {yIdx < arr.length - 1 && (
-                  <div className="program-break">
-                    <span className="program-break-line" />
-                    <span className="program-break-label">☀ {year.breakLabel || "Summer Break"}</span>
-                    <span className="program-break-line" />
-                  </div>
-                )}
-
+                <button className="dash-remove-btn" onClick={() => removeUni(u.id)}>
+                  <span className="dash-remove-icon" />
+                </button>
               </div>
             ))}
           </div>
-        )}
 
-        {/* ── SCHOLARSHIP TAB ── */}
-        {activeTab === "scholarship" && (
-          <div className="detail-section">
-            <div className="detail-section-title">Available Scholarships</div>
-            {[
-              { name: "Merit Scholarship", amount: "€5,000/year", req: "GPA above 3.5" },
-              { name: "International Student Grant", amount: "€3,000/year", req: "Non-EU students" },
-              { name: "Need-Based Aid", amount: "Up to €8,000", req: "Financial documentation required" },
-            ].map((s, i) => (
-              <div key={i} className="detail-scholarship-card">
-                <div>
-                  <div className="detail-scholarship-name">{s.name}</div>
-                  <div className="detail-scholarship-req">{s.req}</div>
-                </div>
-                <div className="detail-scholarship-amount">{s.amount}</div>
+          {/* Data rows */}
+          {ROW_LABELS.map(row => (
+            <div key={row.key} className="dash-table-row">
+              <div className="dash-table-label-cell">
+                {row.label}
+                {row.info && <InfoTooltip text={row.info} />}
               </div>
-            ))}
-          </div>
-        )}
+              {unis.map(u => (
+                <div key={u.id} className="dash-table-cell">
+                  {u[row.key] || "—"}
+                </div>
+              ))}
+            </div>
+          ))}
 
+        </div>
       </div>
     </div>
   );
