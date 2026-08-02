@@ -16,6 +16,7 @@ import "./styles/profile.css";
 
 const SAVED_UNIS_KEY = "unexa_saved_universities";
 const COMPARED_UNIS_KEY = "unexa_compared_universities";
+const JOINED_GROUPS_KEY = "unexa_joined_groups";
 const AVATAR_KEY = "unexa_profile_avatar";
 const COVER_KEY = "unexa_profile_cover";
 const AUTH_KEY = "unexa_auth_user";
@@ -53,6 +54,15 @@ export default function App() {
     }
   });
 
+  const [joinedGroupIds, setJoinedGroupIds] = useState(() => {
+    try {
+      const stored = localStorage.getItem(JOINED_GROUPS_KEY);
+      return stored ? JSON.parse(stored) : [];
+    } catch {
+      return [];
+    }
+  });
+
   const [avatarUrl, setAvatarUrl] = useState(() => {
     try {
       return localStorage.getItem(AVATAR_KEY) || null;
@@ -80,6 +90,12 @@ export default function App() {
       localStorage.setItem(COMPARED_UNIS_KEY, JSON.stringify(comparedUniversities));
     } catch {}
   }, [comparedUniversities]);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem(JOINED_GROUPS_KEY, JSON.stringify(joinedGroupIds));
+    } catch {}
+  }, [joinedGroupIds]);
 
   useEffect(() => {
     try {
@@ -132,6 +148,12 @@ export default function App() {
 
   function removeFromCompare(id) {
     setComparedUniversities(prev => prev.filter(u => u.id !== id));
+  }
+
+  function toggleJoinGroup(id) {
+    setJoinedGroupIds(prev =>
+      prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]
+    );
   }
 
   function handleLogin(user) {
@@ -200,7 +222,15 @@ export default function App() {
               }
             />
             <Route path="/career-roadmap" element={<CareerRoadmap />} />
-            <Route path="/community" element={<Community />} />
+            <Route
+              path="/community"
+              element={
+                <Community
+                  joinedGroupIds={joinedGroupIds}
+                  onToggleJoin={toggleJoinGroup}
+                />
+              }
+            />
             <Route
               path="/profile"
               element={
