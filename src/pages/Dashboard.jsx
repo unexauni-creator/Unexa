@@ -85,13 +85,17 @@ export default function Dashboard({ comparedUniversities = [], onRemove, maxComp
             </p>
           </div>
         </div>
-        <div className="dash-narrow-wrap">
+
+        <div className="dash-warning-wrap">
           <div className="dash-warning">
             <span className="dash-warning-icon" />
             <div className="dash-warning-title">Add at least one more university</div>
             <div className="dash-warning-desc">You need a minimum of 2 universities to start comparing. Go back to Home and add another one.</div>
             <button className="dash-warning-btn" onClick={() => navigate("/")}>Add university →</button>
           </div>
+        </div>
+
+        <div className="dash-narrow-wrap">
           <div className="dash-single-preview">
             {unis.map(u => (
               <div key={u.id} className="dash-single-card">

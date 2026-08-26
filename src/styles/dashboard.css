@@ -42,6 +42,13 @@
   mask: url('/close-circle.svg') center / contain no-repeat;
 }
 
+/* Full-width wrapper so the warning block centers on the whole page, not just the narrow column */
+.dash-warning-wrap {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
 .dash-warning {
   display: flex;
   flex-direction: column;
@@ -54,8 +61,6 @@
   padding: 28px 24px;
   width: 100%;
   max-width: 480px;
-  margin: 0 auto;
-  align-self: center;
 }
 .dash-warning-icon {
   width: 28px;
