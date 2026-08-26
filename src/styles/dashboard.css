@@ -42,8 +42,30 @@
   mask: url('/close-circle.svg') center / contain no-repeat;
 }
 
-.dash-warning { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 10px; background: rgba(172,136,118,0.12); border: 1.5px solid rgba(172,136,118,0.35); border-radius: 16px; padding: 28px 24px; }
-.dash-warning-icon { width: 28px; height: 28px; flex-shrink: 0; }
+.dash-warning {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 10px;
+  background: rgba(172,136,118,0.12);
+  border: 1.5px solid rgba(172,136,118,0.35);
+  border-radius: 16px;
+  padding: 28px 24px;
+  width: 100%;
+  max-width: 480px;
+  margin: 0 auto;
+  align-self: center;
+}
+.dash-warning-icon {
+  width: 28px;
+  height: 28px;
+  display: inline-block;
+  flex-shrink: 0;
+  background-color: #4a3f38;
+  -webkit-mask: url('/danger.svg') center / contain no-repeat;
+  mask: url('/danger.svg') center / contain no-repeat;
+}
 .dash-warning-title { font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 15px; color: rgba(43,31,24,0.96); margin-bottom: 3px; }
 .dash-warning-desc { font-family: 'Nunito', sans-serif; font-size: 13px; color: #9e8f86; max-width: 420px; }
 .dash-warning-btn { margin-top: 6px; flex-shrink: 0; padding: 9px 16px; background: #AC8876; color: white; border: none; border-radius: 10px; font-family: 'Nunito', sans-serif; font-size: 13px; font-weight: 600; cursor: pointer; white-space: nowrap; transition: background 0.18s; }
@@ -77,7 +99,7 @@
   .dash-table-label-cell { min-width: 120px; width: 120px; font-size: 12px; padding: 12px 10px; }
   .dash-table-cell { font-size: 12px; padding: 12px 10px; min-width: 130px; }
   .dash-uni-card-img { width: 36px; height: 36px; }
-  .dash-warning-btn { margin-left: 0; }
+  .dash-warning { padding: 24px 18px; }
   .dash-tooltip { width: 240px; }
   .dash-desc-block { padding: 0; }
 }

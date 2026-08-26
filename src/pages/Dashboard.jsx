@@ -87,7 +87,7 @@ export default function Dashboard({ comparedUniversities = [], onRemove, maxComp
         </div>
         <div className="dash-narrow-wrap">
           <div className="dash-warning">
-            <img src="/danger.svg" alt="warning" className="dash-warning-icon" />
+            <span className="dash-warning-icon" />
             <div className="dash-warning-title">Add at least one more university</div>
             <div className="dash-warning-desc">You need a minimum of 2 universities to start comparing. Go back to Home and add another one.</div>
             <button className="dash-warning-btn" onClick={() => navigate("/")}>Add university →</button>
