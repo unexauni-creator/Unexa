@@ -101,7 +101,7 @@ export default function Dashboard({ comparedUniversities = [], onRemove, maxComp
               <div key={u.id} className="dash-single-card">
                 <img src={u.image} alt={u.name} className="dash-single-img" />
                 <div className="dash-single-info">
-                  <div className="dash-uni-card-name" style={{ fontSize: 15 }}>{u.name}</div>
+                  <div className="dash-uni-card-name">{u.name}</div>
                   <div className="dash-uni-card-program">{u.program}</div>
                 </div>
                 <button className="dash-remove-btn" style={{ position: "static", marginLeft: "auto" }}
