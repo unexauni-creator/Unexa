@@ -20,7 +20,25 @@ function InfoTooltip({ text }) {
   function handleMouseEnter() {
     if (btnRef.current) {
       const rect = btnRef.current.getBoundingClientRect();
-      setPos({ top: rect.bottom + window.scrollY + 8, left: rect.left + window.scrollX });
+      const tooltipWidth = Math.min(300, window.innerWidth - 32);
+      const estimatedHeight = 180; // rough max height before content is known
+      const spaceBelow = window.innerHeight - rect.bottom;
+      const spaceAbove = rect.top;
+
+      let top;
+      if (spaceBelow >= estimatedHeight || spaceBelow >= spaceAbove) {
+        top = rect.bottom + 8;
+      } else {
+        top = Math.max(8, rect.top - estimatedHeight - 8);
+      }
+
+      let left = rect.left;
+      if (left + tooltipWidth > window.innerWidth - 16) {
+        left = window.innerWidth - tooltipWidth - 16;
+      }
+      if (left < 16) left = 16;
+
+      setPos({ top, left });
     }
     setVisible(true);
   }
