@@ -42,7 +42,6 @@
   mask: url('/close-circle.svg') center / contain no-repeat;
 }
 
-/* Full-width wrapper so the warning block centers on the whole page, not just the narrow column */
 .dash-warning-wrap {
   width: 100%;
   display: flex;
@@ -108,7 +107,7 @@
 .dash-info-btn { background: none; border: none; cursor: pointer; padding: 0; line-height: 1; display: flex; align-items: center; transition: opacity 0.18s; }
 .dash-info-btn:hover { opacity: 0.7; }
 .dash-info-icon { width: 16px; height: 16px; filter: brightness(0) saturate(100%) invert(55%) sepia(15%) saturate(500%) hue-rotate(340deg); }
-.dash-tooltip { position: fixed; z-index: 9999; width: 300px; max-width: calc(100vw - 32px); max-height: 70vh; overflow-y: auto; background: #2c2420; color: white; border-radius: 14px; padding: 14px 16px; box-shadow: 0 8px 32px rgba(0,0,0,0.22); animation: fadeIn 0.15s ease; pointer-events: auto; }
+.dash-tooltip { position: fixed; z-index: 9999; width: 300px; max-width: calc(100vw - 32px); max-height: 70vh; overflow-y: auto; background: #2c2420; color: white; border-radius: 14px; padding: 14px 16px; box-shadow: 0 8px 32px rgba(0,0,0,0.22); transition: opacity 0.12s ease; pointer-events: auto; }
 .dash-tooltip-text { font-family: 'Nunito', sans-serif; font-size: 13px; line-height: 1.7; color: rgba(255,255,255,0.9); }
 
 @media (max-width: 768px) {
@@ -122,9 +121,6 @@
   .dash-desc-block { padding: 0; }
 }
 
-/* Table now hugs its content width instead of stretching to fill the page.
-   Fixed per-column width means 2 universities stay compact; 4 universities
-   scroll horizontally inside .dash-table-scroll rather than stretching cells. */
 .dash-table-scroll {
   width: 100%;
   overflow-x: auto;
@@ -172,7 +168,6 @@
 }
 .dash-table-cell:last-child { border-right: none; }
 
-/* Narrow wrapper for the 1-university state — no longer stretches full width */
 .dash-narrow-wrap {
   max-width: 640px;
   display: flex;

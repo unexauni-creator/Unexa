@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { useState, useRef } from "react";
+import { useState, useRef, useLayoutEffect } from "react";
 import { createPortal } from "react-dom";
 
 const ROW_LABELS = [
@@ -15,21 +15,39 @@ const ROW_LABELS = [
 function InfoTooltip({ text }) {
   const [visible, setVisible] = useState(false);
   const [pos, setPos] = useState({ top: 0, left: 0 });
+  const [ready, setReady] = useState(false);
   const btnRef = useRef(null);
+  const tooltipRef = useRef(null);
 
   function handleMouseEnter() {
     if (btnRef.current) {
       const rect = btnRef.current.getBoundingClientRect();
       const tooltipWidth = Math.min(300, window.innerWidth - 32);
-      const estimatedHeight = 180; // rough max height before content is known
+      let left = rect.left;
+      if (left + tooltipWidth > window.innerWidth - 16) {
+        left = window.innerWidth - tooltipWidth - 16;
+      }
+      if (left < 16) left = 16;
+      // Initial guess below the button; corrected precisely once real height is known.
+      setPos({ top: rect.bottom + 8, left });
+    }
+    setReady(false);
+    setVisible(true);
+  }
+
+  useLayoutEffect(() => {
+    if (visible && btnRef.current && tooltipRef.current) {
+      const rect = btnRef.current.getBoundingClientRect();
+      const tooltipHeight = tooltipRef.current.offsetHeight;
+      const tooltipWidth = tooltipRef.current.offsetWidth;
       const spaceBelow = window.innerHeight - rect.bottom;
       const spaceAbove = rect.top;
 
       let top;
-      if (spaceBelow >= estimatedHeight || spaceBelow >= spaceAbove) {
+      if (spaceBelow >= tooltipHeight + 8 || spaceBelow >= spaceAbove) {
         top = rect.bottom + 8;
       } else {
-        top = Math.max(8, rect.top - estimatedHeight - 8);
+        top = Math.max(8, rect.top - tooltipHeight - 8);
       }
 
       let left = rect.left;
@@ -39,9 +57,9 @@ function InfoTooltip({ text }) {
       if (left < 16) left = 16;
 
       setPos({ top, left });
+      setReady(true);
     }
-    setVisible(true);
-  }
+  }, [visible]);
 
   return (
     <span className="dash-info-wrap">
@@ -49,7 +67,7 @@ function InfoTooltip({ text }) {
         <img src="/info-circle.svg" alt="info" className="dash-info-icon" />
       </button>
       {visible && createPortal(
-        <div className="dash-tooltip" style={{ top: pos.top, left: pos.left }}
+        <div ref={tooltipRef} className="dash-tooltip" style={{ top: pos.top, left: pos.left, opacity: ready ? 1 : 0 }}
           onMouseEnter={() => setVisible(true)} onMouseLeave={() => setVisible(false)}>
           <div className="dash-tooltip-text">{text}</div>
         </div>,
