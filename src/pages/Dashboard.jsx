@@ -101,7 +101,7 @@ export default function Dashboard({ comparedUniversities = [], onRemove, maxComp
           </div>
         </div>
         <div className="compare-empty">
-          <div className="compare-empty-icon">⚖️</div>
+          <div className="compare-empty-icon" />
           <div className="compare-empty-title">No universities added</div>
           <div className="compare-empty-desc">Go to Home and open a university card, then click "Compare to others" to add it here.</div>
           <button className="detail-btn-primary" style={{ marginTop: 16 }} onClick={() => navigate("/")}>Browse Universities</button>
