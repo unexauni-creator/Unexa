@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { useState, useRef } from "react";
+import { createPortal } from "react-dom";
 
 const ROW_LABELS = [
   { key: "scholarshipsText", label: "Scholarship", info: null },
@@ -29,11 +30,12 @@ function InfoTooltip({ text }) {
       <button ref={btnRef} className="dash-info-btn" onMouseEnter={handleMouseEnter} onMouseLeave={() => setVisible(false)}>
         <img src="/info-circle.svg" alt="info" className="dash-info-icon" />
       </button>
-      {visible && (
+      {visible && createPortal(
         <div className="dash-tooltip" style={{ top: pos.top, left: pos.left }}
           onMouseEnter={() => setVisible(true)} onMouseLeave={() => setVisible(false)}>
           <div className="dash-tooltip-text">{text}</div>
-        </div>
+        </div>,
+        document.body
       )}
     </span>
   );
@@ -72,20 +74,22 @@ export default function Dashboard({ comparedUniversities = [], onRemove, maxComp
     );
   }
 
-  if (count === 1) {
-    return (
-      <div className="dashboard-page">
-        <div className="dashboard-header">
-          <div className="dash-title">Dashboard</div>
-          <div className="dash-desc-block">
-            <p className="dash-desc-sub">
-              Compare selected universities side by side.
-              <br />
-              You can add up to {maxCompare} universities to find the one that fits you best.
-            </p>
-          </div>
+  return (
+    <div className="dashboard-page">
+      <div className="dashboard-header">
+        <div className="dash-title">Dashboard</div>
+        <div className="dash-desc-block">
+          <p className="dash-desc-sub">
+            {count === 1
+              ? "Compare selected universities side by side."
+              : `Compare ${count} selected universities side by side.`}
+            <br />
+            You can add up to {maxCompare} universities to find the one that fits you best.
+          </p>
         </div>
+      </div>
 
+      {count === 1 && (
         <div className="dash-warning-wrap">
           <div className="dash-warning">
             <span className="dash-warning-icon" />
@@ -94,40 +98,7 @@ export default function Dashboard({ comparedUniversities = [], onRemove, maxComp
             <button className="dash-warning-btn" onClick={() => navigate("/")}>Add university →</button>
           </div>
         </div>
-
-        <div className="dash-narrow-wrap">
-          <div className="dash-single-preview">
-            {unis.map(u => (
-              <div key={u.id} className="dash-single-card">
-                <img src={u.image} alt={u.name} className="dash-single-img" />
-                <div className="dash-single-info">
-                  <div className="dash-uni-card-name">{u.name}</div>
-                  <div className="dash-uni-card-program">{u.program}</div>
-                </div>
-                <button className="dash-remove-btn" style={{ position: "static", marginLeft: "auto" }}
-                  onClick={() => removeUni(u.id)}>
-                  <span className="dash-remove-icon" />
-                </button>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  return (
-    <div className="dashboard-page">
-      <div className="dashboard-header">
-        <div className="dash-title">Dashboard</div>
-        <div className="dash-desc-block">
-          <p className="dash-desc-sub">
-            Compare {count} selected universities side by side.
-            <br />
-            You can add up to {maxCompare} universities to find the one that fits you best.
-          </p>
-        </div>
-      </div>
+      )}
 
       {count === maxCompare && (
         <div className="dash-max-banner">
