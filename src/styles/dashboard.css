@@ -25,9 +25,9 @@
 .dash-table-cell { box-sizing: border-box; flex: 1 1 200px; min-width: 200px; padding: 16px 20px; font-family: 'Nunito', sans-serif; font-size: 14px; color: rgba(43,31,24,0.8); display: flex; align-items: center; justify-content: flex-start; text-align: left; border-right: 1px solid rgba(172,136,118,0.15); }
 .dash-table-cell:last-child { border-right: none; }
 
-.dash-uni-header { display: flex; align-items: center; gap: 10px; padding: 16px 40px 16px 18px; position: relative; min-height: 90px; min-width: 0; justify-content: flex-start; text-align: left; }
+.dash-uni-header { display: flex; align-items: center; gap: 10px; padding: 16px 48px 16px 18px; position: relative; min-height: 90px; min-width: 0; justify-content: flex-start; text-align: left; }
 .dash-uni-card-img { width: 44px; height: 44px; border-radius: 10px; object-fit: cover; flex-shrink: 0; }
-.dash-uni-card-info { flex: 1; min-width: 0; overflow: hidden; }
+.dash-uni-card-info { flex: 1; min-width: 0; max-width: 100%; overflow: hidden; padding-right: 2px; }
 .dash-uni-card-name { font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 13px; color: rgba(43,31,24,0.96); margin-bottom: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .dash-uni-card-program { font-family: 'Nunito', sans-serif; font-size: 12px; color: #9e8f86; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
