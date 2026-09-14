@@ -82,6 +82,7 @@ export default function Dashboard({ comparedUniversities = [], onRemove, maxComp
 
   const unis = comparedUniversities;
   const count = unis.length;
+  const isFull = count === maxCompare;
 
   function removeUni(id) {
     onRemove?.(id);
@@ -136,14 +137,14 @@ export default function Dashboard({ comparedUniversities = [], onRemove, maxComp
         </div>
       )}
 
-      {count === maxCompare && (
+      {isFull && (
         <div className="dash-max-banner">
           <span>✓ Maximum reached — you can compare up to {maxCompare} universities. Remove one to add another.</span>
         </div>
       )}
 
       <div className="dash-table-scroll">
-        <div className="dash-table" style={{ "--uni-count": count }}>
+        <div className={`dash-table${isFull ? " dash-table-full" : ""}`} style={{ "--uni-count": count }}>
 
           {/* Header row */}
           <div className="dash-table-row dash-header-row">
