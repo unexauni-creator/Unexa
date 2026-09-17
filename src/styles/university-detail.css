@@ -31,7 +31,8 @@
 .detail-scroll::-webkit-scrollbar-track { background: transparent; }
 .detail-scroll::-webkit-scrollbar-thumb { background: rgba(172, 136, 118, 0.4); border-radius: 6px; }
 
-/* ── Sticky header: same frosted-glass fill as the box, tabs styled like the original ── */
+/* ── Sticky header: own frosted-glass fill so scrolled content blurs
+       underneath instead of bleeding through, pill-style tabs ── */
 .detail-sticky-header {
   position: sticky;
   top: 0;
@@ -39,14 +40,20 @@
   display: flex;
   align-items: center;
   gap: 0;
+  padding: 20px 20px 16px;
+  background: rgba(208, 208, 208, 0.55);
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  border-radius: 0 24px 0 0;
 }
 
-.detail-back-btn { width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; background: transparent; border: none; border-radius: 16px; cursor: pointer; margin: 24px 12px 20px 0; transition: opacity 0.18s; flex-shrink: 0; }
+.detail-back-btn { width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; background: transparent; border: none; border-radius: 16px; cursor: pointer; margin: 0 12px 0 0; transition: opacity 0.18s; flex-shrink: 0; }
 .detail-back-btn:hover { opacity: 0.6; background: transparent; }
 .detail-back-icon { width: 20px; height: 20px; filter: brightness(0); }
 
-.detail-tabs { display: flex; gap: 0; margin-bottom: 0; flex-shrink: 0; }
-.detail-tab { padding: 10px 20px; font-family: 'Nunito', sans-serif; font-size: 15px; font-weight: 400; color: #000; background: rgba(208,208,208,0.2); border: none; border-radius: 10px 10px 0 0; cursor: pointer; transition: background 0.18s; }
+.detail-tabs { display: flex; gap: 8px; margin-bottom: 0; flex-shrink: 0; }
+.detail-tab { padding: 10px 22px; font-family: 'Nunito', sans-serif; font-size: 15px; font-weight: 600; color: rgba(43,31,24,0.75); background: transparent; border: none; border-radius: 12px; cursor: pointer; transition: background 0.18s, color 0.18s; }
+.detail-tab:hover { background: rgba(172,136,118,0.14); }
 .detail-tab.active { background: #AC8876; color: #fff; }
 
 .detail-body { display: flex; flex-direction: column; gap: 28px; padding: 20px 20px 40px; }
@@ -147,8 +154,9 @@
   .detail-details-row { flex-direction: column; }
   .detail-social-row { flex-direction: column; align-items: center; }
   .detail-info-grid { grid-template-columns: 1fr 1fr; }
-  .detail-tabs { overflow-x: auto; }
+  .detail-sticky-header { padding: 14px 16px 12px; }
+  .detail-tabs { overflow-x: auto; gap: 6px; }
   .detail-tab { font-size: 13px; padding: 8px 14px; white-space: nowrap; }
   .compare-toast { min-width: unset; width: calc(100% - 32px); left: 16px; transform: none; bottom: 16px; }
-  .detail-back-btn { margin: 16px 8px 12px 0; }
+  .detail-back-btn { margin: 0 8px 0 0; }
 }
