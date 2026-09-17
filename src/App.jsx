@@ -15,9 +15,12 @@ import "./styles/landing.css";
 import "./styles/profile.css";
 
 const SAVED_UNIS_KEY = "unexa_saved_universities";
+const COMPARED_UNIS_KEY = "unexa_compared_universities";
+const JOINED_GROUPS_KEY = "unexa_joined_groups";
 const AVATAR_KEY = "unexa_profile_avatar";
 const COVER_KEY = "unexa_profile_cover";
 const AUTH_KEY = "unexa_auth_user";
+const MAX_COMPARE = 4;
 
 export default function App() {
   const [selectedUni, setSelectedUni] = useState(null);
@@ -36,6 +39,24 @@ export default function App() {
   const [savedUniversities, setSavedUniversities] = useState(() => {
     try {
       const stored = localStorage.getItem(SAVED_UNIS_KEY);
+      return stored ? JSON.parse(stored) : [];
+    } catch {
+      return [];
+    }
+  });
+
+  const [comparedUniversities, setComparedUniversities] = useState(() => {
+    try {
+      const stored = localStorage.getItem(COMPARED_UNIS_KEY);
+      return stored ? JSON.parse(stored) : [];
+    } catch {
+      return [];
+    }
+  });
+
+  const [joinedGroupIds, setJoinedGroupIds] = useState(() => {
+    try {
+      const stored = localStorage.getItem(JOINED_GROUPS_KEY);
       return stored ? JSON.parse(stored) : [];
     } catch {
       return [];
@@ -66,6 +87,18 @@ export default function App() {
 
   useEffect(() => {
     try {
+      localStorage.setItem(COMPARED_UNIS_KEY, JSON.stringify(comparedUniversities));
+    } catch {}
+  }, [comparedUniversities]);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem(JOINED_GROUPS_KEY, JSON.stringify(joinedGroupIds));
+    } catch {}
+  }, [joinedGroupIds]);
+
+  useEffect(() => {
+    try {
       if (avatarUrl) {
         localStorage.setItem(AVATAR_KEY, avatarUrl);
       } else {
@@ -93,6 +126,33 @@ export default function App() {
       prev.some(u => u.id === uni.id)
         ? prev.filter(u => u.id !== uni.id)
         : [...prev, uni]
+    );
+  }
+
+  // Returns "added" | "exists" | "full" so the caller (UniversityDetail) can react
+  function addToCompare(uni) {
+    let result = "added";
+    setComparedUniversities(prev => {
+      if (prev.some(u => u.id === uni.id)) {
+        result = "exists";
+        return prev;
+      }
+      if (prev.length >= MAX_COMPARE) {
+        result = "full";
+        return prev;
+      }
+      return [...prev, uni];
+    });
+    return result;
+  }
+
+  function removeFromCompare(id) {
+    setComparedUniversities(prev => prev.filter(u => u.id !== id));
+  }
+
+  function toggleJoinGroup(id) {
+    setJoinedGroupIds(prev =>
+      prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]
     );
   }
 
@@ -136,6 +196,8 @@ export default function App() {
             onBack={() => setSelectedUni(null)}
             savedUniversities={savedUniversities}
             onToggleSave={toggleSaveUni}
+            comparedUniversities={comparedUniversities}
+            onAddToCompare={addToCompare}
           />
         ) : (
           <Routes>
@@ -149,9 +211,26 @@ export default function App() {
                 />
               }
             />
-            <Route path="/dashboard" element={<Dashboard />} />
+            <Route
+              path="/dashboard"
+              element={
+                <Dashboard
+                  comparedUniversities={comparedUniversities}
+                  onRemove={removeFromCompare}
+                  maxCompare={MAX_COMPARE}
+                />
+              }
+            />
             <Route path="/career-roadmap" element={<CareerRoadmap />} />
-            <Route path="/community" element={<Community />} />
+            <Route
+              path="/community"
+              element={
+                <Community
+                  joinedGroupIds={joinedGroupIds}
+                  onToggleJoin={toggleJoinGroup}
+                />
+              }
+            />
             <Route
               path="/profile"
               element={

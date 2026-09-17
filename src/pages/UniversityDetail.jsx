@@ -1,68 +1,22 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-const DEFAULT_CURRICULUM = [
-  {
-    year: 1,
-    label: "Foundation",
-    breakLabel: "Summer Break",
-    semesters: [
-      {
-        name: "Semester 1",
-        subjects: [
-          { type: "Core", name: "Introduction to Design" },
-          { type: "Core", name: "Typography & Layout" },
-          { type: "Elective", name: "Art History" },
-        ],
-      },
-      {
-        name: "Semester 2",
-        subjects: [
-          { type: "Core", name: "Digital Illustration" },
-          { type: "Core", name: "Brand Identity" },
-          { type: "Elective", name: "Visual Culture" },
-        ],
-      },
-    ],
-  },
-  {
-    year: 2,
-    label: "Advanced",
-    breakLabel: "Summer Break",
-    semesters: [
-      {
-        name: "Semester 3",
-        subjects: [
-          { type: "Core", name: "UX Research Methods" },
-          { type: "Core", name: "Motion Graphics" },
-          { type: "Elective", name: "Design Theory" },
-        ],
-      },
-      {
-        name: "Semester 4",
-        subjects: [
-          { type: "Core", name: "Portfolio Development" },
-          { type: "Core", name: "Final Project" },
-          { type: "Elective", name: "Studio Practice" },
-        ],
-      },
-    ],
-  },
-];
-
-const DEFAULT_REQUIRED_DOCS = [
-  { label: "Language", value: "TOPIK Level 3 (B2)" },
-  { label: "High school diploma", value: "Translated to Korean" },
-  { label: "Visa", value: "D-4 visa for language study" },
-  { label: "Bank statement", value: "Minimum 20,000 USD/year" },
-];
-
-const DEFAULT_CANDIDATE_REQUIREMENTS = [
-  { label: "Portfolio", value: "10–15 pieces, digital submission" },
-  { label: "Minimum GPA", value: "3.0 / 4.0 or equivalent" },
-  { label: "English proficiency", value: "IELTS 6.0 / TOEFL 80" },
-  { label: "Recommendation letters", value: "2 required" },
-];
+// Розбиває "Merit Scholarship (GPA above 3.5), Grant X" на окремі пункти,
+// не ламаючи текст усередині дужок
+function parseScholarships(text) {
+  if (!text) return [];
+  return text
+    .split(/,\s*(?![^(]*\))/)
+    .map((s) => s.trim())
+    .filter(Boolean)
+    .map((entry) => {
+      const match = entry.match(/^(.+?)\s*\((.+)\)$/);
+      if (match) {
+        return { name: match[1].trim(), detail: match[2].trim() };
+      }
+      return { name: entry, detail: null };
+    });
+}
 
 const PLACEHOLDER_IMAGES = {
   teacher:
@@ -73,24 +27,29 @@ const PLACEHOLDER_IMAGES = {
     "https://images.unsplash.com/photo-1555854877-bab0e564b8d5?auto=format&fit=crop&w=600&q=80",
 };
 
-export default function UniversityDetail({ uni, onBack, savedUniversities = [], onToggleSave }) {
+export default function UniversityDetail({
+  uni,
+  onBack,
+  savedUniversities = [],
+  onToggleSave,
+  comparedUniversities = [],
+  onAddToCompare,
+}) {
   const [activeTab, setActiveTab] = useState("info");
-  const [compareMsg, setCompareMsg] = useState(false);
+  const [compareMsg, setCompareMsg] = useState(null); // null | "added" | "exists" | "full"
   const navigate = useNavigate();
 
   if (!uni) return null;
 
   const isSaved = savedUniversities.some((u) => u.id === uni.id);
-  const requiredDocs = uni.requiredDocuments?.length ? uni.requiredDocuments : DEFAULT_REQUIRED_DOCS;
-  const candidateReqs = uni.candidateRequirements?.length
-    ? uni.candidateRequirements
-    : DEFAULT_CANDIDATE_REQUIREMENTS;
-  const extraAcademic = uni.extraAcademicInfo?.length ? uni.extraAcademicInfo : null;
-  const locationLabel = uni.location || uni.desc;
+  const isCompared = comparedUniversities.some((u) => u.id === uni.id);
+  const scholarships = parseScholarships(uni.scholarshipsText);
+  const hasCandidateRequirements = uni.submissionPeriod || uni.minLanguageLevel || uni.minCGPA;
 
   function handleCompare() {
-    setCompareMsg(true);
-    setTimeout(() => setCompareMsg(false), 5000);
+    const result = onAddToCompare?.(uni);
+    setCompareMsg(result);
+    setTimeout(() => setCompareMsg(null), 5000);
   }
 
   function handleToggleSave(e) {
@@ -103,13 +62,17 @@ export default function UniversityDetail({ uni, onBack, savedUniversities = [], 
       {compareMsg && (
         <div className="compare-toast">
           <div className="compare-toast-text">
-            <span>✓ Added to Dashboard!</span>
-            <span className="compare-toast-sub">If you want to compare this university go to Dashboard</span>
+            {compareMsg === "added" && <span>✓ Added to Dashboard!</span>}
+            {compareMsg === "exists" && <span>Already in your Dashboard</span>}
+            {compareMsg === "full" && <span>Dashboard is full (max 4) — remove one first</span>}
+            {compareMsg !== "full" && (
+              <span className="compare-toast-sub">If you want to compare this university go to Dashboard</span>
+            )}
           </div>
           <button
             className="compare-toast-btn"
             onClick={() => {
-              setCompareMsg(false);
+              setCompareMsg(null);
               navigate("/dashboard");
             }}
           >
@@ -152,21 +115,18 @@ export default function UniversityDetail({ uni, onBack, savedUniversities = [], 
             <>
               <div className="detail-hero">
                 <div className="detail-hero-left">
-                  {uni.specialty && <div className="detail-overline">{uni.specialty}</div>}
                   <div className="detail-name">{uni.name}</div>
-                  {locationLabel && <div className="detail-university">{locationLabel}</div>}
-                  <p className="detail-desc">
-                    {uni.description || "No description available yet."}
-                  </p>
+                  {uni.desc && <div className="detail-university">{uni.desc}</div>}
+                  <p className="detail-desc">{uni.description || "No description available yet."}</p>
                   <div className="detail-btn-group">
                     <button
                       className="detail-btn-primary"
-                      onClick={() => window.open(uni.website || "https://www.univ-amu.fr/", "_blank")}
+                      onClick={() => window.open(uni.website || "#", "_blank")}
                     >
                       Official Website
                     </button>
                     <button className="detail-btn-ghost" onClick={handleCompare}>
-                      Compare to others
+                      {isCompared ? "✓ Added to compare" : "Compare to others"}
                     </button>
                   </div>
                 </div>
@@ -176,8 +136,8 @@ export default function UniversityDetail({ uni, onBack, savedUniversities = [], 
                   <div className="detail-hero-glass">
                     <div className="detail-hero-glass-blur" />
                     <div className="detail-hero-text">
-                      <div className="detail-hero-card-title">{uni.specialty || uni.name}</div>
-                      <div className="detail-hero-card-subtitle">{locationLabel}</div>
+                      <div className="detail-hero-card-title">{uni.name}</div>
+                      <div className="detail-hero-card-subtitle">{uni.desc}</div>
                     </div>
                     <button
                       className={`detail-hero-save ${isSaved ? "saved" : ""}`}
@@ -206,26 +166,44 @@ export default function UniversityDetail({ uni, onBack, savedUniversities = [], 
                   <div className="detail-info-box">
                     <div className="detail-section-title">Required documents</div>
                     <div className="detail-info-grid">
-                      {requiredDocs.map((item, i) => (
-                        <div className="detail-info-item" key={i}>
-                          <div className="detail-info-label">{item.label}</div>
-                          <div className="detail-info-value">{item.value}</div>
-                        </div>
-                      ))}
+                      <div className="detail-info-item">
+                        <div className="detail-info-label">Language</div>
+                        <div className="detail-info-value">{uni.documents?.language || "Not specified"}</div>
+                      </div>
+                      <div className="detail-info-item">
+                        <div className="detail-info-label">Diploma</div>
+                        <div className="detail-info-value">{uni.documents?.diploma || "Not specified"}</div>
+                      </div>
+                      <div className="detail-info-item">
+                        <div className="detail-info-label">Visa</div>
+                        <div className="detail-info-value">{uni.documents?.visa || "Not specified"}</div>
+                      </div>
+                      <div className="detail-info-item">
+                        <div className="detail-info-label">Bank statement</div>
+                        <div className="detail-info-value">{uni.documents?.bankStatement || "Not specified"}</div>
+                      </div>
                     </div>
                   </div>
 
-                  <div className="detail-info-box">
-                    <div className="detail-section-title">Candidate requirements</div>
-                    <div className="detail-info-grid">
-                      {candidateReqs.map((item, i) => (
-                        <div className="detail-info-item" key={i}>
-                          <div className="detail-info-label">{item.label}</div>
-                          <div className="detail-info-value">{item.value}</div>
+                  {hasCandidateRequirements && (
+                    <div className="detail-info-box">
+                      <div className="detail-section-title">Candidate requirements</div>
+                      <div className="detail-info-grid">
+                        <div className="detail-info-item">
+                          <div className="detail-info-label">Submission period</div>
+                          <div className="detail-info-value">{uni.submissionPeriod || "Not specified"}</div>
                         </div>
-                      ))}
+                        <div className="detail-info-item">
+                          <div className="detail-info-label">Min. language level</div>
+                          <div className="detail-info-value">{uni.minLanguageLevel || "Not specified"}</div>
+                        </div>
+                        <div className="detail-info-item">
+                          <div className="detail-info-label">Min. CGPA</div>
+                          <div className="detail-info-value">{uni.minCGPA || "Not specified"}</div>
+                        </div>
+                      </div>
                     </div>
-                  </div>
+                  )}
                 </div>
 
                 <div className="detail-column">
@@ -234,32 +212,21 @@ export default function UniversityDetail({ uni, onBack, savedUniversities = [], 
                     <div className="detail-info-grid">
                       <div className="detail-info-item">
                         <div className="detail-info-label">Duration</div>
-                        <div className="detail-info-value">{uni.duration || "4 Years"}</div>
+                        <div className="detail-info-value">{uni.duration || "Not specified"}</div>
                       </div>
                       <div className="detail-info-item">
                         <div className="detail-info-label">Tuition Fee</div>
-                        <div className="detail-info-value">{uni.tuition || "$4,500 / year"}</div>
+                        <div className="detail-info-value">{uni.tuition || "Not specified"}</div>
                       </div>
                       <div className="detail-info-item">
                         <div className="detail-info-label">Language</div>
-                        <div className="detail-info-value">{uni.language || "Korean"}</div>
+                        <div className="detail-info-value">{uni.language || "Not specified"}</div>
                       </div>
                       <div className="detail-info-item">
                         <div className="detail-info-label">Study Mode</div>
-                        <div className="detail-info-value">{uni.studyMode || "Campus"}</div>
+                        <div className="detail-info-value">{uni.studyMode || "Not specified"}</div>
                       </div>
                     </div>
-
-                    {extraAcademic && (
-                      <div className="detail-info-grid detail-info-grid-secondary">
-                        {extraAcademic.map((item, i) => (
-                          <div className="detail-info-item" key={i}>
-                            <div className="detail-info-label">{item.label}</div>
-                            <div className="detail-info-value">{item.value}</div>
-                          </div>
-                        ))}
-                      </div>
-                    )}
                   </div>
                 </div>
               </div>
@@ -304,40 +271,12 @@ export default function UniversityDetail({ uni, onBack, savedUniversities = [], 
           {/* ── PROGRAM TAB ── */}
           {activeTab === "program" && (
             <div className="detail-section">
-              <div className="detail-section-title">Program by Year</div>
-
-              {(uni.curriculum || DEFAULT_CURRICULUM).map((year, yIdx, arr) => (
-                <div className="program-year-block" key={yIdx}>
-                  <div className="program-year-header">
-                    <span className="program-year-badge">Year {year.year}</span>
-                    {year.label && <span className="program-year-label">{year.label}</span>}
-                  </div>
-
-                  <div className="program-semesters-row">
-                    {year.semesters.map((sem, sIdx) => (
-                      <div className="program-semester-card" key={sIdx}>
-                        <div className="program-semester-name">{sem.name}</div>
-                        <div className="program-classes">
-                          {sem.subjects.map((subj, cIdx) => (
-                            <div className="program-class-item" key={cIdx}>
-                              <span className="program-class-time">{subj.type}</span>
-                              <span className="program-class-name">{subj.name}</span>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-
-                  {yIdx < arr.length - 1 && (
-                    <div className="program-break">
-                      <span className="program-break-line" />
-                      <span className="program-break-label">☀ {year.breakLabel || "Summer Break"}</span>
-                      <span className="program-break-line" />
-                    </div>
-                  )}
-                </div>
-              ))}
+              <div className="detail-section-title">Program Overview</div>
+              <div className="detail-info-box">
+                <p className="detail-desc" style={{ margin: 0, lineHeight: 1.7 }}>
+                  {uni.curriculumSummary || "Detailed program information for this specialty hasn't been added yet."}
+                </p>
+              </div>
             </div>
           )}
 
@@ -345,19 +284,22 @@ export default function UniversityDetail({ uni, onBack, savedUniversities = [], 
           {activeTab === "scholarship" && (
             <div className="detail-section">
               <div className="detail-section-title">Available Scholarships</div>
-              {[
-                { name: "Merit Scholarship", amount: "€5,000/year", req: "GPA above 3.5" },
-                { name: "International Student Grant", amount: "€3,000/year", req: "Non-EU students" },
-                { name: "Need-Based Aid", amount: "Up to €8,000", req: "Financial documentation required" },
-              ].map((s, i) => (
-                <div key={i} className="detail-scholarship-card">
-                  <div>
-                    <div className="detail-scholarship-name">{s.name}</div>
-                    <div className="detail-scholarship-req">{s.req}</div>
+              {scholarships.length > 0 ? (
+                scholarships.map((s, i) => (
+                  <div key={i} className="detail-scholarship-card">
+                    <div>
+                      <div className="detail-scholarship-name">{s.name}</div>
+                      {s.detail && <div className="detail-scholarship-req">{s.detail}</div>}
+                    </div>
                   </div>
-                  <div className="detail-scholarship-amount">{s.amount}</div>
+                ))
+              ) : (
+                <div className="detail-info-box">
+                  <p className="detail-desc" style={{ margin: 0 }}>
+                    No scholarship information available for this specialty yet.
+                  </p>
                 </div>
-              ))}
+              )}
             </div>
           )}
         </div>

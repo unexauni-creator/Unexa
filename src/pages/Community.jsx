@@ -1,31 +1,55 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { supabase } from "../lib/supabase";
 
-const GROUPS = [
-  { id: 1, name: "Design Students France", desc: "Marseille, France", members: "1.2k members", image: "https://madeinmarseille.net/actualites-marseille/2019/04/Cube-campus-aix.jpeg", joined: true },
-  { id: 2, name: "Architecture Network", desc: "Bordeaux, France", members: "860 members", image: "https://upload.wikimedia.org/wikipedia/commons/8/8f/Ijba_iut_montaigne_bordeaux.jpg", joined: false },
-  { id: 3, name: "Fine Arts Collective", desc: "Besançon, France", members: "540 members", image: "https://cdn-s-www.bienpublic.com/images/AC513A2C-88A9-456D-972D-758F6975A8A9/NW_raw/le-campus-dijonnais-de-l-universite-de-bourgogne-accueille-plus-de-30-000-etudiants-photo-d-illustration-lbp-emma-buoncristiani-1690820597.jpg", joined: false },
-  { id: 4, name: "Digital Media Makers", desc: "Loire, France", members: "2.1k members", image: "https://www.univ-st-etienne.fr/_richText-file/ametys-internal%253Asites/ujm/ametys-internal%253Acontents/plans-d-acces-2/_attribute/content/_data/Campus-Trefilerie-Pierre-Grasset.jpg", joined: true },
-  { id: 5, name: "Fashion Design Hub", desc: "Nîmes, France", members: "410 members", image: "https://upload.wikimedia.org/wikipedia/commons/1/16/Scines_nimes.jpg", joined: false },
-  { id: 6, name: "Rennes Art Society", desc: "Rennes, France", members: "760 members", image: "https://upload.wikimedia.org/wikipedia/commons/thumb/2/29/Batiments_de_nuits_-Univ_Rennes_2_-_Louis_Arretche.jpg/330px-Batiments_de_nuits_-Univ_Rennes_2_-_Louis_Arretche.jpg", joined: false },
-];
-
-export default function Community() {
+export default function Community({ joinedGroupIds = [], onToggleJoin }) {
+  const [groups, setGroups] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState(null);
   const [search, setSearch] = useState("");
   const [activeTab, setActiveTab] = useState("discover"); // discover | joined
-  const [groups, setGroups] = useState(GROUPS);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function fetchGroups() {
+      setLoading(true);
+      const { data, error } = await supabase
+        .from("community_groups")
+        .select("*");
+
+      if (cancelled) return;
+
+      if (error) {
+        console.error("Помилка завантаження груп:", error);
+        setLoadError(error.message);
+      } else {
+        setGroups(data);
+        setLoadError(null);
+      }
+      setLoading(false);
+    }
+
+    fetchGroups();
+    return () => { cancelled = true; };
+  }, []);
+
+  function isJoined(id) {
+    return joinedGroupIds.includes(id);
+  }
 
   function toggleJoin(id) {
-    setGroups(prev => prev.map(g => g.id === id ? { ...g, joined: !g.joined } : g));
+    onToggleJoin?.(id);
   }
 
   const filtered = groups.filter(g => {
     const q = search.toLowerCase();
-    if (q && !g.name.toLowerCase().includes(q) && !g.desc.toLowerCase().includes(q)) return false;
-    if (activeTab === "joined") return g.joined;
+    const desc = `${g.city ?? ""}, ${g.country ?? ""}`;
+    if (q && !g.name.toLowerCase().includes(q) && !desc.toLowerCase().includes(q)) return false;
+    if (activeTab === "joined") return isJoined(g.id);
     return true;
   });
 
-  const joinedCount = groups.filter(g => g.joined).length;
+  const joinedCount = groups.filter(g => isJoined(g.id)).length;
 
   return (
     <div className="community-header">
@@ -56,40 +80,54 @@ export default function Community() {
       </div>
 
       <div className="community-content">
-        {filtered.length > 0 ? (
-          <div className="community-grid">
-            {filtered.map(group => (
-              <div key={group.id} className="community-card">
-                <img src={group.image} alt={group.name} className="community-card-img" />
-                <div className="community-card-glass">
-                  <div className="community-card-glass-blur" />
-                  <div className="community-card-text">
-                    <div className="community-card-title">{group.name}</div>
-                    <div className="community-card-subtitle">{group.desc}</div>
-                    <div className="community-card-members">{group.members}</div>
+        {loading && (
+          <div style={{ textAlign: "center", padding: "48px 0", fontFamily: "Nunito", color: "#8a7c70" }}>
+            Loading groups...
+          </div>
+        )}
+
+        {!loading && loadError && (
+          <div style={{ textAlign: "center", padding: "48px 0", fontFamily: "Nunito", color: "#c05050" }}>
+            Couldn't load groups: {loadError}
+          </div>
+        )}
+
+        {!loading && !loadError && (
+          filtered.length > 0 ? (
+            <div className="community-grid">
+              {filtered.map(group => (
+                <div key={group.id} className="community-card">
+                  <img src={group.image_url} alt={group.name} className="community-card-img" />
+                  <div className="community-card-glass">
+                    <div className="community-card-glass-blur" />
+                    <div className="community-card-text">
+                      <div className="community-card-title">{group.name}</div>
+                      <div className="community-card-subtitle">{group.city}, {group.country}</div>
+                      <div className="community-card-members">{group.member_count}</div>
+                    </div>
+                    <button
+                      className={`community-card-join-btn ${isJoined(group.id) ? "joined" : ""}`}
+                      onClick={() => toggleJoin(group.id)}
+                    >
+                      {isJoined(group.id) ? "Joined" : "Join"}
+                    </button>
                   </div>
-                  <button
-                    className={`community-card-join-btn ${group.joined ? "joined" : ""}`}
-                    onClick={() => toggleJoin(group.id)}
-                  >
-                    {group.joined ? "Joined" : "Join"}
-                  </button>
                 </div>
+              ))}
+            </div>
+          ) : (
+            <div className="community-empty">
+              <div className="community-empty-icon">👥</div>
+              <div className="community-empty-title">
+                {activeTab === "joined" ? "You haven't joined any groups yet" : "No groups found"}
               </div>
-            ))}
-          </div>
-        ) : (
-          <div className="community-empty">
-            <div className="community-empty-icon">👥</div>
-            <div className="community-empty-title">
-              {activeTab === "joined" ? "You haven't joined any groups yet" : "No groups found"}
+              <div className="community-empty-desc">
+                {activeTab === "joined"
+                  ? "Switch to Discover and join a group to see it here."
+                  : "Try a different search term."}
+              </div>
             </div>
-            <div className="community-empty-desc">
-              {activeTab === "joined"
-                ? "Switch to Discover and join a group to see it here."
-                : "Try a different search term."}
-            </div>
-          </div>
+          )
         )}
       </div>
     </div>

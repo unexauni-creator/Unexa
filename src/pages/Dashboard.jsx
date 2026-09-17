@@ -1,123 +1,92 @@
 import { useNavigate } from "react-router-dom";
-import { useState, useRef } from "react";
-
-const mockUniversities = [
-  {
-    id: 1,
-    name: "Aix-Marseille Université",
-    program: "Graphic Design",
-    scholarship: "Merit Award",
-    submissionPeriod: "September 2026",
-    duration: "36 months",
-    language: "English / French",
-    minLanguage: "IELTS 6.0 / DELF B2",
-    minCGPA: "CGPA 3.0",
-    tuition: "$8,500/yr",
-    image: "https://madeinmarseille.net/actualites-marseille/2019/04/Cube-campus-aix.jpeg",
-  },
-  {
-    id: 2,
-    name: "Université Bordeaux",
-    program: "Graphic Design",
-    scholarship: "International Grant",
-    submissionPeriod: "April 2026",
-    duration: "36 months",
-    language: "English / French",
-    minLanguage: "IELTS 6.5 / DELF B2",
-    minCGPA: "CGPA 3.2",
-    tuition: "$7,200/yr",
-    image: "https://upload.wikimedia.org/wikipedia/commons/8/8f/Ijba_iut_montaigne_bordeaux.jpg",
-  },
-  {
-    id: 3,
-    name: "Université Rennes 2",
-    program: "Graphic Design",
-    scholarship: "Need-Based Aid",
-    submissionPeriod: "April 2026",
-    duration: "36 months",
-    language: "English / French",
-    minLanguage: "IELTS 5.5 / DELF B1",
-    minCGPA: "CGPA 2.8",
-    tuition: "$6,000/yr",
-    image: "https://upload.wikimedia.org/wikipedia/commons/thumb/2/29/Batiments_de_nuits_-Univ_Rennes_2_-_Louis_Arretche.jpg/330px-Batiments_de_nuits_-Univ_Rennes_2_-_Louis_Arretche.jpg",
-  },
-  {
-    id: 4,
-    name: "Université de Nîmes",
-    program: "Graphic Design",
-    scholarship: "Regional Grant",
-    submissionPeriod: "May 2026",
-    duration: "36 months",
-    language: "English / French",
-    minLanguage: "IELTS 6.0 / DELF B1",
-    minCGPA: "CGPA 2.9",
-    tuition: "$5,400/yr",
-    image: "https://upload.wikimedia.org/wikipedia/commons/1/16/Scines_nimes.jpg",
-  },
-];
+import { useState, useRef, useLayoutEffect } from "react";
+import { createPortal } from "react-dom";
 
 const ROW_LABELS = [
-  { label: "Scholarship", info: null },
-  { label: "Submission period", info: null },
-  { label: "Duration of study", info: null },
-  { label: "Language", info: null },
-  { label: "Min. language", info: null },
-  { label: "Min. CGPA", info: "CGPA (Cumulative Grade Point Average) is a measure of your overall academic performance. Most universities require a minimum CGPA to ensure students can handle the academic workload of the program." },
-  { label: "Tuition fees", info: null },
+  { key: "scholarshipsText", label: "Scholarship", info: null },
+  { key: "submissionPeriod", label: "Submission period", info: null },
+  { key: "duration", label: "Duration of study", info: null },
+  { key: "language", label: "Language", info: null },
+  { key: "minLanguageLevel", label: "Min. language", info: null },
+  { key: "minCGPA", label: "Min. CGPA", info: "CGPA (Cumulative Grade Point Average) is a measure of your overall academic performance. Most universities require a minimum CGPA to ensure students can handle the academic workload of the program." },
+  { key: "tuition", label: "Tuition fees", info: null },
 ];
 
 function InfoTooltip({ text }) {
   const [visible, setVisible] = useState(false);
   const [pos, setPos] = useState({ top: 0, left: 0 });
+  const [ready, setReady] = useState(false);
   const btnRef = useRef(null);
+  const tooltipRef = useRef(null);
 
   function handleMouseEnter() {
     if (btnRef.current) {
       const rect = btnRef.current.getBoundingClientRect();
-      setPos({ top: rect.bottom + window.scrollY + 8, left: rect.left + window.scrollX });
+      const tooltipWidth = Math.min(300, window.innerWidth - 32);
+      let left = rect.left;
+      if (left + tooltipWidth > window.innerWidth - 16) {
+        left = window.innerWidth - tooltipWidth - 16;
+      }
+      if (left < 16) left = 16;
+      // Initial guess below the button; corrected precisely once real height is known.
+      setPos({ top: rect.bottom + 8, left });
     }
+    setReady(false);
     setVisible(true);
   }
+
+  useLayoutEffect(() => {
+    if (visible && btnRef.current && tooltipRef.current) {
+      const rect = btnRef.current.getBoundingClientRect();
+      const tooltipHeight = tooltipRef.current.offsetHeight;
+      const tooltipWidth = tooltipRef.current.offsetWidth;
+      const spaceBelow = window.innerHeight - rect.bottom;
+      const spaceAbove = rect.top;
+
+      let top;
+      if (spaceBelow >= tooltipHeight + 8 || spaceBelow >= spaceAbove) {
+        top = rect.bottom + 8;
+      } else {
+        top = Math.max(8, rect.top - tooltipHeight - 8);
+      }
+
+      let left = rect.left;
+      if (left + tooltipWidth > window.innerWidth - 16) {
+        left = window.innerWidth - tooltipWidth - 16;
+      }
+      if (left < 16) left = 16;
+
+      setPos({ top, left });
+      setReady(true);
+    }
+  }, [visible]);
 
   return (
     <span className="dash-info-wrap">
       <button ref={btnRef} className="dash-info-btn" onMouseEnter={handleMouseEnter} onMouseLeave={() => setVisible(false)}>
         <img src="/info-circle.svg" alt="info" className="dash-info-icon" />
       </button>
-      {visible && (
-        <div className="dash-tooltip" style={{ top: pos.top, left: pos.left }}
+      {visible && createPortal(
+        <div ref={tooltipRef} className="dash-tooltip" style={{ top: pos.top, left: pos.left, opacity: ready ? 1 : 0 }}
           onMouseEnter={() => setVisible(true)} onMouseLeave={() => setVisible(false)}>
           <div className="dash-tooltip-text">{text}</div>
-        </div>
+        </div>,
+        document.body
       )}
     </span>
   );
 }
 
-export default function Dashboard() {
+export default function Dashboard({ comparedUniversities = [], onRemove, maxCompare = 4 }) {
   const navigate = useNavigate();
 
-  // Empty by default — nothing is added to the comparison until the person
-  // explicitly adds a university via "Compare to others" on a detail page.
-  // (mockUniversities stays as demo data for wiring up that flow later.)
-  const [addedIds, setAddedIds] = useState([]);
-
-  const unis = mockUniversities.filter(u => addedIds.includes(u.id));
+  const unis = comparedUniversities;
   const count = unis.length;
+  const isFull = count === maxCompare;
 
   function removeUni(id) {
-    setAddedIds(prev => prev.filter(x => x !== id));
+    onRemove?.(id);
   }
-
-  const rows = [
-    unis.map(u => u.scholarship),
-    unis.map(u => u.submissionPeriod),
-    unis.map(u => u.duration),
-    unis.map(u => u.language),
-    unis.map(u => u.minLanguage),
-    unis.map(u => u.minCGPA),
-    unis.map(u => u.tuition),
-  ];
 
   if (count === 0) {
     return (
@@ -128,57 +97,15 @@ export default function Dashboard() {
             <p className="dash-desc-sub">
               Compare selected universities side by side.
               <br />
-              You can add up to 4 universities to find the one that fits you best.
+              You can add up to {maxCompare} universities to find the one that fits you best.
             </p>
           </div>
         </div>
         <div className="compare-empty">
-          <div className="compare-empty-icon">⚖️</div>
+          <div className="compare-empty-icon" />
           <div className="compare-empty-title">No universities added</div>
           <div className="compare-empty-desc">Go to Home and open a university card, then click "Compare to others" to add it here.</div>
           <button className="detail-btn-primary" style={{ marginTop: 16 }} onClick={() => navigate("/")}>Browse Universities</button>
-        </div>
-      </div>
-    );
-  }
-
-  if (count === 1) {
-    return (
-      <div className="dashboard-page">
-        <div className="dashboard-header">
-          <div className="dash-title">Dashboard</div>
-          <div className="dash-desc-block">
-            <p className="dash-desc-sub">
-              Compare selected universities side by side.
-              <br />
-              You can add up to 4 universities to find the one that fits you best.
-            </p>
-          </div>
-        </div>
-        <div className="dash-narrow-wrap">
-          <div className="dash-warning">
-            <span className="dash-warning-icon">⚠️</span>
-            <div>
-              <div className="dash-warning-title">Add at least one more university</div>
-              <div className="dash-warning-desc">You need a minimum of 2 universities to start comparing. Go back to Home and add another one.</div>
-            </div>
-            <button className="dash-warning-btn" onClick={() => navigate("/")}>Add university →</button>
-          </div>
-          <div className="dash-single-preview">
-            {unis.map(u => (
-              <div key={u.id} className="dash-single-card">
-                <img src={u.image} alt={u.name} className="dash-single-img" />
-                <div className="dash-single-info">
-                  <div className="dash-uni-card-name" style={{ fontSize: 15 }}>{u.name}</div>
-                  <div className="dash-uni-card-program">{u.program}</div>
-                </div>
-                <button className="dash-remove-btn" style={{ position: "static", marginLeft: "auto" }}
-                  onClick={() => removeUni(u.id)}>
-                  <span className="dash-remove-icon" />
-                </button>
-              </div>
-            ))}
-          </div>
         </div>
       </div>
     );
@@ -190,21 +117,34 @@ export default function Dashboard() {
         <div className="dash-title">Dashboard</div>
         <div className="dash-desc-block">
           <p className="dash-desc-sub">
-            Compare {count} selected universities side by side.
+            {count === 1
+              ? "Compare selected universities side by side."
+              : `Compare ${count} selected universities side by side.`}
             <br />
-            You can add up to 4 universities to find the one that fits you best.
+            You can add up to {maxCompare} universities to find the one that fits you best.
           </p>
         </div>
       </div>
 
-      {count === 4 && (
+      {count === 1 && (
+        <div className="dash-warning-wrap">
+          <div className="dash-warning">
+            <span className="dash-warning-icon" />
+            <div className="dash-warning-title">Add at least one more university</div>
+            <div className="dash-warning-desc">You need a minimum of 2 universities to start comparing. Go back to Home and add another one.</div>
+            <button className="dash-warning-btn" onClick={() => navigate("/")}>Add university →</button>
+          </div>
+        </div>
+      )}
+
+      {isFull && (
         <div className="dash-max-banner">
-          <span>✓ Maximum reached — you can compare up to 4 universities. Remove one to add another.</span>
+          <span>✓ Maximum reached — you can compare up to {maxCompare} universities. Remove one to add another.</span>
         </div>
       )}
 
       <div className="dash-table-scroll">
-        <div className="dash-table" style={{ "--uni-count": count }}>
+        <div className={`dash-table${isFull ? " dash-table-full" : ""}`} style={{ "--uni-count": count }}>
 
           {/* Header row */}
           <div className="dash-table-row dash-header-row">
@@ -230,15 +170,15 @@ export default function Dashboard() {
           </div>
 
           {/* Data rows */}
-          {ROW_LABELS.map((row, rowIdx) => (
-            <div key={row.label} className="dash-table-row">
+          {ROW_LABELS.map(row => (
+            <div key={row.key} className="dash-table-row">
               <div className="dash-table-label-cell">
                 {row.label}
                 {row.info && <InfoTooltip text={row.info} />}
               </div>
               {unis.map(u => (
                 <div key={u.id} className="dash-table-cell">
-                  {rows[rowIdx][unis.indexOf(u)]}
+                  {u[row.key] || "—"}
                 </div>
               ))}
             </div>
