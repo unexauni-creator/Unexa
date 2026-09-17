@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router-dom";
+import "./landing.css";
 
 const FEATURES = [
   { icon: "🎓", title: "Discover Universities", desc: "Browse design and art programs across Europe, filtered by country, tuition, language, and more.", accent: "mustard" },
@@ -27,6 +28,8 @@ const STATS = [
   { number: "5 yr", label: "Roadmaps", caption: "A plan built around your timeline" },
 ];
 
+const HERO_LOGOS = ["ECAL", "DAE", "CSM", "POLI", "KABK", "HDK"];
+
 export default function Landing() {
   const navigate = useNavigate();
 
@@ -43,44 +46,87 @@ export default function Landing() {
         </div>
       </header>
 
-      {/* ── Hero ── */}
-      <section className="landing-hero">
-        <div className="landing-hero-blob" aria-hidden="true" />
-        <span className="landing-hero-sparkle landing-hero-sparkle-left" aria-hidden="true">✦</span>
-        <span className="landing-hero-sparkle landing-hero-sparkle-right" aria-hidden="true">✧</span>
-        <div className="landing-hero-grid-deco" aria-hidden="true" />
+      {/* ── Hero (capture-style, Unexa palette) ── */}
+      <section className="unx-hero2">
+        <div className="unx-hero2-frame">
+          <span className="unx-hero2-corner tl" aria-hidden="true" />
+          <span className="unx-hero2-corner tr" aria-hidden="true" />
+          <span className="unx-hero2-corner bl" aria-hidden="true" />
+          <span className="unx-hero2-corner br" aria-hidden="true" />
 
-        <div className="landing-hero-inner">
-          <div className="landing-hero-eyebrow-row">
-            <span className="landing-hero-badge-dot">✳</span>
-            <span className="landing-hero-eyebrow">Design & Art Education, Simplified</span>
+          <span className="unx-hero2-plus p1" aria-hidden="true">+</span>
+          <span className="unx-hero2-plus p2" aria-hidden="true">+</span>
+          <span className="unx-hero2-plus p3" aria-hidden="true">+</span>
+
+          <div className="unx-hero2-trust">
+            <div className="unx-hero2-avatars">
+              <span className="unx-hero2-avatar" style={{ background: "#E8B84B" }}>A</span>
+              <span className="unx-hero2-avatar" style={{ background: "#7C9070" }}>M</span>
+              <span className="unx-hero2-avatar" style={{ background: "#C97B57" }}>S</span>
+              <span className="unx-hero2-avatar" style={{ background: "#6E90A8" }}>+</span>
+            </div>
+            <span className="unx-hero2-trust-label">Happy students worldwide</span>
           </div>
 
-          <h1 className="landing-hero-title">
-            Find your <span className="landing-hero-accent">university</span>.<br />
-            Plan your future.
-          </h1>
+          <div className="unx-hero2-content">
+            <h1 className="unx-hero2-title">
+              Unexa<sup className="unx-hero2-reg">®</sup>
+            </h1>
+            <p className="unx-hero2-tagline">through your roadmap</p>
 
-          <div className="landing-hero-bottom">
-            <div className="landing-hero-trust">
-              <div className="landing-hero-avatars">
-                <span className="landing-hero-avatar" style={{ background: "#E8B84B" }}>A</span>
-                <span className="landing-hero-avatar" style={{ background: "#7C9070" }}>M</span>
-                <span className="landing-hero-avatar" style={{ background: "#C97B57" }}>S</span>
-              </div>
-              <p className="landing-hero-trust-text"><strong>5,000+ students</strong> planning their future with Unexa</p>
+            <p className="unx-hero2-desc">
+              — Find design &amp; art programs that fit you, compare tuition,
+              <br />
+              deadlines, and scholarships into one clear plan.
+            </p>
+          </div>
+
+          <div className="unx-hero2-card">
+            <div className="unx-hero2-card-title">Personalized university roadmap</div>
+            <div className="unx-hero2-card-visual">
+              <div className="unx-hero2-card-bar" style={{ height: "48%" }} />
+              <div className="unx-hero2-card-bar" style={{ height: "78%" }} />
+              <div className="unx-hero2-card-bar" style={{ height: "62%" }} />
+              <div className="unx-hero2-card-bar" style={{ height: "92%" }} />
             </div>
-
-           <div className="landing-hero-cta-block">
-              <p className="landing-hero-desc">
-                Discover design and art universities across Europe, compare programs side by side, and build a roadmap tailored to you.
-              </p>
-              <button className="landing-btn-primary" onClick={() => navigate("/login?mode=signup")}>
-                Show all universities →
+            <div className="unx-hero2-card-footer">
+              <span className="unx-hero2-card-year">© 2026</span>
+              <button
+                className="unx-hero2-card-btn"
+                onClick={() => navigate("/login?mode=signup")}
+              >
+                Let's plan
               </button>
             </div>
           </div>
         </div>
+
+        <div className="unx-hero2-logos-row">
+          <div className="unx-hero2-logos">
+            {HERO_LOGOS.map((l) => (
+              <span className="unx-hero2-logo" key={l}>
+                {l}
+              </span>
+            ))}
+          </div>
+          <div className="unx-hero2-rating">
+            <span className="unx-hero2-stars">★★★★★</span>
+            <span className="unx-hero2-rating-text">
+              4.9/5 · Trusted by <strong>5,000+</strong> students
+            </span>
+          </div>
+        </div>
+
+        <figure className="unx-hero2-quote-block">
+          <figcaption className="unx-hero2-quote-author">
+            <span className="unx-hero2-quote-name">Elena M.</span>
+            <span className="unx-hero2-quote-role">Product Design applicant, ECAL</span>
+          </figcaption>
+          <blockquote className="unx-hero2-quote">
+            "I don't just browse programs — I compare tuition, deadlines, and
+            scholarships until I find the one plan that actually fits."
+          </blockquote>
+        </figure>
       </section>
 
       {/* ── Features ── */}

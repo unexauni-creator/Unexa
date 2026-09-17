@@ -57,67 +57,161 @@
 .landing-nav-cta { background: var(--ink); color: var(--onDark); border: none; border-radius: 100px; padding: 11px 22px; font-family: 'Nunito', sans-serif; font-size: 14px; font-weight: 700; cursor: pointer; transition: background 0.18s; }
 .landing-nav-cta:hover { background: var(--ink-2); }
 
-/* ── Hero ── */
-.landing-hero { position: relative; max-width: 1280px; margin: 0 auto; padding: 48px 48px 64px; overflow: hidden; }
-
-.landing-hero-blob {
-  position: absolute; top: -140px; left: -140px; width: 460px; height: 420px;
-  background: radial-gradient(circle at 35% 35%, rgba(196,149,106,0.28), rgba(172,136,118,0.18) 45%, transparent 72%);
-  filter: blur(4px); z-index: 0; pointer-events: none;
+.unx-hero2 {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 24px 48px 64px;
 }
 
-.landing-hero-sparkle { position: absolute; color: var(--clay); opacity: 0.55; z-index: 1; }
-.landing-hero-sparkle-left { top: 118px; left: 40%; font-size: 15px; }
-.landing-hero-sparkle-right { top: 40px; right: 64px; font-size: 22px; }
-
-.landing-hero-grid-deco {
-  position: absolute; top: 20px; right: 20px; width: 150px; height: 110px;
-  background-image: linear-gradient(var(--line) 1px, transparent 1px), linear-gradient(90deg, var(--line) 1px, transparent 1px);
-  background-size: 20px 20px; z-index: 0;
-  mask-image: linear-gradient(to bottom right, black 55%, transparent 100%);
+.unx-hero2-frame {
+  position: relative;
+  border-radius: 28px;
+  padding: 56px 48px 64px;
+  background:
+    linear-gradient(135deg, rgba(99,79,68,0.94), rgba(76,60,52,0.97)),
+    radial-gradient(circle at 20% 15%, rgba(196,149,106,0.35), transparent 55%);
+  overflow: hidden;
+  min-height: 480px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 }
 
-.landing-hero-inner { position: relative; z-index: 1; }
-
-.landing-hero-eyebrow-row { display: flex; align-items: center; gap: 10px; margin-bottom: 20px; }
-.landing-hero-badge-dot { width: 32px; height: 32px; border-radius: 50%; background: rgba(196,149,106,0.16); color: var(--espresso); display: flex; align-items: center; justify-content: center; font-size: 14px; flex-shrink: 0; }
-.landing-hero-eyebrow { font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 12.5px; letter-spacing: 0.05em; text-transform: uppercase; color: var(--text-soft); }
-
-.landing-hero-title { font-family: 'Nunito', sans-serif; font-weight: 800; font-size: 54px; line-height: 1.12; color: rgba(43,31,24,0.96); margin: 0 0 36px; letter-spacing: -0.01em; max-width: 700px; }
-.landing-hero-accent { font-family: 'Instrument Serif', serif; font-style: italic; font-weight: 400; color: var(--amber); }
-
-.landing-hero-bottom { display: flex; align-items: center; justify-content: space-between; gap: 32px; flex-wrap: wrap; border-top: 1px solid var(--line); padding-top: 28px; }
-
-.landing-hero-trust { display: flex; align-items: center; gap: 14px; padding: 12px 16px 12px 12px; border-radius: 16px; background: var(--card-soft); }
-.landing-hero-avatars { display: flex; flex-shrink: 0; }
-.landing-hero-avatar { width: 36px; height: 36px; border-radius: 50%; border: 3px solid var(--paper); margin-left: -12px; display: flex; align-items: center; justify-content: center; font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 12px; color: #fff; }
-.landing-hero-avatar:first-child { margin-left: 0; }
-.landing-hero-trust-text { font-family: 'Nunito', sans-serif; font-size: 13px; color: var(--text-soft); line-height: 1.4; max-width: 170px; margin: 0; }
-.landing-hero-trust-text strong { color: var(--ink); }
-
-.landing-hero-cta-block { display: flex; align-items: center; gap: 24px; flex-wrap: wrap; max-width: 460px; }
-.landing-hero-desc { font-family: 'Nunito', sans-serif; font-size: 13.5px; color: var(--text-soft); line-height: 1.6; margin: 0; flex: 1; min-width: 220px; }
-
-.landing-btn-primary {
-  background: var(--espresso); color: #F5F5F5; border: none; border-radius: 100px;
-  padding: 13px 24px; font-family: 'Nunito', sans-serif; font-size: 14px; font-weight: 700;
-  cursor: pointer; transition: background 0.18s; white-space: nowrap; flex-shrink: 0;
+.unx-hero2-corner {
+  position: absolute;
+  width: 26px;
+  height: 26px;
+  border: 1.5px solid rgba(245,245,245,0.45);
 }
-.landing-btn-primary:hover { background: var(--espresso-dark); }
+.unx-hero2-corner.tl { top: 22px; left: 22px; border-right: none; border-bottom: none; border-radius: 6px 0 0 0; }
+.unx-hero2-corner.tr { top: 22px; right: 22px; border-left: none; border-bottom: none; border-radius: 0 6px 0 0; }
+.unx-hero2-corner.bl { bottom: 22px; left: 22px; border-right: none; border-top: none; border-radius: 0 0 0 6px; }
+.unx-hero2-corner.br { bottom: 22px; right: 22px; border-left: none; border-top: none; border-radius: 0 0 6px 0; }
 
-@media (max-width: 1024px) {
-  .landing-hero-title { font-size: 40px; }
-  .landing-hero-grid-deco { display: none; }
+.unx-hero2-plus {
+  position: absolute;
+  color: rgba(245,245,245,0.35);
+  font-size: 16px;
+  font-family: 'Nunito', sans-serif;
+}
+.unx-hero2-plus.p1 { top: 46%; left: 12%; }
+.unx-hero2-plus.p2 { top: 44%; left: 34%; }
+.unx-hero2-plus.p3 { top: 40%; left: 62%; }
+
+.unx-hero2-trust {
+  align-self: flex-end;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  z-index: 2;
+}
+.unx-hero2-avatars { display: flex; }
+.unx-hero2-avatar {
+  width: 30px; height: 30px; border-radius: 50%;
+  border: 2px solid rgba(76,60,52,0.9);
+  margin-left: -10px;
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 11px; color: #fff;
+}
+.unx-hero2-avatar:first-child { margin-left: 0; }
+.unx-hero2-trust-label {
+  font-family: 'Nunito', sans-serif; font-size: 12.5px; color: rgba(245,245,245,0.72);
 }
 
-@media (max-width: 768px) {
-  .landing-hero { padding: 32px 20px 48px; }
-  .landing-hero-title { font-size: 30px; margin-bottom: 28px; }
-  .landing-hero-bottom { flex-direction: column; align-items: flex-start; gap: 20px; }
-  .landing-hero-cta-block { flex-direction: column; align-items: flex-start; max-width: 100%; }
-  .landing-btn-primary { align-self: stretch; text-align: center; }
-  .landing-hero-sparkle-left, .landing-hero-sparkle-right { display: none; }
+.unx-hero2-content { z-index: 2; margin-top: 24px; }
+.unx-hero2-title {
+  font-family: 'Nunito', sans-serif; font-weight: 800; font-size: 84px;
+  color: #F5F5F5; margin: 0; line-height: 1; letter-spacing: -0.02em;
 }
+.unx-hero2-reg { font-size: 30px; font-weight: 600; vertical-align: super; }
+.unx-hero2-tagline {
+  font-family: 'Instrument Serif', serif; font-style: italic; font-weight: 400;
+  font-size: 30px; color: #C4956A; margin: 4px 0 0;
+}
+.unx-hero2-desc {
+  font-family: 'Nunito', sans-serif; font-size: 14.5px; line-height: 1.6;
+  color: rgba(245,245,245,0.72); margin: 22px 0 0; max-width: 360px;
+}
+
+.unx-hero2-card {
+  position: absolute;
+  right: 48px;
+  bottom: 56px;
+  width: 230px;
+  background: rgba(245,243,239,0.97);
+  border-radius: 18px;
+  padding: 18px 18px 16px;
+  z-index: 3;
+  box-shadow: 0 20px 44px rgba(0,0,0,0.28);
+}
+.unx-hero2-card-title {
+  font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 14px;
+  color: #2c2420; line-height: 1.3; margin-bottom: 14px;
+}
+.unx-hero2-card-visual {
+  display: flex; align-items: flex-end; gap: 6px;
+  height: 64px; padding: 0 2px; margin-bottom: 14px;
+}
+.unx-hero2-card-bar {
+  flex: 1; border-radius: 4px 4px 2px 2px;
+  background: linear-gradient(180deg, #C4956A, #AC8876);
+}
+.unx-hero2-card-footer {
+  display: flex; align-items: center; justify-content: space-between;
+}
+.unx-hero2-card-year { font-family: 'Nunito', sans-serif; font-size: 11px; color: #9e8f86; }
+.unx-hero2-card-btn {
+  background: #2c2420; color: #F5F5F5; border: none; border-radius: 100px;
+  padding: 8px 14px; font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 12px;
+  cursor: pointer; transition: background 0.18s;
+}
+.unx-hero2-card-btn:hover { background: #4a3f38; }
+
+.unx-hero2-logos-row {
+  display: flex; align-items: center; justify-content: space-between;
+  flex-wrap: wrap; gap: 20px;
+  padding: 28px 4px 0;
+}
+.unx-hero2-logos { display: flex; align-items: center; gap: 28px; flex-wrap: wrap; }
+.unx-hero2-logo {
+  font-family: 'Nunito', sans-serif; font-weight: 800; font-size: 13px;
+  letter-spacing: 0.04em; color: #9e8f86; opacity: 0.8;
+}
+.unx-hero2-rating { display: flex; align-items: center; gap: 8px; }
+.unx-hero2-stars { color: #C4956A; font-size: 13px; letter-spacing: 1px; }
+.unx-hero2-rating-text { font-family: 'Nunito', sans-serif; font-size: 12.5px; color: #6b5e56; }
+.unx-hero2-rating-text strong { color: #2c2420; }
+
+.unx-hero2-quote-block {
+  max-width: 720px; margin: 56px auto 0; text-align: center; padding: 0 20px;
+}
+.unx-hero2-quote-author { display: block; margin-bottom: 14px; }
+.unx-hero2-quote-name {
+  display: block; font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 14px; color: #2c2420;
+}
+.unx-hero2-quote-role {
+  display: block; font-family: 'Nunito', sans-serif; font-size: 12.5px; color: #9e8f86;
+}
+.unx-hero2-quote {
+  font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 24px; line-height: 1.45;
+  color: #2c2420; margin: 0;
+}
+
+@media (max-width: 900px) {
+  .unx-hero2 { padding: 16px 20px 48px; }
+  .unx-hero2-frame { padding: 40px 24px 220px; }
+  .unx-hero2-title { font-size: 56px; }
+  .unx-hero2-tagline { font-size: 22px; }
+  .unx-hero2-card { left: 24px; right: 24px; width: auto; bottom: 24px; }
+  .unx-hero2-plus { display: none; }
+  .unx-hero2-quote { font-size: 19px; }
+}
+
+@media (max-width: 560px) {
+  .unx-hero2-title { font-size: 42px; }
+  .unx-hero2-logos-row { justify-content: center; text-align: center; }
+}
+
 
 /* ── Shared section head ── */
 .landing-section-head { text-align: center; max-width: 620px; margin: 0 auto 48px; padding: 0 24px; }
