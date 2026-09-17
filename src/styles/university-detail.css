@@ -13,8 +13,7 @@
 .compare-toast-btn { background: #AC8876; color: white; border: none; border-radius: 8px; padding: 8px 16px; font-family: 'Nunito', sans-serif; font-size: 13px; font-weight: 600; cursor: pointer; white-space: nowrap; flex-shrink: 0; }
 .compare-toast-btn:hover { background: #9a7664; }
 
-/* ── Scroll container: now fills all available height (fixes the mismatch
-   with the sidebar height / profile row) and reads as a bordered card ── */
+/* ── Card wrapping everything (tabs + content), no gap between them ── */
 .detail-scroll {
   flex: 1;
   min-height: 0;
@@ -32,15 +31,15 @@
 .detail-scroll::-webkit-scrollbar-track { background: transparent; }
 .detail-scroll::-webkit-scrollbar-thumb { background: rgba(172, 136, 118, 0.4); border-radius: 6px; }
 
-/* ── Sticky header ── */
+/* ── Sticky header: tabs sit flush at the very top edge of the card, no extra top space ── */
 .detail-sticky-header {
   position: sticky;
   top: 0;
   z-index: 100;
   display: flex;
   align-items: center;
-  gap: 16px;
-  padding: 20px 20px 0;
+  gap: 12px;
+  padding: 16px 20px 0;
   background: rgb(238, 236, 233);
   border-radius: 24px 24px 0 0;
   box-shadow: 0 1px 0 rgba(43, 31, 24, 0.06);
@@ -54,11 +53,11 @@
   pointer-events: none;
 }
 
-.detail-back-btn { width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; background: transparent; border: none; border-radius: 12px; cursor: pointer; transition: background 0.18s, opacity 0.18s; flex-shrink: 0; margin-bottom: 14px; }
+.detail-back-btn { width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; background: transparent; border: none; border-radius: 12px; cursor: pointer; transition: background 0.18s, opacity 0.18s; flex-shrink: 0; margin-bottom: 12px; }
 .detail-back-btn:hover { opacity: 0.7; background: rgba(43,31,24,0.06); }
 .detail-back-icon { width: 18px; height: 18px; filter: brightness(0); }
 
-.detail-tabs { display: flex; gap: 0; }
+.detail-tabs { display: flex; gap: 0; align-self: flex-end; margin-bottom: 0; }
 .detail-tab { padding: 10px 20px; font-family: 'Nunito', sans-serif; font-size: 15px; font-weight: 400; color: #000; background: rgba(208,208,208,0.2); border: none; border-radius: 10px 10px 0 0; cursor: pointer; transition: background 0.18s; }
 .detail-tab.active { background: #AC8876; color: #fff; }
 
@@ -160,7 +159,7 @@
   .detail-details-row { flex-direction: column; }
   .detail-social-row { flex-direction: column; align-items: center; }
   .detail-info-grid { grid-template-columns: 1fr 1fr; }
-  .detail-tabs { overflow-x: auto; }
+  .detail-tabs { overflow-x: auto; align-self: stretch; }
   .detail-tab { font-size: 13px; padding: 8px 14px; white-space: nowrap; }
   .compare-toast { min-width: unset; width: calc(100% - 32px); left: 16px; transform: none; bottom: 16px; }
 }
