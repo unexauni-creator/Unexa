@@ -13,15 +13,16 @@
 .compare-toast-btn { background: #AC8876; color: white; border: none; border-radius: 8px; padding: 8px 16px; font-family: 'Nunito', sans-serif; font-size: 13px; font-weight: 600; cursor: pointer; white-space: nowrap; flex-shrink: 0; }
 .compare-toast-btn:hover { background: #9a7664; }
 
+/* ── Card wrapping everything (tabs + content), no gap between them ── */
 .detail-scroll {
   flex: 1;
   min-height: 0;
   overflow-y: auto;
   overflow-x: hidden;
-  background: rgba(208, 208, 208, 0.20);
-  backdrop-filter: blur(24px) saturate(180%);
-  -webkit-backdrop-filter: blur(24px) saturate(180%);
-  border-radius: 0 24px 24px 24px;
+  border-radius: 24px;
+  background: rgb(238, 236, 233);
+  border: 1px solid rgba(43, 31, 24, 0.06);
+  box-shadow: 0 12px 32px rgba(43, 31, 24, 0.07);
   scrollbar-width: thin;
   scrollbar-color: rgba(172, 136, 118, 0.4) transparent;
   position: relative;
@@ -30,55 +31,37 @@
 .detail-scroll::-webkit-scrollbar-track { background: transparent; }
 .detail-scroll::-webkit-scrollbar-thumb { background: rgba(172, 136, 118, 0.4); border-radius: 6px; }
 
-/* ── Header row: back button + tabs, 24px gap per Figma spec ── */
+/* ── Sticky header: tabs sit flush at the very top edge of the card, no extra top space ── */
 .detail-sticky-header {
   position: sticky;
   top: 0;
   z-index: 100;
   display: flex;
   align-items: center;
-  gap: 24px;
-  padding: 24px 20px 0;
+  gap: 12px;
+  padding: 16px 20px 0;
+  background: rgb(238, 236, 233);
+  border-radius: 24px 24px 0 0;
+  box-shadow: 0 1px 0 rgba(43, 31, 24, 0.06);
+}
+.detail-sticky-header::after {
+  content: "";
+  position: absolute;
+  left: 0; right: 0; top: 100%;
+  height: 18px;
+  background: linear-gradient(to bottom, rgb(238, 236, 233), rgba(238,236,233,0));
+  pointer-events: none;
 }
 
-/* ── Back button: bordered squircle per Figma spec (was plain transparent icon) ── */
-.detail-back-btn {
-  width: 48px;
-  height: 48px;
-  padding: 12px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: transparent;
-  border: none;
-  outline: 1px solid rgba(227, 227, 227, 0.43);
-  outline-offset: -1px;
-  border-radius: 16px;
-  cursor: pointer;
-  transition: opacity 0.18s, background 0.18s;
-  flex-shrink: 0;
-}
-.detail-back-btn:hover { opacity: 0.7; background: rgba(43,31,24,0.04); }
-.detail-back-icon { width: 20px; height: 20px; filter: brightness(0); }
+.detail-back-btn { width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; background: transparent; border: none; border-radius: 12px; cursor: pointer; transition: background 0.18s, opacity 0.18s; flex-shrink: 0; margin-bottom: 12px; }
+.detail-back-btn:hover { opacity: 0.7; background: rgba(43,31,24,0.06); }
+.detail-back-icon { width: 18px; height: 18px; filter: brightness(0); }
 
-/* ── Tabs: 20px Nunito per Figma spec (was 15px) ── */
-.detail-tabs { display: flex; gap: 0; }
-.detail-tab {
-  padding: 10px 24px;
-  font-family: 'Nunito', sans-serif;
-  font-size: 20px;
-  font-weight: 400;
-  line-height: 30px;
-  color: #000;
-  background: rgba(229, 228, 229, 0.20);
-  border: none;
-  border-radius: 10px 10px 0 0;
-  cursor: pointer;
-  transition: background 0.18s, color 0.18s;
-}
+.detail-tabs { display: flex; gap: 0; align-self: flex-end; margin-bottom: 0; }
+.detail-tab { padding: 10px 20px; font-family: 'Nunito', sans-serif; font-size: 15px; font-weight: 400; color: #000; background: rgba(208,208,208,0.2); border: none; border-radius: 10px 10px 0 0; cursor: pointer; transition: background 0.18s; }
 .detail-tab.active { background: #AC8876; color: #fff; }
 
-.detail-body { display: flex; flex-direction: column; gap: 40px; padding: 40px; }
+.detail-body { display: flex; flex-direction: column; gap: 28px; padding: 20px 24px 40px; background: rgb(238, 236, 233); border-radius: 0 0 24px 24px; }
 
 .detail-overline { font-family: 'Nunito', sans-serif; font-size: 13px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; color: #AC8876; }
 .detail-hero { display: flex; flex-direction: row; gap: 24px; align-items: flex-start; }
@@ -97,29 +80,29 @@
 .detail-hero-save svg { width: 18px; height: 18px; }
 .detail-hero-save.saved { color: #ffffff; }
 
-.detail-name { font-family: 'Nunito', sans-serif; font-weight: 600; font-size: 24px; color: rgba(43,31,24,0.96); line-height: 26px; }
-.detail-university { font-family: 'Nunito', sans-serif; font-size: 16px; color: #0F0F0F; line-height: 24px; margin-bottom: 4px; }
-.detail-desc { font-family: 'Nunito', sans-serif; font-size: 16px; color: #0F0F0F; line-height: 24px; }
+.detail-name { font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 30px; color: rgba(43,31,24,0.96); }
+.detail-university { font-family: 'Nunito', sans-serif; font-size: 15px; color: #6b5e56; margin-bottom: 4px; }
+.detail-desc { font-family: 'Nunito', sans-serif; font-size: 16px; color: #3a322c; line-height: 1.6; }
 .detail-btn-group { display: flex; align-items: center; gap: 16px; margin-top: 8px; }
-.detail-btn-primary { padding: 10px 18px; background: #634F44; color: #F5F5F5; border: none; border-radius: 10px; font-family: 'Roboto', sans-serif; font-size: 14px; cursor: pointer; transition: background 0.18s; }
+.detail-btn-primary { padding: 10px 18px; background: #634F44; color: #F5F5F5; border: none; border-radius: 10px; font-family: 'Nunito', sans-serif; font-size: 14px; cursor: pointer; transition: background 0.18s; }
 .detail-btn-primary:hover { background: #4e3d35; }
-.detail-btn-ghost { padding: 10px 14px; background: transparent; color: #303030; border: none; font-family: 'Roboto', sans-serif; font-size: 14px; cursor: pointer; }
+.detail-btn-ghost { padding: 10px 14px; background: transparent; color: #303030; border: none; font-family: 'Nunito', sans-serif; font-size: 14px; cursor: pointer; }
 
-.detail-section-heading { font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 20px; line-height: 30px; color: rgba(43,31,24,0.96); }
+.detail-section-heading { font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 22px; color: rgba(43,31,24,0.96); }
 
 .detail-section { display: flex; flex-direction: column; gap: 16px; }
-.detail-section-title { font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 16px; line-height: 20px; color: rgba(43,31,24,0.96); }
+.detail-section-title { font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 18px; color: rgba(43,31,24,0.96); }
 
 .detail-details-row { display: flex; gap: 16px; align-items: flex-start; }
 .detail-column { flex: 1; display: flex; flex-direction: column; gap: 16px; }
 
-.detail-info-box { background: rgba(239,239,239,0.72); border-radius: 12px; padding: 16px; display: flex; flex-direction: column; gap: 16px; }
+.detail-info-box { background: rgba(239,239,239,0.72); border-radius: 16px; padding: 20px; display: flex; flex-direction: column; gap: 14px; }
 .detail-info-box-tall { flex: none; }
-.detail-info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.detail-info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 .detail-info-grid-secondary { margin-top: 4px; padding-top: 14px; border-top: 1px solid rgba(43,31,24,0.06); }
-.detail-info-item { background: rgba(255,250,246,0.41); border-radius: 6px; padding: 14px 8px; display: flex; flex-direction: column; gap: 8px; }
-.detail-info-label { font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 16px; line-height: 20px; color: rgba(43,31,24,0.96); }
-.detail-info-value { font-family: 'Roboto', sans-serif; font-size: 14px; line-height: 21px; color: rgba(43,31,24,0.96); }
+.detail-info-item { background: rgba(255,250,246,0.85); border-radius: 12px; padding: 12px 14px; display: flex; flex-direction: column; gap: 4px; }
+.detail-info-label { font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 13px; color: rgba(43,31,24,0.96); }
+.detail-info-value { font-family: 'Nunito', sans-serif; font-size: 12px; color: #6b5e56; }
 
 .detail-social-row { display: flex; gap: 28px; flex-wrap: wrap; }
 .detail-social-card { flex: 1; min-width: 220px; display: flex; flex-direction: column; align-items: center; gap: 14px; }
@@ -171,13 +154,12 @@
 
 @media (max-width: 768px) {
   .detail-page { padding: 0 16px 16px; }
-  .detail-body { padding: 24px; }
   .detail-hero { flex-direction: column; }
   .detail-hero-right { width: 100%; height: 240px; min-width: unset; margin-top: 8px; }
   .detail-details-row { flex-direction: column; }
   .detail-social-row { flex-direction: column; align-items: center; }
   .detail-info-grid { grid-template-columns: 1fr 1fr; }
-  .detail-tabs { overflow-x: auto; }
-  .detail-tab { font-size: 15px; padding: 8px 16px; white-space: nowrap; }
+  .detail-tabs { overflow-x: auto; align-self: stretch; }
+  .detail-tab { font-size: 13px; padding: 8px 14px; white-space: nowrap; }
   .compare-toast { min-width: unset; width: calc(100% - 32px); left: 16px; transform: none; bottom: 16px; }
 }
