@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import "./landing.css";
+import "../styles/landing.css";
 
 const FEATURES = [
   { icon: "🎓", title: "Discover Universities", desc: "Browse design and art programs across Europe, filtered by country, tuition, language, and more.", accent: "mustard" },
