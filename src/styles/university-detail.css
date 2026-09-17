@@ -13,7 +13,20 @@
 .compare-toast-btn { background: #AC8876; color: white; border: none; border-radius: 8px; padding: 8px 16px; font-family: 'Nunito', sans-serif; font-size: 13px; font-weight: 600; cursor: pointer; white-space: nowrap; flex-shrink: 0; }
 .compare-toast-btn:hover { background: #9a7664; }
 
-/* ── Box: reverted to original frosted-glass look ── */
+/* ── Back button: its own row, sits on the page background, not the box ── */
+.detail-topbar { display: flex; align-items: center; padding: 24px 4px 4px; flex-shrink: 0; }
+.detail-back-btn { width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; background: transparent; border: none; border-radius: 12px; cursor: pointer; transition: opacity 0.18s; flex-shrink: 0; }
+.detail-back-btn:hover { opacity: 0.6; background: transparent; }
+.detail-back-icon { width: 18px; height: 18px; filter: brightness(0); }
+
+/* ── Tabs: pill style, gap between, transparent, floats above the box ── */
+.detail-tabs { display: flex; align-items: center; gap: 8px; padding: 12px 4px 16px; flex-shrink: 0; }
+.detail-tab { padding: 10px 22px; font-family: 'Nunito', sans-serif; font-size: 15px; font-weight: 600; color: rgba(43,31,24,0.75); background: transparent; border: none; border-radius: 12px; cursor: pointer; transition: background 0.18s, color 0.18s; }
+.detail-tab:hover { background: rgba(172,136,118,0.14); }
+.detail-tab.active { background: #AC8876; color: #fff; }
+
+/* ── Box: frosted-glass content card, now fully rounded since tabs no
+       longer attach to its top-left corner ── */
 .detail-scroll {
   flex: 1;
   min-height: 0;
@@ -22,7 +35,7 @@
   background: rgba(208, 208, 208, 0.20);
   backdrop-filter: blur(24px) saturate(180%);
   -webkit-backdrop-filter: blur(24px) saturate(180%);
-  border-radius: 0 24px 24px 24px;
+  border-radius: 24px;
   scrollbar-width: thin;
   scrollbar-color: rgba(172, 136, 118, 0.4) transparent;
   position: relative;
@@ -30,31 +43,6 @@
 .detail-scroll::-webkit-scrollbar { width: 6px; }
 .detail-scroll::-webkit-scrollbar-track { background: transparent; }
 .detail-scroll::-webkit-scrollbar-thumb { background: rgba(172, 136, 118, 0.4); border-radius: 6px; }
-
-/* ── Sticky header: own frosted-glass fill so scrolled content blurs
-       underneath instead of bleeding through, pill-style tabs ── */
-.detail-sticky-header {
-  position: sticky;
-  top: 0;
-  z-index: 100;
-  display: flex;
-  align-items: center;
-  gap: 0;
-  padding: 20px 20px 16px;
-  background: rgba(208, 208, 208, 0.55);
-  backdrop-filter: blur(24px) saturate(180%);
-  -webkit-backdrop-filter: blur(24px) saturate(180%);
-  border-radius: 0 24px 0 0;
-}
-
-.detail-back-btn { width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; background: transparent; border: none; border-radius: 16px; cursor: pointer; margin: 0 12px 0 0; transition: opacity 0.18s; flex-shrink: 0; }
-.detail-back-btn:hover { opacity: 0.6; background: transparent; }
-.detail-back-icon { width: 20px; height: 20px; filter: brightness(0); }
-
-.detail-tabs { display: flex; gap: 8px; margin-bottom: 0; flex-shrink: 0; }
-.detail-tab { padding: 10px 22px; font-family: 'Nunito', sans-serif; font-size: 15px; font-weight: 600; color: rgba(43,31,24,0.75); background: transparent; border: none; border-radius: 12px; cursor: pointer; transition: background 0.18s, color 0.18s; }
-.detail-tab:hover { background: rgba(172,136,118,0.14); }
-.detail-tab.active { background: #AC8876; color: #fff; }
 
 .detail-body { display: flex; flex-direction: column; gap: 28px; padding: 20px 20px 40px; }
 
@@ -154,9 +142,8 @@
   .detail-details-row { flex-direction: column; }
   .detail-social-row { flex-direction: column; align-items: center; }
   .detail-info-grid { grid-template-columns: 1fr 1fr; }
-  .detail-sticky-header { padding: 14px 16px 12px; }
-  .detail-tabs { overflow-x: auto; gap: 6px; }
+  .detail-topbar { padding: 16px 0 0; }
+  .detail-tabs { overflow-x: auto; gap: 6px; padding: 10px 0 14px; }
   .detail-tab { font-size: 13px; padding: 8px 14px; white-space: nowrap; }
   .compare-toast { min-width: unset; width: calc(100% - 32px); left: 16px; transform: none; bottom: 16px; }
-  .detail-back-btn { margin: 0 8px 0 0; }
 }
