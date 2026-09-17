@@ -1,4 +1,10 @@
-.detail-page { position: relative; padding: 0 32px 48px; }
+.detail-page {
+  position: relative;
+  padding: 0 32px 32px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
 
 .compare-toast { position: fixed; bottom: 32px; left: 50%; transform: translateX(-50%); z-index: 200; display: flex; align-items: center; justify-content: space-between; gap: 16px; min-width: 420px; background: #2c2420; color: white; padding: 14px 20px; border-radius: 14px; animation: slideUp 0.25s ease; box-shadow: 0 8px 32px rgba(0,0,0,0.2); }
 .compare-toast-text { display: flex; flex-direction: column; gap: 2px; }
@@ -7,14 +13,17 @@
 .compare-toast-btn { background: #AC8876; color: white; border: none; border-radius: 8px; padding: 8px 16px; font-family: 'Nunito', sans-serif; font-size: 13px; font-weight: 600; cursor: pointer; white-space: nowrap; flex-shrink: 0; }
 .compare-toast-btn:hover { background: #9a7664; }
 
-/* ── Scroll container ── */
+/* ── Scroll container: now fills all available height (fixes the mismatch
+   with the sidebar height / profile row) and reads as a bordered card ── */
 .detail-scroll {
-  height: calc(100vh - 140px);
-  min-height: 600px;
+  flex: 1;
+  min-height: 0;
   overflow-y: auto;
   overflow-x: hidden;
-  border-radius: 0 24px 24px 24px;
-  background: rgba(208, 208, 208, 0.20);
+  border-radius: 24px;
+  background: rgb(238, 236, 233);
+  border: 1px solid rgba(43, 31, 24, 0.06);
+  box-shadow: 0 12px 32px rgba(43, 31, 24, 0.07);
   scrollbar-width: thin;
   scrollbar-color: rgba(172, 136, 118, 0.4) transparent;
   position: relative;
@@ -23,7 +32,7 @@
 .detail-scroll::-webkit-scrollbar-track { background: transparent; }
 .detail-scroll::-webkit-scrollbar-thumb { background: rgba(172, 136, 118, 0.4); border-radius: 6px; }
 
-/* ── Sticky header: fully opaque so nothing bleeds through when content scrolls under it ── */
+/* ── Sticky header ── */
 .detail-sticky-header {
   position: sticky;
   top: 0;
@@ -33,6 +42,7 @@
   gap: 16px;
   padding: 20px 20px 0;
   background: rgb(238, 236, 233);
+  border-radius: 24px 24px 0 0;
   box-shadow: 0 1px 0 rgba(43, 31, 24, 0.06);
 }
 .detail-sticky-header::after {
@@ -48,13 +58,11 @@
 .detail-back-btn:hover { opacity: 0.7; background: rgba(43,31,24,0.06); }
 .detail-back-icon { width: 18px; height: 18px; filter: brightness(0); }
 
-/* ── Tabs: reverted to original attached style ── */
 .detail-tabs { display: flex; gap: 0; }
 .detail-tab { padding: 10px 20px; font-family: 'Nunito', sans-serif; font-size: 15px; font-weight: 400; color: #000; background: rgba(208,208,208,0.2); border: none; border-radius: 10px 10px 0 0; cursor: pointer; transition: background 0.18s; }
 .detail-tab.active { background: #AC8876; color: #fff; }
 
-/* ── Body content ── */
-.detail-body { display: flex; flex-direction: column; gap: 28px; padding: 20px 24px 40px; background: rgb(238, 236, 233); }
+.detail-body { display: flex; flex-direction: column; gap: 28px; padding: 20px 24px 40px; background: rgb(238, 236, 233); border-radius: 0 0 24px 24px; }
 
 .detail-overline { font-family: 'Nunito', sans-serif; font-size: 13px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; color: #AC8876; }
 .detail-hero { display: flex; flex-direction: row; gap: 24px; align-items: flex-start; }
@@ -86,7 +94,6 @@
 .detail-section { display: flex; flex-direction: column; gap: 16px; }
 .detail-section-title { font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 18px; color: rgba(43,31,24,0.96); }
 
-/* ── Fixed: right column no longer stretches to match left column's height ── */
 .detail-details-row { display: flex; gap: 16px; align-items: flex-start; }
 .detail-column { flex: 1; display: flex; flex-direction: column; gap: 16px; }
 
@@ -98,7 +105,6 @@
 .detail-info-label { font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 13px; color: rgba(43,31,24,0.96); }
 .detail-info-value { font-family: 'Nunito', sans-serif; font-size: 12px; color: #6b5e56; }
 
-/* ── Teachers & social life ── */
 .detail-social-row { display: flex; gap: 28px; flex-wrap: wrap; }
 .detail-social-card { flex: 1; min-width: 220px; display: flex; flex-direction: column; align-items: center; gap: 14px; }
 .detail-social-stack { position: relative; width: 100%; max-width: 260px; aspect-ratio: 4 / 3; }
@@ -128,7 +134,6 @@
 .detail-social-card:hover .detail-social-img { transform: translateY(-4px) rotate(-1deg); }
 .detail-social-label { font-family: 'Nunito', sans-serif; font-weight: 600; font-size: 15px; color: rgba(43,31,24,0.9); }
 
-/* ── Program tab ── */
 .program-year-block { display: flex; flex-direction: column; gap: 14px; }
 .program-year-header { display: flex; align-items: center; gap: 10px; }
 .program-year-badge { background: #AC8876; color: #fff; font-family: 'Nunito', sans-serif; font-size: 13px; font-weight: 700; padding: 4px 12px; border-radius: 999px; }
@@ -149,8 +154,7 @@
 .detail-scholarship-amount { font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 18px; color: #AC8876; }
 
 @media (max-width: 768px) {
-  .detail-page { padding: 0 16px 48px; }
-  .detail-scroll { height: calc(100vh - 100px); }
+  .detail-page { padding: 0 16px 16px; }
   .detail-hero { flex-direction: column; }
   .detail-hero-right { width: 100%; height: 240px; min-width: unset; margin-top: 8px; }
   .detail-details-row { flex-direction: column; }
