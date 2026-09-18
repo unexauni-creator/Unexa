@@ -1,0 +1,53 @@
+.scholarship-section { display: flex; flex-direction: column; gap: 20px; }
+
+.scholarship-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 20px; flex-wrap: wrap; }
+.scholarship-title { font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 22px; color: rgba(43,31,24,0.96); }
+.scholarship-subtitle { font-family: 'Nunito', sans-serif; font-size: 14px; color: #6b5e56; margin-top: 4px; max-width: 480px; }
+
+.scholarship-controls { display: flex; gap: 10px; flex-wrap: wrap; }
+.scholarship-search { display: flex; align-items: center; gap: 8px; background: rgba(255,255,255,0.6); border-radius: 10px; padding: 8px 12px; color: #6b5e56; }
+.scholarship-search input { border: none; background: transparent; outline: none; font-family: 'Nunito', sans-serif; font-size: 14px; color: #3a322c; min-width: 160px; }
+.scholarship-category { border: none; background: rgba(255,255,255,0.6); border-radius: 10px; padding: 8px 12px; font-family: 'Nunito', sans-serif; font-size: 14px; color: #3a322c; cursor: pointer; }
+
+.scholarship-layout { display: flex; gap: 20px; align-items: stretch; flex-wrap: wrap; }
+
+.scholarship-list { flex: 2; min-width: 280px; display: flex; flex-direction: column; gap: 12px; }
+.scholarship-row { display: flex; align-items: center; gap: 14px; background: rgba(255,255,255,0.55); border-radius: 14px; padding: 16px; }
+.scholarship-row-icon { width: 40px; height: 40px; flex-shrink: 0; border-radius: 50%; background: rgba(172,136,118,0.18); display: flex; align-items: center; justify-content: center; font-size: 18px; }
+.scholarship-row-text { flex: 1; min-width: 0; }
+.scholarship-row-name { font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 15px; color: rgba(43,31,24,0.96); }
+.scholarship-row-detail { font-family: 'Nunito', sans-serif; font-size: 13px; color: #6b5e56; margin-top: 2px; }
+.scholarship-row-badge { flex-shrink: 0; background: rgba(172,136,118,0.18); color: #7a5c4a; font-family: 'Nunito', sans-serif; font-size: 12px; font-weight: 600; padding: 6px 12px; border-radius: 999px; white-space: nowrap; }
+.scholarship-row-arrow { flex-shrink: 0; color: #AC8876; font-size: 16px; }
+.scholarship-empty { font-family: 'Nunito', sans-serif; font-size: 14px; color: #6b5e56; padding: 20px; }
+
+.scholarship-featured {
+  flex: 1;
+  min-width: 220px;
+  max-width: 300px;
+  border-radius: 18px;
+  background-size: cover;
+  background-position: center;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: flex-end;
+  min-height: 320px;
+}
+.scholarship-featured-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(20,14,10,0.85), rgba(20,14,10,0.1) 60%);
+}
+.scholarship-featured-content { position: relative; z-index: 1; padding: 20px; display: flex; flex-direction: column; gap: 8px; }
+.scholarship-featured-badge { align-self: flex-start; background: rgba(255,255,255,0.9); color: #7a5c4a; font-family: 'Nunito', sans-serif; font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 999px; }
+.scholarship-featured-title { font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 18px; color: #fff; line-height: 1.3; }
+.scholarship-featured-subtitle { font-family: 'Nunito', sans-serif; font-size: 13px; color: rgba(255,255,255,0.85); }
+.scholarship-featured-btn { margin-top: 6px; align-self: flex-start; background: #fff; color: #3a322c; border: none; border-radius: 10px; padding: 10px 16px; font-family: 'Nunito', sans-serif; font-size: 13px; font-weight: 600; cursor: pointer; transition: background 0.18s; }
+.scholarship-featured-btn:hover { background: #f0ece7; }
+
+@media (max-width: 768px) {
+  .scholarship-layout { flex-direction: column; }
+  .scholarship-featured { max-width: 100%; min-height: 220px; }
+  .scholarship-header { flex-direction: column; align-items: stretch; }
+}
