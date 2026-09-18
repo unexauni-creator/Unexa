@@ -151,3 +151,13 @@
   padding: 10px 12px;
   margin-top: 14px;
 }
+
+.login-message {
+  font-family: 'Nunito', sans-serif;
+  font-size: 13px;
+  color: #2d6a4f;
+  background: rgba(45, 106, 79, 0.08);
+  border-radius: 10px;
+  padding: 10px 12px;
+  margin-top: 14px;
+}
