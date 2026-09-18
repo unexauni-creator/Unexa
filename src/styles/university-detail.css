@@ -88,7 +88,7 @@
 .detail-details-row { display: flex; gap: 16px; align-items: flex-start; }
 .detail-column { flex: 1; display: flex; flex-direction: column; gap: 16px; }
 
-.detail-info-box { background: rgba(239,239,239,0.72); border-radius: 16px; padding: 20px; display: flex; flex-direction: column; gap: 14px; }
+.detail-info-box { background: rgba(208,208,208,0.2); border-radius: 16px; padding: 18px; display: flex; flex-direction: column; gap: 12px; }
 .detail-info-box-tall { flex: none; }
 .detail-info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 .detail-info-grid-secondary { margin-top: 4px; padding-top: 14px; border-top: 1px solid rgba(43,31,24,0.06); }
