@@ -30,7 +30,6 @@
 .scholarship-featured-overlay {
   position: absolute;
   inset: 0;
-  background: linear-gradient(to top, rgba(20,14,10,0.85), rgba(20,14,10,0.1) 60%);
 }
 .scholarship-featured-content { position: relative; z-index: 1; padding: 20px; display: flex; flex-direction: column; gap: 8px; }
 .scholarship-featured-badge { align-self: flex-start; background: rgba(255,255,255,0.9); color: #7a5c4a; font-family: 'Nunito', sans-serif; font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 999px; }
