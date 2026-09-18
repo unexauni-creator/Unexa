@@ -24,7 +24,7 @@
   flex-shrink: 0;
   background: transparent;
   border-radius: 24px 24px 0 0;
-  padding: 0 24px;
+  padding: 48px;
 }
 
 .detail-back-btn { width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; background: transparent; border: none; border-radius: 12px; cursor: pointer; transition: background 0.18s, opacity 0.18s; flex-shrink: 0; }
