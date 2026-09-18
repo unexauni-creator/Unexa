@@ -163,94 +163,92 @@ export default function UniversityDetail({
               <div className="detail-section-heading">Details for enrol</div>
 
               <div className="detail-details-row">
-                <div className="detail-column">
-                  <div className="detail-info-box">
-                    <div className="detail-section-title">Required documents</div>
-                    <div className="detail-info-grid">
-                      <div className="detail-info-item">
-                        <div className="detail-info-label">Language</div>
-                        <div className="detail-info-value">{uni.documents?.language || "Not specified"}</div>
-                      </div>
-                      <div className="detail-info-item">
-                        <div className="detail-info-label">Diploma</div>
-                        <div className="detail-info-value">{uni.documents?.diploma || "Not specified"}</div>
-                      </div>
-                      <div className="detail-info-item">
-                        <div className="detail-info-label">Visa</div>
-                        <div className="detail-info-value">{uni.documents?.visa || "Not specified"}</div>
-                      </div>
-                      <div className="detail-info-item">
-                        <div className="detail-info-label">Bank statement</div>
-                        <div className="detail-info-value">{uni.documents?.bankStatement || "Not specified"}</div>
-                      </div>
+                <div className="detail-info-box">
+                  <div className="detail-section-title">Required documents</div>
+                  <div className="detail-info-grid">
+                    <div className="detail-info-item">
+                      <div className="detail-info-label">Language</div>
+                      <div className="detail-info-value">{uni.documents?.language || "Not specified"}</div>
                     </div>
-                  </div>
-
-                  <div className="detail-info-box">
-                    <div className="detail-section-title">Candidate requirements</div>
-                    <div className="detail-info-grid">
-                      <div className="detail-info-item">
-                        <div className="detail-info-label">Submission period</div>
-                        <div className="detail-info-value">{uni.submissionPeriod || "Not specified"}</div>
-                      </div>
-                      <div className="detail-info-item">
-                        <div className="detail-info-label">Min. language level</div>
-                        <div className="detail-info-value">{uni.minLanguageLevel || "Not specified"}</div>
-                      </div>
-                      <div className="detail-info-item">
-                        <div className="detail-info-label">Min. CGPA</div>
-                        <div className="detail-info-value">{uni.minCGPA || "Not specified"}</div>
-                      </div>
-                      <div className="detail-info-item">
-                        <div className="detail-info-label">Application Fee</div>
-                        <div className="detail-info-value">{uni.applicationFee || "Not specified"}</div>
-                      </div>
+                    <div className="detail-info-item">
+                      <div className="detail-info-label">Diploma</div>
+                      <div className="detail-info-value">{uni.documents?.diploma || "Not specified"}</div>
+                    </div>
+                    <div className="detail-info-item">
+                      <div className="detail-info-label">Visa</div>
+                      <div className="detail-info-value">{uni.documents?.visa || "Not specified"}</div>
+                    </div>
+                    <div className="detail-info-item">
+                      <div className="detail-info-label">Bank statement</div>
+                      <div className="detail-info-value">{uni.documents?.bankStatement || "Not specified"}</div>
                     </div>
                   </div>
                 </div>
 
-                <div className="detail-column">
-                  <div className="detail-info-box">
-                    <div className="detail-section-title">Academic info</div>
-                    <div className="detail-info-grid">
-                      <div className="detail-info-item">
-                        <div className="detail-info-label">Duration</div>
-                        <div className="detail-info-value">{uni.duration || "Not specified"}</div>
-                      </div>
-                      <div className="detail-info-item">
-                        <div className="detail-info-label">Tuition Fee</div>
-                        <div className="detail-info-value">{uni.tuition || "Not specified"}</div>
-                      </div>
-                      <div className="detail-info-item">
-                        <div className="detail-info-label">Intake</div>
-                        <div className="detail-info-value">{uni.intake || "Not specified"}</div>
-                      </div>
-                      <div className="detail-info-item">
-                        <div className="detail-info-label">Application Deadline</div>
-                        <div className="detail-info-value">{uni.applicationDeadline || "Not specified"}</div>
-                      </div>
+                <div className="detail-info-box">
+                  <div className="detail-section-title">Academic info</div>
+                  <div className="detail-info-grid">
+                    <div className="detail-info-item">
+                      <div className="detail-info-label">Duration</div>
+                      <div className="detail-info-value">{uni.duration || "Not specified"}</div>
+                    </div>
+                    <div className="detail-info-item">
+                      <div className="detail-info-label">Tuition Fee</div>
+                      <div className="detail-info-value">{uni.tuition || "Not specified"}</div>
+                    </div>
+                    <div className="detail-info-item">
+                      <div className="detail-info-label">Intake</div>
+                      <div className="detail-info-value">{uni.intake || "Not specified"}</div>
+                    </div>
+                    <div className="detail-info-item">
+                      <div className="detail-info-label">Application Deadline</div>
+                      <div className="detail-info-value">{uni.applicationDeadline || "Not specified"}</div>
                     </div>
                   </div>
+                </div>
+              </div>
 
-                  <div className="detail-info-box">
-                    <div className="detail-section-title">Study details</div>
-                    <div className="detail-info-grid">
-                      <div className="detail-info-item">
-                        <div className="detail-info-label">Language</div>
-                        <div className="detail-info-value">{uni.language || "Not specified"}</div>
-                      </div>
-                      <div className="detail-info-item">
-                        <div className="detail-info-label">Study Mode</div>
-                        <div className="detail-info-value">{uni.studyMode || "Not specified"}</div>
-                      </div>
-                      <div className="detail-info-item">
-                        <div className="detail-info-label">Class Size</div>
-                        <div className="detail-info-value">{uni.classSize || "Not specified"}</div>
-                      </div>
-                      <div className="detail-info-item">
-                        <div className="detail-info-label">Campus Facilities</div>
-                        <div className="detail-info-value">{uni.campusFacilities || "Not specified"}</div>
-                      </div>
+              <div className="detail-details-row">
+                <div className="detail-info-box">
+                  <div className="detail-section-title">Candidate requirements</div>
+                  <div className="detail-info-grid">
+                    <div className="detail-info-item">
+                      <div className="detail-info-label">Submission period</div>
+                      <div className="detail-info-value">{uni.submissionPeriod || "Not specified"}</div>
+                    </div>
+                    <div className="detail-info-item">
+                      <div className="detail-info-label">Min. language level</div>
+                      <div className="detail-info-value">{uni.minLanguageLevel || "Not specified"}</div>
+                    </div>
+                    <div className="detail-info-item">
+                      <div className="detail-info-label">Min. CGPA</div>
+                      <div className="detail-info-value">{uni.minCGPA || "Not specified"}</div>
+                    </div>
+                    <div className="detail-info-item">
+                      <div className="detail-info-label">Application Fee</div>
+                      <div className="detail-info-value">{uni.applicationFee || "Not specified"}</div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="detail-info-box">
+                  <div className="detail-section-title">Study details</div>
+                  <div className="detail-info-grid">
+                    <div className="detail-info-item">
+                      <div className="detail-info-label">Language</div>
+                      <div className="detail-info-value">{uni.language || "Not specified"}</div>
+                    </div>
+                    <div className="detail-info-item">
+                      <div className="detail-info-label">Study Mode</div>
+                      <div className="detail-info-value">{uni.studyMode || "Not specified"}</div>
+                    </div>
+                    <div className="detail-info-item">
+                      <div className="detail-info-label">Class Size</div>
+                      <div className="detail-info-value">{uni.classSize || "Not specified"}</div>
+                    </div>
+                    <div className="detail-info-item">
+                      <div className="detail-info-label">Campus Facilities</div>
+                      <div className="detail-info-value">{uni.campusFacilities || "Not specified"}</div>
                     </div>
                   </div>
                 </div>

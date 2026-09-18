@@ -85,11 +85,10 @@
 .detail-section { display: flex; flex-direction: column; gap: 16px; }
 .detail-section-title { font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 18px; color: rgba(43,31,24,0.96); }
 
-.detail-details-row { display: flex; gap: 16px; align-items: flex-start; }
-.detail-column { flex: 1; display: flex; flex-direction: column; gap: 16px; }
+/* ── Each row pairs its two boxes and stretches them to equal height ── */
+.detail-details-row { display: flex; gap: 16px; align-items: stretch; }
 
-.detail-info-box { background: rgba(208,208,208,0.2); border-radius: 16px; padding: 18px; display: flex; flex-direction: column; gap: 12px; }
-.detail-info-box-tall { flex: none; }
+.detail-info-box { flex: 1; background: rgba(208,208,208,0.2); border-radius: 16px; padding: 18px; display: flex; flex-direction: column; gap: 12px; }
 .detail-info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 .detail-info-grid-secondary { margin-top: 4px; padding-top: 14px; border-top: 1px solid rgba(43,31,24,0.06); }
 .detail-info-item { background: rgba(255,250,246,0.4); border-radius: 12px; padding: 12px 14px; display: flex; flex-direction: column; justify-content: center; gap: 4px; }
