@@ -211,7 +211,7 @@ export default function UniversityDetail({
                 <div className="detail-column">
                   <div className="detail-info-box">
                     <div className="detail-section-title">Academic info</div>
-                    <div className="detail-info-grid">
+                    <div className="detail-info-grid detail-info-grid-stack">
                       <div className="detail-info-item">
                         <div className="detail-info-label">Duration</div>
                         <div className="detail-info-value">{uni.duration || "Not specified"}</div>
@@ -225,7 +225,7 @@ export default function UniversityDetail({
 
                   <div className="detail-info-box">
                     <div className="detail-section-title">Study details</div>
-                    <div className="detail-info-grid">
+                    <div className="detail-info-grid detail-info-grid-stack">
                       <div className="detail-info-item">
                         <div className="detail-info-label">Language</div>
                         <div className="detail-info-value">{uni.language || "Not specified"}</div>

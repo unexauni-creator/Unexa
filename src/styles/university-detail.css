@@ -91,6 +91,7 @@
 .detail-info-box { background: rgba(208,208,208,0.2); border-radius: 16px; padding: 18px; display: flex; flex-direction: column; gap: 12px; }
 .detail-info-box-tall { flex: none; }
 .detail-info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.detail-info-grid-stack { grid-template-columns: 1fr; }
 .detail-info-grid-secondary { margin-top: 4px; padding-top: 14px; border-top: 1px solid rgba(43,31,24,0.06); }
 .detail-info-item { background: rgba(255,250,246,0.4); border-radius: 12px; padding: 12px 14px; display: flex; flex-direction: column; gap: 4px; }
 .detail-info-label { font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 13px; color: rgba(43,31,24,0.96); }
