@@ -51,21 +51,21 @@ const PROCESS_STEPS = [
   {
     key: "research",
     type: "video",
-    src: encodeURI("/Screen Recording 2026-08-10 at 10.31.13.mov"),
+    src: "/1.mov",
     title: "Researching the space",
     text: "We studied how university and course-discovery sites look today, grouped by region — Canada, the UK, Korea — to see what actually works.",
   },
   {
     key: "references",
     type: "video",
-    src: encodeURI("/Screen Recording 2026-08-10 at 10.31.35.mov"),
+    src: "/2.mov",
     title: "Collecting references",
     text: "We pulled together the layouts and UI patterns we liked most, to shape a direction for Unexa's own design.",
   },
   {
     key: "vibecoded",
     type: "video",
-    src: encodeURI("/Screen Recording 2026-07-08 at 18.03.40.mov"),
+    src: "/3.mov",
     title: "From mockup to a live page",
     text: "After sketching the first mockup in Figma, we vibecoded it into a real, working homepage — search, filters, and university cards included.",
   },
@@ -74,13 +74,13 @@ const PROCESS_STEPS = [
 const TEAM = [
   {
     key: "katia",
-    photo: encodeURI("/IMG_2481 2.png"),
+    photo: "/katia.png",
     name: "Kateryna Dmytrenko",
     linkedin: "https://www.linkedin.com/in/kateryna-dmytrenko-059a22266/",
   },
   {
     key: "anastasiia",
-    photo: encodeURI("/photo_2026-08-11_19-37-08.png"),
+    photo: "/nastya.png",
     name: "Anastasiia Andriievska",
     linkedin: "https://www.linkedin.com/in/anastasiia-andriievska-136244223/",
   },
