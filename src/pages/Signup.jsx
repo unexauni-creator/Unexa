@@ -102,7 +102,7 @@ export default function Signup({ onLogin }) {
           <Link to="/login" className="login-link">Log in</Link>
         </div>
 
-        <Link to="/login" className="login-back-link">← Back to home</Link>
+        <Link to="/landing" className="login-back-link">← Back to home</Link>
       </div>
     </div>
   );
