@@ -179,12 +179,42 @@ html, body, #root { margin: 0; padding: 0; width: 100%; min-height: 100%; overfl
   right: 0;
 }
 
+/* ── Nav auth buttons: Log in (filled pill) + Create account (outline pill) ── */
+.landing-nav-auth {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.landing-nav-signup {
+  font-family: 'Nunito', sans-serif;
+  font-weight: 700;
+  font-size: 14px;
+  color: #634F44;
+  background: transparent;
+  border: 1.5px solid rgba(99,79,68,0.32);
+  padding: 10px 18px;
+  border-radius: 999px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.3s var(--ease-premium), border-color 0.3s var(--ease-premium), transform 0.3s var(--ease-premium);
+}
+.landing-nav-signup:hover {
+  background: rgba(99,79,68,0.06);
+  border-color: rgba(99,79,68,0.5);
+  transform: translateY(-2px);
+}
+.landing-nav-signup:active {
+  transform: translateY(0);
+}
+
 .landing-nav-cta {
   font-family: 'Nunito', sans-serif;
   font-weight: 700;
   font-size: 14px;
   color: #fff8f2;
   background: #614E45;
+  border: none;
   padding: 10px 18px;
   border-radius: 999px;
   text-decoration: none;
@@ -192,6 +222,7 @@ html, body, #root { margin: 0; padding: 0; width: 100%; min-height: 100%; overfl
   display: inline-flex;
   align-items: center;
   gap: 6px;
+  cursor: pointer;
   transition: background 0.3s var(--ease-premium), transform 0.3s var(--ease-premium), box-shadow 0.3s var(--ease-premium);
 }
 .landing-nav-cta:hover {
@@ -287,9 +318,28 @@ html, body, #root { margin: 0; padding: 0; width: 100%; min-height: 100%; overfl
   font-size: 14px;
   color: #fff8f2;
   background: #614E45;
+  border: none;
   padding: 12px 18px;
   border-radius: 999px;
   text-decoration: none;
+  cursor: pointer;
+}
+
+.landing-nav-mobile-signup {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin-top: 6px;
+  font-family: 'Nunito', sans-serif;
+  font-weight: 700;
+  font-size: 14px;
+  color: #634F44;
+  background: transparent;
+  border: 1.5px solid rgba(99,79,68,0.32);
+  padding: 12px 18px;
+  border-radius: 999px;
+  cursor: pointer;
 }
 
 .landing-nav-overlay {
@@ -1082,7 +1132,7 @@ html, body, #root { margin: 0; padding: 0; width: 100%; min-height: 100%; overfl
   }
 
   .landing-nav-links,
-  .landing-nav-cta {
+  .landing-nav-auth {
     display: none;
   }
   .landing-nav-hamburger {

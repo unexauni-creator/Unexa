@@ -387,6 +387,7 @@ function NavLink({ item, isActive, onClick }) {
 
 export default function Landing() {
   const isDesktop = useIsDesktop(900);
+  const navigate = useNavigate();
   const [zoomRef, progress] = useSmoothScrollProgress();
   const [videoStackRef, activeStep, layerProgress] = useVideoStack(PROCESS_STEPS.length);
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
@@ -482,6 +483,14 @@ export default function Landing() {
     setMobileNavOpen(false);
   }
 
+  function goToLogin() {
+    navigate("/login");
+  }
+
+  function goToSignup() {
+    navigate("/login?mode=signup");
+  }
+
   const processTextBlock = (
     <>
       <div className="landing-hero-eyebrow process-eyebrow">
@@ -549,9 +558,14 @@ export default function Landing() {
               })}
             </nav>
 
-            <a href="#launch" className="landing-nav-cta">
-              Join waitlist <span aria-hidden="true">↗</span>
-            </a>
+            <div className="landing-nav-auth">
+              <button type="button" className="landing-nav-signup" onClick={goToSignup}>
+                Create account
+              </button>
+              <button type="button" className="landing-nav-cta" onClick={goToLogin}>
+                Log in <span aria-hidden="true">↗</span>
+              </button>
+            </div>
 
             <button
               type="button"
@@ -578,9 +592,20 @@ export default function Landing() {
                   />
                 );
               })}
-              <a href="#launch" className="landing-nav-mobile-cta" onClick={closeMobileNav}>
-                Join waitlist <span aria-hidden="true">↗</span>
-              </a>
+              <button
+                type="button"
+                className="landing-nav-mobile-signup"
+                onClick={() => { closeMobileNav(); goToSignup(); }}
+              >
+                Create account
+              </button>
+              <button
+                type="button"
+                className="landing-nav-mobile-cta"
+                onClick={() => { closeMobileNav(); goToLogin(); }}
+              >
+                Log in <span aria-hidden="true">↗</span>
+              </button>
             </nav>
           </div>
         </div>
@@ -666,10 +691,13 @@ export default function Landing() {
             </div>
 
             <a className="linkedin-card" href={LINKEDIN_URL} target="_blank" rel="noopener noreferrer">
-              <div className="linkedin-card-name">Anastasiia Andriievska</div>
-              <span className="linkedin-card-cta">
-                View post <span className="linkedin-card-arrow" aria-hidden="true">↗</span>
-              </span>
+              <img src="/unexapost.png" alt="Unexa LinkedIn survey results post" className="linkedin-card-thumb" />
+              <div className="linkedin-card-info">
+                <div className="linkedin-card-name">Anastasiia Andriievska</div>
+                <span className="linkedin-card-cta">
+                  View post <span className="linkedin-card-arrow" aria-hidden="true">↗</span>
+                </span>
+              </div>
             </a>
           </TextWrap>
         </div>
