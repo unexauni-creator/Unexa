@@ -142,3 +142,12 @@
   }
   .login-title { font-size: 22px; }
 }
+.login-error {
+  font-family: 'Nunito', sans-serif;
+  font-size: 13px;
+  color: #c0392b;
+  background: rgba(192, 57, 43, 0.08);
+  border-radius: 10px;
+  padding: 10px 12px;
+  margin-top: 14px;
+}

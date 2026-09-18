@@ -1,16 +1,30 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
+import { supabase } from "../lib/supabaseClient";
 import "../styles/login.css";
 
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  function handleSubmit(e) {
+  async function handleSubmit(e) {
     e.preventDefault();
-    // TODO: wire up real auth
-    console.log("Logging in with", email, password);
+    setError(null);
+    setLoading(true);
+
+    const { error } = await supabase.auth.signInWithPassword({ email, password });
+
+    setLoading(false);
+
+    if (error) {
+      setError(error.message);
+      return;
+    }
+
+    navigate("/dashboard");
   }
 
   return (
@@ -43,7 +57,11 @@ export default function Login() {
             required
           />
 
-          <button type="submit" className="login-btn-primary">Log in</button>
+          {error && <p className="login-error">{error}</p>}
+
+          <button type="submit" className="login-btn-primary" disabled={loading}>
+            {loading ? "Logging in..." : "Log in"}
+          </button>
         </form>
 
         <div className="login-footer">
