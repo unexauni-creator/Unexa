@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import ScholarshipSection from "../components/ScholarshipSection";
 
 // Розбиває "Merit Scholarship (GPA above 3.5), Grant X" на окремі пункти,
 // не ламаючи текст усередині дужок
@@ -305,25 +306,12 @@ export default function UniversityDetail({
 
           {/* ── SCHOLARSHIP TAB ── */}
           {activeTab === "scholarship" && (
-            <div className="detail-section">
-              <div className="detail-section-title">Available Scholarships</div>
-              {scholarships.length > 0 ? (
-                scholarships.map((s, i) => (
-                  <div key={i} className="detail-scholarship-card">
-                    <div>
-                      <div className="detail-scholarship-name">{s.name}</div>
-                      {s.detail && <div className="detail-scholarship-req">{s.detail}</div>}
-                    </div>
-                  </div>
-                ))
-              ) : (
-                <div className="detail-info-box">
-                  <p className="detail-desc" style={{ margin: 0 }}>
-                    No scholarship information available for this specialty yet.
-                  </p>
-                </div>
-              )}
-            </div>
+            <ScholarshipSection
+              scholarships={scholarships}
+              heroImage={uni.image}
+              programName={uni.name}
+              website={uni.website}
+            />
           )}
         </div>
       </div>
