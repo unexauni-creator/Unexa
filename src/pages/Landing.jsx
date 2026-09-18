@@ -488,7 +488,7 @@ export default function Landing() {
   }
 
   function goToSignup() {
-    navigate("/login?mode=signup");
+    navigate("/signup");
   }
 
   const processTextBlock = (
