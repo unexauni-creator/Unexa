@@ -3,12 +3,14 @@ import { Routes, Route, useLocation, useNavigate } from "react-router-dom";
 import Sidebar from "./components/Sidebar";
 import Landing from "./pages/Landing";
 import Login from "./pages/Login";
+import Signup from "./pages/Signup";
 import Home from "./pages/Home";
 import Dashboard from "./pages/Dashboard";
 import CareerRoadmap from "./pages/CareerRoadmap";
 import Community from "./pages/Community";
 import UniversityDetail from "./pages/UniversityDetail";
 import Profile from "./pages/Profile";
+import { supabase } from "./lib/supabaseClient";
 import "./styles/base.css";
 import "./styles/community.css";
 import "./styles/landing.css";
@@ -163,19 +165,21 @@ export default function App() {
     } catch {}
   }
 
-  function handleLogout() {
+  async function handleLogout() {
     setAuthUser(null);
     try {
       localStorage.removeItem(AUTH_KEY);
     } catch {}
+    await supabase.auth.signOut();
     navigate("/landing");
   }
 
-  // ── Logged out: only Landing and Login are reachable ──
+  // ── Logged out: only Landing, Login, and Signup are reachable ──
   if (!authUser) {
     return (
       <Routes>
         <Route path="/login" element={<Login onLogin={handleLogin} />} />
+        <Route path="/signup" element={<Signup onLogin={handleLogin} />} />
         <Route path="*" element={<Landing />} />
       </Routes>
     );

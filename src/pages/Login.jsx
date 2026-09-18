@@ -3,7 +3,7 @@ import { useNavigate, Link } from "react-router-dom";
 import { supabase } from "../lib/supabaseClient";
 import "../styles/login.css";
 
-export default function Login() {
+export default function Login({ onLogin }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState(null);
@@ -15,7 +15,7 @@ export default function Login() {
     setError(null);
     setLoading(true);
 
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
 
     setLoading(false);
 
@@ -24,7 +24,14 @@ export default function Login() {
       return;
     }
 
-    navigate("/dashboard");
+    const user = data.user;
+    onLogin({
+      id: user.id,
+      email: user.email,
+      name: user.user_metadata?.full_name || user.email.split("@")[0],
+    });
+
+    navigate("/");
   }
 
   return (
@@ -69,7 +76,7 @@ export default function Login() {
           <Link to="/signup" className="login-link">Sign up</Link>
         </div>
 
-        <Link to="/" className="login-back-link">← Back to home</Link>
+        <Link to="/login" className="login-back-link">← Back to home</Link>
       </div>
     </div>
   );

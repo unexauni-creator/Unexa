@@ -3,7 +3,7 @@ import { useNavigate, Link } from "react-router-dom";
 import { supabase } from "../lib/supabaseClient";
 import "../styles/login.css";
 
-export default function Signup() {
+export default function Signup({ onLogin }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -33,9 +33,14 @@ export default function Signup() {
       return;
     }
 
-    // If email confirmation is required, Supabase won't return a session yet.
     if (data.session) {
-      navigate("/dashboard");
+      const user = data.user;
+      onLogin({
+        id: user.id,
+        email: user.email,
+        name: user.user_metadata?.full_name || user.email.split("@")[0],
+      });
+      navigate("/");
     } else {
       setMessage("Check your email to confirm your account before logging in.");
     }
@@ -97,7 +102,7 @@ export default function Signup() {
           <Link to="/login" className="login-link">Log in</Link>
         </div>
 
-        <Link to="/" className="login-back-link">← Back to home</Link>
+        <Link to="/login" className="login-back-link">← Back to home</Link>
       </div>
     </div>
   );
