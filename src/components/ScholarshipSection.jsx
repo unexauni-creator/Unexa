@@ -72,6 +72,12 @@ export default function ScholarshipSection({
                 <div className="scholarship-row-name">{s.name}</div>
                 {s.detail && <div className="scholarship-row-detail">{s.detail}</div>}
               </div>
+              <button
+                className="scholarship-row-btn"
+                onClick={() => window.open(website || "#", "_blank")}
+              >
+                See more
+              </button>
             </div>
           ))}
         </div>
