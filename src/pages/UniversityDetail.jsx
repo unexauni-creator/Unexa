@@ -81,34 +81,36 @@ export default function UniversityDetail({
         </div>
       )}
 
-      <div className="detail-scroll">
-        <div className="detail-sticky-header">
-          <button className="detail-back-btn" onClick={onBack} aria-label="Back">
-            <img src="/arrow-left.svg" alt="" className="detail-back-icon" />
+      {/* ── Header row: back button + tabs. OUTSIDE the scrollable card ── */}
+      <div className="detail-header-row">
+        <button className="detail-back-btn" onClick={onBack} aria-label="Back">
+          <img src="/arrow-left.svg" alt="" className="detail-back-icon" />
+        </button>
+
+        <div className="detail-tabs">
+          <button
+            className={`detail-tab ${activeTab === "info" ? "active" : ""}`}
+            onClick={() => setActiveTab("info")}
+          >
+            Information
           </button>
-
-          <div className="detail-tabs">
-            <button
-              className={`detail-tab ${activeTab === "info" ? "active" : ""}`}
-              onClick={() => setActiveTab("info")}
-            >
-              Information
-            </button>
-            <button
-              className={`detail-tab ${activeTab === "program" ? "active" : ""}`}
-              onClick={() => setActiveTab("program")}
-            >
-              Program
-            </button>
-            <button
-              className={`detail-tab ${activeTab === "scholarship" ? "active" : ""}`}
-              onClick={() => setActiveTab("scholarship")}
-            >
-              Scholarship
-            </button>
-          </div>
+          <button
+            className={`detail-tab ${activeTab === "program" ? "active" : ""}`}
+            onClick={() => setActiveTab("program")}
+          >
+            Program
+          </button>
+          <button
+            className={`detail-tab ${activeTab === "scholarship" ? "active" : ""}`}
+            onClick={() => setActiveTab("scholarship")}
+          >
+            Scholarship
+          </button>
         </div>
+      </div>
 
+      {/* ── Card: ONLY the scrollable content lives in here ── */}
+      <div className="detail-scroll">
         <div className="detail-body">
           {/* ── INFO TAB ── */}
           {activeTab === "info" && (

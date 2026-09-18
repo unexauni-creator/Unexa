@@ -13,13 +13,18 @@
 .compare-toast-btn { background: #AC8876; color: white; border: none; border-radius: 8px; padding: 8px 16px; font-family: 'Nunito', sans-serif; font-size: 13px; font-weight: 600; cursor: pointer; white-space: nowrap; flex-shrink: 0; }
 .compare-toast-btn:hover { background: #9a7664; }
 
-/* ── Header row: back button + tabs. Lives OUTSIDE the card, not scrollable ── */
+/* ── Header row: back button + tabs, filled white, sticky/fixed at top ── */
 .detail-header-row {
+  position: sticky;
+  top: 0;
+  z-index: 50;
   display: flex;
   align-items: center;
   gap: 12px;
   flex-shrink: 0;
-  padding: 16px 4px 0;
+  background: #ffffff;
+  border-radius: 24px 24px 0 0;
+  padding: 16px 20px 0;
 }
 
 .detail-back-btn { width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; background: transparent; border: none; border-radius: 12px; cursor: pointer; transition: background 0.18s, opacity 0.18s; flex-shrink: 0; }
@@ -30,7 +35,7 @@
 .detail-tab { padding: 10px 20px; font-family: 'Nunito', sans-serif; font-size: 15px; font-weight: 400; color: #000; background: rgba(208,208,208,0.35); border: none; border-radius: 10px 10px 0 0; cursor: pointer; transition: background 0.18s, color 0.18s; }
 .detail-tab.active { background: #AC8876; color: #fff; }
 
-/* ── Card wrapping ONLY the scrollable content, not the tabs ── */
+/* ── Card wrapping ONLY the scrollable content, attached flush under the header ── */
 .detail-scroll {
   flex: 1;
   min-height: 0;
@@ -146,7 +151,7 @@
   .detail-details-row { flex-direction: column; }
   .detail-social-row { flex-direction: column; align-items: center; }
   .detail-info-grid { grid-template-columns: 1fr 1fr; }
-  .detail-header-row { overflow-x: auto; }
+  .detail-header-row { overflow-x: auto; padding: 12px 12px 0; }
   .detail-tabs { flex-shrink: 0; }
   .detail-tab { font-size: 13px; padding: 8px 14px; white-space: nowrap; }
   .compare-toast { min-width: unset; width: calc(100% - 32px); left: 16px; transform: none; bottom: 16px; }
