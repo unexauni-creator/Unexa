@@ -220,6 +220,14 @@ export default function UniversityDetail({
                         <div className="detail-info-label">Tuition Fee</div>
                         <div className="detail-info-value">{uni.tuition || "Not specified"}</div>
                       </div>
+                      <div className="detail-info-item">
+                        <div className="detail-info-label">Intake</div>
+                        <div className="detail-info-value">{uni.intake || "Not specified"}</div>
+                      </div>
+                      <div className="detail-info-item">
+                        <div className="detail-info-label">Application Deadline</div>
+                        <div className="detail-info-value">{uni.applicationDeadline || "Not specified"}</div>
+                      </div>
                     </div>
                   </div>
 
@@ -233,6 +241,14 @@ export default function UniversityDetail({
                       <div className="detail-info-item">
                         <div className="detail-info-label">Study Mode</div>
                         <div className="detail-info-value">{uni.studyMode || "Not specified"}</div>
+                      </div>
+                      <div className="detail-info-item">
+                        <div className="detail-info-label">Class Size</div>
+                        <div className="detail-info-value">{uni.classSize || "Not specified"}</div>
+                      </div>
+                      <div className="detail-info-item">
+                        <div className="detail-info-label">Campus Facilities</div>
+                        <div className="detail-info-value">{uni.campusFacilities || "Not specified"}</div>
                       </div>
                     </div>
                   </div>
