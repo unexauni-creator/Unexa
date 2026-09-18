@@ -44,7 +44,6 @@ export default function UniversityDetail({
   const isSaved = savedUniversities.some((u) => u.id === uni.id);
   const isCompared = comparedUniversities.some((u) => u.id === uni.id);
   const scholarships = parseScholarships(uni.scholarshipsText);
-  const hasCandidateRequirements = uni.submissionPeriod || uni.minLanguageLevel || uni.minCGPA;
 
   function handleCompare() {
     const result = onAddToCompare?.(uni);
@@ -187,25 +186,27 @@ export default function UniversityDetail({
                     </div>
                   </div>
 
-                  {hasCandidateRequirements && (
-                    <div className="detail-info-box">
-                      <div className="detail-section-title">Candidate requirements</div>
-                      <div className="detail-info-grid">
-                        <div className="detail-info-item">
-                          <div className="detail-info-label">Submission period</div>
-                          <div className="detail-info-value">{uni.submissionPeriod || "Not specified"}</div>
-                        </div>
-                        <div className="detail-info-item">
-                          <div className="detail-info-label">Min. language level</div>
-                          <div className="detail-info-value">{uni.minLanguageLevel || "Not specified"}</div>
-                        </div>
-                        <div className="detail-info-item">
-                          <div className="detail-info-label">Min. CGPA</div>
-                          <div className="detail-info-value">{uni.minCGPA || "Not specified"}</div>
-                        </div>
+                  <div className="detail-info-box">
+                    <div className="detail-section-title">Candidate requirements</div>
+                    <div className="detail-info-grid">
+                      <div className="detail-info-item">
+                        <div className="detail-info-label">Submission period</div>
+                        <div className="detail-info-value">{uni.submissionPeriod || "Not specified"}</div>
+                      </div>
+                      <div className="detail-info-item">
+                        <div className="detail-info-label">Min. language level</div>
+                        <div className="detail-info-value">{uni.minLanguageLevel || "Not specified"}</div>
+                      </div>
+                      <div className="detail-info-item">
+                        <div className="detail-info-label">Min. CGPA</div>
+                        <div className="detail-info-value">{uni.minCGPA || "Not specified"}</div>
+                      </div>
+                      <div className="detail-info-item">
+                        <div className="detail-info-label">Application Fee</div>
+                        <div className="detail-info-value">{uni.applicationFee || "Not specified"}</div>
                       </div>
                     </div>
-                  )}
+                  </div>
                 </div>
 
                 <div className="detail-column">
