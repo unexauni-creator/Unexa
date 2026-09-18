@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom"; 
 
 const CARDS = [
   { img: "https://madeinmarseille.net/actualites-marseille/2019/04/Cube-campus-aix.jpeg", rotate: -10 },
@@ -65,7 +65,7 @@ const PROCESS_STEPS = [
   {
     key: "vibecoded",
     type: "video",
-    src: encodeURI("/unexa.mov"),
+    src: encodeURI("/Screen Recording 2026-07-08 at 18.03.40.mov"),
     title: "From mockup to a live page",
     text: "After sketching the first mockup in Figma, we vibecoded it into a real, working homepage — search, filters, and university cards included.",
   },
@@ -80,7 +80,7 @@ const TEAM = [
   },
   {
     key: "anastasiia",
-    photo: encodeURI("/photo_2026-09-01_17-58-19.png"),
+    photo: encodeURI("/photo_2026-08-11_19-37-08.png"),
     name: "Anastasiia Andriievska",
     linkedin: "https://www.linkedin.com/in/anastasiia-andriievska-136244223/",
   },
@@ -525,11 +525,6 @@ export default function Landing() {
     <div className="landing-page">
       <div className="scroll-progress-bar" style={{ transform: `scaleX(${docProgress})` }} />
 
-           {/* Scrim only shows once the user has actually scrolled
-          (reusing navScrolled, same threshold as the nav pill's own
-          "scrolled" state) — otherwise it was rendering at full
-          strength from the very first pixel of the page, covering
-          the hero text before any scrolling happened at all. */}
       {!mobileNavOpen && (
         <div
           className={`scroll-blur-stack${navScrolled ? " is-visible" : ""}`}
@@ -591,9 +586,6 @@ export default function Landing() {
         </div>
       </header>
 
-      {/* Fixed nav is removed from document flow, so this spacer
-          reserves the exact space it would otherwise occupy — keeps
-          the hero section from jumping up underneath it. */}
       <div className="landing-nav-spacer" aria-hidden="true" />
 
       <div
