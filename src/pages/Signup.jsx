@@ -44,8 +44,6 @@ export default function Signup({ onLogin }) {
       return;
     }
 
-    // Write the name into a real, queryable profiles row — not just auth metadata —
-    // so it's still there on every future login, not just this first session.
     if (data.user) {
       const { error: profileError } = await supabase
         .from("profiles")
@@ -65,7 +63,7 @@ export default function Signup({ onLogin }) {
         email: user.email,
         name: name.trim(),
       });
-      navigate("/");
+      navigate("/app");
     } else {
       setMessage("Check your email to confirm your account before logging in.");
     }
@@ -138,7 +136,7 @@ export default function Signup({ onLogin }) {
           <Link to="/login" className="login-link">Log in</Link>
         </div>
 
-        <Link to="/landing" className="login-back-link">← Back to home</Link>
+        <Link to="/" className="login-back-link">← Back to home</Link>
       </div>
     </div>
   );

@@ -34,8 +34,6 @@ export default function Login({ onLogin }) {
 
     const user = data.user;
 
-    // Pull the name from the profiles table rather than auth metadata,
-    // so it's consistent with whatever Signup.jsx wrote there.
     const { data: profile, error: profileError } = await supabase
       .from("profiles")
       .select("full_name")
@@ -53,7 +51,7 @@ export default function Login({ onLogin }) {
       email: user.email,
       name: profile?.full_name || user.email.split("@")[0],
     });
-    navigate("/");
+    navigate("/app");
   }
 
   return (
@@ -98,7 +96,7 @@ export default function Login({ onLogin }) {
           <Link to="/signup" className="login-link">Sign up</Link>
         </div>
 
-        <Link to="/landing" className="login-back-link">← Back to home</Link>
+        <Link to="/" className="login-back-link">← Back to home</Link>
       </div>
     </div>
   );
