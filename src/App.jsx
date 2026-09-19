@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Routes, Route, useLocation, useNavigate } from "react-router-dom";
+import { Routes, Route, Navigate, useLocation, useNavigate } from "react-router-dom";
 import Sidebar from "./components/Sidebar";
 import Landing from "./pages/Landing";
 import Login from "./pages/Login";
@@ -131,7 +131,6 @@ export default function App() {
     );
   }
 
-  // Returns "added" | "exists" | "full" so the caller (UniversityDetail) can react
   function addToCompare(uni) {
     let result = "added";
     setComparedUniversities(prev => {
@@ -171,99 +170,108 @@ export default function App() {
       localStorage.removeItem(AUTH_KEY);
     } catch {}
     await supabase.auth.signOut();
-    navigate("/landing");
+    navigate("/");
   }
 
-  // ── Logged out: only Landing, Login, and Signup are reachable ──
-  if (!authUser) {
-    return (
-      <Routes>
-        <Route path="/login" element={<Login onLogin={handleLogin} />} />
-        <Route path="/signup" element={<Signup onLogin={handleLogin} />} />
-        <Route path="*" element={<Landing />} />
-      </Routes>
-    );
-  }
-
-  // ── Logged in: full app ──
-  const userInitials = authUser.name
+  const userInitials = authUser?.name
     ? authUser.name.split(" ").map(w => w[0]).slice(0, 2).join("").toUpperCase()
     : "U";
 
   return (
-    <div className="app">
-      <Sidebar avatarUrl={avatarUrl} userInitials={userInitials} userName={authUser.name} />
-      <main className="main">
-        {selectedUni ? (
-          <UniversityDetail
-            uni={selectedUni}
-            onBack={() => setSelectedUni(null)}
-            savedUniversities={savedUniversities}
-            onToggleSave={toggleSaveUni}
-            comparedUniversities={comparedUniversities}
-            onAddToCompare={addToCompare}
-          />
-        ) : (
-          <Routes>
-            <Route
-              path="/"
-              element={
-                <Home
-                  onSelectUni={setSelectedUni}
-                  savedUniversities={savedUniversities}
-                  onToggleSave={toggleSaveUni}
-                  currentUser={authUser}
-                />
-              }
-            />
-            <Route
-              path="/dashboard"
-              element={
-                <Dashboard
-                  comparedUniversities={comparedUniversities}
-                  onRemove={removeFromCompare}
-                  maxCompare={MAX_COMPARE}
-                />
-              }
-            />
-            <Route path="/career-roadmap" element={<CareerRoadmap />} />
-            <Route
-              path="/community"
-              element={
-                <Community
-                  joinedGroupIds={joinedGroupIds}
-                  onToggleJoin={toggleJoinGroup}
-                />
-              }
-            />
-            <Route
-              path="/profile"
-              element={
-                <Profile
-                  savedUniversities={savedUniversities}
-                  onToggleSave={toggleSaveUni}
-                  avatarUrl={avatarUrl}
-                  coverUrl={coverUrl}
-                  onAvatarChange={setAvatarUrl}
-                  onCoverChange={setCoverUrl}
-                  userName={authUser.name}
-                  onLogout={handleLogout}
-                />
-              }
-            />
-            <Route
-              path="*"
-              element={
-                <Home
-                  onSelectUni={setSelectedUni}
-                  savedUniversities={savedUniversities}
-                  onToggleSave={toggleSaveUni}
-                />
-              }
-            />
-          </Routes>
-        )}
-      </main>
-    </div>
+    <Routes>
+      {/* ── Public: always reachable, regardless of login state ── */}
+      <Route path="/" element={<Landing />} />
+      <Route path="/login" element={<Login onLogin={handleLogin} />} />
+      <Route path="/signup" element={<Signup onLogin={handleLogin} />} />
+
+      {/* ── Authenticated app, lives under /app/* ── */}
+      <Route
+        path="/app/*"
+        element={
+          authUser ? (
+            <div className="app">
+              <Sidebar avatarUrl={avatarUrl} userInitials={userInitials} userName={authUser.name} />
+              <main className="main">
+                {selectedUni ? (
+                  <UniversityDetail
+                    uni={selectedUni}
+                    onBack={() => setSelectedUni(null)}
+                    savedUniversities={savedUniversities}
+                    onToggleSave={toggleSaveUni}
+                    comparedUniversities={comparedUniversities}
+                    onAddToCompare={addToCompare}
+                  />
+                ) : (
+                  <Routes>
+                    <Route
+                      index
+                      element={
+                        <Home
+                          onSelectUni={setSelectedUni}
+                          savedUniversities={savedUniversities}
+                          onToggleSave={toggleSaveUni}
+                          currentUser={authUser}
+                        />
+                      }
+                    />
+                    <Route
+                      path="dashboard"
+                      element={
+                        <Dashboard
+                          comparedUniversities={comparedUniversities}
+                          onRemove={removeFromCompare}
+                          maxCompare={MAX_COMPARE}
+                        />
+                      }
+                    />
+                    <Route path="career-roadmap" element={<CareerRoadmap />} />
+                    <Route
+                      path="community"
+                      element={
+                        <Community
+                          joinedGroupIds={joinedGroupIds}
+                          onToggleJoin={toggleJoinGroup}
+                        />
+                      }
+                    />
+                    <Route
+                      path="profile"
+                      element={
+                        <Profile
+                          savedUniversities={savedUniversities}
+                          onToggleSave={toggleSaveUni}
+                          avatarUrl={avatarUrl}
+                          coverUrl={coverUrl}
+                          onAvatarChange={setAvatarUrl}
+                          onCoverChange={setCoverUrl}
+                          userName={authUser.name}
+                          onLogout={handleLogout}
+                        />
+                      }
+                    />
+                    <Route
+                      path="*"
+                      element={
+                        <Home
+                          onSelectUni={setSelectedUni}
+                          savedUniversities={savedUniversities}
+                          onToggleSave={toggleSaveUni}
+                          currentUser={authUser}
+                        />
+                      }
+                    />
+                  </Routes>
+                )}
+              </main>
+            </div>
+          ) : (
+            <Navigate to="/login" replace />
+          )
+        }
+      />
+
+      {/* Anything else falls back to Landing */}
+      <Route path="*" element={<Landing />} />
+    </Routes>
   );
 }
