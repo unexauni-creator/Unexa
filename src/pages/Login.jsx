@@ -13,24 +13,46 @@ export default function Login({ onLogin }) {
   async function handleSubmit(e) {
     e.preventDefault();
     setError(null);
+
+    if (!email.trim() || !password.trim()) {
+      setError("Please fill in email and password.");
+      return;
+    }
+
     setLoading(true);
 
-    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+    const { data, error: signInError } = await supabase.auth.signInWithPassword({
+      email: email.trim(),
+      password,
+    });
 
-    setLoading(false);
-
-    if (error) {
-      setError(error.message);
+    if (signInError) {
+      setLoading(false);
+      setError(signInError.message);
       return;
     }
 
     const user = data.user;
+
+    // Pull the name from the profiles table rather than auth metadata,
+    // so it's consistent with whatever Signup.jsx wrote there.
+    const { data: profile, error: profileError } = await supabase
+      .from("profiles")
+      .select("full_name")
+      .eq("id", user.id)
+      .single();
+
+    if (profileError) {
+      console.error("Couldn't load profile:", profileError.message);
+    }
+
+    setLoading(false);
+
     onLogin({
       id: user.id,
       email: user.email,
-      name: user.user_metadata?.full_name || user.email.split("@")[0],
+      name: profile?.full_name || user.email.split("@")[0],
     });
-
     navigate("/");
   }
 
@@ -76,7 +98,7 @@ export default function Login({ onLogin }) {
           <Link to="/signup" className="login-link">Sign up</Link>
         </div>
 
-   <Link to="/landing" className="login-back-link">← Back to home</Link>
+        <Link to="/landing" className="login-back-link">← Back to home</Link>
       </div>
     </div>
   );

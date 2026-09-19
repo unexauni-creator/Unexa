@@ -4,6 +4,7 @@ import { supabase } from "../lib/supabaseClient";
 import "../styles/login.css";
 
 export default function Signup({ onLogin }) {
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -17,6 +18,11 @@ export default function Signup({ onLogin }) {
     setError(null);
     setMessage(null);
 
+    if (!name.trim()) {
+      setError("Please enter your name.");
+      return;
+    }
+
     if (password !== confirmPassword) {
       setError("Passwords don't match.");
       return;
@@ -24,21 +30,40 @@ export default function Signup({ onLogin }) {
 
     setLoading(true);
 
-    const { data, error } = await supabase.auth.signUp({ email, password });
-
-    setLoading(false);
+    const { data, error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        data: { full_name: name.trim() },
+      },
+    });
 
     if (error) {
+      setLoading(false);
       setError(error.message);
       return;
     }
+
+    // Write the name into a real, queryable profiles row — not just auth metadata —
+    // so it's still there on every future login, not just this first session.
+    if (data.user) {
+      const { error: profileError } = await supabase
+        .from("profiles")
+        .upsert({ id: data.user.id, full_name: name.trim() });
+
+      if (profileError) {
+        console.error("Couldn't save profile:", profileError.message);
+      }
+    }
+
+    setLoading(false);
 
     if (data.session) {
       const user = data.user;
       onLogin({
         id: user.id,
         email: user.email,
-        name: user.user_metadata?.full_name || user.email.split("@")[0],
+        name: name.trim(),
       });
       navigate("/");
     } else {
@@ -54,6 +79,17 @@ export default function Signup({ onLogin }) {
         <p className="login-subtitle">Sign up to get started with Unexa.</p>
 
         <form className="login-form" onSubmit={handleSubmit}>
+          <label className="login-label" htmlFor="name">Full name</label>
+          <input
+            id="name"
+            type="text"
+            className="login-input"
+            placeholder="Kateryna Dmytrenko"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            required
+          />
+
           <label className="login-label" htmlFor="email">Email</label>
           <input
             id="email"
