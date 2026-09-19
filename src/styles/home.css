@@ -16,18 +16,18 @@
   top: 0;
   z-index: 50;
   padding: 40px 32px 24px;
-  background-color: #EDEBEC;
- background-image: url("/MacBook Air - 13.png");
-  background-size: cover;
-  background-repeat: no-repeat;
-  background-position: center;
+  background: rgba(237, 235, 236, 0.55);
+  backdrop-filter: blur(20px) saturate(160%);
+  -webkit-backdrop-filter: blur(20px) saturate(160%);
 }
 .home-sticky-header::after {
   content: "";
   position: absolute;
   left: 0; right: 0; top: 100%;
-  height: 20px;
-  background: linear-gradient(to bottom, #EDEBEC, rgba(237,235,236,0));
+  height: 32px;
+  background: linear-gradient(to bottom, rgba(237,235,236,0.35), rgba(237,235,236,0));
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   pointer-events: none;
 }
 
