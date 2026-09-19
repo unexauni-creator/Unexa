@@ -23,13 +23,14 @@
   min-height: 0;
   overflow-y: auto;
   padding: 0 32px 40px;
+  background: #EDEBEC;
   scrollbar-width: thin;
-  scrollbar-color: rgba(172, 136, 118, 0.4) transparent;
+  scrollbar-color: rgba(172, 136, 118, 0.4) #EDEBEC;
 }
 .home-scroll::-webkit-scrollbar { width: 6px; }
-.home-scroll::-webkit-scrollbar-track { background: transparent; }
+.home-scroll::-webkit-scrollbar-track { background: #EDEBEC; }
 .home-scroll::-webkit-scrollbar-thumb { background: rgba(172, 136, 118, 0.4); border-radius: 6px; }
-.home-scroll::-webkit-scrollbar-corner { background: transparent; }
+.home-scroll::-webkit-scrollbar-corner { background: #EDEBEC; }
 
 .uni-grid {
   margin-top: 0;
