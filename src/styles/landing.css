@@ -3,8 +3,7 @@ html { scroll-behavior: smooth; }
 html, body, #root { margin: 0; padding: 0; width: 100%; min-height: 100%; overflow-x: clip; background: #EDEBEC; }
 
 :root {
-  --paper-texture: url("/unxabg.png");
-  --brown-paper: url("/brownpaper.png");
+  --paper-texture: url("/paper-texture.png");
   --ease-premium: cubic-bezier(0.22, 1, 0.36, 1);
 }
 

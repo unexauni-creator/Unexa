@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import { supabase } from "../lib/supabase.js";
+import { supabase } from "../lib/supabaseClient";
 import { mapSpecialty } from "../lib/mapSpecialty.js";
 
 const SUGGESTIONS = ["Art Design", "Architecture", "Fine Arts", "Digital Media", "Fashion Design", "France", "Master", "Bachelor", "Online Course"];
@@ -238,7 +238,7 @@ function SearchEmptyState({ query }) {
   );
 }
 
-export default function Home({ onSelectUni, savedUniversities, onToggleSave }) {
+export default function Home({ onSelectUni, savedUniversities, onToggleSave, currentUser }) {
   const [universities, setUniversities] = useState([]);
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState(null);
@@ -352,7 +352,7 @@ export default function Home({ onSelectUni, savedUniversities, onToggleSave }) {
   return (
     <div className="home-page">
       <div className="home-sticky-header">
-        <h1 className="home-title">Welcome back, Kateryna</h1>
+        <h1 className="home-title">Welcome back, {currentUser?.name || "there"}</h1>
         <p className="home-desc">Discover design and art universities with Unexa. Everything you need in one place</p>
 
         <div className="home-search-row">

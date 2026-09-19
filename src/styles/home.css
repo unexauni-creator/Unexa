@@ -6,26 +6,7 @@
   background:transparent;
 }
 
-.home-sticky-header {
-  position: sticky;
-  top: 0;
-  z-index: 50;
-  padding: 40px 32px 24px;
-  background: transparent;
-}
 
-.home-sticky-header::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  bottom: -40px;
-  z-index: -1;
-  pointer-events: none;
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  -webkit-mask-image: linear-gradient(to bottom, black 0%, black 75%, transparent 100%);
-  mask-image: linear-gradient(to bottom, black 0%, black 75%, transparent 100%);
-}
 
 .home-scroll {
   flex: 1;
