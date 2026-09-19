@@ -11,24 +11,20 @@
   top: 0;
   z-index: 50;
   padding: 40px 32px 24px;
-  background: #EDEBEC;
+  background: transparent;
 }
 
-.home-sticky-header::after {
+.home-sticky-header::before {
   content: "";
   position: absolute;
-  left: 0;
-  right: 0;
-  top: 100%;
-  height: 60px;
+  inset: 0;
+  bottom: -40px;
+  z-index: -1;
   pointer-events: none;
-  background: linear-gradient(
-    to bottom,
-    #EDEBEC 0%,
-    rgba(237, 235, 236, 0.85) 30%,
-    rgba(237, 235, 236, 0.45) 65%,
-    rgba(237, 235, 236, 0) 100%
-  );
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  -webkit-mask-image: linear-gradient(to bottom, black 0%, black 75%, transparent 100%);
+  mask-image: linear-gradient(to bottom, black 0%, black 75%, transparent 100%);
 }
 
 .home-scroll {
