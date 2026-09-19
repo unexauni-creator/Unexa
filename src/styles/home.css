@@ -3,6 +3,17 @@
   display: flex;
   flex-direction: column;
 }
+.home-scroll {
+  padding-top: 0;
+}
+
+.uni-grid {
+  margin-top: 0;
+}
+
+.home-scroll::-webkit-scrollbar-corner {
+  background: transparent;
+}
 
 .home-sticky-header {
   position: sticky;
