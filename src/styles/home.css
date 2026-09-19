@@ -11,33 +11,24 @@
   top: 0;
   z-index: 50;
   padding: 40px 32px 24px;
-  background: transparent;
-}
-
-.home-sticky-header::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  bottom: -60px;
-  z-index: -1;
-  pointer-events: none;
-  backdrop-filter: blur(2px);
-  -webkit-backdrop-filter: blur(2px);
-  mask-image: linear-gradient(to bottom, black 0%, black 55%, transparent 75%);
-  -webkit-mask-image: linear-gradient(to bottom, black 0%, black 55%, transparent 75%);
+  background: #EDEBEC;
 }
 
 .home-sticky-header::after {
   content: "";
   position: absolute;
-  inset: 0;
-  bottom: -30px;
-  z-index: -1;
+  left: 0;
+  right: 0;
+  top: 100%;
+  height: 60px;
   pointer-events: none;
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
-  mask-image: linear-gradient(to bottom, black 0%, black 35%, transparent 55%);
-  -webkit-mask-image: linear-gradient(to bottom, black 0%, black 35%, transparent 55%);
+  background: linear-gradient(
+    to bottom,
+    #EDEBEC 0%,
+    rgba(237, 235, 236, 0.85) 30%,
+    rgba(237, 235, 236, 0.45) 65%,
+    rgba(237, 235, 236, 0) 100%
+  );
 }
 
 .home-scroll {
