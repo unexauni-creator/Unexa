@@ -2,10 +2,10 @@ import { useState } from "react";
 import { NavLink } from "react-router-dom";
 
 const navItems = [
-  { path: "/", label: "Home", icon: "/home.svg" },
-  { path: "/dashboard", label: "Dashboard", icon: "/chart.svg" },
-  { path: "/career-roadmap", label: "Roadmap", icon: "/medal-star.svg" },
-  { path: "/community", label: "Community", icon: "/messages.svg" },
+  { path: "/app", label: "Home", icon: "/home.svg" },
+  { path: "/app/dashboard", label: "Dashboard", icon: "/chart.svg" },
+  { path: "/app/career-roadmap", label: "Roadmap", icon: "/medal-star.svg" },
+  { path: "/app/community", label: "Community", icon: "/messages.svg" },
 ];
 
 export default function Sidebar({ avatarUrl, userInitials = "KD", userName = "Kateryna Dmyt..." }) {
@@ -20,7 +20,7 @@ export default function Sidebar({ avatarUrl, userInitials = "KD", userName = "Ka
             <NavLink
               key={item.path}
               to={item.path}
-              end={item.path === "/"}
+              end={item.path === "/app"}
               className={({ isActive }) => `nav-item ${isActive ? "active" : ""}`}
             >
               <img src={item.icon} alt="" className="nav-icon" />
@@ -33,8 +33,8 @@ export default function Sidebar({ avatarUrl, userInitials = "KD", userName = "Ka
           <img src="/Menu.svg" alt="Menu" className="hamburger-icon" />
         </button>
 
-        {/* Profile at bottom — clickable, goes to /profile */}
-        <NavLink to="/profile" className="sidebar-bottom" style={{ textDecoration: "none" }}>
+        {/* Profile at bottom — clickable, goes to /app/profile */}
+        <NavLink to="/app/profile" className="sidebar-bottom" style={{ textDecoration: "none" }}>
           {avatarUrl ? (
             <img src={avatarUrl} alt="" className="avatar-img avatar-img-photo" />
           ) : (
@@ -50,7 +50,7 @@ export default function Sidebar({ avatarUrl, userInitials = "KD", userName = "Ka
             <NavLink
               key={item.path}
               to={item.path}
-              end={item.path === "/"}
+              end={item.path === "/app"}
               className={({ isActive }) => `mobile-nav-item ${isActive ? "active" : ""}`}
               onClick={() => setMenuOpen(false)}
             >
@@ -58,7 +58,7 @@ export default function Sidebar({ avatarUrl, userInitials = "KD", userName = "Ka
               <span>{item.label}</span>
             </NavLink>
           ))}
-          <NavLink to="/profile" className="mobile-nav-item" onClick={() => setMenuOpen(false)}>
+          <NavLink to="/app/profile" className="mobile-nav-item" onClick={() => setMenuOpen(false)}>
             {avatarUrl ? (
               <img src={avatarUrl} alt="" className="avatar-img avatar-img-photo" style={{ width: 20, height: 20 }} />
             ) : (
