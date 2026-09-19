@@ -350,119 +350,123 @@ export default function Home({ onSelectUni, savedUniversities, onToggleSave }) {
   ];
 
   return (
-    <div className="home-header">
-      <h1 className="home-title">Welcome back, Kateryna</h1>
-      <p className="home-desc">Discover design and art universities with Unexa. Everything you need in one place</p>
+    <div className="home-page">
+      <div className="home-sticky-header">
+        <h1 className="home-title">Welcome back, Kateryna</h1>
+        <p className="home-desc">Discover design and art universities with Unexa. Everything you need in one place</p>
 
-      <div className="home-search-row">
-        <div className={`home-search ${searchFocused ? "active" : ""}`} ref={searchRef} style={{ position: "relative" }}>
-          <input
-            type="text"
-            placeholder="Search ......"
-            className="home-search-input"
-            value={search}
-            onChange={e => setSearch(e.target.value)}
-            onFocus={() => setSearchFocused(true)}
-          />
-          {search.length > 0 ? (
-            <button
-              type="button"
-              className="home-search-clear-btn"
-              onClick={() => setSearch("")}
-              aria-label="Clear search"
-            >
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
-                <line x1="18" y1="6" x2="6" y2="18" />
-                <line x1="6" y1="6" x2="18" y2="18" />
-              </svg>
-            </button>
-          ) : (
-            <img src="/search-normal.svg" alt="" className="home-search-icon-svg" />
-          )}
-          {searchFocused && (
-            <SearchDropdown
-              search={search}
-              setSearch={setSearch}
-              recentSearches={recentSearches}
-              setRecentSearches={setRecentSearches}
-              onSelect={() => setSearchFocused(false)}
+        <div className="home-search-row">
+          <div className={`home-search ${searchFocused ? "active" : ""}`} ref={searchRef} style={{ position: "relative" }}>
+            <input
+              type="text"
+              placeholder="Search ......"
+              className="home-search-input"
+              value={search}
+              onChange={e => setSearch(e.target.value)}
+              onFocus={() => setSearchFocused(true)}
             />
-          )}
+            {search.length > 0 ? (
+              <button
+                type="button"
+                className="home-search-clear-btn"
+                onClick={() => setSearch("")}
+                aria-label="Clear search"
+              >
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+                  <line x1="18" y1="6" x2="6" y2="18" />
+                  <line x1="6" y1="6" x2="18" y2="18" />
+                </svg>
+              </button>
+            ) : (
+              <img src="/search-normal.svg" alt="" className="home-search-icon-svg" />
+            )}
+            {searchFocused && (
+              <SearchDropdown
+                search={search}
+                setSearch={setSearch}
+                recentSearches={recentSearches}
+                setRecentSearches={setRecentSearches}
+                onSelect={() => setSearchFocused(false)}
+              />
+            )}
+          </div>
+          <div className="home-icon-buttons">
+            <button className="home-icon-btn filter-trigger" onClick={() => setShowFilter(true)}>
+              <img src="/filter.svg" alt="Filter" />
+              {activeCount > 0 && <span className="filter-badge">{activeCount}</span>}
+            </button>
+            <button className="home-icon-btn filter-trigger" onClick={() => setShowNotif(true)}>
+              <img src="/notification.svg" alt="Notifications" />
+              {unreadNotifCount > 0 && <span className="filter-badge">{unreadNotifCount}</span>}
+            </button>
+          </div>
         </div>
-        <div className="home-icon-buttons">
-          <button className="home-icon-btn filter-trigger" onClick={() => setShowFilter(true)}>
-            <img src="/filter.svg" alt="Filter" />
-            {activeCount > 0 && <span className="filter-badge">{activeCount}</span>}
-          </button>
-          <button className="home-icon-btn filter-trigger" onClick={() => setShowNotif(true)}>
-            <img src="/notification.svg" alt="Notifications" />
-            {unreadNotifCount > 0 && <span className="filter-badge">{unreadNotifCount}</span>}
-          </button>
-        </div>
+
+        {activeTags.length > 0 && (
+          <div className="filter-tags-row">
+            {activeTags.map(tag => (
+              <span key={tag.label} className="filter-tag">
+                {tag.label}
+                <button className="filter-tag-remove" onClick={() => removeTag(tag.key, tag.value)}>✕</button>
+              </span>
+            ))}
+            <button className="filter-clear-all-btn" onClick={clearFilters}>Clear all</button>
+          </div>
+        )}
       </div>
 
-      {activeTags.length > 0 && (
-        <div className="filter-tags-row">
-          {activeTags.map(tag => (
-            <span key={tag.label} className="filter-tag">
-              {tag.label}
-              <button className="filter-tag-remove" onClick={() => removeTag(tag.key, tag.value)}>✕</button>
-            </span>
-          ))}
-          <button className="filter-clear-all-btn" onClick={clearFilters}>Clear all</button>
-        </div>
-      )}
+      <div className="home-scroll">
+        {loading && (
+          <div style={{ textAlign: "center", padding: "48px 0", fontFamily: "Nunito", color: "#8a7c70" }}>
+            Loading universities...
+          </div>
+        )}
 
-      {loading && (
-        <div style={{ textAlign: "center", padding: "48px 0", fontFamily: "Nunito", color: "#8a7c70" }}>
-          Loading universities...
-        </div>
-      )}
+        {!loading && loadError && (
+          <div style={{ textAlign: "center", padding: "48px 0", fontFamily: "Nunito", color: "#c05050" }}>
+            Couldn't load universities: {loadError}
+          </div>
+        )}
 
-      {!loading && loadError && (
-        <div style={{ textAlign: "center", padding: "48px 0", fontFamily: "Nunito", color: "#c05050" }}>
-          Couldn't load universities: {loadError}
-        </div>
-      )}
-
-      {!loading && !loadError && (
-        <div className="uni-grid">
-          {filtered.length > 0 ? filtered.map(uni => {
-            const isSaved = savedUniversities.some(u => u.id === uni.id);
-            return (
-              <div key={uni.id} className="uni-card-new" onClick={() => onSelectUni(uni)}>
-                <img src={uni.image} alt={uni.name} className="uni-card-img" />
-                <div className="uni-card-glass">
-                  <div className="uni-card-glass-blur" />
-                  <div className="uni-card-text">
-                    <div className="uni-card-title">{uni.program}</div>
-                    <div className="uni-card-subtitle">{uni.name}</div>
+        {!loading && !loadError && (
+          <div className="uni-grid">
+            {filtered.length > 0 ? filtered.map(uni => {
+              const isSaved = savedUniversities.some(u => u.id === uni.id);
+              return (
+                <div key={uni.id} className="uni-card-new" onClick={() => onSelectUni(uni)}>
+                  <img src={uni.image} alt={uni.name} className="uni-card-img" />
+                  <div className="uni-card-glass">
+                    <div className="uni-card-glass-blur" />
+                    <div className="uni-card-text">
+                      <div className="uni-card-title">{uni.program}</div>
+                      <div className="uni-card-subtitle">{uni.name}</div>
+                    </div>
+                    <button
+                      className={`uni-card-save ${isSaved ? "saved" : ""}`}
+                      onClick={e => toggleSave(e, uni)}
+                      aria-label={isSaved ? "Remove from profile" : "Save to profile"}
+                    >
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill={isSaved ? "currentColor" : "none"} stroke="currentColor" strokeWidth="2">
+                        <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" />
+                      </svg>
+                    </button>
                   </div>
-                  <button
-                    className={`uni-card-save ${isSaved ? "saved" : ""}`}
-                    onClick={e => toggleSave(e, uni)}
-                    aria-label={isSaved ? "Remove from profile" : "Save to profile"}
-                  >
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill={isSaved ? "currentColor" : "none"} stroke="currentColor" strokeWidth="2">
-                      <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" />
-                    </svg>
-                  </button>
                 </div>
+              );
+            }) : search.trim().length > 0 ? (
+              <div style={{ gridColumn: "1/-1" }}>
+                <SearchEmptyState query={search} />
               </div>
-            );
-          }) : search.trim().length > 0 ? (
-            <div style={{ gridColumn: "1/-1" }}>
-              <SearchEmptyState query={search} />
-            </div>
-          ) : (
-            <div style={{ gridColumn: "1/-1", textAlign: "center", padding: "48px 0" }}>
-              <div style={{ fontSize: 36, marginBottom: 12 }}>🔍</div>
-              <div style={{ fontFamily: "Nunito", fontWeight: 600, fontSize: 16, color: "#4a3f38" }}>No universities match your filters</div>
-              <button className="filter-clear-btn" style={{ marginTop: 12 }} onClick={clearFilters}>Clear filters</button>
-            </div>
-          )}
-        </div>
-      )}
+            ) : (
+              <div style={{ gridColumn: "1/-1", textAlign: "center", padding: "48px 0" }}>
+                <div style={{ fontSize: 36, marginBottom: 12 }}>🔍</div>
+                <div style={{ fontFamily: "Nunito", fontWeight: 600, fontSize: 16, color: "#4a3f38" }}>No universities match your filters</div>
+                <button className="filter-clear-btn" style={{ marginTop: 12 }} onClick={clearFilters}>Clear filters</button>
+              </div>
+            )}
+          </div>
+        )}
+      </div>
 
       {showFilter && (
         <FilterPanel filters={filters} setFilters={setFilters}

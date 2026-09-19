@@ -1,4 +1,37 @@
-.home-header { padding: 40px 32px; }
+.home-page {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.home-sticky-header {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  padding: 40px 32px 24px;
+  background: rgb(238, 236, 233);
+}
+.home-sticky-header::after {
+  content: "";
+  position: absolute;
+  left: 0; right: 0; top: 100%;
+  height: 20px;
+  background: linear-gradient(to bottom, rgb(238, 236, 233), rgba(238,236,233,0));
+  pointer-events: none;
+}
+
+.home-scroll {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 0 32px 40px;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(172, 136, 118, 0.4) transparent;
+}
+.home-scroll::-webkit-scrollbar { width: 6px; }
+.home-scroll::-webkit-scrollbar-track { background: transparent; }
+.home-scroll::-webkit-scrollbar-thumb { background: rgba(172, 136, 118, 0.4); border-radius: 6px; }
+
 .home-title { font-family: 'Nunito', sans-serif; font-weight: 600; font-size: 32px; color: #0F0F0F; margin-bottom: 4px; }
 .home-desc { font-family: 'Nunito', sans-serif; font-weight: 400; font-size: 16px; line-height: 150%; color: #0F0F0F; max-width: 439px; }
 
@@ -113,7 +146,8 @@
 }
 
 @media (max-width: 768px) {
-  .home-header { padding: 24px 20px; }
+  .home-sticky-header { padding: 24px 20px 16px; }
+  .home-scroll { padding: 0 20px 24px; }
   .home-title { font-size: 24px; }
   .home-desc { font-size: 14px; }
   .home-search { width: 100%; flex: 1; }
@@ -123,5 +157,6 @@
 }
 
 @media (min-width: 769px) and (max-width: 1024px) {
-  .home-header { padding: 28px 24px; }
+  .home-sticky-header { padding: 28px 24px 20px; }
+  .home-scroll { padding: 0 24px 32px; }
 }
