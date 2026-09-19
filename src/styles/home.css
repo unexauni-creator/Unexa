@@ -3,12 +3,7 @@
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  background-color: #EDEBEC;
-  background-image: url("/MacBook Air - 13.png");
-  background-size: cover;
-  background-repeat: no-repeat;
-  background-position: center;
-  background-attachment: fixed;
+  background: #EDEBEC;
 }
 
 .home-sticky-header {
@@ -16,7 +11,7 @@
   top: 0;
   z-index: 50;
   padding: 40px 32px 24px;
-  background: rgba(237, 235, 236, 0.6);
+  background: transparent;
   backdrop-filter: blur(18px);
   -webkit-backdrop-filter: blur(18px);
   -webkit-mask-image: linear-gradient(to bottom, black 0%, black 82%, transparent 100%);
@@ -154,7 +149,6 @@
 }
 
 @media (max-width: 768px) {
-  .home-page { background-attachment: scroll; }
   .home-sticky-header { padding: 24px 20px 16px; }
   .home-scroll { padding: 0 20px 24px; }
   .home-title { font-size: 24px; }
