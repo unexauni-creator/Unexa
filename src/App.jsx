@@ -212,6 +212,7 @@ export default function App() {
                   onSelectUni={setSelectedUni}
                   savedUniversities={savedUniversities}
                   onToggleSave={toggleSaveUni}
+                  currentUser={authUser}
                 />
               }
             />
@@ -250,7 +251,16 @@ export default function App() {
                 />
               }
             />
-            <Route path="*" element={<Home onSelectUni={setSelectedUni} savedUniversities={savedUniversities} onToggleSave={toggleSaveUni} />} />
+            <Route
+              path="*"
+              element={
+                <Home
+                  onSelectUni={setSelectedUni}
+                  savedUniversities={savedUniversities}
+                  onToggleSave={toggleSaveUni}
+                />
+              }
+            />
           </Routes>
         )}
       </main>
