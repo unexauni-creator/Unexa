@@ -28,7 +28,6 @@ function InfoTooltip({ text }) {
         left = window.innerWidth - tooltipWidth - 16;
       }
       if (left < 16) left = 16;
-      // Initial guess below the button; corrected precisely once real height is known.
       setPos({ top: rect.bottom + 8, left });
     }
     setReady(false);
@@ -83,6 +82,7 @@ export default function Dashboard({ comparedUniversities = [], onRemove, maxComp
   const unis = comparedUniversities;
   const count = unis.length;
   const isFull = count === maxCompare;
+  const isLocked = count === 1;
 
   function removeUni(id) {
     onRemove?.(id);
@@ -111,6 +111,52 @@ export default function Dashboard({ comparedUniversities = [], onRemove, maxComp
     );
   }
 
+  const table = (
+    <div className="dash-table-scroll">
+      <div className={`dash-table${isFull ? " dash-table-full" : ""}`} style={{ "--uni-count": count }}>
+
+        {/* Header row */}
+        <div className="dash-table-row dash-header-row">
+          <div className="dash-table-label-cell dash-corner-cell">
+            <svg className="dash-corner-svg" preserveAspectRatio="none" viewBox="0 0 100 100">
+              <line x1="0" y1="0" x2="100" y2="100" vectorEffect="non-scaling-stroke" />
+            </svg>
+            <span className="dash-corner-top">Universities</span>
+            <span className="dash-corner-bottom">Criteria</span>
+          </div>
+          {unis.map(u => (
+            <div key={u.id} className="dash-table-cell dash-uni-header">
+              <img src={u.image} alt={u.name} className="dash-uni-card-img" />
+              <div className="dash-uni-card-info">
+                <div className="dash-uni-card-name">{u.name}</div>
+                <div className="dash-uni-card-program">{u.program}</div>
+              </div>
+              <button className="dash-remove-btn" onClick={() => removeUni(u.id)}>
+                <span className="dash-remove-icon" />
+              </button>
+            </div>
+          ))}
+        </div>
+
+        {/* Data rows */}
+        {ROW_LABELS.map(row => (
+          <div key={row.key} className="dash-table-row">
+            <div className="dash-table-label-cell">
+              {row.label}
+              {row.info && <InfoTooltip text={row.info} />}
+            </div>
+            {unis.map(u => (
+              <div key={u.id} className="dash-table-cell">
+                {u[row.key] || "—"}
+              </div>
+            ))}
+          </div>
+        ))}
+
+      </div>
+    </div>
+  );
+
   return (
     <div className="dashboard-page">
       <div className="dashboard-header">
@@ -126,66 +172,29 @@ export default function Dashboard({ comparedUniversities = [], onRemove, maxComp
         </div>
       </div>
 
-      {count === 1 && (
-        <div className="dash-warning-wrap">
-          <div className="dash-warning">
-            <span className="dash-warning-icon" />
-            <div className="dash-warning-title">Add at least one more university</div>
-            <div className="dash-warning-desc">You need a minimum of 2 universities to start comparing. Go back to Home and add another one.</div>
-            <button className="dash-warning-btn" onClick={() => navigate("/")}>Add university →</button>
-          </div>
-        </div>
-      )}
-
       {isFull && (
         <div className="dash-max-banner">
           <span>✓ Maximum reached — you can compare up to {maxCompare} universities. Remove one to add another.</span>
         </div>
       )}
 
-      <div className="dash-table-scroll">
-        <div className={`dash-table${isFull ? " dash-table-full" : ""}`} style={{ "--uni-count": count }}>
-
-          {/* Header row */}
-          <div className="dash-table-row dash-header-row">
-            <div className="dash-table-label-cell dash-corner-cell">
-              <svg className="dash-corner-svg" preserveAspectRatio="none" viewBox="0 0 100 100">
-                <line x1="0" y1="0" x2="100" y2="100" vectorEffect="non-scaling-stroke" />
-              </svg>
-              <span className="dash-corner-top">Universities</span>
-              <span className="dash-corner-bottom">Criteria</span>
-            </div>
-            {unis.map(u => (
-              <div key={u.id} className="dash-table-cell dash-uni-header">
-                <img src={u.image} alt={u.name} className="dash-uni-card-img" />
-                <div className="dash-uni-card-info">
-                  <div className="dash-uni-card-name">{u.name}</div>
-                  <div className="dash-uni-card-program">{u.program}</div>
-                </div>
-                <button className="dash-remove-btn" onClick={() => removeUni(u.id)}>
-                  <span className="dash-remove-icon" />
-                </button>
-              </div>
-            ))}
+      {isLocked ? (
+        <div className="dash-locked-wrap">
+          <div className="dash-locked-content">
+            {table}
           </div>
-
-          {/* Data rows */}
-          {ROW_LABELS.map(row => (
-            <div key={row.key} className="dash-table-row">
-              <div className="dash-table-label-cell">
-                {row.label}
-                {row.info && <InfoTooltip text={row.info} />}
-              </div>
-              {unis.map(u => (
-                <div key={u.id} className="dash-table-cell">
-                  {u[row.key] || "—"}
-                </div>
-              ))}
+          <div className="dash-warning-overlay">
+            <div className="dash-warning">
+              <span className="dash-warning-icon" />
+              <div className="dash-warning-title">Add at least one more university</div>
+              <div className="dash-warning-desc">You need a minimum of 2 universities to start comparing. Go back to Home and add another one.</div>
+              <button className="dash-warning-btn" onClick={() => navigate("/")}>Add university →</button>
             </div>
-          ))}
-
+          </div>
         </div>
-      </div>
+      ) : (
+        table
+      )}
     </div>
   );
 }
