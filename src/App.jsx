@@ -16,6 +16,8 @@ import "./styles/community.css";
 import "./styles/landing.css";
 import "./styles/profile.css";
 import Onboarding from "./pages/Onboarding";
+import ForgotPassword from "./pages/ForgotPassword";
+import ResetPassword from "./pages/ResetPassword";
 
 const SAVED_UNIS_KEY = "unexa_saved_universities";
 const COMPARED_UNIS_KEY = "unexa_compared_universities";
@@ -182,10 +184,11 @@ export default function App() {
     <Routes>
       {/* ── Public: always reachable, regardless of login state ── */}
       <Route path="/" element={<Landing />} />
-      <Route path="/login" element={<Login onLogin={handleLogin} />} />
+           <Route path="/login" element={<Login onLogin={handleLogin} />} />
       <Route path="/signup" element={<Signup onLogin={handleLogin} />} />
       <Route path="/onboarding" element={<Onboarding onLogin={handleLogin} />} />
-
+      <Route path="/forgot-password" element={<ForgotPassword />} />
+      <Route path="/reset-password" element={<ResetPassword />} />
       {/* ── Authenticated app, lives under /app/* ── */}
       <Route
         path="/app/*"
