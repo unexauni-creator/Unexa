@@ -161,3 +161,53 @@
   padding: 10px 12px;
   margin-top: 14px;
 }
+
+/* ── Centered header used by Signup and Onboarding ── */
+.login-header-centered {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 6px;
+  margin-bottom: 26px;
+}
+.login-header-centered .login-title,
+.login-header-centered .login-subtitle {
+  margin-bottom: 0;
+}
+
+.login-logo-img {
+  height: 32px;
+  width: auto;
+  margin-bottom: 6px;
+}
+
+/* ── Password field with show/hide toggle ── */
+.login-password-wrap {
+  position: relative;
+}
+
+.login-input-password {
+  padding-right: 44px;
+}
+
+.login-password-toggle {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #8a7a6c;
+  padding: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  transition: color 0.2s ease, background 0.2s ease;
+}
+.login-password-toggle:hover {
+  color: #4a3f38;
+  background: rgba(172, 136, 118, 0.1);
+}
