@@ -105,7 +105,7 @@ export default function Dashboard({ comparedUniversities = [], onRemove, maxComp
           <div className="compare-empty-icon" />
           <div className="compare-empty-title">No universities added</div>
           <div className="compare-empty-desc">Go to Home and open a university card, then click "Compare to others" to add it here.</div>
-          <button className="detail-btn-primary" style={{ marginTop: 16 }} onClick={() => navigate("/")}>Browse Universities</button>
+          <button className="detail-btn-primary" style={{ marginTop: 16 }} onClick={() => navigate("/app")}>Browse Universities</button>
         </div>
       </div>
     );
@@ -188,7 +188,7 @@ export default function Dashboard({ comparedUniversities = [], onRemove, maxComp
               <span className="dash-warning-icon" />
               <div className="dash-warning-title">Add at least one more university</div>
               <div className="dash-warning-desc">You need a minimum of 2 universities to start comparing. Go back to Home and add another one.</div>
-              <button className="dash-warning-btn" onClick={() => navigate("/")}>Add university →</button>
+              <button className="dash-warning-btn" onClick={() => navigate("/app")}>Add university →</button>
             </div>
           </div>
         </div>
