@@ -131,7 +131,7 @@
 .profile-settings-btn:hover { background: #4e3d35; }
 .profile-settings-icon { width: 16px; height: 16px; color: #F5F5F5; flex-shrink: 0; }
 
-/* Tabs */
+/* Tabs (main profile page: Saved / Applied) */
 .profile-tabs { display: flex; gap: 0; padding: 24px 32px 0; margin-top: 16px; }
 .profile-tab {
   padding: 10px 20px;
@@ -170,8 +170,10 @@
 .profile-applied-desc { font-family: 'Nunito', sans-serif; font-size: 13px; color: #9e8f86; }
 .profile-applied-status { padding: 6px 14px; border-radius: 10px; font-family: 'Nunito', sans-serif; font-size: 13px; font-weight: 600; flex-shrink: 0; }
 
-/* ── Settings — full page, not a modal ── */
+/* ── Settings — pill tabs + frosted glass box, same language as university detail page ── */
 .settings-page { display: flex; flex-direction: column; padding: 24px 32px 48px; gap: 0; }
+
+.settings-topbar { display: flex; align-items: center; margin-bottom: 16px; }
 
 .settings-back-btn {
   display: inline-flex;
@@ -181,7 +183,6 @@
   background: none;
   border: none;
   padding: 0;
-  margin-bottom: 16px;
   font-family: 'Nunito', sans-serif;
   font-size: 14px;
   font-weight: 700;
@@ -237,6 +238,7 @@
   cursor: pointer;
   flex-shrink: 0;
   background: #EFEFEF;
+  border: 3px solid #F5F5F5;
 }
 .settings-avatar-overlap-img { width: 100%; height: 100%; object-fit: cover; display: block; }
 .settings-avatar-overlap-placeholder {
@@ -251,48 +253,63 @@
   font-size: 22px;
 }
 
-.settings-page-nav {
+/* Pill tabs row, with logout as its own outlined pill on the right */
+.settings-tabs-row {
   display: flex;
   align-items: center;
-  gap: 8px;
-  margin-top: 16px;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 20px;
   flex-wrap: wrap;
 }
-.settings-nav-item {
-  padding: 10px 18px;
-  border-radius: 10px;
-  border: none;
-  background: rgba(208,208,208,0.2);
+
+.settings-tabs { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+
+.settings-tab {
+  padding: 10px 22px;
   font-family: 'Nunito', sans-serif;
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 600;
-  color: #6b5e56;
+  color: rgba(43,31,24,0.75);
+  background: transparent;
+  border: none;
+  border-radius: 12px;
   cursor: pointer;
-  transition: background 0.15s, color 0.15s;
+  transition: background 0.18s, color 0.18s;
 }
-.settings-nav-item:hover { background: rgba(172,136,118,0.18); color: #4a3f38; }
-.settings-nav-item.active { background: #AC8876; color: #ffffff; }
+.settings-tab:hover { background: rgba(172,136,118,0.14); }
+.settings-tab.active { background: #AC8876; color: #fff; }
 
 .settings-nav-logout {
   display: inline-flex;
   align-items: center;
   gap: 6px;
   padding: 10px 18px;
-  border-radius: 10px;
-  border: none;
-  background: rgba(200,80,80,0.08);
+  border-radius: 12px;
+  border: 1.5px solid rgba(200,80,80,0.3);
+  background: transparent;
   font-family: 'Nunito', sans-serif;
   font-size: 14px;
   font-weight: 700;
   color: #c05050;
   cursor: pointer;
-  transition: background 0.15s;
+  transition: background 0.15s, border-color 0.15s;
 }
-.settings-nav-logout:hover { background: rgba(200,80,80,0.16); }
+.settings-nav-logout:hover { background: rgba(200,80,80,0.08); border-color: rgba(200,80,80,0.5); }
 
-.settings-page-content { max-width: 560px; display: flex; flex-direction: column; margin-top: 28px; }
+/* Frosted glass content box — same look as the university detail page */
+.settings-scroll {
+  margin-top: 16px;
+  background: rgba(208, 208, 208, 0.20);
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  border-radius: 24px;
+  padding: 8px 28px;
+}
 
-.settings-field { display: flex; flex-direction: column; gap: 8px; padding: 16px 0; border-bottom: 1px solid rgba(172,136,118,0.12); }
+.settings-page-content { max-width: 560px; display: flex; flex-direction: column; }
+
+.settings-field { display: flex; flex-direction: column; gap: 8px; padding: 20px 0; border-bottom: 1px solid rgba(172,136,118,0.14); }
 .settings-field:last-of-type { border-bottom: none; }
 .settings-field-row { flex-direction: row; align-items: center; justify-content: space-between; gap: 24px; }
 
@@ -305,15 +322,15 @@
   padding: 12px 14px;
   border-radius: 12px;
   border: 1.5px solid rgba(172,136,118,0.25);
-  background: #ffffff;
+  background: rgba(255,250,246,0.85);
   font-family: 'Nunito', sans-serif;
   font-size: 14px;
   color: #2c2420;
   outline: none;
-  transition: border-color 0.15s;
+  transition: border-color 0.15s, background 0.15s;
   box-sizing: border-box;
 }
-.settings-input:focus { border-color: #AC8876; }
+.settings-input:focus { border-color: #AC8876; background: #ffffff; }
 .settings-textarea { resize: vertical; font-family: 'Nunito', sans-serif; }
 
 .settings-toggle {
@@ -345,7 +362,7 @@
   display: flex;
   justify-content: flex-end;
   gap: 10px;
-  margin-top: 24px;
+  padding: 20px 0 24px;
 }
 
 @media (max-width: 768px) {
@@ -363,6 +380,8 @@
   .settings-page { padding: 16px 16px 40px; }
   .settings-banner { height: 130px; }
   .settings-banner-action { opacity: 1; }
-  .settings-page-nav { overflow-x: auto; flex-wrap: nowrap; }
-  .settings-nav-item, .settings-nav-logout { white-space: nowrap; }
+  .settings-tabs-row { flex-direction: column; align-items: stretch; }
+  .settings-tabs { overflow-x: auto; flex-wrap: nowrap; }
+  .settings-tab, .settings-nav-logout { white-space: nowrap; }
+  .settings-scroll { padding: 4px 18px; border-radius: 18px; }
 }
