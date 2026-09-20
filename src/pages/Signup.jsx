@@ -147,7 +147,7 @@ export default function Signup({ onLogin }) {
               aria-label={showPassword ? "Hide password" : "Show password"}
               tabIndex={-1}
             >
-              {showPassword ? <EyeOffIcon /> : <EyeIcon />}
+              {showPassword ? <EyeIcon /> : <EyeOffIcon />}
             </button>
           </div>
 
@@ -170,7 +170,7 @@ export default function Signup({ onLogin }) {
               aria-label={showConfirmPassword ? "Hide password" : "Show password"}
               tabIndex={-1}
             >
-              {showConfirmPassword ? <EyeOffIcon /> : <EyeIcon />}
+              {showConfirmPassword ? <EyeIcon /> : <EyeOffIcon />}
             </button>
           </div>
 

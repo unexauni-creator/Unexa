@@ -211,3 +211,7 @@
   color: #4a3f38;
   background: rgba(172, 136, 118, 0.1);
 }
+
+.login-input {
+  width: 100%;
+}
