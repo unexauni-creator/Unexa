@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { supabase } from "../lib/supabaseClient";
 import { mapSpecialty } from "../lib/mapSpecialty.js";
 
@@ -252,7 +253,9 @@ export default function Home({ onSelectUni, savedUniversities, onToggleSave, cur
   const [appliedFilters, setAppliedFilters] = useState(DEFAULT_FILTERS);
   const [toast, setToast] = useState(null);
   const [openMenuId, setOpenMenuId] = useState(null);
+  const [compareMsg, setCompareMsg] = useState(null); // null | "added" | "exists" | "full"
   const searchRef = useRef(null);
+  const navigate = useNavigate();
 
   // Fetch specialties + their parent university in one query
   useEffect(() => {
@@ -314,9 +317,8 @@ export default function Home({ onSelectUni, savedUniversities, onToggleSave, cur
   function handleAddToCompare(e, uni) {
     e.stopPropagation();
     const result = onAddToCompare?.(uni);
-    if (result === "added") setToast(`${uni.name} added to Dashboard`);
-    else if (result === "exists") setToast(`${uni.name} is already in your Dashboard`);
-    else if (result === "full") setToast(`Dashboard is full (max ${maxCompare}) — remove one first`);
+    setCompareMsg(result);
+    setTimeout(() => setCompareMsg(null), 5000);
   }
 
   function removeTag(key, value) {
@@ -535,6 +537,28 @@ export default function Home({ onSelectUni, savedUniversities, onToggleSave, cur
             <polyline points="20 6 9 17 4 12" />
           </svg>
           {toast}
+        </div>
+      )}
+
+      {compareMsg && (
+        <div className="compare-toast">
+          <div className="compare-toast-text">
+            {compareMsg === "added" && <span>✓ Added to Dashboard!</span>}
+            {compareMsg === "exists" && <span>Already in your Dashboard</span>}
+            {compareMsg === "full" && <span>Dashboard is full (max {maxCompare}) — remove one first</span>}
+            {compareMsg !== "full" && (
+              <span className="compare-toast-sub">If you want to compare this university go to Dashboard</span>
+            )}
+          </div>
+          <button
+            className="compare-toast-btn"
+            onClick={() => {
+              setCompareMsg(null);
+              navigate("/app/dashboard");
+            }}
+          >
+            See →
+          </button>
         </div>
       )}
     </div>
