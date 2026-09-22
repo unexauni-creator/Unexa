@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { useState, useRef, useLayoutEffect } from "react";
+import { useState, useRef, useLayoutEffect, useEffect } from "react";
 import { createPortal } from "react-dom";
 
 const ROW_LABELS = [
@@ -83,6 +83,17 @@ export default function Dashboard({ comparedUniversities = [], onRemove, maxComp
   const count = unis.length;
   const isFull = count === maxCompare;
   const isLocked = count === 1;
+
+  const [showMaxPopup, setShowMaxPopup] = useState(false);
+
+  useEffect(() => {
+    if (isFull) {
+      setShowMaxPopup(true);
+      const timer = setTimeout(() => setShowMaxPopup(false), 4000);
+      return () => clearTimeout(timer);
+    }
+    setShowMaxPopup(false);
+  }, [isFull]);
 
   function removeUni(id) {
     onRemove?.(id);
@@ -172,6 +183,13 @@ export default function Dashboard({ comparedUniversities = [], onRemove, maxComp
     </div>
   );
 
+  const maxPopup = showMaxPopup && createPortal(
+    <div className="dash-max-popup">
+      <span>✓ Maximum reached — you can compare up to {maxCompare} universities. Remove one to add another.</span>
+    </div>,
+    document.body
+  );
+
   if (isLocked) {
     return (
       <div className="dashboard-page">
@@ -196,13 +214,7 @@ export default function Dashboard({ comparedUniversities = [], onRemove, maxComp
   return (
     <div className="dashboard-page">
       {header}
-
-      {isFull && (
-        <div className="dash-max-banner">
-          <span>✓ Maximum reached — you can compare up to {maxCompare} universities. Remove one to add another.</span>
-        </div>
-      )}
-
+      {maxPopup}
       {table}
     </div>
   );
