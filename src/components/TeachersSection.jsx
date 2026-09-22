@@ -15,12 +15,13 @@ const FEATURED_TEACHER = {
   name: "Prof. Miniji Park",
   subject: "Medicine",
   degree: "PhD",
-  bio: "Expert in public health and preventive medicine. Her research focuses on community health, epidemiology, and health policy.",
+    bio: "Expert in public health and preventive medicine. Her research focuses on community health, epidemiology, and health policy. Passionate about creating real-world impact through education and research.",
+  quote: "Education is not just about knowledge, it's about giving students the confidence to shape a better tomorrow.",
   image: PLACEHOLDER_IMAGES.featured,
   stats: [
-    { icon: "👥", label: "10+ years", sub: "teaching experience" },
-    { icon: "📄", label: "Published 35+", sub: "research papers" },
-    { icon: "🏥", label: "Global health", sub: "research center" },
+    { icon: "ð", label: "10+ years", sub: "teaching experience" },
+    { icon: "ð", label: "Published 35+", sub: "research papers" },
+    { icon: "ð", label: "Global health", sub: "research center" },
   ],
 };
 
@@ -68,7 +69,7 @@ export default function TeachersSection({ onBack }) {
           <div className="teachers-featured-label">Featured Teacher</div>
           <div className="teachers-featured-name">{FEATURED_TEACHER.name}</div>
           <div className="teachers-featured-subject">
-            {FEATURED_TEACHER.subject} · {FEATURED_TEACHER.degree}
+            {FEATURED_TEACHER.subject} Â· {FEATURED_TEACHER.degree}
           </div>
           <p className="teachers-featured-bio">{FEATURED_TEACHER.bio}</p>
 
@@ -81,6 +82,12 @@ export default function TeachersSection({ onBack }) {
                   <div className="teachers-stat-sub">{s.sub}</div>
                 </div>
               </div>
+
+        <div className="teachers-featured-quote">
+          <span className="teachers-quote-mark">“</span>
+          <p className="teachers-quote-text">{FEATURED_TEACHER.quote}</p>
+          <div className="teachers-quote-attribution">â {FEATURED_TEACHER.name}</div>
+        </div>
             ))}
           </div>
         </div>
