@@ -171,3 +171,41 @@
   .teachers-featured-card { flex-wrap: wrap; }
   .teachers-featured-quote { width: 100%; }
 }
+
+.teachers-featured-quote {
+  flex-shrink: 0;
+  width: 220px;
+  background: rgba(172, 136, 118, 0.1);
+  border-radius: 14px;
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-self: stretch;
+  justify-content: center;
+}
+.teachers-quote-mark {
+  font-family: Georgia, serif;
+  font-size: 32px;
+  color: #AC8876;
+  line-height: 1;
+}
+.teachers-quote-text {
+  font-family: 'Nunito', sans-serif;
+  font-style: italic;
+  font-size: 13px;
+  line-height: 1.6;
+  color: #6b5e56;
+  margin: 0;
+}
+.teachers-quote-attribution {
+  font-family: 'Nunito', sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  color: #9e8f86;
+}
+
+@media (max-width: 1024px) {
+  .teachers-featured-card { flex-wrap: wrap; }
+  .teachers-featured-quote { width: 100%; }
+}
