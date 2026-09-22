@@ -15,6 +15,7 @@ import "./styles/base.css";
 import "./styles/community.css";
 import "./styles/landing.css";
 import "./styles/profile.css";
+import "./styles/university-detail.css";
 import Onboarding from "./pages/Onboarding";
 import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
