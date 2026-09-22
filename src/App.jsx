@@ -136,7 +136,6 @@ export default function App() {
   }
 
   function addToCompare(uni) {
-    console.log("[DEBUG] addToCompare called", uni.id);
     if (comparedUniversities.some(u => u.id === uni.id)) {
       return "exists";
     }
@@ -181,7 +180,7 @@ export default function App() {
     <Routes>
       {/* ── Public: always reachable, regardless of login state ── */}
       <Route path="/" element={<Landing />} />
-           <Route path="/login" element={<Login onLogin={handleLogin} />} />
+      <Route path="/login" element={<Login onLogin={handleLogin} />} />
       <Route path="/signup" element={<Signup onLogin={handleLogin} />} />
       <Route path="/onboarding" element={<Onboarding onLogin={handleLogin} />} />
       <Route path="/forgot-password" element={<ForgotPassword />} />
@@ -213,6 +212,9 @@ export default function App() {
                           savedUniversities={savedUniversities}
                           onToggleSave={toggleSaveUni}
                           currentUser={authUser}
+                          comparedUniversities={comparedUniversities}
+                          onAddToCompare={addToCompare}
+                          maxCompare={MAX_COMPARE}
                         />
                       }
                     />
@@ -251,25 +253,7 @@ export default function App() {
                         />
                       }
                     />
-                    <Route
-                      path="*"
-                      element={
- <Route
-  index
-  element={
-    <Home
-      onSelectUni={setSelectedUni}
-      savedUniversities={savedUniversities}
-      onToggleSave={toggleSaveUni}
-      currentUser={authUser}
-      comparedUniversities={comparedUniversities}
-      onAddToCompare={addToCompare}
-      maxCompare={MAX_COMPARE}
-    />
-  }
-/>
-                      }
-                    />
+                    <Route path="*" element={<Navigate to="/app" replace />} />
                   </Routes>
                 )}
               </main>
