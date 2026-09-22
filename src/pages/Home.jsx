@@ -556,11 +556,11 @@ export default function Home({ onSelectUni, savedUniversities, onToggleSave, cur
     </div>
   );
 }
-
-{compareMsg === "full" && (
+ {compareMsg === "full" && (
   <div className="compare-toast">
     <div className="compare-toast-text">
       <span>You can add up to {maxCompare} universities to compare — remove one first</span>
     </div>
   </div>
 )}
+ 
