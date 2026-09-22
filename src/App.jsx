@@ -144,7 +144,6 @@ export default function App() {
     setComparedUniversities(prev => [...prev, uni]);
     return "added";
   }
-  }
 
   function removeFromCompare(id) {
     setComparedUniversities(prev => prev.filter(u => u.id !== id));
