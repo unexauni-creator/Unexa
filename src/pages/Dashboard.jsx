@@ -157,30 +157,27 @@ export default function Dashboard({ comparedUniversities = [], onRemove, maxComp
     </div>
   );
 
-  return (
-    <div className="dashboard-page">
-      <div className="dashboard-header">
-        <div className="dash-title">Dashboard</div>
-        <div className="dash-desc-block">
-          <p className="dash-desc-sub">
-            {count === 1
-              ? "Compare selected universities side by side."
-              : `Compare ${count} selected universities side by side.`}
-            <br />
-            You can add up to {maxCompare} universities to find the one that fits you best.
-          </p>
-        </div>
+  const header = (
+    <div className="dashboard-header">
+      <div className="dash-title">Dashboard</div>
+      <div className="dash-desc-block">
+        <p className="dash-desc-sub">
+          {count === 1
+            ? "Compare selected universities side by side."
+            : `Compare ${count} selected universities side by side.`}
+          <br />
+          You can add up to {maxCompare} universities to find the one that fits you best.
+        </p>
       </div>
+    </div>
+  );
 
-      {isFull && (
-        <div className="dash-max-banner">
-          <span>✓ Maximum reached — you can compare up to {maxCompare} universities. Remove one to add another.</span>
-        </div>
-      )}
-
-      {isLocked ? (
+  if (isLocked) {
+    return (
+      <div className="dashboard-page">
         <div className="dash-locked-wrap">
           <div className="dash-locked-content">
+            {header}
             {table}
           </div>
           <div className="dash-warning-overlay">
@@ -192,9 +189,21 @@ export default function Dashboard({ comparedUniversities = [], onRemove, maxComp
             </div>
           </div>
         </div>
-      ) : (
-        table
+      </div>
+    );
+  }
+
+  return (
+    <div className="dashboard-page">
+      {header}
+
+      {isFull && (
+        <div className="dash-max-banner">
+          <span>✓ Maximum reached — you can compare up to {maxCompare} universities. Remove one to add another.</span>
+        </div>
       )}
+
+      {table}
     </div>
   );
 }

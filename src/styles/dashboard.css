@@ -204,3 +204,12 @@
   flex-direction: column;
   gap: 20px;
 }
+
+.dash-locked-content {
+  filter: blur(6px);
+  pointer-events: none;
+  user-select: none;
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
