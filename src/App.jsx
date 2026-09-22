@@ -135,19 +135,15 @@ export default function App() {
   }
 
   function addToCompare(uni) {
-    let result = "added";
-    setComparedUniversities(prev => {
-      if (prev.some(u => u.id === uni.id)) {
-        result = "exists";
-        return prev;
-      }
-      if (prev.length >= MAX_COMPARE) {
-        result = "full";
-        return prev;
-      }
-      return [...prev, uni];
-    });
-    return result;
+    if (comparedUniversities.some(u => u.id === uni.id)) {
+      return "exists";
+    }
+    if (comparedUniversities.length >= MAX_COMPARE) {
+      return "full";
+    }
+    setComparedUniversities(prev => [...prev, uni]);
+    return "added";
+  }
   }
 
   function removeFromCompare(id) {
@@ -287,4 +283,3 @@ export default function App() {
       <Route path="*" element={<Landing />} />
     </Routes>
   );
-}
