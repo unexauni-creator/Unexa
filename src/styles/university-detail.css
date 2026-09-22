@@ -151,4 +151,4 @@
   .detail-tabs { flex-shrink: 0; }
   .detail-tab { font-size: 13px; padding: 8px 14px; white-space: nowrap; }
   .compare-toast { min-width: unset; width: calc(100% - 32px); left: 16px; transform: none; bottom: 16px; }
-}
+}.detail-social-card-clickable { cursor: pointer; }

@@ -278,7 +278,7 @@ export default function UniversityDetail({
                   </div>
                   <div className="detail-social-label">Teachers</div>
                 </div>
-                <div className="detail-social-card">
+                <div className="detail-social-card detail-social-card-clickable" onClick={() => navigate("/app/student-life")}>
                   <div className="detail-social-stack">
                     <img
                       src={uni.studentLifeImage || PLACEHOLDER_IMAGES.studentLife}
