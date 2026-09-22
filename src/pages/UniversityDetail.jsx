@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import ScholarshipSection from "../components/ScholarshipSection";
+import TeachersSection from "../components/TeachersSection";
 
 // Розбиває "Merit Scholarship (GPA above 3.5), Grant X" на окремі пункти,
 // не ламаючи текст усередині дужок
@@ -37,6 +38,7 @@ export default function UniversityDetail({
   onAddToCompare,
 }) {
   const [activeTab, setActiveTab] = useState("info");
+  const [viewingTeachers, setViewingTeachers] = useState(false);
   const [compareMsg, setCompareMsg] = useState(null); // null | "added" | "exists" | "full"
   const navigate = useNavigate();
 
@@ -113,7 +115,11 @@ export default function UniversityDetail({
       <div className="detail-scroll">
         <div className="detail-body">
           {/* ── INFO TAB ── */}
-          {activeTab === "info" && (
+          {activeTab === "info" && viewingTeachers && (
+  <TeachersSection onBack={() => setViewingTeachers(false)} />
+)}
+
+{activeTab === "info" && !viewingTeachers && (
             <>
               <div className="detail-hero">
                 <div className="detail-hero-left">
@@ -258,7 +264,11 @@ export default function UniversityDetail({
               <div className="detail-section-heading">Teachers & social life</div>
 
               <div className="detail-social-row">
-                <div className="detail-social-card">
+                <div
+  className="detail-social-card"
+  onClick={() => setViewingTeachers(true)}
+  style={{ cursor: "pointer" }}
+>
                   <div className="detail-social-stack">
                     <img
                       src={uni.teacherImage || PLACEHOLDER_IMAGES.teacher}
