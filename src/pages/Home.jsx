@@ -1,5 +1,5 @@
-import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { useState, useRef, useEffect } from "react";
 import { supabase } from "../lib/supabaseClient";
 import { mapSpecialty } from "../lib/mapSpecialty.js";
 
@@ -75,7 +75,6 @@ function FilterPanel({ filters, setFilters, onClose, onApply, onClear }) {
             {DEGREES.map(d => <CheckItem key={d} label={d} checked={filters.degrees.includes(d)} onChange={() => toggle("degrees", d)} />)}
           </CollapsibleSection>
 
-          {/* Tuition — always open, no arrow */}
           <div className="filter-section">
             <div className="filter-section-header" style={{ cursor: "default" }}>
               <span className="filter-group-title">
@@ -253,11 +252,10 @@ export default function Home({ onSelectUni, savedUniversities, onToggleSave, cur
   const [appliedFilters, setAppliedFilters] = useState(DEFAULT_FILTERS);
   const [toast, setToast] = useState(null);
   const [openMenuId, setOpenMenuId] = useState(null);
-  const [compareMsg, setCompareMsg] = useState(null); // null | "full"
+  const [compareMsg, setCompareMsg] = useState(null); // null | "added" | "exists" | "full"
   const searchRef = useRef(null);
   const navigate = useNavigate();
 
-  // Fetch specialties + their parent university in one query
   useEffect(() => {
     let cancelled = false;
 
@@ -288,7 +286,6 @@ export default function Home({ onSelectUni, savedUniversities, onToggleSave, cur
       if (searchRef.current && !searchRef.current.contains(e.target)) {
         setSearchFocused(false);
       }
-      // Close any open card menu when clicking anywhere outside it.
       if (!e.target.closest(".uni-card-menu-wrap")) {
         setOpenMenuId(null);
       }
@@ -314,17 +311,13 @@ export default function Home({ onSelectUni, savedUniversities, onToggleSave, cur
     setOpenMenuId(null);
   }
 
-  // Compare now behaves like "Compare to others": add (or confirm already added),
-  // then go straight to the Dashboard. Only blocked when the list is already full.
+  // Same pattern as UniversityDetail.jsx: add (or confirm) then show a toast
+  // with a "See ->" button. Navigation only happens when the person clicks it.
   function handleAddToCompare(e, uni) {
     e.stopPropagation();
     const result = onAddToCompare?.(uni); // "added" | "exists" | "full"
-    if (result === "full") {
-      setCompareMsg("full");
-      setTimeout(() => setCompareMsg(null), 5000);
-      return;
-    }
-    navigate("/app/dashboard");
+    setCompareMsg(result);
+    setTimeout(() => setCompareMsg(null), 5000);
   }
 
   function removeTag(key, value) {
@@ -371,6 +364,28 @@ export default function Home({ onSelectUni, savedUniversities, onToggleSave, cur
 
   return (
     <div className="home-page">
+      {compareMsg && (
+        <div className="compare-toast">
+          <div className="compare-toast-text">
+            {compareMsg === "added" && <span>✓ Added to Dashboard!</span>}
+            {compareMsg === "exists" && <span>Already in your Dashboard</span>}
+            {compareMsg === "full" && <span>Dashboard is full (max {maxCompare}) — remove one first</span>}
+            {compareMsg !== "full" && (
+              <span className="compare-toast-sub">If you want to compare this university go to Dashboard</span>
+            )}
+          </div>
+          <button
+            className="compare-toast-btn"
+            onClick={() => {
+              setCompareMsg(null);
+              navigate("/app/dashboard");
+            }}
+          >
+            See →
+          </button>
+        </div>
+      )}
+
       <div className="home-sticky-header">
         <h1 className="home-title">Welcome back, {currentUser?.name || "there"}</h1>
         <p className="home-desc">Discover design and art universities with Unexa. Everything you need in one place</p>
@@ -543,14 +558,6 @@ export default function Home({ onSelectUni, savedUniversities, onToggleSave, cur
             <polyline points="20 6 9 17 4 12" />
           </svg>
           {toast}
-        </div>
-      )}
-
-      {compareMsg === "full" && (
-        <div className="compare-toast">
-          <div className="compare-toast-text">
-            <span>Dashboard is full (max {maxCompare}) — remove one first</span>
-          </div>
         </div>
       )}
     </div>
