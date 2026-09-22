@@ -54,8 +54,8 @@ const ALL_TEACHERS = [
 export default function TeachersSection({ onBack }) {
   return (
     <div className="teachers-section">
-      <button className="teachers-back-btn" onClick={onBack}>
-        ← Back
+      <button className="teachers-back-btn" onClick={onBack} aria-label="Back">
+        <img src="/arrow-left.svg" alt="" className="teachers-back-icon" />
       </button>
 
       <div className="teachers-featured-card">
