@@ -282,3 +282,4 @@ export default function App() {
       <Route path="*" element={<Landing />} />
     </Routes>
   );
+}
