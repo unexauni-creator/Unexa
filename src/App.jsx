@@ -15,6 +15,8 @@ import "./styles/base.css";
 import "./styles/community.css";
 import "./styles/landing.css";
 import "./styles/profile.css";
+import "./styles/university-detail.css";
+import "./styles/teachers-section.css";
 import Onboarding from "./pages/Onboarding";
 import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
@@ -135,19 +137,14 @@ export default function App() {
   }
 
   function addToCompare(uni) {
-    let result = "added";
-    setComparedUniversities(prev => {
-      if (prev.some(u => u.id === uni.id)) {
-        result = "exists";
-        return prev;
-      }
-      if (prev.length >= MAX_COMPARE) {
-        result = "full";
-        return prev;
-      }
-      return [...prev, uni];
-    });
-    return result;
+    if (comparedUniversities.some(u => u.id === uni.id)) {
+      return "exists";
+    }
+    if (comparedUniversities.length >= MAX_COMPARE) {
+      return "full";
+    }
+    setComparedUniversities(prev => [...prev, uni]);
+    return "added";
   }
 
   function removeFromCompare(id) {
@@ -184,7 +181,7 @@ export default function App() {
     <Routes>
       {/* ── Public: always reachable, regardless of login state ── */}
       <Route path="/" element={<Landing />} />
-           <Route path="/login" element={<Login onLogin={handleLogin} />} />
+      <Route path="/login" element={<Login onLogin={handleLogin} />} />
       <Route path="/signup" element={<Signup onLogin={handleLogin} />} />
       <Route path="/onboarding" element={<Onboarding onLogin={handleLogin} />} />
       <Route path="/forgot-password" element={<ForgotPassword />} />
@@ -216,6 +213,9 @@ export default function App() {
                           savedUniversities={savedUniversities}
                           onToggleSave={toggleSaveUni}
                           currentUser={authUser}
+                          comparedUniversities={comparedUniversities}
+                          onAddToCompare={addToCompare}
+                          maxCompare={MAX_COMPARE}
                         />
                       }
                     />
@@ -254,17 +254,7 @@ export default function App() {
                         />
                       }
                     />
-                    <Route
-                      path="*"
-                      element={
-                        <Home
-                          onSelectUni={setSelectedUni}
-                          savedUniversities={savedUniversities}
-                          onToggleSave={toggleSaveUni}
-                          currentUser={authUser}
-                        />
-                      }
-                    />
+                    <Route path="*" element={<Navigate to="/app" replace />} />
                   </Routes>
                 )}
               </main>

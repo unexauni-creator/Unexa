@@ -1,3 +1,4 @@
+import { useNavigate } from "react-router-dom";
 import { useState, useRef, useEffect } from "react";
 import { supabase } from "../lib/supabaseClient";
 import { mapSpecialty } from "../lib/mapSpecialty.js";
@@ -74,7 +75,6 @@ function FilterPanel({ filters, setFilters, onClose, onApply, onClear }) {
             {DEGREES.map(d => <CheckItem key={d} label={d} checked={filters.degrees.includes(d)} onChange={() => toggle("degrees", d)} />)}
           </CollapsibleSection>
 
-          {/* Tuition — always open, no arrow */}
           <div className="filter-section">
             <div className="filter-section-header" style={{ cursor: "default" }}>
               <span className="filter-group-title">
@@ -238,7 +238,7 @@ function SearchEmptyState({ query }) {
   );
 }
 
-export default function Home({ onSelectUni, savedUniversities, onToggleSave, currentUser }) {
+export default function Home({ onSelectUni, savedUniversities, onToggleSave, currentUser, comparedUniversities = [], onAddToCompare, maxCompare = 4 }) {
   const [universities, setUniversities] = useState([]);
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState(null);
@@ -251,9 +251,11 @@ export default function Home({ onSelectUni, savedUniversities, onToggleSave, cur
   const [filters, setFilters] = useState(DEFAULT_FILTERS);
   const [appliedFilters, setAppliedFilters] = useState(DEFAULT_FILTERS);
   const [toast, setToast] = useState(null);
+  const [openMenuId, setOpenMenuId] = useState(null);
+  const [compareMsg, setCompareMsg] = useState(null); // null | "added" | "exists" | "full"
   const searchRef = useRef(null);
+  const navigate = useNavigate();
 
-  // Fetch specialties + their parent university in one query
   useEffect(() => {
     let cancelled = false;
 
@@ -284,6 +286,9 @@ export default function Home({ onSelectUni, savedUniversities, onToggleSave, cur
       if (searchRef.current && !searchRef.current.contains(e.target)) {
         setSearchFocused(false);
       }
+      if (!e.target.closest(".uni-card-menu-wrap")) {
+        setOpenMenuId(null);
+      }
     }
     document.addEventListener("mousedown", handleClick);
     return () => document.removeEventListener("mousedown", handleClick);
@@ -298,13 +303,22 @@ export default function Home({ onSelectUni, savedUniversities, onToggleSave, cur
   function applyFilters() { setAppliedFilters({ ...filters }); setShowFilter(false); }
   function clearFilters() { setFilters(DEFAULT_FILTERS); setAppliedFilters(DEFAULT_FILTERS); }
 
-  function toggleSave(e, uni) {
+  function handleSaveToggle(e, uni) {
     e.stopPropagation();
     const isSaved = savedUniversities.some(u => u.id === uni.id);
     onToggleSave(uni);
-    if (!isSaved) {
-      setToast(`${uni.name} saved to profile`);
-    }
+    setToast(isSaved ? `${uni.name} removed from saved` : `${uni.name} saved to profile`);
+    setOpenMenuId(null);
+  }
+
+  // Same pattern as UniversityDetail.jsx: add (or confirm) then show a toast
+  // with a "See ->" button. Navigation only happens when the person clicks it.
+  function handleAddToCompare(e, uni) {
+    console.log("[DEBUG] handleAddToCompare called", uni.id, typeof onAddToCompare);
+    e.stopPropagation();
+    const result = onAddToCompare?.(uni); // "added" | "exists" | "full"
+    setCompareMsg(result);
+    setTimeout(() => setCompareMsg(null), 5000);
   }
 
   function removeTag(key, value) {
@@ -351,6 +365,28 @@ export default function Home({ onSelectUni, savedUniversities, onToggleSave, cur
 
   return (
     <div className="home-page">
+      {compareMsg && (
+        <div className="compare-toast">
+          <div className="compare-toast-text">
+            {compareMsg === "added" && <span>✓ Added to Dashboard!</span>}
+            {compareMsg === "exists" && <span>Already in your Dashboard</span>}
+            {compareMsg === "full" && <span>Dashboard is full (max {maxCompare}) — remove one first</span>}
+            {compareMsg !== "full" && (
+              <span className="compare-toast-sub">If you want to compare this university go to Dashboard</span>
+            )}
+          </div>
+          <button
+            className="compare-toast-btn"
+            onClick={() => {
+              setCompareMsg(null);
+              navigate("/app/dashboard");
+            }}
+          >
+            See →
+          </button>
+        </div>
+      )}
+
       <div className="home-sticky-header">
         <h1 className="home-title">Welcome back, {currentUser?.name || "there"}</h1>
         <p className="home-desc">Discover design and art universities with Unexa. Everything you need in one place</p>
@@ -432,9 +468,47 @@ export default function Home({ onSelectUni, savedUniversities, onToggleSave, cur
           <div className="uni-grid">
             {filtered.length > 0 ? filtered.map(uni => {
               const isSaved = savedUniversities.some(u => u.id === uni.id);
+              const isCompared = comparedUniversities.some(u => u.id === uni.id);
               return (
                 <div key={uni.id} className="uni-card-new" onClick={() => onSelectUni(uni)}>
                   <img src={uni.image} alt={uni.name} className="uni-card-img" />
+
+                  <div className="uni-card-menu-wrap" style={{ pointerEvents: "auto", zIndex: 6 }}>
+                    <button
+                      className="uni-card-menu-btn"
+                      style={{ pointerEvents: "auto" }}
+                      onClick={e => { e.stopPropagation(); setOpenMenuId(openMenuId === uni.id ? null : uni.id); }}
+                      aria-label="More options"
+                    >
+                      <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor">
+                        <circle cx="12" cy="5" r="2" />
+                        <circle cx="12" cy="12" r="2" />
+                        <circle cx="12" cy="19" r="2" />
+                      </svg>
+                    </button>
+
+                    {openMenuId === uni.id && (
+                      <div className="uni-card-menu" onClick={e => e.stopPropagation()}>
+                        {isSaved ? (
+                          <button className="uni-card-menu-item uni-card-menu-item-remove" onClick={e => handleSaveToggle(e, uni)}>
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                              <polyline points="3 6 5 6 21 6" />
+                              <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+                            </svg>
+                            Remove from saved
+                          </button>
+                        ) : (
+                          <button className="uni-card-menu-item" onClick={e => handleSaveToggle(e, uni)}>
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                              <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" />
+                            </svg>
+                            Save to profile
+                          </button>
+                        )}
+                      </div>
+                    )}
+                  </div>
+
                   <div className="uni-card-glass">
                     <div className="uni-card-glass-blur" />
                     <div className="uni-card-text">
@@ -442,13 +516,16 @@ export default function Home({ onSelectUni, savedUniversities, onToggleSave, cur
                       <div className="uni-card-subtitle">{uni.name}</div>
                     </div>
                     <button
-                      className={`uni-card-save ${isSaved ? "saved" : ""}`}
-                      onClick={e => toggleSave(e, uni)}
-                      aria-label={isSaved ? "Remove from profile" : "Save to profile"}
+                      type="button"
+                      className={`uni-card-compare-btn ${isCompared ? "added" : ""}`}
+                      style={{ pointerEvents: "auto", position: "relative", zIndex: 6 }}
+                      onClick={e => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        handleAddToCompare(e, uni);
+                      }}
                     >
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill={isSaved ? "currentColor" : "none"} stroke="currentColor" strokeWidth="2">
-                        <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" />
-                      </svg>
+                      {isCompared ? "Added ✓" : "Compare"}
                     </button>
                   </div>
                 </div>
