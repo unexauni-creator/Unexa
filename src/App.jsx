@@ -257,12 +257,15 @@ export default function App() {
                     <Route
                       path="*"
                       element={
-                        <Home
-                          onSelectUni={setSelectedUni}
-                          savedUniversities={savedUniversities}
-                          onToggleSave={toggleSaveUni}
-                          currentUser={authUser}
-                        />
+                       <Home
+  onSelectUni={setSelectedUni}
+  savedUniversities={savedUniversities}
+  onToggleSave={toggleSaveUni}
+  currentUser={authUser}
+  comparedUniversities={comparedUniversities}
+  onAddToCompare={addToCompare}
+  maxCompare={MAX_COMPARE}
+/>
                       }
                     />
                   </Routes>
