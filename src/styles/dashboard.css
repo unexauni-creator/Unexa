@@ -194,6 +194,7 @@
   .dash-tooltip { width: 240px; }
   .dash-desc-block { padding: 0; }
   .dash-max-popup { left: 16px; right: 16px; transform: none; white-space: normal; text-align: center; animation: dashMaxPopupInMobile 0.25s ease, dashMaxPopupOut 0.25s ease 3.75s; }
+  .dash-table-full .dash-table-cell { padding-left: 8px; padding-right: 8px; }
 }
 
 @keyframes dashMaxPopupInMobile {
@@ -203,7 +204,11 @@
 
 .dash-table-scroll {
   width: 100%;
+  min-width: 0;
   overflow-x: auto;
+}
+.dash-table-scroll:has(.dash-table-full) {
+  overflow-x: hidden;
 }
 
 .dash-table {
@@ -229,12 +234,19 @@
 .dash-table-full {
   display: flex;
   width: 100%;
+  min-width: 0;
 }
 .dash-table-full .dash-table-cell,
 .dash-table-full .dash-uni-header {
   flex: 1 1 0;
   width: auto;
   min-width: 0;
+  overflow: hidden;
+}
+.dash-table-full .dash-table-cell {
+  padding-left: 14px;
+  padding-right: 14px;
+  word-break: break-word;
 }
 
 .dash-narrow-wrap {
