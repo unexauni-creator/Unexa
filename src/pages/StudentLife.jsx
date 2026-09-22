@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
 
 const CATEGORIES = ["All", "Clubs", "Events", "Sports", "Culture", "Support"];
 
@@ -53,9 +52,8 @@ const SECTIONS = [
   },
 ];
 
-export default function StudentLife() {
+export default function StudentLife({ onBack }) {
   const [activeCategory, setActiveCategory] = useState("All");
-  const navigate = useNavigate();
 
   const filtered = activeCategory === "All"
     ? SECTIONS
@@ -63,6 +61,9 @@ export default function StudentLife() {
 
   return (
     <div className="student-life-page">
+      <button className="sl-back-btn" onClick={onBack} aria-label="Back">
+        <img src="/arrow-left.svg" alt="" className="sl-back-icon" />
+      </button>
       <div className="sl-hero">
         <div className="sl-hero-text">
           <div className="sl-hero-title">Explore Student Life</div>
@@ -94,7 +95,7 @@ export default function StudentLife() {
 
       <div className="sl-grid">
         {filtered.map(section => (
-          <div key={section.id} className="sl-card" onClick={() => navigate(`/app/student-life/${section.id}`)}>
+          <div key={section.id} className="sl-card">
             <img src={section.image} alt={section.title} className="sl-card-img" />
             <div className="sl-card-body">
               <div className="sl-card-text">

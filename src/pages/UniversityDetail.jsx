@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import ScholarshipSection from "../components/ScholarshipSection";
 import TeachersSection from "../components/TeachersSection";
+import StudentLife from "./StudentLife";
 
 // Розбиває "Merit Scholarship (GPA above 3.5), Grant X" на окремі пункти,
 // не ламаючи текст усередині дужок
@@ -39,6 +40,7 @@ export default function UniversityDetail({
 }) {
   const [activeTab, setActiveTab] = useState("info");
   const [viewingTeachers, setViewingTeachers] = useState(false);
+  const [viewingStudentLife, setViewingStudentLife] = useState(false);
   const [compareMsg, setCompareMsg] = useState(null); // null | "added" | "exists" | "full"
   const navigate = useNavigate();
 
@@ -115,11 +117,14 @@ export default function UniversityDetail({
       <div className="detail-scroll">
         <div className="detail-body">
           {/* ── INFO TAB ── */}
-          {activeTab === "info" && viewingTeachers && (
+          {activeTab === "info" && viewingStudentLife && (
+        <StudentLife onBack={() => setViewingStudentLife(false)} />
+      )}
+      {activeTab === "info" && viewingTeachers && (
   <TeachersSection onBack={() => setViewingTeachers(false)} />
 )}
 
-{activeTab === "info" && !viewingTeachers && (
+{activeTab === "info" && !viewingTeachers && !viewingStudentLife && (
             <>
               <div className="detail-hero">
                 <div className="detail-hero-left">
