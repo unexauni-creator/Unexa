@@ -138,7 +138,7 @@
 }
 .save-toast svg { flex-shrink: 0; color: #7BA986; }
 
-/* Three-dot menu, top-right of the card */
+/* Three-dot menu, top-right of the card — transparent, icon only */
 .uni-card-menu-wrap {
   position: absolute;
   top: 12px;
@@ -150,7 +150,7 @@
   width: 30px;
   height: 30px;
   border-radius: 10px;
-  background: rgba(0,0,0,0.38);
+  background: transparent;
   color: #ffffff;
   border: none;
   display: flex;
@@ -159,7 +159,7 @@
   cursor: pointer;
   transition: background 0.18s;
 }
-.uni-card-menu-btn:hover { background: rgba(0,0,0,0.55); }
+.uni-card-menu-btn:hover { background: rgba(0,0,0,0.28); }
 
 .uni-card-menu {
   position: absolute;
@@ -197,23 +197,26 @@
 .uni-card-menu-item-remove { color: #c05050; }
 .uni-card-menu-item-remove:hover { background: rgba(200,80,80,0.08); }
 
-/* Add-to-Dashboard button, replaces the old bookmark button position */
+/* Add-to-Dashboard button — solid pill with label, matches reference design */
 .uni-card-compare-btn {
   flex-shrink: 0;
-  width: 32px;
-  height: 32px;
-  border-radius: 10px;
+  padding: 10px 20px;
+  border-radius: 999px;
   border: none;
-  background: rgba(255,255,255,0.12);
+  background: rgba(20,16,12,0.55);
   color: #ffffff;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  font-family: 'Nunito', sans-serif;
+  font-size: 13.5px;
+  font-weight: 700;
   cursor: pointer;
+  white-space: nowrap;
   transition: background 0.18s, transform 0.12s;
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
 }
-.uni-card-compare-btn:hover { background: rgba(255,255,255,0.22); transform: scale(1.06); }
+.uni-card-compare-btn:hover { background: rgba(20,16,12,0.75); transform: translateY(-1px); }
 .uni-card-compare-btn.added { background: #AC8876; }
+.uni-card-compare-btn.added:hover { background: #9a7664; }
 
 @keyframes toastIn {
   from { opacity: 0; transform: translate(-50%, 12px); }
