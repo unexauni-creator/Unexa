@@ -136,6 +136,7 @@ export default function App() {
   }
 
   function addToCompare(uni) {
+    console.log("[DEBUG] addToCompare called", uni.id);
     if (comparedUniversities.some(u => u.id === uni.id)) {
       return "exists";
     }

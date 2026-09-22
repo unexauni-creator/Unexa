@@ -314,6 +314,7 @@ export default function Home({ onSelectUni, savedUniversities, onToggleSave, cur
   // Same pattern as UniversityDetail.jsx: add (or confirm) then show a toast
   // with a "See ->" button. Navigation only happens when the person clicks it.
   function handleAddToCompare(e, uni) {
+    console.log("[DEBUG] handleAddToCompare called", uni.id, typeof onAddToCompare);
     e.stopPropagation();
     const result = onAddToCompare?.(uni); // "added" | "exists" | "full"
     setCompareMsg(result);
