@@ -253,7 +253,7 @@ export default function Home({ onSelectUni, savedUniversities, onToggleSave, cur
   const [appliedFilters, setAppliedFilters] = useState(DEFAULT_FILTERS);
   const [toast, setToast] = useState(null);
   const [openMenuId, setOpenMenuId] = useState(null);
-  const [compareMsg, setCompareMsg] = useState(null); // null | "added" | "exists" | "full"
+  const [compareMsg, setCompareMsg] = useState(null); // null | "full"
   const searchRef = useRef(null);
   const navigate = useNavigate();
 
@@ -314,11 +314,17 @@ export default function Home({ onSelectUni, savedUniversities, onToggleSave, cur
     setOpenMenuId(null);
   }
 
+  // Compare now behaves like "Compare to others": add (or confirm already added),
+  // then go straight to the Dashboard. Only blocked when the list is already full.
   function handleAddToCompare(e, uni) {
     e.stopPropagation();
-    const result = onAddToCompare?.(uni);
-    setCompareMsg(result);
-    setTimeout(() => setCompareMsg(null), 5000);
+    const result = onAddToCompare?.(uni); // "added" | "exists" | "full"
+    if (result === "full") {
+      setCompareMsg("full");
+      setTimeout(() => setCompareMsg(null), 5000);
+      return;
+    }
+    navigate("/app/dashboard");
   }
 
   function removeTag(key, value) {
@@ -540,25 +546,11 @@ export default function Home({ onSelectUni, savedUniversities, onToggleSave, cur
         </div>
       )}
 
-      {compareMsg && (
+      {compareMsg === "full" && (
         <div className="compare-toast">
           <div className="compare-toast-text">
-            {compareMsg === "added" && <span>✓ Added to Dashboard!</span>}
-            {compareMsg === "exists" && <span>Already in your Dashboard</span>}
-            {compareMsg === "full" && <span>Dashboard is full (max {maxCompare}) — remove one first</span>}
-            {compareMsg !== "full" && (
-              <span className="compare-toast-sub">If you want to compare this university go to Dashboard</span>
-            )}
+            <span>Dashboard is full (max {maxCompare}) — remove one first</span>
           </div>
-          <button
-            className="compare-toast-btn"
-            onClick={() => {
-              setCompareMsg(null);
-              navigate("/app/dashboard");
-            }}
-          >
-            See →
-          </button>
         </div>
       )}
     </div>
