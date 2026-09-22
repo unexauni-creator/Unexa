@@ -198,32 +198,30 @@
 .uni-card-menu-item-remove { color: #c05050; }
 .uni-card-menu-item-remove:hover { background: rgba(200,80,80,0.08); }
 
-/* Add-to-Dashboard button — solid pill with label, matches reference design.
-   pointer-events: auto is required here because the parent .uni-card-glass
-   overlay is pointer-events: none (so the card itself stays clickable
-   through the overlay) — without this, clicks fall through to the card. */
+/* Add-to-Dashboard button — solid, opaque pill so text stays legible over
+   any photo. z-index/pointer-events are also set inline in the JSX as a
+   belt-and-suspenders guarantee against any overlay stacking above it. */
 .uni-card-compare-btn {
   flex-shrink: 0;
-  pointer-events: auto;
   padding: 10px 20px;
   border-radius: 999px;
   border: none;
-  background: rgba(20,16,12,0.65);
+  background: #634F44;
   cursor: pointer;
   white-space: nowrap;
   transition: background 0.18s, transform 0.12s;
-  backdrop-filter: blur(6px);
-  -webkit-backdrop-filter: blur(6px);
+  box-shadow: 0 4px 14px rgba(0,0,0,0.28);
 }
 .uni-card-compare-btn,
 .uni-card-compare-btn span {
   color: #ffffff !important;
   font-family: 'Nunito', sans-serif;
   font-size: 13.5px;
-  font-weight: 700;
+  font-weight: 800;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.35);
   opacity: 1;
 }
-.uni-card-compare-btn:hover { background: rgba(20,16,12,0.85); transform: translateY(-1px); }
+.uni-card-compare-btn:hover { background: #4e3d35; transform: translateY(-1px); }
 .uni-card-compare-btn.added { background: #AC8876; }
 .uni-card-compare-btn.added:hover { background: #9a7664; }
 

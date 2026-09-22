@@ -449,9 +449,10 @@ export default function Home({ onSelectUni, savedUniversities, onToggleSave, cur
                 <div key={uni.id} className="uni-card-new" onClick={() => onSelectUni(uni)}>
                   <img src={uni.image} alt={uni.name} className="uni-card-img" />
 
-                  <div className="uni-card-menu-wrap">
+                  <div className="uni-card-menu-wrap" style={{ pointerEvents: "auto", zIndex: 6 }}>
                     <button
                       className="uni-card-menu-btn"
+                      style={{ pointerEvents: "auto" }}
                       onClick={e => { e.stopPropagation(); setOpenMenuId(openMenuId === uni.id ? null : uni.id); }}
                       aria-label="More options"
                     >
@@ -491,8 +492,14 @@ export default function Home({ onSelectUni, savedUniversities, onToggleSave, cur
                       <div className="uni-card-subtitle">{uni.name}</div>
                     </div>
                     <button
+                      type="button"
                       className={`uni-card-compare-btn ${isCompared ? "added" : ""}`}
-                      onClick={e => handleAddToCompare(e, uni)}
+                      style={{ pointerEvents: "auto", position: "relative", zIndex: 6 }}
+                      onClick={e => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        handleAddToCompare(e, uni);
+                      }}
                     >
                       {isCompared ? "Added ✓" : "Compare"}
                     </button>
