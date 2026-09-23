@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { useState, useRef, useLayoutEffect } from "react";
+import { useState, useRef, useLayoutEffect, useEffect } from "react";
 import { createPortal } from "react-dom";
 
 const ROW_LABELS = [
@@ -84,6 +84,17 @@ export default function Dashboard({ comparedUniversities = [], onRemove, maxComp
   const isFull = count === maxCompare;
   const isLocked = count === 1;
 
+  const [showMaxPopup, setShowMaxPopup] = useState(false);
+
+  useEffect(() => {
+    if (isFull) {
+      setShowMaxPopup(true);
+      const timer = setTimeout(() => setShowMaxPopup(false), 4000);
+      return () => clearTimeout(timer);
+    }
+    setShowMaxPopup(false);
+  }, [isFull]);
+
   function removeUni(id) {
     onRemove?.(id);
   }
@@ -157,30 +168,34 @@ export default function Dashboard({ comparedUniversities = [], onRemove, maxComp
     </div>
   );
 
-  return (
-    <div className="dashboard-page">
-      <div className="dashboard-header">
-        <div className="dash-title">Dashboard</div>
-        <div className="dash-desc-block">
-          <p className="dash-desc-sub">
-            {count === 1
-              ? "Compare selected universities side by side."
-              : `Compare ${count} selected universities side by side.`}
-            <br />
-            You can add up to {maxCompare} universities to find the one that fits you best.
-          </p>
-        </div>
+  const header = (
+    <div className="dashboard-header">
+      <div className="dash-title">Dashboard</div>
+      <div className="dash-desc-block">
+        <p className="dash-desc-sub">
+          {count === 1
+            ? "Compare selected universities side by side."
+            : `Compare ${count} selected universities side by side.`}
+          <br />
+          You can add up to {maxCompare} universities to find the one that fits you best.
+        </p>
       </div>
+    </div>
+  );
 
-      {isFull && (
-        <div className="dash-max-banner">
-          <span>✓ Maximum reached — you can compare up to {maxCompare} universities. Remove one to add another.</span>
-        </div>
-      )}
+  const maxPopup = showMaxPopup && createPortal(
+    <div className="dash-max-popup">
+      <span>✓ Maximum reached — you can compare up to {maxCompare} universities. Remove one to add another.</span>
+    </div>,
+    document.body
+  );
 
-      {isLocked ? (
+  if (isLocked) {
+    return (
+      <div className="dashboard-page">
         <div className="dash-locked-wrap">
           <div className="dash-locked-content">
+            {header}
             {table}
           </div>
           <div className="dash-warning-overlay">
@@ -192,9 +207,15 @@ export default function Dashboard({ comparedUniversities = [], onRemove, maxComp
             </div>
           </div>
         </div>
-      ) : (
-        table
-      )}
+      </div>
+    );
+  }
+
+  return (
+    <div className="dashboard-page">
+      {header}
+      {maxPopup}
+      {table}
     </div>
   );
 }
