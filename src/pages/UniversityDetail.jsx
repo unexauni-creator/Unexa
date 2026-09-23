@@ -298,7 +298,7 @@ export default function UniversityDetail({
                   </div>
                   <div className="detail-social-label">Student live</div>
                 </div>
-                <div className="detail-social-card">
+                <div className="detail-social-card detail-social-card-clickable" onClick={() => setViewingDorm(true)}>
                   <div className="detail-social-stack">
                     <img
                       src={uni.dormImage || PLACEHOLDER_IMAGES.dorm}
