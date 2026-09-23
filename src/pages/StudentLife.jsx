@@ -96,7 +96,7 @@ export default function StudentLife({ onBack }) {
       <div className="sl-grid">
         {filtered.map(section => (
           <div key={section.id} className="sl-card">
-            <img src={section.image} alt={section.title} className="sl-card-img" />
+            <div className="sl-card-img-wrap"><img src={section.image} alt={section.title} className="sl-card-img" /><span className="sl-card-icon-badge">🏛️</span></div>
             <div className="sl-card-body">
               <div className="sl-card-text">
                 <div className="sl-card-title">{section.title}</div>
