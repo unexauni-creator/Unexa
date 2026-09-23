@@ -12,6 +12,14 @@ const ROW_LABELS = [
   { key: "tuition", label: "Tuition fees", info: null },
 ];
 
+const MAX_NAME_LENGTH = 22;
+
+function truncateName(name, maxLength = MAX_NAME_LENGTH) {
+  if (!name) return "";
+  if (name.length <= maxLength) return name;
+  return name.slice(0, maxLength - 1).trimEnd() + "…";
+}
+
 function InfoTooltip({ text }) {
   const [visible, setVisible] = useState(false);
   const [pos, setPos] = useState({ top: 0, left: 0 });
@@ -139,7 +147,7 @@ export default function Dashboard({ comparedUniversities = [], onRemove, maxComp
             <div key={u.id} className="dash-table-cell dash-uni-header">
               <img src={u.image} alt={u.name} className="dash-uni-card-img" />
               <div className="dash-uni-card-info">
-                <div className="dash-uni-card-name">{u.name}</div>
+                <div className="dash-uni-card-name" title={u.name}>{truncateName(u.name)}</div>
                 <div className="dash-uni-card-program">{u.program}</div>
               </div>
               <button className="dash-remove-btn" onClick={() => removeUni(u.id)}>
