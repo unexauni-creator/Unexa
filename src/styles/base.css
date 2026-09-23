@@ -3,7 +3,7 @@
 * { box-sizing: border-box; margin: 0; padding: 0; }
 body, #root { height: 100vh; font-family: 'DM Sans', sans-serif; background: #e2e0e0; }
 .app { display: flex; height: 100vh; overflow: hidden; background: url('/paper-texture.png') center/cover no-repeat; }
-.main { flex: 1; overflow-y: auto; background: transparent; scrollbar-gutter: stable; }
+.main { flex: 1; overflow-y: hidden; background: transparent; scrollbar-gutter: stable; }
 .page-title { font-family: 'DM Serif Display', serif; font-size: 32px; color: #2c2420; margin-bottom: 6px; }
 .page-subtitle { font-size: 15px; color: #9e8f86; margin-bottom: 28px; line-height: 1.5; }
 .page-header { margin-bottom: 28px; }
