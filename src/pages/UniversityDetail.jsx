@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import ScholarshipSection from "../components/ScholarshipSection";
 import TeachersSection from "../components/TeachersSection";
 import StudentLife from "./StudentLife";
+import Dorm from "./Dorm";
 
 // Розбиває "Merit Scholarship (GPA above 3.5), Grant X" на окремі пункти,
 // не ламаючи текст усередині дужок
@@ -41,6 +42,7 @@ export default function UniversityDetail({
   const [activeTab, setActiveTab] = useState("info");
   const [viewingTeachers, setViewingTeachers] = useState(false);
   const [viewingStudentLife, setViewingStudentLife] = useState(false);
+  const [viewingDorm, setViewingDorm] = useState(false);
   const [compareMsg, setCompareMsg] = useState(null); // null | "added" | "exists" | "full"
   const navigate = useNavigate();
 
@@ -120,11 +122,14 @@ export default function UniversityDetail({
           {activeTab === "info" && viewingStudentLife && (
         <StudentLife onBack={() => setViewingStudentLife(false)} />
       )}
+      {activeTab === "info" && viewingDorm && (
+        <Dorm onBack={() => setViewingDorm(false)} />
+      )}
       {activeTab === "info" && viewingTeachers && (
   <TeachersSection onBack={() => setViewingTeachers(false)} />
 )}
 
-{activeTab === "info" && !viewingTeachers && !viewingStudentLife && (
+{activeTab === "info" && !viewingTeachers && !viewingStudentLife && !viewingDorm && (
             <>
               <div className="detail-hero">
                 <div className="detail-hero-left">
