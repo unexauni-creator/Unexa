@@ -91,6 +91,7 @@
 .detail-details-row { display: flex; gap: 16px; align-items: stretch; }
 
 .detail-info-box { flex: 1; background: rgba(208,208,208,0.2); border-radius: 16px; padding: 18px; display: flex; flex-direction: column; gap: 12px; }
+.detail-info-item { min-height: 76px; }
 .detail-info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 .detail-info-grid-secondary { margin-top: 4px; padding-top: 14px; border-top: 1px solid rgba(43,31,24,0.06); }
 .detail-info-item { background: rgba(255,250,246,0.4); border-radius: 12px; padding: 12px 14px; display: flex; flex-direction: column; justify-content: center; gap: 4px; }
