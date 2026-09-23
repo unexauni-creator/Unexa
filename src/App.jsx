@@ -16,6 +16,7 @@ import "./styles/community.css";
 import "./styles/landing.css";
 import "./styles/profile.css";
 import "./styles/university-detail.css";
+import "./styles/student-life.css";
 import "./styles/teachers-section.css";
 import Onboarding from "./pages/Onboarding";
 import ForgotPassword from "./pages/ForgotPassword";
