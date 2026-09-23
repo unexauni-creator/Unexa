@@ -20,9 +20,9 @@ const FEATURED_TEACHER = {
     "Education is not just about knowledge, it's about giving students the confidence to shape a better tomorrow.",
   image: PLACEHOLDER_IMAGES.featured,
   stats: [
-    { icon: "🎓", label: "10+ years", sub: "teaching experience" },
-    { icon: "📄", label: "Published 35+", sub: "research papers" },
-    { icon: "🌐", label: "Global health", sub: "research center" },
+    { label: "10+ years", sub: "teaching experience" },
+    { label: "Published 35+", sub: "research papers" },
+    { label: "Global health", sub: "research center" },
   ],
 };
 
@@ -60,51 +60,52 @@ export default function TeachersSection({ onBack }) {
         <img src="/arrow-left.svg" alt="" className="teachers-back-icon" />
       </button>
 
-      <div className="teachers-featured-card">
-        <img
-          src={FEATURED_TEACHER.image}
-          alt={FEATURED_TEACHER.name}
-          className="teachers-featured-img"
-        />
-        <div className="teachers-featured-info">
-          <div className="teachers-featured-label">Featured Teacher</div>
-          <div className="teachers-featured-name">{FEATURED_TEACHER.name}</div>
-          <div className="teachers-featured-subject">
-            {FEATURED_TEACHER.subject} · {FEATURED_TEACHER.degree}
-          </div>
-          <p className="teachers-featured-bio">{FEATURED_TEACHER.bio}</p>
+      <div className="teachers-scroll">
+        <div className="teachers-featured-card">
+          <img
+            src={FEATURED_TEACHER.image}
+            alt={FEATURED_TEACHER.name}
+            className="teachers-featured-img"
+          />
+          <div className="teachers-featured-info">
+            <div className="teachers-featured-label">Featured Teacher</div>
+            <div className="teachers-featured-name">{FEATURED_TEACHER.name}</div>
+            <div className="teachers-featured-subject">
+              {FEATURED_TEACHER.subject} · {FEATURED_TEACHER.degree}
+            </div>
+            <p className="teachers-featured-bio">{FEATURED_TEACHER.bio}</p>
 
-          <div className="teachers-featured-stats">
-            {FEATURED_TEACHER.stats.map((s, i) => (
-              <div className="teachers-stat" key={i}>
-                <span className="teachers-stat-icon">{s.icon}</span>
-                <div>
-                  <div className="teachers-stat-label">{s.label}</div>
-                  <div className="teachers-stat-sub">{s.sub}</div>
+            <div className="teachers-featured-stats">
+              {FEATURED_TEACHER.stats.map((s, i) => (
+                <div className="teachers-stat" key={i}>
+                  <div>
+                    <div className="teachers-stat-label">{s.label}</div>
+                    <div className="teachers-stat-sub">{s.sub}</div>
+                  </div>
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
+          </div>
+
+          <div className="teachers-featured-quote">
+            <span className="teachers-quote-mark">"</span>
+            <p className="teachers-quote-text">{FEATURED_TEACHER.quote}</p>
+            <div className="teachers-quote-attribution">— {FEATURED_TEACHER.name}</div>
           </div>
         </div>
 
-        <div className="teachers-featured-quote">
-          <span className="teachers-quote-mark">"</span>
-          <p className="teachers-quote-text">{FEATURED_TEACHER.quote}</p>
-          <div className="teachers-quote-attribution">— {FEATURED_TEACHER.name}</div>
+        <div className="teachers-section-heading">All teachers</div>
+
+        <div className="teachers-grid">
+          {ALL_TEACHERS.map((t, i) => (
+            <div className="teachers-card" key={i}>
+              <img src={t.image} alt={t.name} className="teachers-card-img" />
+              <div className="teachers-card-name">{t.name}</div>
+              <div className="teachers-card-subject">{t.subject}</div>
+              <p className="teachers-card-bio">{t.bio}</p>
+            </div>
+          ))}
         </div>
-      </div>
-
-      <div className="teachers-section-heading">All teachers</div>
-
-      <div className="teachers-grid">
-        {ALL_TEACHERS.map((t, i) => (
-          <div className="teachers-card" key={i}>
-            <img src={t.image} alt={t.name} className="teachers-card-img" />
-            <div className="teachers-card-name">{t.name}</div>
-            <div className="teachers-card-subject">{t.subject}</div>
-            <p className="teachers-card-bio">{t.bio}</p>
-          </div>
-        ))}
       </div>
     </div>
   );

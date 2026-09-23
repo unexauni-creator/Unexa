@@ -1,7 +1,35 @@
-.teachers-section { display: flex; flex-direction: column; gap: 24px; }
+.teachers-section {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  height: 100%;
+  min-height: 0;
+}
+
+.teachers-scroll {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 0 20px 24px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(172, 136, 118, 0.4) transparent;
+}
+.teachers-scroll::-webkit-scrollbar { width: 6px; }
+.teachers-scroll::-webkit-scrollbar-track { background: transparent; margin: 8px 4px; }
+.teachers-scroll::-webkit-scrollbar-thumb {
+  background: rgba(172, 136, 118, 0.5);
+  border-radius: 8px;
+  border: 2px solid transparent;
+  background-clip: content-box;
+}
 
 .teachers-back-btn {
   align-self: flex-start;
+  flex-shrink: 0;
   width: 44px;
   height: 44px;
   display: flex;
@@ -67,7 +95,7 @@
   border-top: 1px solid rgba(43,31,24,0.08);
   flex-wrap: wrap;
 }
-.teachers-stat { display: flex; align-items: center; gap: 10px; }
+.teachers-stat { display: flex; align-items: center; }
 .teachers-stat-icon { font-size: 18px; }
 .teachers-stat-label {
   font-family: 'Nunito', sans-serif;
