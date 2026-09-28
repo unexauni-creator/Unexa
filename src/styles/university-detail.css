@@ -35,16 +35,22 @@
 .detail-tab { padding: 10px 20px; font-family: 'Nunito', sans-serif; font-size: 15px; font-weight: 400; color: #000; background: rgba(208,208,208,0.35); border: none; border-radius: 10px 10px 0 0; cursor: pointer; transition: background 0.18s, color 0.18s; }
 .detail-tab.active { background: #AC8876; color: #fff; }
 
-/* ── Card wrapping ONLY the scrollable content ── */
+/* ── FIXED FRAME: background, border-radius, border, and shadow all live
+   here, on the frame itself — never on the scrolling content — so the
+   card's rounded corners stay put on every side, at every scroll
+   position. Only what's inside scrolls; the frame never moves. ── */
 .detail-scroll {
   flex: 1;
   min-height: 0;
   overflow-y: auto;
   overflow-x: hidden;
-  padding: 0 26px 40px 32px;
-  background: transparent;
+  border-radius: 24px;
+  background: rgba(208, 208, 208, 0.2);
+  border: 1px solid rgba(43, 31, 24, 0.06);
+  box-shadow: 0 12px 32px rgba(43, 31, 24, 0.07);
   scrollbar-width: thin;
   scrollbar-color: rgba(172, 136, 118, 0.4) transparent;
+  position: relative;
 }
 .detail-scroll::-webkit-scrollbar { width: 6px; }
 .detail-scroll::-webkit-scrollbar-track { background: transparent; margin: 8px 4px; }
@@ -55,7 +61,14 @@
   background-clip: content-box;
 }
 
-.detail-body { min-height: 100%; display: flex; flex-direction: column; gap: 28px; padding: 24px 24px 40px; background: rgba(208, 208, 208, 0.2); border-radius: 24px; }
+/* Plain content wrapper — no background, no radius, no min-height trick.
+   It scrolls freely inside the fixed .detail-scroll frame above. */
+.detail-body {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+  padding: 24px 24px 40px;
+}
 
 .detail-overline { font-family: 'Nunito', sans-serif; font-size: 13px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; color: #AC8876; }
 .detail-hero { display: flex; flex-direction: row; gap: 24px; align-items: flex-start; }
@@ -91,10 +104,9 @@
 .detail-details-row { display: flex; gap: 16px; align-items: stretch; }
 
 .detail-info-box { flex: 1; background: rgba(208,208,208,0.2); border-radius: 16px; padding: 18px; display: flex; flex-direction: column; gap: 12px; }
-.detail-info-item { min-height: 76px; }
 .detail-info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 .detail-info-grid-secondary { margin-top: 4px; padding-top: 14px; border-top: 1px solid rgba(43,31,24,0.06); }
-.detail-info-item { background: rgba(255,250,246,0.4); border-radius: 12px; padding: 12px 14px; display: flex; flex-direction: column; justify-content: center; gap: 4px; }
+.detail-info-item { background: rgba(255,250,246,0.4); border-radius: 12px; padding: 12px 14px; display: flex; flex-direction: column; justify-content: center; gap: 4px; min-height: 76px; }
 .detail-info-label { font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 13px; color: rgba(43,31,24,0.96); }
 .detail-info-value { font-family: 'Nunito', sans-serif; font-size: 12px; color: #6b5e56; }
 
@@ -125,6 +137,7 @@
   transition: transform 0.25s ease;
 }
 .detail-social-card:hover .detail-social-img { transform: translateY(-4px) rotate(-1deg); }
+.detail-social-card-clickable { cursor: pointer; }
 .detail-social-label { font-family: 'Nunito', sans-serif; font-weight: 600; font-size: 15px; color: rgba(43,31,24,0.9); }
 
 .program-year-block { display: flex; flex-direction: column; gap: 14px; }
@@ -157,4 +170,4 @@
   .detail-tabs { flex-shrink: 0; }
   .detail-tab { font-size: 13px; padding: 8px 14px; white-space: nowrap; }
   .compare-toast { min-width: unset; width: calc(100% - 32px); left: 16px; transform: none; bottom: 16px; }
-}.detail-social-card-clickable { cursor: pointer; }
+}
