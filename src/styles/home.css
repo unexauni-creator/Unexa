@@ -98,7 +98,7 @@
 .search-dropdown-item strong { color: rgba(43,31,24,0.96); }
 .search-dropdown-icon { font-size: 15px; flex-shrink: 0; }
 
-/* Save (bookmark) button on university cards */
+/* Save (bookmark) button on university cards — kept for reference, currently unused after menu removal */
 .uni-card-save {
   flex-shrink: 0;
   width: 32px;
@@ -138,7 +138,7 @@
 }
 .save-toast svg { flex-shrink: 0; color: #7BA986; }
 
-/* Three-dot menu, top-right of the card — transparent, icon only */
+/* Three-dot menu — kept for reference, currently unused after menu removal */
 .uni-card-menu-wrap {
   position: absolute;
   top: 12px;

@@ -251,7 +251,6 @@ export default function Home({ onSelectUni, savedUniversities, onToggleSave, cur
   const [filters, setFilters] = useState(DEFAULT_FILTERS);
   const [appliedFilters, setAppliedFilters] = useState(DEFAULT_FILTERS);
   const [toast, setToast] = useState(null);
-  const [openMenuId, setOpenMenuId] = useState(null);
   const [compareMsg, setCompareMsg] = useState(null); // null | "added" | "exists" | "full"
   const searchRef = useRef(null);
   const navigate = useNavigate();
@@ -286,9 +285,6 @@ export default function Home({ onSelectUni, savedUniversities, onToggleSave, cur
       if (searchRef.current && !searchRef.current.contains(e.target)) {
         setSearchFocused(false);
       }
-      if (!e.target.closest(".uni-card-menu-wrap")) {
-        setOpenMenuId(null);
-      }
     }
     document.addEventListener("mousedown", handleClick);
     return () => document.removeEventListener("mousedown", handleClick);
@@ -302,14 +298,6 @@ export default function Home({ onSelectUni, savedUniversities, onToggleSave, cur
 
   function applyFilters() { setAppliedFilters({ ...filters }); setShowFilter(false); }
   function clearFilters() { setFilters(DEFAULT_FILTERS); setAppliedFilters(DEFAULT_FILTERS); }
-
-  function handleSaveToggle(e, uni) {
-    e.stopPropagation();
-    const isSaved = savedUniversities.some(u => u.id === uni.id);
-    onToggleSave(uni);
-    setToast(isSaved ? `${uni.name} removed from saved` : `${uni.name} saved to profile`);
-    setOpenMenuId(null);
-  }
 
   // Same pattern as UniversityDetail.jsx: add (or confirm) then show a toast
   // with a "See ->" button. Navigation only happens when the person clicks it.
@@ -467,7 +455,6 @@ export default function Home({ onSelectUni, savedUniversities, onToggleSave, cur
         {!loading && !loadError && (
           <div className="uni-grid">
             {filtered.length > 0 ? filtered.map(uni => {
-              const isSaved = savedUniversities.some(u => u.id === uni.id);
               const isCompared = comparedUniversities.some(u => u.id === uni.id);
               return (
                 <div key={uni.id} className="uni-card-new" onClick={() => onSelectUni(uni)}>
