@@ -204,7 +204,7 @@
 .uni-card-compare-btn {
   flex-shrink: 0;
   padding: 10px 20px;
-  border-radius: 4px;
+  border-radius: 8px;
   border: none;
   background: #634F44;
   cursor: pointer;
