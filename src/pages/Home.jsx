@@ -473,42 +473,6 @@ export default function Home({ onSelectUni, savedUniversities, onToggleSave, cur
                 <div key={uni.id} className="uni-card-new" onClick={() => onSelectUni(uni)}>
                   <img src={uni.image} alt={uni.name} className="uni-card-img" />
 
-                  <div className="uni-card-menu-wrap" style={{ pointerEvents: "auto", zIndex: 6 }}>
-                    <button
-                      className="uni-card-menu-btn"
-                      style={{ pointerEvents: "auto" }}
-                      onClick={e => { e.stopPropagation(); setOpenMenuId(openMenuId === uni.id ? null : uni.id); }}
-                      aria-label="More options"
-                    >
-                      <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor">
-                        <circle cx="12" cy="5" r="2" />
-                        <circle cx="12" cy="12" r="2" />
-                        <circle cx="12" cy="19" r="2" />
-                      </svg>
-                    </button>
-
-                    {openMenuId === uni.id && (
-                      <div className="uni-card-menu" onClick={e => e.stopPropagation()}>
-                        {isSaved ? (
-                          <button className="uni-card-menu-item uni-card-menu-item-remove" onClick={e => handleSaveToggle(e, uni)}>
-                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                              <polyline points="3 6 5 6 21 6" />
-                              <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
-                            </svg>
-                            Remove from saved
-                          </button>
-                        ) : (
-                          <button className="uni-card-menu-item" onClick={e => handleSaveToggle(e, uni)}>
-                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                              <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" />
-                            </svg>
-                            Save to profile
-                          </button>
-                        )}
-                      </div>
-                    )}
-                  </div>
-
                   <div className="uni-card-glass">
                     <div className="uni-card-glass-blur" />
                     <div className="uni-card-text">
@@ -525,7 +489,7 @@ export default function Home({ onSelectUni, savedUniversities, onToggleSave, cur
                         handleAddToCompare(e, uni);
                       }}
                     >
-                      {isCompared ? "Added ✓" : "Compare"}
+                      {isCompared ? "Added ✓" : "Add"}
                     </button>
                   </div>
                 </div>
