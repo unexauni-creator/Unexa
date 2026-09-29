@@ -13,8 +13,6 @@ const PLACEHOLDER_IMAGES = {
     "https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=300&q=80",
 };
 
-// Three consistent icons reused across every teacher's stats row:
-// years of experience, published works, and research focus/center.
 const ICON_YEARS = (
   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
     <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
@@ -106,8 +104,15 @@ const TEACHERS = [
 
 export default function TeachersSection({ onBack }) {
   const [selectedId, setSelectedId] = useState(TEACHERS[0].id);
+  const [cursorPos, setCursorPos] = useState({ x: 0, y: 0 });
+  const [hoveringCard, setHoveringCard] = useState(false);
+
   const featured = TEACHERS.find(t => t.id === selectedId) || TEACHERS[0];
   const otherTeachers = TEACHERS.filter(t => t.id !== selectedId);
+
+  function handleGridMouseMove(e) {
+    setCursorPos({ x: e.clientX, y: e.clientY });
+  }
 
   return (
     <div className="teachers-section">
@@ -116,54 +121,63 @@ export default function TeachersSection({ onBack }) {
         Go back
       </button>
 
-      <div className="teachers-scroll">
-        <div className="teachers-featured-card">
-          <img
-            src={featured.image}
-            alt={featured.name}
-            className="teachers-featured-img"
-          />
-          <div className="teachers-featured-info">
-            <div className="teachers-featured-label">Featured Teacher</div>
-            <div className="teachers-featured-name">{featured.name}</div>
-            <div className="teachers-featured-subject">
-              {featured.subject} · {featured.degree}
-            </div>
-            <p className="teachers-featured-bio">{featured.bio}</p>
+      <div className="teachers-featured-card">
+        <img
+          src={featured.image}
+          alt={featured.name}
+          className="teachers-featured-img"
+        />
+        <div className="teachers-featured-info">
+          <div className="teachers-featured-label">Featured Teacher</div>
+          <div className="teachers-featured-name">{featured.name}</div>
+          <div className="teachers-featured-subject">
+            {featured.subject} · {featured.degree}
+          </div>
+          <p className="teachers-featured-bio">{featured.bio}</p>
 
-            <div className="teachers-featured-stats">
-              {featured.stats.map((s, i) => (
-                <div className="teachers-stat" key={i}>
-                  <div className="teachers-stat-icon-badge">
-                    {s.icon}
-                  </div>
-                  <div>
-                    <div className="teachers-stat-label">{s.label}</div>
-                    <div className="teachers-stat-sub">{s.sub}</div>
-                  </div>
+          <div className="teachers-featured-stats">
+            {featured.stats.map((s, i) => (
+              <div className="teachers-stat" key={i}>
+                <div className="teachers-stat-icon-badge">
+                  {s.icon}
                 </div>
-              ))}
-            </div>
+                <div>
+                  <div className="teachers-stat-label">{s.label}</div>
+                  <div className="teachers-stat-sub">{s.sub}</div>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
-
-        <div className="teachers-section-heading">All teachers</div>
-
-        <div className="teachers-grid">
-          {otherTeachers.map((t) => (
-            <div
-              className="teachers-card"
-              key={t.id}
-              onClick={() => setSelectedId(t.id)}
-              role="button"
-              tabIndex={0}
-              onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") setSelectedId(t.id); }}
-            >
-              <img src={t.image} alt={t.name} className="teachers-card-img" />
-            </div>
-          ))}
-        </div>
       </div>
+
+      <div className="teachers-section-heading">All teachers</div>
+
+      <div className="teachers-grid" onMouseMove={handleGridMouseMove}>
+        {otherTeachers.map((t) => (
+          <div
+            className="teachers-card"
+            key={t.id}
+            onClick={() => setSelectedId(t.id)}
+            onMouseEnter={() => setHoveringCard(true)}
+            onMouseLeave={() => setHoveringCard(false)}
+            role="button"
+            tabIndex={0}
+            onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") setSelectedId(t.id); }}
+          >
+            <img src={t.image} alt={t.name} className="teachers-card-img" />
+          </div>
+        ))}
+      </div>
+
+      {hoveringCard && (
+        <div
+          className="teachers-hover-cursor"
+          style={{ left: cursorPos.x, top: cursorPos.y }}
+        >
+          See teacher
+        </div>
+      )}
     </div>
   );
 }

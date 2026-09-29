@@ -1,44 +1,26 @@
 .teachers-section {
   display: flex;
   flex-direction: column;
-  gap: 16px;
-  height: 100%;
-  min-height: 0;
-}
-
-.teachers-scroll {
-  flex: 1;
-  min-height: 0;
-  overflow-y: auto;
-  overflow-x: hidden;
-  padding: 0 20px 24px 0;
-  display: flex;
-  flex-direction: column;
   gap: 24px;
-  scrollbar-width: thin;
-  scrollbar-color: rgba(172, 136, 118, 0.4) transparent;
-}
-.teachers-scroll::-webkit-scrollbar { width: 6px; }
-.teachers-scroll::-webkit-scrollbar-track { background: transparent; margin: 8px 4px; }
-.teachers-scroll::-webkit-scrollbar-thumb {
-  background: rgba(172, 136, 118, 0.5);
-  border-radius: 8px;
-  border: 2px solid transparent;
-  background-clip: content-box;
 }
 
-/* ── Back button: fixed at top, icon + label, same pattern as detail-header-row ── */
+/* ── Back button: sticky to the real scroll container (the University
+   Detail page's outer .detail-scroll), so it behaves as a fixed button
+   while the content underneath scrolls ── */
 .teachers-back-btn {
   position: sticky;
   top: 0;
-  z-index: 20;
+  z-index: 30;
   align-self: flex-start;
   flex-shrink: 0;
   display: inline-flex;
   align-items: center;
   gap: 10px;
   padding: 12px 18px 12px 14px;
-  background: transparent;
+  margin: -4px 0 0;
+  background: rgba(237, 235, 236, 0.92);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
   border: none;
   border-radius: 16px;
   cursor: pointer;
@@ -48,24 +30,39 @@
   font-size: 14px;
   color: rgba(43,31,24,0.9);
 }
-.teachers-back-btn:hover { opacity: 0.8; background: rgba(43,31,24,0.06); }
+.teachers-back-btn:hover { opacity: 0.8; }
 .teachers-back-icon { width: 18px; height: 18px; filter: brightness(0); flex-shrink: 0; }
 
+/* ── Featured card: fixed height regardless of which teacher is selected ── */
 .teachers-featured-card {
   display: flex;
   gap: 24px;
   background: rgba(239, 239, 239, 0.72);
   border-radius: 18px;
   padding: 20px;
+  height: 260px;
+  overflow: hidden;
 }
 .teachers-featured-img {
-  width: 200px;
-  height: 200px;
+  width: 220px;
+  height: 220px;
   border-radius: 14px;
   object-fit: cover;
   flex-shrink: 0;
 }
-.teachers-featured-info { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+
+/* ── Text side gets its own fill so it reads as a distinct block ── */
+.teachers-featured-info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  background: rgba(255, 255, 255, 0.5);
+  border-radius: 14px;
+  padding: 18px 22px;
+  overflow: hidden;
+}
 .teachers-featured-label {
   font-family: 'Nunito', sans-serif;
   font-size: 12px;
@@ -92,11 +89,15 @@
   color: #3a322c;
   margin-top: 6px;
   max-width: 520px;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 .teachers-featured-stats {
   display: flex;
   gap: 24px;
-  margin-top: 14px;
+  margin-top: auto;
   padding-top: 14px;
   border-top: 1px solid rgba(43,31,24,0.08);
   flex-wrap: wrap;
@@ -141,8 +142,8 @@
   background: rgba(239, 239, 239, 0.72);
   border-radius: 14px;
   padding: 10px;
-  cursor: pointer;
   transition: background 0.18s, transform 0.15s;
+  cursor: none;
 }
 .teachers-card:hover {
   background: rgba(239, 239, 239, 0.95);
@@ -154,14 +155,39 @@
   border-radius: 10px;
   object-fit: cover;
   display: block;
+  pointer-events: none;
+}
+
+/* ── Custom hover cursor: "See teacher" circle following the mouse ── */
+.teachers-hover-cursor {
+  position: fixed;
+  transform: translate(-50%, -50%);
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  border: 1px solid rgba(43,31,24,0.5);
+  background: rgba(255, 255, 255, 0.92);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  font-family: 'Nunito', sans-serif;
+  font-weight: 700;
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: rgba(43,31,24,0.9);
+  pointer-events: none;
+  z-index: 999;
 }
 
 @media (max-width: 1024px) {
-  .teachers-featured-card { flex-wrap: wrap; }
+  .teachers-featured-card { height: auto; flex-wrap: wrap; }
 }
 
 @media (max-width: 900px) {
   .teachers-grid { grid-template-columns: repeat(2, 1fr); }
-  .teachers-featured-card { flex-direction: column; }
+  .teachers-featured-card { flex-direction: column; height: auto; }
   .teachers-featured-img { width: 100%; height: 220px; }
+  .teachers-hover-cursor { display: none; }
 }
