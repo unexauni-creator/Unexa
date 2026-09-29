@@ -13,6 +13,29 @@ const PLACEHOLDER_IMAGES = {
     "https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=300&q=80",
 };
 
+// Three consistent icons reused across every teacher's stats row:
+// years of experience, published works, and research focus/center.
+const ICON_YEARS = (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+    <circle cx="12" cy="7" r="4" />
+  </svg>
+);
+
+const ICON_PAPERS = (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
+    <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
+  </svg>
+);
+
+const ICON_CENTER = (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M12 21s-7-6.5-7-11a7 7 0 0 1 14 0c0 4.5-7 11-7 11z" />
+    <circle cx="12" cy="10" r="2.5" />
+  </svg>
+);
+
 const TEACHERS = [
   {
     id: "park",
@@ -24,9 +47,9 @@ const TEACHERS = [
       "Education is not just about knowledge, it's about giving students the confidence to shape a better tomorrow.",
     image: PLACEHOLDER_IMAGES.featured,
     stats: [
-      { label: "10+ years", sub: "teaching experience" },
-      { label: "Published 35+", sub: "research papers" },
-      { label: "Global health", sub: "research center" },
+      { label: "10+ years", sub: "teaching experience", icon: ICON_YEARS },
+      { label: "Published 35+", sub: "research papers", icon: ICON_PAPERS },
+      { label: "Global health", sub: "research center", icon: ICON_CENTER },
     ],
   },
   {
@@ -38,9 +61,9 @@ const TEACHERS = [
     quote: "The best way to learn computer science is to build something that matters.",
     image: PLACEHOLDER_IMAGES.kim,
     stats: [
-      { label: "8+ years", sub: "teaching experience" },
-      { label: "Published 20+", sub: "research papers" },
-      { label: "AI & ML", sub: "research lab" },
+      { label: "8+ years", sub: "teaching experience", icon: ICON_YEARS },
+      { label: "Published 20+", sub: "research papers", icon: ICON_PAPERS },
+      { label: "AI & ML", sub: "research lab", icon: ICON_CENTER },
     ],
   },
   {
@@ -52,9 +75,9 @@ const TEACHERS = [
     quote: "Leadership is about creating the conditions for others to succeed.",
     image: PLACEHOLDER_IMAGES.carter,
     stats: [
-      { label: "12+ years", sub: "teaching experience" },
-      { label: "Published 15+", sub: "case studies" },
-      { label: "Global business", sub: "advisory board" },
+      { label: "12+ years", sub: "teaching experience", icon: ICON_YEARS },
+      { label: "Published 15+", sub: "case studies", icon: ICON_PAPERS },
+      { label: "Global business", sub: "advisory board", icon: ICON_CENTER },
     ],
   },
   {
@@ -66,9 +89,9 @@ const TEACHERS = [
     quote: "Engineering is the art of solving tomorrow's problems today.",
     image: PLACEHOLDER_IMAGES.lee,
     stats: [
-      { label: "9+ years", sub: "teaching experience" },
-      { label: "Published 28+", sub: "research papers" },
-      { label: "Robotics", sub: "research center" },
+      { label: "9+ years", sub: "teaching experience", icon: ICON_YEARS },
+      { label: "Published 28+", sub: "research papers", icon: ICON_PAPERS },
+      { label: "Robotics", sub: "research center", icon: ICON_CENTER },
     ],
   },
   {
@@ -80,9 +103,9 @@ const TEACHERS = [
     quote: "Understanding others is the first step toward a more peaceful world.",
     image: PLACEHOLDER_IMAGES.martinez,
     stats: [
-      { label: "11+ years", sub: "teaching experience" },
-      { label: "Published 22+", sub: "research papers" },
-      { label: "Diplomacy", sub: "policy institute" },
+      { label: "11+ years", sub: "teaching experience", icon: ICON_YEARS },
+      { label: "Published 22+", sub: "research papers", icon: ICON_PAPERS },
+      { label: "Diplomacy", sub: "policy institute", icon: ICON_CENTER },
     ],
   },
 ];
@@ -117,6 +140,9 @@ export default function TeachersSection({ onBack }) {
             <div className="teachers-featured-stats">
               {featured.stats.map((s, i) => (
                 <div className="teachers-stat" key={i}>
+                  <div className="teachers-stat-icon-badge">
+                    {s.icon}
+                  </div>
                   <div>
                     <div className="teachers-stat-label">{s.label}</div>
                     <div className="teachers-stat-sub">{s.sub}</div>
