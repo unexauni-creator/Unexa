@@ -43,8 +43,6 @@ const TEACHERS = [
     subject: "Medicine",
     degree: "PhD",
     bio: "Expert in public health and preventive medicine. Her research focuses on community health, epidemiology, and health policy. Passionate about creating real-world impact through education and research.",
-    quote:
-      "Education is not just about knowledge, it's about giving students the confidence to shape a better tomorrow.",
     image: PLACEHOLDER_IMAGES.featured,
     stats: [
       { label: "10+ years", sub: "teaching experience", icon: ICON_YEARS },
@@ -58,7 +56,6 @@ const TEACHERS = [
     subject: "Computer Science",
     degree: "PhD",
     bio: "AI, ML and data science expert. Works on real-world projects with a focus on applied machine learning and large-scale systems.",
-    quote: "The best way to learn computer science is to build something that matters.",
     image: PLACEHOLDER_IMAGES.kim,
     stats: [
       { label: "8+ years", sub: "teaching experience", icon: ICON_YEARS },
@@ -72,7 +69,6 @@ const TEACHERS = [
     subject: "Business Administration",
     degree: "MBA",
     bio: "Leads in global business and leadership. Former consultant at international firms, now focused on developing the next generation of business leaders.",
-    quote: "Leadership is about creating the conditions for others to succeed.",
     image: PLACEHOLDER_IMAGES.carter,
     stats: [
       { label: "12+ years", sub: "teaching experience", icon: ICON_YEARS },
@@ -86,7 +82,6 @@ const TEACHERS = [
     subject: "Mechanical Engineering",
     degree: "PhD",
     bio: "Robotics and sustainable engineering. Published in top journals, with a focus on energy-efficient mechanical systems and automation.",
-    quote: "Engineering is the art of solving tomorrow's problems today.",
     image: PLACEHOLDER_IMAGES.lee,
     stats: [
       { label: "9+ years", sub: "teaching experience", icon: ICON_YEARS },
@@ -100,7 +95,6 @@ const TEACHERS = [
     subject: "International Relations",
     degree: "PhD",
     bio: "Global politics, diplomacy and cross-cultural understanding. Advises on international policy and has worked with several diplomatic missions.",
-    quote: "Understanding others is the first step toward a more peaceful world.",
     image: PLACEHOLDER_IMAGES.martinez,
     stats: [
       { label: "11+ years", sub: "teaching experience", icon: ICON_YEARS },
@@ -119,7 +113,7 @@ export default function TeachersSection({ onBack }) {
     <div className="teachers-section">
       <button className="teachers-back-btn" onClick={onBack}>
         <img src="/arrow-left.svg" alt="" className="teachers-back-icon" />
-        Go back to Informations
+        Go back
       </button>
 
       <div className="teachers-scroll">
@@ -151,12 +145,6 @@ export default function TeachersSection({ onBack }) {
               ))}
             </div>
           </div>
-
-          <div className="teachers-featured-quote">
-            <span className="teachers-quote-mark">"</span>
-            <p className="teachers-quote-text">{featured.quote}</p>
-            <div className="teachers-quote-attribution">— {featured.name}</div>
-          </div>
         </div>
 
         <div className="teachers-section-heading">All teachers</div>
@@ -172,9 +160,6 @@ export default function TeachersSection({ onBack }) {
               onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") setSelectedId(t.id); }}
             >
               <img src={t.image} alt={t.name} className="teachers-card-img" />
-              <div className="teachers-card-name">{t.name}</div>
-              <div className="teachers-card-subject">{t.subject}</div>
-              <p className="teachers-card-bio">{t.bio}</p>
             </div>
           ))}
         </div>
