@@ -12,52 +12,58 @@ const SECTIONS = [
     id: "clubs",
     category: "Clubs",
     title: "Clubs & Activities",
-    subtitle: "200+ student clubs",
+    text: "Join 200+ student-run clubs, from photography to debate. Find your people and build lifelong friendships.",
     image: "https://images.unsplash.com/photo-1543269865-cbf427effbad?auto=format&fit=crop&w=600&q=80",
   },
   {
     id: "sports",
     category: "Sports",
     title: "Sports & Wellness",
-    subtitle: "Stay active, stay healthy",
+    text: "Stay active with campus gyms, intramural leagues, and wellness programs designed around your schedule.",
     image: "https://images.unsplash.com/photo-1461896836934-ffe607ba8211?auto=format&fit=crop&w=600&q=80",
   },
   {
     id: "events",
     category: "Events",
+    text: "From live concerts to cultural festivals and hands-on workshops, there's always something happening on campus.",
     title: "Events & Culture",
-    subtitle: "Concerts, festivals, workshops",
     image: "https://images.unsplash.com/photo-1470229722913-7c0e2dbbafd3?auto=format&fit=crop&w=600&q=80",
   },
   {
     id: "leadership",
     category: "Culture",
     title: "Leadership",
-    subtitle: "Build your future",
+    text: "Develop real leadership skills through student government, peer mentoring, and project-based initiatives.",
     image: "https://images.unsplash.com/photo-1519389950473-47ba0277781c?auto=format&fit=crop&w=600&q=80",
   },
   {
     id: "support",
     category: "Support",
     title: "Student Support",
-    subtitle: "Guidance & wellbeing",
+    text: "Confidential counseling, academic guidance, and peer support — help is always close by when you need it.",
     image: "https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?auto=format&fit=crop&w=600&q=80",
   },
   {
     id: "volunteering",
     category: "Culture",
     title: "Volunteering",
-    subtitle: "Make a difference",
+    text: "Give back through local partnerships and volunteer programs that make a real difference in the community.",
     image: "https://images.unsplash.com/photo-1593113630400-ea4288922497?auto=format&fit=crop&w=600&q=80",
   },
 ];
 
 export default function StudentLife({ onBack }) {
   const [activeCategory, setActiveCategory] = useState("All");
+  const [cursorPos, setCursorPos] = useState({ x: 0, y: 0 });
+  const [hoveringCard, setHoveringCard] = useState(false);
 
   const filtered = activeCategory === "All"
     ? SECTIONS
     : SECTIONS.filter(s => s.category === activeCategory);
+
+  function handleGridMouseMove(e) {
+    setCursorPos({ x: e.clientX, y: e.clientY });
+  }
 
   return (
     <div className="student-life-page">
@@ -65,6 +71,7 @@ export default function StudentLife({ onBack }) {
         <img src="/arrow-left.svg" alt="" className="app-back-icon" />
         Go back
       </button>
+
       <div className="sl-hero">
         <div className="sl-hero-text">
           <div className="sl-hero-title">Explore Student Life</div>
@@ -94,20 +101,36 @@ export default function StudentLife({ onBack }) {
         ))}
       </div>
 
-      <div className="sl-grid">
+      <div className="sl-grid" onMouseMove={handleGridMouseMove}>
         {filtered.map(section => (
-          <div key={section.id} className="sl-card">
-            <div className="sl-card-img-wrap"><img src={section.image} alt={section.title} className="sl-card-img" /><span className="sl-card-icon-badge">🏛️</span></div>
-            <div className="sl-card-body">
-              <div className="sl-card-text">
-                <div className="sl-card-title">{section.title}</div>
-                <div className="sl-card-subtitle">{section.subtitle}</div>
+          <div
+            className="sl-flip-card"
+            key={section.id}
+            onMouseEnter={() => setHoveringCard(true)}
+            onMouseLeave={() => setHoveringCard(false)}
+          >
+            <div className="sl-flip-card-inner">
+              <div className="sl-flip-card-front">
+                <img src={section.image} alt={section.title} className="sl-flip-card-img" />
+                <div className="sl-flip-card-title">{section.title}</div>
               </div>
-              <span className="sl-card-arrow">→</span>
+              <div className="sl-flip-card-back">
+                <div className="sl-flip-card-back-title">{section.title}</div>
+                <p className="sl-flip-card-back-text">{section.text}</p>
+              </div>
             </div>
           </div>
         ))}
       </div>
+
+      {hoveringCard && (
+        <div
+          className="sl-hover-cursor"
+          style={{ left: cursorPos.x, top: cursorPos.y }}
+        >
+          Flip
+        </div>
+      )}
     </div>
   );
 }
