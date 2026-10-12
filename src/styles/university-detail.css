@@ -206,3 +206,20 @@
 }
 .app-back-btn:hover { background: rgba(172,136,118,0.22); transform: translateX(-2px); }
 .app-back-icon { width: 18px; height: 18px; filter: brightness(0); flex-shrink: 0; }
+
+.detail-subpage-heading {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.detail-subpage-title {
+  font-family: 'Nunito', sans-serif;
+  font-weight: 700;
+  font-size: 20px;
+  color: rgba(43,31,24,0.96);
+}
+.detail-subpage-desc {
+  font-family: 'Nunito', sans-serif;
+  font-size: 13.5px;
+  color: #6b5e56;
+}

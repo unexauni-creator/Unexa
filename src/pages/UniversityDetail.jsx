@@ -93,26 +93,41 @@ export default function UniversityDetail({
           <img src="/arrow-left.svg" alt="" className="detail-back-icon" />
         </button>
 
-        <div className="detail-tabs">
-          <button
-            className={`detail-tab ${activeTab === "info" ? "active" : ""}`}
-            onClick={() => setActiveTab("info")}
-          >
-            Information
-          </button>
-          <button
-            className={`detail-tab ${activeTab === "program" ? "active" : ""}`}
-            onClick={() => setActiveTab("program")}
-          >
-            Program
-          </button>
-          <button
-            className={`detail-tab ${activeTab === "scholarship" ? "active" : ""}`}
-            onClick={() => setActiveTab("scholarship")}
-          >
-            Scholarship
-          </button>
-        </div>
+        {viewingTeachers || viewingStudentLife || viewingDorm ? (
+          <div className="detail-subpage-heading">
+            <div className="detail-subpage-title">
+              {viewingTeachers && "Teachers"}
+              {viewingStudentLife && "Student Life"}
+              {viewingDorm && "Dorm"}
+            </div>
+            <div className="detail-subpage-desc">
+              {viewingTeachers && "Meet the faculty members at this university."}
+              {viewingStudentLife && "Clubs, events, and campus culture."}
+              {viewingDorm && "Housing options and campus amenities."}
+            </div>
+          </div>
+        ) : (
+          <div className="detail-tabs">
+            <button
+              className={`detail-tab ${activeTab === "info" ? "active" : ""}`}
+              onClick={() => setActiveTab("info")}
+            >
+              Information
+            </button>
+            <button
+              className={`detail-tab ${activeTab === "program" ? "active" : ""}`}
+              onClick={() => setActiveTab("program")}
+            >
+              Program
+            </button>
+            <button
+              className={`detail-tab ${activeTab === "scholarship" ? "active" : ""}`}
+              onClick={() => setActiveTab("scholarship")}
+            >
+              Scholarship
+            </button>
+          </div>
+        )}
       </div>
 
       {/* ── Card: ONLY the scrollable content lives in here ── */}
