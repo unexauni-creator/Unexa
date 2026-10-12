@@ -68,14 +68,14 @@ export default function StudentLife({ onBack }) {
 
   return (
     <div className="student-life-page">
-      <button className="app-back-btn" onClick={onBack}>
-        <img src="/arrow-left.svg" alt="" className="app-back-icon" />
-        Go back
-      </button>
-
-      <div className="sl-heading">
-        <div className="sl-heading-title">Student Life</div>
-        <div className="sl-heading-desc">Clubs, events, and campus culture.</div>
+      <div className="sl-top-row">
+        <button className="sl-back-icon-btn" onClick={onBack} aria-label="Go back">
+          <img src="/arrow-left.svg" alt="" className="sl-back-icon" />
+        </button>
+        <div className="sl-heading">
+          <div className="sl-heading-title">Student Life</div>
+          <div className="sl-heading-desc">Clubs, events, and campus culture.</div>
+        </div>
       </div>
 
       <div className="sl-grid">

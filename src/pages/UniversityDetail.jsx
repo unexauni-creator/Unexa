@@ -89,9 +89,11 @@ export default function UniversityDetail({
 
       {/* ── Header row: back button + tabs. OUTSIDE the scrollable card ── */}
       <div className="detail-header-row">
-        <button className="detail-back-btn" onClick={onBack} aria-label="Back">
-          <img src="/arrow-left.svg" alt="" className="detail-back-icon" />
-        </button>
+        {!viewingStudentLife && (
+          <button className="detail-back-btn" onClick={onBack} aria-label="Back">
+            <img src="/arrow-left.svg" alt="" className="detail-back-icon" />
+          </button>
+        )}
 
         {viewingTeachers || viewingDorm ? (
           <div className="detail-subpage-heading">

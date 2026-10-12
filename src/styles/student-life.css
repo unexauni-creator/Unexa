@@ -229,3 +229,25 @@
   font-size: 13.5px;
   color: #6b5e56;
 }
+
+.sl-top-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.sl-top-row .sl-heading { margin-bottom: 0; }
+.sl-back-icon-btn {
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  border: none;
+  background: rgba(237, 235, 236, 0.92);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.18s, transform 0.12s;
+}
+.sl-back-icon-btn:hover { background: rgba(172,136,118,0.22); transform: translateX(-2px); }
+.sl-back-icon { width: 18px; height: 18px; filter: brightness(0); }
