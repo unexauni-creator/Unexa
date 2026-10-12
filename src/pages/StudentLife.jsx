@@ -73,16 +73,9 @@ export default function StudentLife({ onBack }) {
         Go back
       </button>
 
-      <div className="sl-categories">
-        {CATEGORIES.map(cat => (
-          <button
-            key={cat}
-            className={`sl-category-pill ${activeCategory === cat ? "active" : ""}`}
-            onClick={() => setActiveCategory(cat)}
-          >
-            {cat}
-          </button>
-        ))}
+      <div className="sl-heading">
+        <div className="sl-heading-title">Student Life</div>
+        <div className="sl-heading-desc">Clubs, events, and campus culture.</div>
       </div>
 
       <div className="sl-grid">

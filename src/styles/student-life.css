@@ -211,3 +211,21 @@
 }
 .sl-back-btn:hover { background: #f2efec; }
 .sl-back-icon { width: 18px; height: 18px; }
+
+.sl-heading {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-bottom: 8px;
+}
+.sl-heading-title {
+  font-family: 'Nunito', sans-serif;
+  font-weight: 700;
+  font-size: 20px;
+  color: rgba(43,31,24,0.96);
+}
+.sl-heading-desc {
+  font-family: 'Nunito', sans-serif;
+  font-size: 13.5px;
+  color: #6b5e56;
+}
