@@ -134,20 +134,6 @@ export default function TeachersSection({ onBack }) {
             {featured.subject} · {featured.degree}
           </div>
           <p className="teachers-featured-bio">{featured.bio}</p>
-
-          <div className="teachers-featured-stats">
-            {featured.stats.map((s, i) => (
-              <div className="teachers-stat" key={i}>
-                <div className="teachers-stat-icon-badge">
-                  {s.icon}
-                </div>
-                <div>
-                  <div className="teachers-stat-label">{s.label}</div>
-                  <div className="teachers-stat-sub">{s.sub}</div>
-                </div>
-              </div>
-            ))}
-          </div>
         </div>
       </div>
 
@@ -175,7 +161,7 @@ export default function TeachersSection({ onBack }) {
           className="teachers-hover-cursor"
           style={{ left: cursorPos.x, top: cursorPos.y }}
         >
-          See teacher
+          See Teacher
         </div>
       )}
     </div>

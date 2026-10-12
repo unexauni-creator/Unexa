@@ -25,7 +25,7 @@
   transition: opacity 0.18s, background 0.18s;
   font-family: 'Nunito', sans-serif;
   font-weight: 700;
-  font-size: 14px;
+  font-size: 16px;
   color: rgba(43,31,24,0.9);
 }
 .teachers-back-btn:hover { opacity: 0.8; }
@@ -34,7 +34,7 @@
 /* ── Featured card: fixed height regardless of which teacher is selected ── */
 .teachers-featured-card {
   display: flex;
-  gap: 24px;
+  gap: 16px;
   background: rgba(239, 239, 239, 0.72);
   border-radius: 18px;
   padding: 20px;
@@ -163,18 +163,18 @@
   width: 96px;
   height: 96px;
   border-radius: 50%;
-  border: 1px solid rgba(43,31,24,0.5);
-  background: rgba(255, 255, 255, 0.92);
+  border: none;
+  background: #AC8876;
   display: flex;
   align-items: center;
   justify-content: center;
   text-align: center;
   font-family: 'Nunito', sans-serif;
   font-weight: 700;
-  font-size: 11px;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  color: rgba(43,31,24,0.9);
+  font-size: 12px;
+  letter-spacing: 0.02em;
+  text-transform: none;
+  color: #ffffff;
   pointer-events: none;
   z-index: 999;
 }
