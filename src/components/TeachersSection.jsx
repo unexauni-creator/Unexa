@@ -116,10 +116,15 @@ export default function TeachersSection({ onBack }) {
 
   return (
     <div className="teachers-section">
-      <button className="app-back-btn" onClick={onBack}>
-        <img src="/arrow-left.svg" alt="" className="app-back-icon" />
-        Go back
-      </button>
+      <div className="teachers-top-row">
+        <button className="teachers-back-icon-btn" onClick={onBack} aria-label="Go back">
+          <img src="/arrow-left.svg" alt="" className="teachers-back-icon-img" />
+        </button>
+        <div className="teachers-heading">
+          <div className="teachers-heading-title">Teachers</div>
+          <div className="teachers-heading-desc">Meet the faculty members at this university.</div>
+        </div>
+      </div>
 
       <div className="teachers-featured-card">
         <img
