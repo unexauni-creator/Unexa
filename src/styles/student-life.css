@@ -17,7 +17,7 @@
   flex-wrap: wrap;
   box-shadow: 0 4px 20px rgba(43,31,24,0.06);
 }
-.sl-hero-text { flex: 1; min-width: 260px; }
+.sl-hero-text { flex: 1; min-width: 260px; display: flex; flex-direction: column; justify-content: center; gap: 4px; }
 .sl-hero-title {
   font-family: 'Nunito', sans-serif;
   font-weight: 700;

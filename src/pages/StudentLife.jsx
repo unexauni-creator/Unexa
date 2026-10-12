@@ -61,8 +61,9 @@ export default function StudentLife({ onBack }) {
 
   return (
     <div className="student-life-page">
-      <button className="sl-back-btn" onClick={onBack} aria-label="Back">
-        <img src="/arrow-left.svg" alt="" className="sl-back-icon" />
+      <button className="app-back-btn" onClick={onBack}>
+        <img src="/arrow-left.svg" alt="" className="app-back-icon" />
+        Go back
       </button>
       <div className="sl-hero">
         <div className="sl-hero-text">
