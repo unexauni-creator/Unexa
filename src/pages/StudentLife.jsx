@@ -54,6 +54,7 @@ const SECTIONS = [
 
 export default function StudentLife({ onBack }) {
   const [activeCategory, setActiveCategory] = useState("All");
+  const [flippedId, setFlippedId] = useState(null);
   const [cursorPos, setCursorPos] = useState({ x: 0, y: 0 });
   const [hoveringCard, setHoveringCard] = useState(false);
 
@@ -72,23 +73,6 @@ export default function StudentLife({ onBack }) {
         Go back
       </button>
 
-      <div className="sl-hero">
-        <div className="sl-hero-text">
-          <div className="sl-hero-title">Explore Student Life</div>
-          <p className="sl-hero-sub">
-            Clubs, events, sports and more. Find your people, your passion, and your place at Unexa.
-          </p>
-        </div>
-        <div className="sl-hero-images">
-          <img src={HERO_IMAGES[0]} alt="" className="sl-hero-img sl-hero-img-back" />
-          <img src={HERO_IMAGES[1]} alt="" className="sl-hero-img sl-hero-img-front" />
-          <div className="sl-hero-tag">
-            Find your community
-            <span className="sl-hero-tag-arrow">↴</span>
-          </div>
-        </div>
-      </div>
-
       <div className="sl-categories">
         {CATEGORIES.map(cat => (
           <button
@@ -101,15 +85,14 @@ export default function StudentLife({ onBack }) {
         ))}
       </div>
 
-      <div className="sl-grid" onMouseMove={handleGridMouseMove}>
+      <div className="sl-grid">
         {filtered.map(section => (
           <div
             className="sl-flip-card"
             key={section.id}
-            onMouseEnter={() => setHoveringCard(true)}
-            onMouseLeave={() => setHoveringCard(false)}
+            onClick={() => setFlippedId(flippedId === section.id ? null : section.id)}
           >
-            <div className="sl-flip-card-inner">
+            <div className={`sl-flip-card-inner ${flippedId === section.id ? "flipped" : ""}`}>
               <div className="sl-flip-card-front">
                 <img src={section.image} alt={section.title} className="sl-flip-card-img" />
                 <div className="sl-flip-card-title">{section.title}</div>
@@ -123,14 +106,6 @@ export default function StudentLife({ onBack }) {
         ))}
       </div>
 
-      {hoveringCard && (
-        <div
-          className="sl-hover-cursor"
-          style={{ left: cursorPos.x, top: cursorPos.y }}
-        >
-          Flip
-        </div>
-      )}
     </div>
   );
 }
