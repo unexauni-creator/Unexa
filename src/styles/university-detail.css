@@ -171,3 +171,10 @@
   .detail-tab { font-size: 13px; padding: 8px 14px; white-space: nowrap; }
   .compare-toast { min-width: unset; width: calc(100% - 32px); left: 16px; transform: none; bottom: 16px; }
 }
+/* Teachers section doesn't need the outer scrollbar visible */
+.detail-scroll:has(.teachers-section) {
+  scrollbar-width: none;
+}
+.detail-scroll:has(.teachers-section)::-webkit-scrollbar {
+  display: none;
+}
