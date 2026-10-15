@@ -178,7 +178,7 @@
 
 /* ══════════════════════════════════════════════════════════════════
    Settings — restructured to match UniversityDetail.jsx exactly:
-   a transparent, sticky header row (back button + tabs + logout)
+   a transparent, sticky header row (back button + tabs)
    sitting OUTSIDE and above a frosted, scrollable card. Cover photo,
    avatar, and all fields live inside that scrollable card.
    ══════════════════════════════════════════════════════════════════ */
@@ -190,7 +190,7 @@
   flex-direction: column;
 }
 
-/* ── Header row: back button + tabs + logout, transparent, sticky at top ── */
+/* ── Header row: back button + tabs, transparent, sticky at top ── */
 .settings-header-row {
   position: sticky;
   top: 0;
@@ -223,6 +223,7 @@
 }
 .settings-tab.active { background: #AC8876; color: #fff; }
 
+/* Log out button (now lives in Security → Account) */
 .settings-nav-logout {
   display: inline-flex;
   align-items: center;
@@ -380,6 +381,92 @@
   padding: 20px 0 24px;
 }
 
+/* ── Security → Account section (log out + delete account) ── */
+.settings-account-section {
+  display: flex;
+  flex-direction: column;
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid rgba(172,136,118,0.14);
+}
+.settings-account-title {
+  padding: 16px 0 4px;
+  font-family: 'Nunito', sans-serif;
+  font-weight: 700;
+  font-size: 16px;
+  color: rgba(43,31,24,0.96);
+}
+.settings-account-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 18px 0;
+  border-bottom: 1px solid rgba(172,136,118,0.14);
+}
+.settings-account-row:last-child { border-bottom: none; }
+
+.settings-delete-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 18px;
+  border-radius: 12px;
+  border: 1.5px solid rgba(200,80,80,0.45);
+  background: rgba(200,80,80,0.1);
+  font-family: 'Nunito', sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  color: #b94444;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+  flex-shrink: 0;
+}
+.settings-delete-btn:hover { background: rgba(200,80,80,0.18); border-color: rgba(200,80,80,0.65); }
+
+/* ── Delete account confirmation modal ── */
+.settings-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: rgba(20,16,12,0.45);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+}
+.settings-modal {
+  width: 100%;
+  max-width: 420px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 28px;
+  border-radius: 20px;
+  background: #F3F1EF;
+  box-shadow: 0 20px 60px rgba(20,16,12,0.3);
+}
+.settings-modal-title { font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 18px; color: rgba(43,31,24,0.96); }
+.settings-modal-text { margin: 0; font-family: 'Nunito', sans-serif; font-size: 14px; color: #6b5e56; line-height: 1.6; }
+.settings-modal-error { margin: 0; font-family: 'Nunito', sans-serif; font-size: 13px; color: #c05050; line-height: 1.5; }
+.settings-modal-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 12px; }
+.settings-delete-confirm-btn {
+  padding: 10px 20px;
+  border-radius: 12px;
+  border: none;
+  background: #c05050;
+  color: #ffffff;
+  font-family: 'Nunito', sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.15s, opacity 0.15s;
+}
+.settings-delete-confirm-btn:hover { background: #a94141; }
+.settings-delete-confirm-btn:disabled { opacity: 0.6; cursor: default; }
+
 @media (max-width: 768px) {
   .profile-cover { margin: 16px 16px 0; height: 150px; }
   .profile-cover-actions { opacity: 1; bottom: 12px; right: 12px; }
@@ -398,8 +485,10 @@
   .settings-page { padding: 0 16px 16px; }
   .settings-header-row { overflow-x: auto; padding: 12px 0 0; }
   .settings-tabs { flex-shrink: 0; }
-  .settings-tab, .settings-nav-logout { font-size: 13px; padding: 8px 14px; white-space: nowrap; }
+  .settings-tab, .settings-nav-logout, .settings-delete-btn { font-size: 13px; padding: 8px 14px; }
+  .settings-tab { white-space: nowrap; }
   .settings-banner { height: 130px; }
   .settings-banner-action { opacity: 1; }
   .settings-body { padding: 16px 16px 24px; }
+  .settings-account-row { flex-direction: column; align-items: flex-start; gap: 12px; }
 }

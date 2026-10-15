@@ -1,4 +1,6 @@
 import { useState, useRef } from "react";
+import { createPortal } from "react-dom";
+import { supabase } from "../lib/supabaseClient";
 
 const appliedUniversities = [
   { id: 4, name: "Université de Nîmes", desc: "Nîmes, France", status: "In Review", image: "https://upload.wikimedia.org/wikipedia/commons/1/16/Scines_nimes.jpg" },
@@ -41,6 +43,9 @@ function SettingsPage({ onClose, avatarUrl, onAvatarChange, coverUrl, onCoverCha
   const [notifDeadlines, setNotifDeadlines] = useState(true);
   const [notifTips, setNotifTips] = useState(false);
   const [language, setLanguage] = useState("English");
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+  const [deleteError, setDeleteError] = useState(null);
   const avatarInputRef = useRef(null);
   const bannerInputRef = useRef(null);
 
@@ -62,9 +67,31 @@ function SettingsPage({ onClose, avatarUrl, onAvatarChange, coverUrl, onCoverCha
     e.target.value = "";
   }
 
+  async function handleDeleteAccount() {
+    setDeleting(true);
+    setDeleteError(null);
+
+    const { error } = await supabase.rpc("delete_user");
+
+    if (error) {
+      setDeleting(false);
+      setDeleteError(error.message);
+      return;
+    }
+
+    // Account is gone server-side: sign out locally and return to landing.
+    await onLogout();
+  }
+
+  function closeDeleteModal() {
+    if (deleting) return;
+    setShowDeleteConfirm(false);
+    setDeleteError(null);
+  }
+
   return (
     <div className="settings-page">
-      {/* ── Header row: back button + tabs + logout. OUTSIDE the scrollable card, same as UniversityDetail ── */}
+      {/* ── Header row: back button + tabs. OUTSIDE the scrollable card, same as UniversityDetail ── */}
       <div className="settings-header-row">
         <button className="settings-back-btn" onClick={onClose} aria-label="Back">
           <img src="/arrow-left.svg" alt="" className="settings-back-icon" />
@@ -81,15 +108,6 @@ function SettingsPage({ onClose, avatarUrl, onAvatarChange, coverUrl, onCoverCha
             </button>
           ))}
         </div>
-
-        <button className="settings-nav-logout" onClick={onLogout}>
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
-            <polyline points="16 17 21 12 16 7" />
-            <line x1="21" y1="12" x2="9" y2="12" />
-          </svg>
-          Log out
-        </button>
       </div>
 
       {/* ── Card: cover photo, avatar, and all settings content live in here, same scroll container as UniversityDetail ── */}
@@ -217,17 +235,42 @@ function SettingsPage({ onClose, avatarUrl, onAvatarChange, coverUrl, onCoverCha
                   <input className="settings-input" type="password" placeholder="••••••••" />
                 </div>
 
-                <div className="settings-field settings-field-row">
-                  <div className="settings-field-label-block">
-                    <div className="settings-field-label">Two-factor authentication</div>
-                    <div className="settings-field-hint">Add an extra layer of security to your account</div>
-                  </div>
-                  <ToggleSwitch checked={false} onChange={() => {}} />
-                </div>
-
                 <div className="settings-page-actions">
                   <button className="filter-clear-btn" onClick={onClose}>Cancel</button>
                   <button className="filter-save-btn" onClick={onClose}>Save</button>
+                </div>
+
+                <div className="settings-account-section">
+                  <div className="settings-account-title">Account</div>
+
+                  <div className="settings-account-row">
+                    <div className="settings-field-label-block">
+                      <div className="settings-field-label">Log out</div>
+                      <div className="settings-field-hint">Sign out of Unexa on this device</div>
+                    </div>
+                    <button className="settings-nav-logout" onClick={onLogout}>
+                      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+                        <polyline points="16 17 21 12 16 7" />
+                        <line x1="21" y1="12" x2="9" y2="12" />
+                      </svg>
+                      Log out
+                    </button>
+                  </div>
+
+                  <div className="settings-account-row">
+                    <div className="settings-field-label-block">
+                      <div className="settings-field-label">Delete account</div>
+                      <div className="settings-field-hint">Permanently delete your account and all your data. This can't be undone.</div>
+                    </div>
+                    <button className="settings-delete-btn" onClick={() => setShowDeleteConfirm(true)}>
+                      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <polyline points="3 6 5 6 21 6" />
+                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+                      </svg>
+                      Delete account
+                    </button>
+                  </div>
                 </div>
               </>
             )}
@@ -255,6 +298,25 @@ function SettingsPage({ onClose, avatarUrl, onAvatarChange, coverUrl, onCoverCha
           </div>
         </div>
       </div>
+
+      {showDeleteConfirm && createPortal(
+        <div className="settings-modal-overlay" onClick={closeDeleteModal}>
+          <div className="settings-modal" onClick={e => e.stopPropagation()}>
+            <div className="settings-modal-title">Delete your account?</div>
+            <p className="settings-modal-text">
+              This will permanently delete your account and everything linked to it. You won't be able to get it back.
+            </p>
+            {deleteError && <p className="settings-modal-error">{deleteError}</p>}
+            <div className="settings-modal-actions">
+              <button className="filter-clear-btn" onClick={closeDeleteModal} disabled={deleting}>Cancel</button>
+              <button className="settings-delete-confirm-btn" onClick={handleDeleteAccount} disabled={deleting}>
+                {deleting ? "Deleting..." : "Delete account"}
+              </button>
+            </div>
+          </div>
+        </div>,
+        document.body
+      )}
     </div>
   );
 }
