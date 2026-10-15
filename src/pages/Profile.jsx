@@ -110,41 +110,46 @@ function SettingsPage({ onClose, avatarUrl, onAvatarChange, coverUrl, onCoverCha
         </div>
       </div>
 
-      {/* ── Card: cover photo, avatar, and all settings content live in here, same scroll container as UniversityDetail ── */}
+      {/* ── Card: all settings content lives in here, same scroll container as UniversityDetail ── */}
       <div className="settings-scroll">
         <div className="settings-body">
-          <div className={`settings-banner ${!coverUrl ? "settings-banner-empty" : ""}`} onClick={() => bannerInputRef.current?.click()}>
-            {coverUrl && <img src={coverUrl} alt="Cover" className="settings-banner-img" />}
-            <div className="settings-banner-action">
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M12 20h9" />
-                <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4Z" />
-              </svg>
-              {coverUrl ? "Change banner" : "Add banner"}
-            </div>
-            <input
-              ref={bannerInputRef}
-              type="file"
-              accept="image/*"
-              style={{ display: "none" }}
-              onChange={handleBannerSelect}
-            />
-          </div>
+          {/* Banner + avatar are only shown on the Edit profile tab */}
+          {activeSection === "profile" && (
+            <>
+              <div className={`settings-banner ${!coverUrl ? "settings-banner-empty" : ""}`} onClick={() => bannerInputRef.current?.click()}>
+                {coverUrl && <img src={coverUrl} alt="Cover" className="settings-banner-img" />}
+                <div className="settings-banner-action">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M12 20h9" />
+                    <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4Z" />
+                  </svg>
+                  {coverUrl ? "Change banner" : "Add banner"}
+                </div>
+                <input
+                  ref={bannerInputRef}
+                  type="file"
+                  accept="image/*"
+                  style={{ display: "none" }}
+                  onChange={handleBannerSelect}
+                />
+              </div>
 
-          <div className="settings-avatar-overlap-wrap" onClick={() => avatarInputRef.current?.click()}>
-            {avatarUrl ? (
-              <img src={avatarUrl} alt="Avatar" className="settings-avatar-overlap-img" />
-            ) : (
-              <div className="settings-avatar-overlap-placeholder">KD</div>
-            )}
-            <input
-              ref={avatarInputRef}
-              type="file"
-              accept="image/*"
-              style={{ display: "none" }}
-              onChange={handleAvatarSelect}
-            />
-          </div>
+              <div className="settings-avatar-overlap-wrap" onClick={() => avatarInputRef.current?.click()}>
+                {avatarUrl ? (
+                  <img src={avatarUrl} alt="Avatar" className="settings-avatar-overlap-img" />
+                ) : (
+                  <div className="settings-avatar-overlap-placeholder">KD</div>
+                )}
+                <input
+                  ref={avatarInputRef}
+                  type="file"
+                  accept="image/*"
+                  style={{ display: "none" }}
+                  onChange={handleAvatarSelect}
+                />
+              </div>
+            </>
+          )}
 
           <div className="settings-page-content">
             {activeSection === "profile" && (
