@@ -1,65 +1,66 @@
 .teachers-section {
   display: flex;
   flex-direction: column;
-  gap: 16px;
-  height: 100%;
-  min-height: 0;
-}
-
-.teachers-scroll {
-  flex: 1;
-  min-height: 0;
-  overflow-y: auto;
-  overflow-x: hidden;
-  padding: 0 20px 24px 0;
-  display: flex;
-  flex-direction: column;
   gap: 24px;
-  scrollbar-width: thin;
-  scrollbar-color: rgba(172, 136, 118, 0.4) transparent;
-}
-.teachers-scroll::-webkit-scrollbar { width: 6px; }
-.teachers-scroll::-webkit-scrollbar-track { background: transparent; margin: 8px 4px; }
-.teachers-scroll::-webkit-scrollbar-thumb {
-  background: rgba(172, 136, 118, 0.5);
-  border-radius: 8px;
-  border: 2px solid transparent;
-  background-clip: content-box;
 }
 
+/* ── Back button: sticky to the real scroll container (the University
+   Detail page's outer .detail-scroll), so it behaves as a fixed button
+   while the content underneath scrolls ── */
 .teachers-back-btn {
+  position: sticky;
+  top: 0;
+  z-index: 30;
   align-self: flex-start;
   flex-shrink: 0;
-  width: 44px;
-  height: 44px;
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  justify-content: center;
+  gap: 10px;
+  padding: 12px 18px 12px 14px;
+  margin: -4px 0 0;
   background: transparent;
   border: none;
   border-radius: 16px;
   cursor: pointer;
-  transition: opacity 0.18s;
-  flex-shrink: 0;
+  transition: opacity 0.18s, background 0.18s;
+  font-family: 'Nunito', sans-serif;
+  font-weight: 700;
+  font-size: 16px;
+  color: rgba(43,31,24,0.9);
 }
-.teachers-back-btn:hover { opacity: 0.6; }
-.teachers-back-icon { width: 20px; height: 20px; filter: brightness(0); }
+.teachers-back-btn:hover { opacity: 0.8; }
+.teachers-back-icon { width: 18px; height: 18px; filter: brightness(0); flex-shrink: 0; }
 
+/* ── Featured card: fixed height regardless of which teacher is selected ── */
 .teachers-featured-card {
   display: flex;
-  gap: 24px;
+  gap: 16px;
   background: rgba(239, 239, 239, 0.72);
   border-radius: 18px;
   padding: 20px;
+  height: 260px;
+  overflow: hidden;
 }
 .teachers-featured-img {
-  width: 200px;
-  height: 200px;
+  width: 220px;
+  height: 220px;
   border-radius: 14px;
   object-fit: cover;
   flex-shrink: 0;
 }
-.teachers-featured-info { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+
+/* ── Text side gets its own fill so it reads as a distinct block ── */
+.teachers-featured-info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  background: transparent;
+  border-radius: 14px;
+  padding: 18px 22px;
+  overflow: hidden;
+}
 .teachers-featured-label {
   font-family: 'Nunito', sans-serif;
   font-size: 12px;
@@ -86,17 +87,31 @@
   color: #3a322c;
   margin-top: 6px;
   max-width: 520px;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 .teachers-featured-stats {
   display: flex;
   gap: 24px;
-  margin-top: 14px;
+  margin-top: auto;
   padding-top: 14px;
   border-top: 1px solid rgba(43,31,24,0.08);
   flex-wrap: wrap;
 }
-.teachers-stat { display: flex; align-items: center; }
-.teachers-stat-icon { font-size: 18px; }
+.teachers-stat { display: flex; align-items: center; gap: 10px; }
+.teachers-stat-icon-badge {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: transparent;
+  color: #AC8876;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
 .teachers-stat-label {
   font-family: 'Nunito', sans-serif;
   font-weight: 700;
@@ -124,116 +139,85 @@
 .teachers-card {
   background: rgba(239, 239, 239, 0.72);
   border-radius: 14px;
-  padding: 14px;
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
+  padding: 10px;
+  transition: background 0.18s, transform 0.15s;
+  cursor: none;
+}
+.teachers-card:hover {
+  background: rgba(239, 239, 239, 0.95);
+  transform: translateY(-2px);
 }
 .teachers-card-img {
   width: 100%;
   aspect-ratio: 1 / 1;
   border-radius: 10px;
   object-fit: cover;
-  margin-bottom: 8px;
+  display: block;
+  pointer-events: none;
 }
-.teachers-card-name {
+
+/* ── Custom hover cursor: "See teacher" circle following the mouse ── */
+.teachers-hover-cursor {
+  position: fixed;
+  transform: translate(-50%, -50%);
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  border: none;
+  background: #AC8876;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
   font-family: 'Nunito', sans-serif;
   font-weight: 700;
-  font-size: 14px;
-  color: rgba(43,31,24,0.96);
-}
-.teachers-card-subject {
-  font-family: 'Nunito', sans-serif;
   font-size: 12px;
-  color: #AC8876;
-  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-transform: none;
+  color: #ffffff;
+  pointer-events: none;
+  z-index: 999;
 }
-.teachers-card-bio {
-  font-family: 'Nunito', sans-serif;
-  font-size: 12px;
-  line-height: 1.5;
-  color: #6b5e56;
-  margin-top: 4px;
+
+@media (max-width: 1024px) {
+  .teachers-featured-card { height: auto; flex-wrap: wrap; }
 }
 
 @media (max-width: 900px) {
   .teachers-grid { grid-template-columns: repeat(2, 1fr); }
-  .teachers-featured-card { flex-direction: column; }
+  .teachers-featured-card { flex-direction: column; height: auto; }
   .teachers-featured-img { width: 100%; height: 220px; }
+  .teachers-hover-cursor { display: none; }
 }
-
-.teachers-featured-quote {
-  flex-shrink: 0;
-  width: 220px;
-  background: rgba(172, 136, 118, 0.1);
-  border-radius: 14px;
-  padding: 18px;
+.teachers-top-row {
   display: flex;
-  flex-direction: column;
-  gap: 8px;
-  align-self: stretch;
-  justify-content: center;
+  align-items: center;
+  gap: 14px;
 }
-.teachers-quote-mark {
-  font-family: Georgia, serif;
-  font-size: 32px;
-  color: #AC8876;
-  line-height: 1;
-}
-.teachers-quote-text {
-  font-family: 'Nunito', sans-serif;
-  font-style: italic;
-  font-size: 13px;
-  line-height: 1.6;
-  color: #6b5e56;
-  margin: 0;
-}
-.teachers-quote-attribution {
-  font-family: 'Nunito', sans-serif;
-  font-size: 12px;
-  font-weight: 700;
-  color: #9e8f86;
-}
-
-@media (max-width: 1024px) {
-  .teachers-featured-card { flex-wrap: wrap; }
-  .teachers-featured-quote { width: 100%; }
-}
-
-.teachers-featured-quote {
+.teachers-back-icon-btn {
   flex-shrink: 0;
-  width: 220px;
-  background: rgba(172, 136, 118, 0.1);
-  border-radius: 14px;
-  padding: 18px;
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  border: none;
+  background: rgba(237, 235, 236, 0.92);
   display: flex;
-  flex-direction: column;
-  gap: 8px;
-  align-self: stretch;
+  align-items: center;
   justify-content: center;
+  cursor: pointer;
+  transition: background 0.18s, transform 0.12s;
 }
-.teachers-quote-mark {
-  font-family: Georgia, serif;
-  font-size: 32px;
-  color: #AC8876;
-  line-height: 1;
-}
-.teachers-quote-text {
+.teachers-back-icon-btn:hover { background: rgba(172,136,118,0.22); transform: translateX(-2px); }
+.teachers-back-icon-img { width: 18px; height: 18px; filter: brightness(0); }
+.teachers-heading { display: flex; flex-direction: column; gap: 2px; }
+.teachers-heading-title {
   font-family: 'Nunito', sans-serif;
-  font-style: italic;
-  font-size: 13px;
-  line-height: 1.6;
-  color: #6b5e56;
-  margin: 0;
-}
-.teachers-quote-attribution {
-  font-family: 'Nunito', sans-serif;
-  font-size: 12px;
   font-weight: 700;
-  color: #9e8f86;
+  font-size: 20px;
+  color: rgba(43,31,24,0.96);
 }
-
-@media (max-width: 1024px) {
-  .teachers-featured-card { flex-wrap: wrap; }
-  .teachers-featured-quote { width: 100%; }
+.teachers-heading-desc {
+  font-family: 'Nunito', sans-serif;
+  font-size: 13.5px;
+  color: #6b5e56;
 }

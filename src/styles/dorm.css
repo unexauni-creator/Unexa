@@ -1,5 +1,5 @@
 .dorm-page {
-  padding: 32px;
+  padding: 24px;
   display: flex;
   flex-direction: column;
   gap: 24px;
@@ -108,3 +108,36 @@
 }
 .dorm-amenity-icon { font-size: 20px; flex-shrink: 0; }
 .dorm-amenity-label { font-family: 'Nunito', sans-serif; font-weight: 600; font-size: 13px; color: #4a3f38; }
+
+.dorm-top-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.dorm-back-icon-btn {
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  border: none;
+  background: rgba(237, 235, 236, 0.92);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.18s, transform 0.12s;
+}
+.dorm-back-icon-btn:hover { background: rgba(172,136,118,0.22); transform: translateX(-2px); }
+.dorm-back-icon-img { width: 18px; height: 18px; filter: brightness(0); }
+.dorm-heading { display: flex; flex-direction: column; gap: 2px; }
+.dorm-heading-title {
+  font-family: 'Nunito', sans-serif;
+  font-weight: 700;
+  font-size: 20px;
+  color: rgba(43,31,24,0.96);
+}
+.dorm-heading-desc {
+  font-family: 'Nunito', sans-serif;
+  font-size: 13.5px;
+  color: #6b5e56;
+}

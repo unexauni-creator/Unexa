@@ -14,9 +14,15 @@ const HERO_IMAGE = "https://images.unsplash.com/photo-1555854877-bab0e564b8d5?au
 export default function Dorm({ onBack }) {
   return (
     <div className="dorm-page">
-      <button className="dorm-back-btn" onClick={onBack} aria-label="Back">
-        <img src="/arrow-left.svg" alt="" className="dorm-back-icon" />
-      </button>
+      <div className="dorm-top-row">
+        <button className="dorm-back-icon-btn" onClick={onBack} aria-label="Go back">
+          <img src="/arrow-left.svg" alt="" className="dorm-back-icon-img" />
+        </button>
+        <div className="dorm-heading">
+          <div className="dorm-heading-title">Dorm</div>
+          <div className="dorm-heading-desc">Housing options and campus amenities.</div>
+        </div>
+      </div>
 
       <div className="dorm-hero">
         <div className="dorm-hero-text">
