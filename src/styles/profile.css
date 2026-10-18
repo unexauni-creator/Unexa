@@ -223,7 +223,7 @@
 }
 .settings-tab.active { background: #AC8876; color: #fff; }
 
-/* Log out button (now lives in Security → Account) */
+/* Log out button (lives in Security → Account) */
 .settings-nav-logout {
   display: inline-flex;
   align-items: center;
@@ -324,6 +324,9 @@
 }
 
 .settings-page-content { max-width: 560px; display: flex; flex-direction: column; margin-top: 20px; }
+/* Tabs without the banner/avatar start right at the top of the card */
+.settings-page-content-flush { margin-top: 0; }
+.settings-page-content-flush > .settings-field:first-child { padding-top: 4px; }
 
 .settings-field { display: flex; flex-direction: column; gap: 8px; padding: 20px 0; border-bottom: 1px solid rgba(172,136,118,0.14); }
 .settings-field:last-of-type { border-bottom: none; }
@@ -348,6 +351,20 @@
 }
 .settings-input:focus { border-color: #AC8876; background: rgba(255,250,246,0.7); }
 .settings-textarea { resize: vertical; font-family: 'Nunito', sans-serif; }
+
+/* Language dropdown — same box as the text inputs, with its own chevron
+   so the arrow sits inside the padding instead of hugging the edge */
+.settings-select {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  cursor: pointer;
+  padding-right: 42px;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23634F44' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'/></svg>");
+  background-repeat: no-repeat;
+  background-position: right 14px center;
+  background-size: 16px 16px;
+}
 
 .settings-toggle {
   width: 42px;

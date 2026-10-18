@@ -18,7 +18,6 @@ const SETTINGS_SECTIONS = [
   { id: "profile", label: "Edit profile" },
   { id: "notifications", label: "Notifications" },
   { id: "security", label: "Security" },
-  { id: "language", label: "Languages" },
 ];
 
 function ToggleSwitch({ checked, onChange }) {
@@ -151,7 +150,7 @@ function SettingsPage({ onClose, avatarUrl, onAvatarChange, coverUrl, onCoverCha
             </>
           )}
 
-          <div className="settings-page-content">
+          <div className={`settings-page-content ${activeSection !== "profile" ? "settings-page-content-flush" : ""}`}>
             {activeSection === "profile" && (
               <>
                 <div className="settings-field">
@@ -182,6 +181,19 @@ function SettingsPage({ onClose, avatarUrl, onAvatarChange, coverUrl, onCoverCha
                     <div className="settings-field-hint">Optional</div>
                   </div>
                   <input className="settings-input" type="tel" placeholder="+33 6 12 34 56 78" value={phone} onChange={e => setPhone(e.target.value)} />
+                </div>
+
+                <div className="settings-field">
+                  <div className="settings-field-label-block">
+                    <div className="settings-field-label">Display language</div>
+                    <div className="settings-field-hint">The language Unexa is shown in</div>
+                  </div>
+                  <select className="settings-input settings-select" value={language} onChange={e => setLanguage(e.target.value)}>
+                    <option>English</option>
+                    <option>Українська</option>
+                    <option>Español</option>
+                    <option>Français</option>
+                  </select>
                 </div>
 
                 <div className="settings-page-actions">
@@ -276,27 +288,6 @@ function SettingsPage({ onClose, avatarUrl, onAvatarChange, coverUrl, onCoverCha
                       Delete account
                     </button>
                   </div>
-                </div>
-              </>
-            )}
-
-            {activeSection === "language" && (
-              <>
-                <div className="settings-field">
-                  <div className="settings-field-label-block">
-                    <div className="settings-field-label">Display language</div>
-                  </div>
-                  <select className="settings-input" value={language} onChange={e => setLanguage(e.target.value)}>
-                    <option>English</option>
-                    <option>Українська</option>
-                    <option>Español</option>
-                    <option>Français</option>
-                  </select>
-                </div>
-
-                <div className="settings-page-actions">
-                  <button className="filter-clear-btn" onClick={onClose}>Cancel</button>
-                  <button className="filter-save-btn" onClick={onClose}>Save</button>
                 </div>
               </>
             )}
