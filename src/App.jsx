@@ -11,19 +11,18 @@ import Community from "./pages/Community";
 import UniversityDetail from "./pages/UniversityDetail";
 import Profile from "./pages/Profile";
 import { supabase } from "./lib/supabaseClient";
+import { mapSpecialty } from "./lib/mapSpecialty.js";
 import "./styles/base.css";
 import "./styles/community.css";
 import "./styles/landing.css";
 import "./styles/profile.css";
-import "./styles/university-detail.css";
-import "./styles/student-life.css";
-import "./styles/dorm.css";
-import "./styles/teachers-section.css";
 import Onboarding from "./pages/Onboarding";
 import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
 
-const SAVED_UNIS_KEY = "unexa_saved_universities";
+// Saved universities used to live only in this browser; this key is now read once
+// to import them into the account, then removed.
+const LEGACY_SAVED_KEY = "unexa_saved_universities";
 const COMPARED_UNIS_KEY = "unexa_compared_universities";
 const JOINED_GROUPS_KEY = "unexa_joined_groups";
 const AVATAR_KEY = "unexa_profile_avatar";
@@ -45,14 +44,8 @@ export default function App() {
     }
   });
 
-  const [savedUniversities, setSavedUniversities] = useState(() => {
-    try {
-      const stored = localStorage.getItem(SAVED_UNIS_KEY);
-      return stored ? JSON.parse(stored) : [];
-    } catch {
-      return [];
-    }
-  });
+  const [savedUniversities, setSavedUniversities] = useState([]);
+  const [savedLoading, setSavedLoading] = useState(() => Boolean(authUser?.id));
 
   const [comparedUniversities, setComparedUniversities] = useState(() => {
     try {
@@ -88,11 +81,74 @@ export default function App() {
     }
   });
 
+  // Saved universities live in the account (table: saved_universities).
+  // Load them whenever the signed-in user changes; clear them on logout.
   useEffect(() => {
-    try {
-      localStorage.setItem(SAVED_UNIS_KEY, JSON.stringify(savedUniversities));
-    } catch {}
-  }, [savedUniversities]);
+    if (!authUser?.id) {
+      setSavedUniversities([]);
+      setSavedLoading(false);
+      return;
+    }
+
+    let cancelled = false;
+
+    async function loadSaved() {
+      setSavedLoading(true);
+
+      // One-time import of saves made before they were stored in the account.
+      try {
+        const legacy = JSON.parse(localStorage.getItem(LEGACY_SAVED_KEY) || "[]");
+        if (Array.isArray(legacy) && legacy.length > 0) {
+          const rows = legacy.map(u => ({ user_id: authUser.id, specialty_id: String(u.id) }));
+          const { error: importError } = await supabase
+            .from("saved_universities")
+            .upsert(rows, { onConflict: "user_id,specialty_id", ignoreDuplicates: true });
+          if (!importError) localStorage.removeItem(LEGACY_SAVED_KEY);
+        } else {
+          localStorage.removeItem(LEGACY_SAVED_KEY);
+        }
+      } catch {}
+
+      const { data: rows, error } = await supabase
+        .from("saved_universities")
+        .select("specialty_id")
+        .eq("user_id", authUser.id)
+        .order("created_at", { ascending: true });
+
+      if (cancelled) return;
+      if (error) {
+        console.error("Couldn't load saved universities:", error.message);
+        setSavedLoading(false);
+        return;
+      }
+
+      const ids = rows.map(r => r.specialty_id);
+      if (ids.length === 0) {
+        setSavedUniversities([]);
+        setSavedLoading(false);
+        return;
+      }
+
+      const { data: specs, error: specsError } = await supabase
+        .from("specialties")
+        .select("*, universities(*)")
+        .in("id", ids);
+
+      if (cancelled) return;
+      if (specsError) {
+        console.error("Couldn't load saved university details:", specsError.message);
+        setSavedLoading(false);
+        return;
+      }
+
+      const byId = new Map(specs.map(spec => [String(spec.id), mapSpecialty(spec)]));
+      setSavedUniversities(ids.map(id => byId.get(id)).filter(Boolean));
+      setSavedLoading(false);
+    }
+
+    loadSaved();
+    return () => { cancelled = true; };
+  }, [authUser?.id]);
 
   useEffect(() => {
     try {
@@ -130,23 +186,55 @@ export default function App() {
     setSelectedUni(null);
   }, [location.pathname]);
 
-  function toggleSaveUni(uni) {
+  async function toggleSaveUni(uni) {
+    if (!authUser?.id) return;
+
+    const wasSaved = savedUniversities.some(u => u.id === uni.id);
+    const specialtyId = String(uni.id);
+
+    // Update the UI right away, then sync with the account.
     setSavedUniversities(prev =>
-      prev.some(u => u.id === uni.id)
-        ? prev.filter(u => u.id !== uni.id)
-        : [...prev, uni]
+      wasSaved ? prev.filter(u => u.id !== uni.id) : [...prev, uni]
     );
+
+    const { error } = wasSaved
+      ? await supabase
+          .from("saved_universities")
+          .delete()
+          .eq("user_id", authUser.id)
+          .eq("specialty_id", specialtyId)
+      : await supabase
+          .from("saved_universities")
+          .upsert(
+            { user_id: authUser.id, specialty_id: specialtyId },
+            { onConflict: "user_id,specialty_id", ignoreDuplicates: true }
+          );
+
+    if (error) {
+      console.error("Couldn't update saved universities:", error.message);
+      // Roll the UI back so it matches what's actually stored.
+      setSavedUniversities(prev =>
+        wasSaved
+          ? (prev.some(u => u.id === uni.id) ? prev : [...prev, uni])
+          : prev.filter(u => u.id !== uni.id)
+      );
+    }
   }
 
   function addToCompare(uni) {
-    if (comparedUniversities.some(u => u.id === uni.id)) {
-      return "exists";
-    }
-    if (comparedUniversities.length >= MAX_COMPARE) {
-      return "full";
-    }
-    setComparedUniversities(prev => [...prev, uni]);
-    return "added";
+    let result = "added";
+    setComparedUniversities(prev => {
+      if (prev.some(u => u.id === uni.id)) {
+        result = "exists";
+        return prev;
+      }
+      if (prev.length >= MAX_COMPARE) {
+        result = "full";
+        return prev;
+      }
+      return [...prev, uni];
+    });
+    return result;
   }
 
   function removeFromCompare(id) {
@@ -183,7 +271,7 @@ export default function App() {
     <Routes>
       {/* ── Public: always reachable, regardless of login state ── */}
       <Route path="/" element={<Landing />} />
-      <Route path="/login" element={<Login onLogin={handleLogin} />} />
+           <Route path="/login" element={<Login onLogin={handleLogin} />} />
       <Route path="/signup" element={<Signup onLogin={handleLogin} />} />
       <Route path="/onboarding" element={<Onboarding onLogin={handleLogin} />} />
       <Route path="/forgot-password" element={<ForgotPassword />} />
@@ -215,9 +303,6 @@ export default function App() {
                           savedUniversities={savedUniversities}
                           onToggleSave={toggleSaveUni}
                           currentUser={authUser}
-                          comparedUniversities={comparedUniversities}
-                          onAddToCompare={addToCompare}
-                          maxCompare={MAX_COMPARE}
                         />
                       }
                     />
@@ -246,7 +331,9 @@ export default function App() {
                       element={
                         <Profile
                           savedUniversities={savedUniversities}
+                          savedLoading={savedLoading}
                           onToggleSave={toggleSaveUni}
+                          onSelectUni={setSelectedUni}
                           avatarUrl={avatarUrl}
                           coverUrl={coverUrl}
                           onAvatarChange={setAvatarUrl}
@@ -256,7 +343,17 @@ export default function App() {
                         />
                       }
                     />
-                    <Route path="*" element={<Navigate to="/app" replace />} />
+                    <Route
+                      path="*"
+                      element={
+                        <Home
+                          onSelectUni={setSelectedUni}
+                          savedUniversities={savedUniversities}
+                          onToggleSave={toggleSaveUni}
+                          currentUser={authUser}
+                        />
+                      }
+                    />
                   </Routes>
                 )}
               </main>

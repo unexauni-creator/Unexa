@@ -1,4 +1,20 @@
-.profile-page { display: flex; flex-direction: column; }
+/* Profile page scrolls on its own — .main doesn't scroll for this page */
+.profile-page {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  height: 100%;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(172, 136, 118, 0.4) transparent;
+}
+.profile-page::-webkit-scrollbar { width: 4px; }
+.profile-page::-webkit-scrollbar-track { background: transparent; }
+.profile-page::-webkit-scrollbar-thumb { background: rgba(172, 136, 118, 0.4); border-radius: 6px; }
+/* Keep fixed-height blocks (cover, etc.) from being squashed by the flex column */
+.profile-page > * { flex-shrink: 0; }
 
 /* Cover */
 .profile-cover { position: relative; margin: 24px 32px 0; height: 200px; border-radius: 20px; overflow: hidden; background: #EFEFEF; }
@@ -137,44 +153,27 @@
 .profile-settings-btn:hover { background: #4e3d35; }
 .profile-settings-icon { width: 16px; height: 16px; color: #F5F5F5; flex-shrink: 0; }
 
-/* Tabs (main profile page: Saved / Applied) */
-.profile-tabs { display: flex; gap: 0; padding: 24px 32px 0; margin-top: 16px; }
-.profile-tab {
-  padding: 10px 20px;
-  font-family: 'Nunito', sans-serif;
-  font-size: 15px;
-  font-weight: 400;
-  color: #000;
-  background: rgba(208,208,208,0.2);
-  border: none;
-  border-radius: 10px 10px 0 0;
-  cursor: pointer;
-  transition: background 0.18s;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-.profile-tab.active { background: #AC8876; color: #fff; }
-.profile-tab .community-tab-count {
-  background: rgba(0,0,0,0.12);
-  color: inherit;
+/* Saved universities section */
+.profile-content { padding: 40px 32px 48px; }
+
+.profile-section-header { display: flex; align-items: center; gap: 10px; margin-bottom: 20px; }
+.profile-section-title { margin: 0; font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 20px; color: rgba(43,31,24,0.96); }
+.profile-section-count {
+  background: #AC8876;
+  color: #ffffff;
   border-radius: 100px;
-  font-size: 11px;
-  font-weight: 700;
-  padding: 1px 7px;
   font-family: 'Nunito', sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1;
+  padding: 5px 10px;
 }
-.profile-tab.active .community-tab-count { background: rgba(255,255,255,0.25); }
 
-.profile-content { padding: 24px 32px 48px; }
-
-.profile-applied-list { display: flex; flex-direction: column; gap: 12px; }
-.profile-applied-card { display: flex; align-items: center; gap: 16px; background: rgba(208,208,208,0.2); border-radius: 16px; padding: 16px; backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
-.profile-applied-img { width: 64px; height: 64px; border-radius: 12px; object-fit: cover; flex-shrink: 0; }
-.profile-applied-info { flex: 1; }
-.profile-applied-name { font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 15px; color: rgba(43,31,24,0.96); margin-bottom: 3px; }
-.profile-applied-desc { font-family: 'Nunito', sans-serif; font-size: 13px; color: #9e8f86; }
-.profile-applied-status { padding: 6px 14px; border-radius: 10px; font-family: 'Nunito', sans-serif; font-size: 13px; font-weight: 600; flex-shrink: 0; }
+/* Empty state (no saved universities) */
+.profile-empty { display: flex; flex-direction: column; align-items: center; text-align: center; padding: 48px 20px; }
+.profile-empty-icon { width: 48px; height: 48px; color: #AC8876; margin-bottom: 16px; }
+.profile-empty-title { font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 16px; color: #4a3f38; margin-bottom: 6px; }
+.profile-empty-desc { font-family: 'Nunito', sans-serif; font-size: 14px; color: #9e8f86; max-width: 360px; line-height: 1.6; }
 
 /* ══════════════════════════════════════════════════════════════════
    Settings — restructured to match UniversityDetail.jsx exactly:
@@ -495,8 +494,7 @@
   .profile-avatar-actions { opacity: 1; }
   .profile-name { font-size: 20px; }
   .profile-settings-btn { margin-top: 14px; margin-left: 8px; }
-  .profile-tabs { padding: 16px 16px 0; }
-  .profile-content { padding: 20px 16px 48px; }
+  .profile-content { padding: 28px 16px 48px; }
   .profile-bio { max-width: 100%; }
 
   .settings-page { padding: 0 16px 16px; }
