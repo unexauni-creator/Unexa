@@ -1,0 +1,210 @@
+.ob-page {
+  min-height: 100vh;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  align-items: center;
+  justify-content: center;
+  padding: 24px 16px;
+  background: #ECEAEB;
+}
+
+.ob-card {
+  width: 100%;
+  max-width: 480px;
+  background: #ffffff;
+  border-radius: 26px;
+  padding: 30px 30px 26px;
+  box-shadow: 0 20px 50px rgba(43, 31, 24, 0.08);
+  font-family: 'Nunito', sans-serif;
+}
+
+.ob-logo {
+  display: block;
+  height: 26px;
+  width: auto;
+  margin: 0 auto 20px;
+}
+
+.ob-center { text-align: center; display: flex; flex-direction: column; align-items: center; }
+.ob-welcome-mascot { display: flex; justify-content: center; margin-bottom: 14px; }
+
+.ob-fade { animation: ob-fade-in 0.45s cubic-bezier(0.22, 1, 0.36, 1) both; }
+@keyframes ob-fade-in {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.ob-title {
+  font-weight: 800;
+  font-size: 27px;
+  line-height: 1.2;
+  color: rgba(43, 31, 24, 0.96);
+  letter-spacing: -0.01em;
+  margin: 0 0 8px;
+}
+.ob-title-left { text-align: left; font-size: 23px; }
+
+.ob-sub {
+  font-size: 15px;
+  line-height: 1.6;
+  color: #4a3f38;
+  margin: 0;
+}
+.ob-sub-left { text-align: left; }
+.ob-sub-narrow { max-width: 360px; }
+
+.ob-eyebrow {
+  font-weight: 700;
+  font-size: 12px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #AC8876;
+  margin-bottom: 6px;
+}
+
+.ob-step-head { margin-bottom: 18px; }
+
+.ob-progress {
+  height: 5px;
+  border-radius: 3px;
+  background: rgba(43, 31, 24, 0.1);
+  overflow: hidden;
+  margin-bottom: 18px;
+}
+.ob-progress-fill {
+  height: 100%;
+  border-radius: 3px;
+  background: #AC8876;
+  transition: width 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* ── Mascot + speech bubble ── */
+.ob-guide { display: flex; align-items: center; gap: 14px; margin-bottom: 20px; }
+.ob-bubble {
+  position: relative;
+  flex: 1;
+  background: #F6F1EC;
+  color: #4a3f38;
+  font-weight: 600;
+  font-size: 13.5px;
+  line-height: 1.45;
+  padding: 10px 14px;
+  border-radius: 16px;
+}
+.ob-bubble::before {
+  content: "";
+  position: absolute;
+  left: -5px;
+  top: 50%;
+  width: 12px;
+  height: 12px;
+  background: #F6F1EC;
+  border-radius: 3px;
+  transform: translateY(-50%) rotate(45deg);
+}
+
+.ob-chips { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 20px; }
+
+.ob-chip {
+  font-family: 'Nunito', sans-serif;
+  font-weight: 700;
+  font-size: 13.5px;
+  color: #2b1f18;
+  background: #ffffff;
+  border: 1.5px solid rgba(43, 31, 24, 0.16);
+  border-radius: 999px;
+  padding: 8px 14px;
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s, color 0.2s, transform 0.15s;
+}
+.ob-chip:hover:not(:disabled) { border-color: #AC8876; transform: translateY(-1px); }
+.ob-chip.is-selected {
+  background: #614E45;
+  border-color: #614E45;
+  color: #fff8f2;
+}
+.ob-chip:disabled { opacity: 0.4; cursor: not-allowed; }
+
+.ob-actions { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+
+.ob-btn {
+  font-family: 'Nunito', sans-serif;
+  font-weight: 700;
+  font-size: 14.5px;
+  border: none;
+  border-radius: 12px;
+  padding: 11px 24px;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.15s, opacity 0.2s;
+}
+.ob-btn-solo { margin-top: 22px; }
+.ob-btn-primary { background: #614E45; color: #fff8f2; }
+.ob-btn-primary:hover:not(:disabled) { background: #4c3d36; transform: translateY(-1px); }
+.ob-btn-ghost { background: rgba(43, 31, 24, 0.06); color: #2b1f18; }
+.ob-btn-ghost:hover:not(:disabled) { background: rgba(43, 31, 24, 0.1); }
+.ob-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+.ob-error {
+  font-size: 13.5px;
+  color: #b04a3a;
+  margin: 0 0 12px;
+}
+
+@media (max-width: 520px) {
+  .ob-card { padding: 24px 18px 22px; border-radius: 22px; }
+  .ob-title { font-size: 24px; }
+  .ob-title-left { font-size: 21px; }
+}
+
+/* ── Logo sits above the card ── */
+.ob-page > .ob-logo { margin: 0; }
+
+/* ── Bubble under the mascot (welcome + loading) ── */
+.ob-bubble-below {
+  flex: none;
+  margin-top: 20px;
+  text-align: center;
+  max-width: 340px;
+  font-size: 15px;
+  padding: 14px 18px;
+}
+.ob-bubble-below::before {
+  left: 50%;
+  top: -5px;
+  transform: translateX(-50%) rotate(45deg);
+}
+.ob-bubble-title {
+  display: block;
+  font-size: 20px;
+  font-weight: 800;
+  color: rgba(43, 31, 24, 0.96);
+  margin-bottom: 4px;
+}
+
+/* ── Animated "thinking" dots ── */
+.ob-dots { display: inline-flex; gap: 4px; margin-left: 8px; vertical-align: middle; }
+.ob-dots i {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #AC8876;
+  animation: ob-dot 1s ease-in-out infinite;
+}
+.ob-dots i:nth-child(2) { animation-delay: 0.15s; }
+.ob-dots i:nth-child(3) { animation-delay: 0.3s; }
+@keyframes ob-dot {
+  0%, 80%, 100% { opacity: 0.3; transform: translateY(0); }
+  40% { opacity: 1; transform: translateY(-3px); }
+}
+
+/* ── Bubble above the mascot, tail pointing down ── */
+.ob-bubble-below {
+  margin-top: 0;
+  margin-bottom: 22px;
+}
+.ob-bubble-below::before {
+  top: auto;
+  bottom: -5px;
+}
