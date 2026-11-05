@@ -1,0 +1,20 @@
+{
+  "name": "unexa-university-agent",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "description": "Агент Unexa: знаходить офіційні університети, читає їхні сайти і готує дані для Supabase",
+  "scripts": {
+    "discover": "node --env-file-if-exists=.env src/discover.js",
+    "run-agent": "node --env-file-if-exists=.env src/run.js",
+    "review": "node --env-file-if-exists=.env src/review.js",
+    "models": "node --env-file-if-exists=.env src/models.js",
+    "photos": "node --env-file-if-exists=.env src/photos.js"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^1.5.0",
+    "@google/genai": "^2.32.0",
+    "@supabase/supabase-js": "^2.119.0",
+    "zod": "^4.6.7"
+  }
+}
