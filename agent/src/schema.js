@@ -19,6 +19,11 @@ const Specialty = z.object({
   academic_tuition_fee: z.string().nullable().describe("Tuition as written on the site, e.g. '3 941 € / year'"),
   academic_duration: z.string().nullable().describe("e.g. '2 years (4 semesters)'"),
   academic_study_mode: z.string().nullable().describe("Full-time / Part-time"),
+  intake: z.string().nullable().describe("When studies start, e.g. 'September 2027'"),
+  application_deadlines: z.string().nullable().describe("Application deadline(s), e.g. '15 March 2027'"),
+  application_fee: z.string().nullable().describe("Fee to apply / sit the entrance exam, e.g. '50 €'"),
+  class_size: z.string().nullable().describe("Students admitted per year or group size, e.g. '12 students per year'"),
+  campus_facilities: z.string().nullable().describe("Workshops, studios, labs available to these students, short"),
   submission_period: z.string().nullable().describe("Application period"),
   min_language_level: z.string().nullable().describe("e.g. 'B2 French' or 'IELTS 6.5'"),
   min_cgpa: z.string().nullable(),
@@ -52,6 +57,8 @@ You receive plain text of pages from one university's official website. Return o
 Unexa is only for CREATIVE studies. Return only creative programmes: fine art, graphic and visual communication design, product/industrial design, interior and spatial design, fashion and textile, architecture and landscape, illustration and animation, film, photography, sound and media arts, music, dance, theatre and scenography, circus, curatorial and creative-industry programmes. Ignore every non-creative programme (sciences, law, business, engineering, history and so on). If the pages show no creative programme, return an empty list.
 
 Map French diplomas to the platform's degree levels: Licence, DNA, DN MADE, Diplôme d'études en architecture → Bachelor; Master, DNSEP, DSAA, Diplôme d'État d'architecte → Master; preparatory class (classe préparatoire) → Foundation Year; summer programmes → Summer School; short or certificate courses → Short Course.
+
+Keep every text field short (under 120 characters) — it is shown in a small box; put longer detail into curriculum_summary. Never write placeholder text such as "Not in source", "Not specified" or "N/A": use null.
 
 Write all text fields in English. Return at most 15 programmes, preferring those open to international students, taught in English, or with clear admission information.`;
 

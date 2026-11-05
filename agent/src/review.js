@@ -8,6 +8,7 @@
 import { parseArgs } from "node:util";
 import { getSupabase, SPECIALTY_FK } from "./db.js";
 import { findCoverImage } from "./photo.js";
+import { assignProgramImages } from "./programImages.js";
 
 const { values: opts, positionals } = parseArgs({
   allowPositionals: true,
@@ -82,6 +83,16 @@ if (command === "list") {
     if (match) {
       universityId = match.id;
       console.log(`Університет уже є в базі: "${match.name}" (id ${universityId}) — додаю лише програми.`);
+      // порожній опис школи заповнюємо тим, що знайшов агент (наявний не чіпаємо)
+      if (d.description) {
+        const { data: upd } = await supabase
+          .from("universities")
+          .update({ description: d.description })
+          .eq("id", universityId)
+          .or("description.is.null,description.eq.")
+          .select("id");
+        if (upd?.length) console.log("  + додано опис школи");
+      }
     } else {
       const cover = await findCoverImage(d.website_url);
       const { data: created, error } = await supabase
@@ -102,32 +113,61 @@ if (command === "list") {
     }
   }
 
-  // 2) Програми з достатньою впевненістю
+  // 2) Програми з достатньою впевненістю.
+  //    Якщо програма з такою назвою в цієї школи вже є — лише доповнюємо її порожні поля (без дубля).
+  const { data: existingSpecs, error: exErr } = await supabase.from("specialties").select("*").eq(SPECIALTY_FK, universityId);
+  if (exErr) throw new Error(`specialties: ${exErr.message}`);
+  const sameName = (a, b) => normalize(a) === normalize(b);
+  const isEmpty = (v) => v === null || v === undefined || v === "" || (typeof v === "string" && /^not (in source|specified)$/i.test(v.trim()));
+
   let added = 0;
+  let updated = 0;
   for (const s of d.agent_specialty_drafts.filter((x) => x.status === "pending")) {
     if ((s.confidence ?? 0) < minConfidence) {
       console.log(`  пропущено (впевненість ${s.confidence}): ${s.payload.name}`);
       continue;
     }
-    const { data: row, error } = await supabase
-      .from("specialties")
-      .insert({
-        ...s.payload,
-        [SPECIALTY_FK]: universityId,
-        source_note: `Unexa agent: ${s.source_urls.join(", ")}`, // звідки взято дані
-      })
-      .select("id")
-      .single();
-    if (error) throw new Error(`specialties (${s.payload.name}): ${error.message}`);
-    await supabase.from("agent_specialty_drafts").update({ status: "approved", specialty_id: String(row.id) }).eq("id", s.id);
-    added++;
+    const note = `Unexa agent: ${s.source_urls.join(", ")}`; // звідки взято дані
+    const existing = existingSpecs.find((x) => sameName(x.name, s.payload.name));
+    let specialtyId;
+
+    if (existing) {
+      const patch = Object.fromEntries(
+        Object.entries(s.payload).filter(([k, v]) => !isEmpty(v) && k in existing && isEmpty(existing[k])),
+      );
+      if (isEmpty(existing.source_note)) patch.source_note = note;
+      if (Object.keys(patch).length) {
+        const { error } = await supabase.from("specialties").update(patch).eq("id", existing.id);
+        if (error) throw new Error(`specialties (${s.payload.name}): ${error.message}`);
+        console.log(`  ~ доповнено: ${s.payload.name} (${Object.keys(patch).length} полів)`);
+        updated++;
+      }
+      specialtyId = existing.id;
+    } else {
+      const { data: row, error } = await supabase
+        .from("specialties")
+        .insert({ ...s.payload, [SPECIALTY_FK]: universityId, source_note: note })
+        .select("id")
+        .single();
+      if (error) throw new Error(`specialties (${s.payload.name}): ${error.message}`);
+      specialtyId = row.id;
+      added++;
+    }
+    await supabase.from("agent_specialty_drafts").update({ status: "approved", specialty_id: String(specialtyId) }).eq("id", s.id);
+  }
+
+  // 3) Своє фото для кожної нової програми
+  const { data: uniRow } = await supabase.from("universities").select("id, name, website_url, cover_image_url").eq("id", universityId).single();
+  if (uniRow) {
+    console.log("  Фото для програм:");
+    await assignProgramImages(supabase, uniRow, { log: (m) => console.log("  " + m) });
   }
 
   await supabase
     .from("agent_university_drafts")
     .update({ status: "approved", university_id: String(universityId), updated_at: new Date().toISOString() })
     .eq("id", d.id);
-  console.log(`✓ ${d.name}: додано програм на сайт — ${added}.`);
+  console.log(`✓ ${d.name}: нових програм — ${added}, доповнено наявних — ${updated}.`);
 } else if (command === "reject") {
   const d = await findDraft(idArg);
   await supabase.from("agent_university_drafts").update({ status: "rejected" }).eq("id", d.id);

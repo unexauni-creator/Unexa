@@ -29,7 +29,8 @@ AI можна вибрати в `agent/.env`:
      (саме **service_role**, не anon; цей ключ не можна вставляти у фронтенд);
    - `GEMINI_API_KEY` — безкоштовний ключ з https://aistudio.google.com (Get API key → Create API key).
      Перевірити ключ: `npm run models`.
-3. У Supabase → SQL Editor виконайте файл `sql/001_agent_drafts.sql` (створює таблиці чернеток).
+3. У Supabase → SQL Editor (режим бази даних, не «Logs») виконайте по черзі `sql/001_agent_drafts.sql` (таблиці чернеток)
+   і `sql/002_specialty_details.sql` (колонки для фото програми, intake, вартості заявки, розміру групи, кампусу).
 
 ## Як користуватися
 
@@ -45,6 +46,7 @@ AI можна вибрати в `agent/.env`:
 | `npm run review -- reject <id>` | відхиляє чернетку |
 | `npm run photos -- --dry-run` | показує, які фото знайдено для університетів без фото |
 | `npm run photos -- --fix-broken` | додає фото з офіційних сайтів тим, у кого фото немає або воно бите |
+| `npm run photos -- --programs` | дає кожній програмі своє фото, щоб картки однієї школи різнились |
 
 Корисні параметри `run-agent`: `--all` (також École та інші заклади), `--pages 8` (скільки сторінок читати).
 

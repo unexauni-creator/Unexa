@@ -4,11 +4,13 @@
 // npm run photos -- --dry-run     лише показати, що знайдено, без запису в базу
 // npm run photos                  записати знайдені фото
 // npm run photos -- --fix-broken  також замінити фото, посилання на які не відкриваються
+// npm run photos -- --programs    дати кожній програмі СВОЄ фото (щоб картки однієї школи різнились)
 import { parseArgs } from "node:util";
 import { getSupabase } from "./db.js";
 import { findCoverImage } from "./photo.js";
+import { assignProgramImages } from "./programImages.js";
 
-const { values: args } = parseArgs({ options: { "dry-run": { type: "boolean", default: false }, "fix-broken": { type: "boolean", default: false } } });
+const { values: args } = parseArgs({ options: { "dry-run": { type: "boolean", default: false }, "fix-broken": { type: "boolean", default: false }, programs: { type: "boolean", default: false } } });
 const supabase = getSupabase();
 
 const { data, error } = await supabase.from("universities").select("id, name, website_url, cover_image_url");
@@ -49,4 +51,16 @@ for (const u of missing) {
     else filled++;
   }
 }
-if (!args["dry-run"]) console.log(`\nДодано фото: ${filled}.`);
+if (!args["dry-run"]) console.log(`\nДодано фото університетам: ${filled}.`);
+
+if (args.programs) {
+  // свіжі дані, бо вище обкладинки могли змінитися
+  const { data: unis, error: e2 } = await supabase.from("universities").select("id, name, website_url, cover_image_url");
+  if (e2) throw new Error(e2.message);
+  let total = 0;
+  for (const uni of unis) {
+    console.log(`\n▶ ${uni.name}`);
+    total += await assignProgramImages(supabase, uni, { dryRun: args["dry-run"] });
+  }
+  console.log(`\nПрограм із власним фото${args["dry-run"] ? " (буде)" : ""}: ${total}.`);
+}

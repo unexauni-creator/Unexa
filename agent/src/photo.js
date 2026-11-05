@@ -100,13 +100,68 @@ async function isUsableImage(url) {
   }
 }
 
+// Результат перевірки кожної картинки запам'ятовуємо, щоб не завантажувати двічі
+const usableCache = new Map();
+function checkImage(url) {
+  if (!usableCache.has(url)) usableCache.set(url, isUsableImage(url));
+  return usableCache.get(url);
+}
+
+const toAbs = (src, base) => {
+  try {
+    return new URL(src.replace(/&amp;/g, "&"), base).href;
+  } catch {
+    return null;
+  }
+};
+// JPG / WebP — це майже завжди фото; PNG частіше логотип, тому вони в кінці черги
+const photoFirst = (u) => (/\.(jpe?g|webp|avif)(\?|$)/i.test(u) ? 0 : 1);
+
+/**
+ * Усі кандидати на фото з однієї сторінки: спершу фото для соцмереж, потім фото зі сторінки.
+ * Також повертає внутрішні посилання (для пошуку додаткових фото школи).
+ */
+async function pageCandidates(pageUrl) {
+  const page = await fetchText(pageUrl).catch(() => null);
+  if (!page) return { social: [], inPage: [], links: [] };
+
+  const social = [];
+  for (const pattern of META_PATTERNS) {
+    for (const m of page.html.matchAll(pattern)) {
+      const abs = toAbs(m[1], page.url);
+      if (abs && !social.includes(abs)) social.push(abs);
+    }
+  }
+  // підвал сторінки (<footer>) — це логотипи партнерів, а не фото школи
+  const body = page.html.split(/<footer\b/i)[0];
+  const inPage = [...new Set(pageImages(body).map((src) => toAbs(src, page.url)).filter(Boolean))]
+    .filter((u) => !LOGO_HINTS.test(u))
+    .sort((a, b) => photoFirst(a) - photoFirst(b));
+  const links = [...body.matchAll(/<a\s[^>]*href=["']([^"'#]+)["']/gi)]
+    .map((m) => toAbs(m[1], page.url))
+    .filter(Boolean);
+
+  return { social: social.filter((u) => !LOGO_HINTS.test(u)), inPage, links };
+}
+
+/**
+ * Перше придатне фото зі сторінки, якого ще немає в `used`.
+ * @param {string} pageUrl
+ * @param {Set<string>} [used] фото, які вже зайняті (школою чи іншими програмами)
+ */
+export async function findPageImage(pageUrl, used = new Set()) {
+  const { social, inPage } = await pageCandidates(pageUrl);
+  for (const url of [...social, ...inPage.slice(0, 12)]) {
+    if (!used.has(url) && (await checkImage(url))) return url;
+  }
+  return null;
+}
+
 /**
  * @param {string} websiteUrl офіційний сайт школи
  * @returns {Promise<string|null>} посилання на фото або null
  */
 export async function findCoverImage(websiteUrl) {
-  const candidates = []; // фото для соцмереж — найкращий варіант
-  const inPage = []; // фото зі сторінки — запасний варіант
   // головна сторінка мовою сайту + корінь домену (часто там інше, краще фото)
   const pages = [websiteUrl];
   try {
@@ -115,41 +170,51 @@ export async function findCoverImage(websiteUrl) {
   } catch {
     return null;
   }
-
   for (const pageUrl of pages) {
-    const page = await fetchText(pageUrl).catch(() => null);
-    if (!page) continue;
-    for (const pattern of META_PATTERNS) {
-      for (const m of page.html.matchAll(pattern)) {
-        try {
-          const abs = new URL(m[1].replace(/&amp;/g, "&"), page.url).href;
-          if (!candidates.includes(abs)) candidates.push(abs);
-        } catch {
-          /* битий URL */
-        }
-      }
-    }
-    // підвал сторінки (<footer>) — це логотипи партнерів, а не фото школи
-    const body = page.html.split(/<footer\b/i)[0];
-    for (const src of pageImages(body)) {
-      try {
-        const abs = new URL(src.replace(/&amp;/g, "&"), page.url).href;
-        if (!inPage.includes(abs)) inPage.push(abs);
-      } catch {
-        /* битий URL */
-      }
-    }
-  }
-
-  for (const url of candidates.filter((u) => !LOGO_HINTS.test(u))) {
-    if (await isUsableImage(url)) return url;
-  }
-  // З фото на сторінці перевіряємо лише перші кілька — це зазвичай банер угорі
-  // JPG / WebP — це майже завжди фото; PNG частіше логотип, тому вони в кінці черги
-  const photoFirst = (u) => (/\.(jpe?g|webp|avif)(\?|$)/i.test(u) ? 0 : 1);
-  const ordered = inPage.filter((u) => !LOGO_HINTS.test(u)).sort((a, b) => photoFirst(a) - photoFirst(b));
-  for (const url of ordered.slice(0, 12)) {
-    if (await isUsableImage(url)) return url;
+    const found = await findPageImage(pageUrl);
+    if (found) return found;
   }
   return null;
+}
+
+const POOL_LINK_HINTS = /program|formation|cursus|department|d[ée]partement|atelier|studio|workshop|gallery|galerie|projet|project|works|travaux|diplom|school|ecole|campus/i;
+
+/**
+ * Набір РІЗНИХ фото школи: з головної та кількох внутрішніх сторінок (програми, майстерні, проєкти).
+ * Потрібен, щоб картки різних програм однієї школи не мали однакового фото.
+ * @param {string} websiteUrl
+ * @param {number} want скільки фото потрібно
+ */
+export async function findImagePool(websiteUrl, want = 6) {
+  const pool = [];
+  const home = await pageCandidates(websiteUrl);
+  let host;
+  try {
+    host = new URL(websiteUrl).hostname.replace(/^www\./, "");
+  } catch {
+    return pool;
+  }
+  const extraPages = [...new Set(home.links)]
+    .filter((u) => {
+      try {
+        return new URL(u).hostname.endsWith(host) && POOL_LINK_HINTS.test(u) && !/\.(pdf|jpe?g|png|zip)$/i.test(u);
+      } catch {
+        return false;
+      }
+    })
+    .slice(0, 8);
+
+  const add = async (urls) => {
+    for (const url of urls) {
+      if (pool.length >= want) return;
+      if (!pool.includes(url) && (await checkImage(url))) pool.push(url);
+    }
+  };
+  await add([...home.social, ...home.inPage.slice(0, 15)]);
+  for (const pageUrl of extraPages) {
+    if (pool.length >= want) break;
+    const c = await pageCandidates(pageUrl);
+    await add([...c.social, ...c.inPage.slice(0, 6)]);
+  }
+  return pool;
 }
