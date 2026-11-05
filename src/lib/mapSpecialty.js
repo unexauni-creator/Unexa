@@ -13,6 +13,8 @@ export function mapSpecialty(rawRow) {
   return {
     id: row.id,                     // id спеціальності — саме це "картка" на Home
     universityId: uni?.id,
+    createdAt: row.created_at,      // для сповіщень «нова програма»
+    universityCreatedAt: uni?.created_at,
     name: uni?.name,
     desc: `${uni?.city ?? ""}, ${uni?.country ?? ""}`,
     country: uni?.country,

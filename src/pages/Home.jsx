@@ -1,9 +1,10 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useMemo } from "react";
 import { supabase } from "../lib/supabaseClient";
 import { mapSpecialty } from "../lib/mapSpecialty.js";
 import UniImage from "../components/UniImage.jsx";
+import { searchPrograms, buildSuggestions, highlight } from "../lib/search.js";
+import { buildNotifications, loadPrefs, loadRead, saveRead, timeAgo } from "../lib/notifications.js";
 
-const SUGGESTIONS = ["Art Design", "Architecture", "Fine Arts", "Digital Media", "Fashion Design", "France", "Master", "Bachelor", "Online Course"];
 const DEGREES = ["Bachelor", "Master", "Foundation Year", "Short Course", "Summer School", "Online Course"];
 const LANGUAGES = ["French", "English", "French/English", "German", "Spanish"];
 const FORMATS = ["On Campus", "Hybrid", "Online"];
@@ -17,14 +18,7 @@ const DEFAULT_FILTERS = {
   languages: [], certification: null, formats: [], internship: null,
 };
 
-const NOTIFICATIONS = [
-  { id: 1, type: "new", icon: "🏛️", title: "New university added!", desc: "Sciences Po Paris joined Unexa — explore their programs.", time: "2 min ago", unread: true },
-  { id: 2, type: "deadline", icon: "⏰", title: "Application deadline soon", desc: "Aix-Marseille Université closes applications in 3 days.", time: "1 hour ago", unread: true },
-  { id: 3, type: "new", icon: "🏛️", title: "New university added!", desc: "University of Amsterdam is now on Unexa.", time: "3 hours ago", unread: false },
-  { id: 4, type: "deadline", icon: "📋", title: "Don't miss this program", desc: "Bordeaux-Montaigne Architecture applications open until April 30.", time: "Yesterday", unread: false },
-  { id: 5, type: "tip", icon: "💡", title: "Complete your profile", desc: "Add your language scores to get better university matches.", time: "2 days ago", unread: false },
-  { id: 6, type: "new", icon: "🏛️", title: "New university added!", desc: "TU Munich Design Faculty is now available on Unexa.", time: "3 days ago", unread: false },
-];
+const RECENT_KEY = "unexa_recent_searches";
 
 function CheckItem({ label, checked, onChange }) {
   return (
@@ -201,13 +195,8 @@ function FilterPanel({ filters, setFilters, universities = [], onClose, onApply,
   );
 }
 
-function NotificationPanel({ onClose }) {
-  const [notifications, setNotifications] = useState(NOTIFICATIONS);
-  const unreadCount = notifications.filter(n => n.unread).length;
-
-  function markAllRead() {
-    setNotifications(n => n.map(item => ({ ...item, unread: false })));
-  }
+function NotificationPanel({ notifications, readIds, onRead, onReadAll, onOpen, onClose }) {
+  const unreadCount = notifications.filter(n => !readIds.has(n.id)).length;
 
   return (
     <div className="filter-backdrop" onClick={onClose}>
@@ -219,7 +208,7 @@ function NotificationPanel({ onClose }) {
             {unreadCount > 0 && <span className="notif-count-badge">{unreadCount}</span>}
           </div>
           <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-            {unreadCount > 0 && <button className="notif-mark-read" onClick={markAllRead}>Mark all as read</button>}
+            {unreadCount > 0 && <button className="notif-mark-read" onClick={onReadAll}>Mark all as read</button>}
             <button className="filter-close-btn" onClick={onClose}>✕</button>
           </div>
         </div>
@@ -227,60 +216,78 @@ function NotificationPanel({ onClose }) {
           {notifications.length === 0 ? (
             <div className="notif-empty">
               <div style={{ fontSize: 36, marginBottom: 12 }}>🔔</div>
-              <div style={{ fontFamily: "Nunito", fontWeight: 600, color: "#4a3f38" }}>No notifications yet</div>
+              <div style={{ fontFamily: "Nunito", fontWeight: 600, color: "#4a3f38" }}>You're all caught up</div>
+              <div className="notif-desc" style={{ marginTop: 6 }}>Save programs to get deadline reminders.</div>
             </div>
-          ) : notifications.map(n => (
-            <div key={n.id} className={`notif-item ${n.unread ? "unread" : ""}`} onClick={() => setNotifications(prev => prev.map(item => item.id === n.id ? { ...item, unread: false } : item))}>
-              <div className="notif-icon">{n.icon}</div>
-              <div className="notif-content">
-                <div className="notif-title">{n.title}</div>
-                <div className="notif-desc">{n.desc}</div>
-                <div className="notif-time">{n.time}</div>
+          ) : notifications.map(n => {
+            const unread = !readIds.has(n.id);
+            return (
+              <div
+                key={n.id}
+                className={`notif-item ${unread ? "unread" : ""} ${n.urgent ? "urgent" : ""} ${n.target || n.search ? "clickable" : ""}`}
+                onClick={() => { onRead(n.id); onOpen(n); }}
+              >
+                <div className="notif-icon">{n.icon}</div>
+                <div className="notif-content">
+                  <div className="notif-title">{n.title}</div>
+                  <div className="notif-desc">{n.desc}</div>
+                  <div className="notif-time">{timeAgo(n.date)}</div>
+                </div>
+                {unread && <div className="notif-dot" />}
               </div>
-              {n.unread && <div className="notif-dot" />}
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
     </div>
   );
 }
 
-function SearchDropdown({ search, setSearch, onSelect, recentSearches, setRecentSearches }) {
-  const suggestions = search.length > 0
-    ? SUGGESTIONS.filter(s => s.toLowerCase().startsWith(search.toLowerCase()) && s.toLowerCase() !== search.toLowerCase())
-    : [];
-  const showDropdown = search.length === 0 ? recentSearches.length > 0 : suggestions.length > 0;
+const SUGGESTION_ICONS = { place: "📍", university: "🏛️", program: "🎓" };
 
-  function handleSelect(val) {
-    setSearch(val);
-    if (!recentSearches.includes(val)) {
-      setRecentSearches(prev => [val, ...prev].slice(0, 5));
-    }
-    onSelect();
-  }
-
-  if (!showDropdown) return null;
+function SearchDropdown({ search, items, activeIndex, setActiveIndex, onPick, recentSearches, onClearRecent }) {
+  const showRecent = search.trim().length === 0;
+  if (showRecent ? recentSearches.length === 0 : items.length === 0) return null;
 
   return (
-    <div className="search-dropdown">
-      {search.length === 0 && recentSearches.length > 0 && (
+    <div className="search-dropdown" role="listbox">
+      {showRecent ? (
         <>
-          <div className="search-dropdown-label">Recent</div>
-          {recentSearches.map(r => (
-            <div key={r} className="search-dropdown-item" onClick={() => handleSelect(r)}>
+          <div className="search-dropdown-label search-dropdown-label-row">
+            <span>Recent</span>
+            <button type="button" className="search-dropdown-clear" onMouseDown={e => { e.preventDefault(); onClearRecent(); }}>Clear</button>
+          </div>
+          {recentSearches.map((r, i) => (
+            <div
+              key={r}
+              className={`search-dropdown-item ${i === activeIndex ? "active" : ""}`}
+              onMouseEnter={() => setActiveIndex(i)}
+              onMouseDown={e => { e.preventDefault(); onPick({ type: "recent", label: r }); }}
+            >
+              <span className="search-dropdown-icon">🕘</span>
               <span>{r}</span>
             </div>
           ))}
         </>
-      )}
-      {search.length > 0 && suggestions.length > 0 && (
+      ) : (
         <>
           <div className="search-dropdown-label">Suggestions</div>
-          {suggestions.map(s => (
-            <div key={s} className="search-dropdown-item" onClick={() => handleSelect(s)}>
-              <span className="search-dropdown-icon">🔍</span>
-              <span><strong>{search}</strong>{s.slice(search.length)}</span>
+          {items.map((item, i) => (
+            <div
+              key={`${item.type}-${item.label}-${item.sub}`}
+              role="option"
+              aria-selected={i === activeIndex}
+              className={`search-dropdown-item ${i === activeIndex ? "active" : ""}`}
+              onMouseEnter={() => setActiveIndex(i)}
+              onMouseDown={e => { e.preventDefault(); onPick(item); }}
+            >
+              <span className="search-dropdown-icon">{SUGGESTION_ICONS[item.type]}</span>
+              <span className="search-dropdown-text">
+                <span className="search-dropdown-main">
+                  {highlight(item.label, search).map((part, j) => part.hit ? <strong key={j}>{part.text}</strong> : <span key={j}>{part.text}</span>)}
+                </span>
+                {item.sub && <span className="search-dropdown-sub">{item.sub}</span>}
+              </span>
             </div>
           ))}
         </>
@@ -314,7 +321,12 @@ export default function Home({ onSelectUni, savedUniversities, onToggleSave, cur
 
   const [search, setSearch] = useState("");
   const [searchFocused, setSearchFocused] = useState(false);
-  const [recentSearches, setRecentSearches] = useState(["Art Design", "France", "Master"]);
+  const [recentSearches, setRecentSearches] = useState(() => {
+    try { return JSON.parse(localStorage.getItem(RECENT_KEY) || "[]"); } catch { return []; }
+  });
+  const [activeIndex, setActiveIndex] = useState(-1);
+  const [notifPrefs, setNotifPrefs] = useState(loadPrefs);
+  const [readIds, setReadIds] = useState(() => loadRead(currentUser?.id));
   const [showFilter, setShowFilter] = useState(false);
   const [showNotif, setShowNotif] = useState(false);
   const [filters, setFilters] = useState(DEFAULT_FILTERS);
@@ -364,6 +376,89 @@ export default function Home({ onSelectUni, savedUniversities, onToggleSave, cur
     return () => clearTimeout(t);
   }, [toast]);
 
+  useEffect(() => {
+    try { localStorage.setItem(RECENT_KEY, JSON.stringify(recentSearches)); } catch {}
+  }, [recentSearches]);
+
+  // settings in Profile → Notifications change what is shown here
+  useEffect(() => {
+    const update = () => setNotifPrefs(loadPrefs());
+    window.addEventListener("unexa-notif-prefs", update);
+    window.addEventListener("storage", update);
+    return () => { window.removeEventListener("unexa-notif-prefs", update); window.removeEventListener("storage", update); };
+  }, []);
+
+  useEffect(() => { setReadIds(loadRead(currentUser?.id)); }, [currentUser?.id]);
+
+  const notifications = useMemo(
+    () => buildNotifications(universities, savedUniversities ?? [], notifPrefs),
+    [universities, savedUniversities, notifPrefs]
+  );
+
+  function markRead(ids) {
+    setReadIds(prev => {
+      const next = new Set(prev);
+      ids.forEach(id => next.add(id));
+      saveRead(currentUser?.id, next);
+      return next;
+    });
+  }
+
+  function openNotification(n) {
+    if (n.type === "new" && n.search) {
+      setSearch(n.search);
+      setShowNotif(false);
+    } else if (n.target) {
+      setShowNotif(false);
+      onSelectUni(n.target);
+    }
+  }
+
+  const suggestions = useMemo(() => buildSuggestions(universities, search), [universities, search]);
+  const dropdownItems = search.trim() ? suggestions : recentSearches;
+
+  function rememberSearch(value) {
+    const v = value.trim();
+    if (!v) return;
+    setRecentSearches(prev => [v, ...prev.filter(r => r.toLowerCase() !== v.toLowerCase())].slice(0, 6));
+  }
+
+  function pickSuggestion(item) {
+    if (item.type === "program" && item.target) {
+      rememberSearch(item.label);
+      setSearchFocused(false);
+      onSelectUni(item.target);
+      return;
+    }
+    setSearch(item.label);
+    rememberSearch(item.label);
+    setSearchFocused(false);
+    setActiveIndex(-1);
+  }
+
+  function handleSearchKey(e) {
+    const count = dropdownItems.length;
+    if (e.key === "ArrowDown" && count) {
+      e.preventDefault();
+      setSearchFocused(true);
+      setActiveIndex(i => (i + 1) % count);
+    } else if (e.key === "ArrowUp" && count) {
+      e.preventDefault();
+      setActiveIndex(i => (i <= 0 ? count - 1 : i - 1));
+    } else if (e.key === "Enter") {
+      if (searchFocused && activeIndex >= 0 && activeIndex < count) {
+        const item = dropdownItems[activeIndex];
+        pickSuggestion(typeof item === "string" ? { type: "recent", label: item } : item);
+      } else {
+        rememberSearch(search);
+        setSearchFocused(false);
+      }
+    } else if (e.key === "Escape") {
+      setSearchFocused(false);
+      e.currentTarget.blur();
+    }
+  }
+
   function applyFilters() { setAppliedFilters({ ...filters }); setShowFilter(false); }
   function clearFilters() { setFilters(DEFAULT_FILTERS); setAppliedFilters(DEFAULT_FILTERS); }
 
@@ -393,11 +488,9 @@ export default function Home({ onSelectUni, savedUniversities, onToggleSave, cur
     (appliedFilters.internship !== null ? 1 : 0) + (appliedFilters.certification !== null ? 1 : 0) +
     (appliedFilters.tuitionMin > MIN_PRICE || appliedFilters.tuitionMax < MAX_PRICE ? 1 : 0);
 
-  const unreadNotifCount = NOTIFICATIONS.filter(n => n.unread).length;
+  const unreadNotifCount = notifications.filter(n => !readIds.has(n.id)).length;
 
-  const filtered = universities.filter(u => {
-    const q = search.toLowerCase();
-    if (q && !u.name?.toLowerCase().includes(q) && !u.program?.toLowerCase().includes(q) && !u.country?.toLowerCase().includes(q)) return false;
+  const filtered = searchPrograms(universities, search).filter(u => {
     if (appliedFilters.countries.length && !appliedFilters.countries.includes(u.country)) return false;
     if (appliedFilters.degrees.length && !appliedFilters.degrees.includes(u.degree)) return false;
     if (u.tuitionAmount < appliedFilters.tuitionMin || u.tuitionAmount > appliedFilters.tuitionMax) return false;
@@ -428,11 +521,13 @@ export default function Home({ onSelectUni, savedUniversities, onToggleSave, cur
           <div className={`home-search ${searchFocused ? "active" : ""}`} ref={searchRef} style={{ position: "relative" }}>
             <input
               type="text"
-              placeholder="Search ......"
+              placeholder="Search programs, universities, cities…"
               className="home-search-input"
               value={search}
-              onChange={e => setSearch(e.target.value)}
+              onChange={e => { setSearch(e.target.value); setActiveIndex(-1); setSearchFocused(true); }}
               onFocus={() => setSearchFocused(true)}
+              onKeyDown={handleSearchKey}
+              aria-label="Search programs, universities, cities"
             />
             {search.length > 0 ? (
               <button
@@ -452,10 +547,12 @@ export default function Home({ onSelectUni, savedUniversities, onToggleSave, cur
             {searchFocused && (
               <SearchDropdown
                 search={search}
-                setSearch={setSearch}
+                items={suggestions}
+                activeIndex={activeIndex}
+                setActiveIndex={setActiveIndex}
+                onPick={pickSuggestion}
                 recentSearches={recentSearches}
-                setRecentSearches={setRecentSearches}
-                onSelect={() => setSearchFocused(false)}
+                onClearRecent={() => setRecentSearches([])}
               />
             )}
           </div>
@@ -494,6 +591,12 @@ export default function Home({ onSelectUni, savedUniversities, onToggleSave, cur
         {!loading && loadError && (
           <div style={{ textAlign: "center", padding: "48px 0", fontFamily: "Nunito", color: "#c05050" }}>
             Couldn't load universities: {loadError}
+          </div>
+        )}
+
+        {!loading && !loadError && search.trim() && filtered.length > 0 && (
+          <div className="search-results-count">
+            {filtered.length} result{filtered.length === 1 ? "" : "s"} for <strong>“{search.trim()}”</strong>
           </div>
         )}
 
@@ -543,7 +646,16 @@ export default function Home({ onSelectUni, savedUniversities, onToggleSave, cur
           onApply={applyFilters} onClear={clearFilters} />
       )}
 
-      {showNotif && <NotificationPanel onClose={() => setShowNotif(false)} />}
+      {showNotif && (
+        <NotificationPanel
+          notifications={notifications}
+          readIds={readIds}
+          onRead={id => markRead([id])}
+          onReadAll={() => markRead(notifications.map(n => n.id))}
+          onOpen={openNotification}
+          onClose={() => setShowNotif(false)}
+        />
+      )}
 
       {toast && (
         <div className="save-toast">

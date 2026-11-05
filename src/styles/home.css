@@ -266,3 +266,13 @@
   .home-sticky-header { padding: 28px 24px 20px; }
   .home-scroll { padding: 0 24px 32px; }
 }
+/* Search: suggestions with keyboard highlight, recent searches, result count */
+.search-dropdown-item.active { background: #f5f1ec; }
+.search-dropdown-label-row { display: flex; align-items: center; justify-content: space-between; padding-right: 12px; }
+.search-dropdown-clear { background: none; border: none; font-family: 'Nunito', sans-serif; font-size: 12px; font-weight: 700; color: #AC8876; cursor: pointer; }
+.search-dropdown-clear:hover { opacity: 0.7; }
+.search-dropdown-text { display: flex; flex-direction: column; min-width: 0; }
+.search-dropdown-main, .search-dropdown-sub { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.search-dropdown-sub { font-size: 12px; color: #9e8f86; }
+.search-results-count { font-family: 'Nunito', sans-serif; font-size: 14px; color: #6b5e56; margin: 0 0 12px; }
+.search-results-count strong { color: rgba(43,31,24,0.96); }

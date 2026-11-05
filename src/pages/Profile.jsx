@@ -3,6 +3,7 @@ import { createPortal } from "react-dom";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "../lib/supabaseClient";
 import UniImage from "../components/UniImage.jsx";
+import { loadPrefs, savePrefs } from "../lib/notifications.js";
 
 const SETTINGS_SECTIONS = [
   { id: "profile", label: "Edit profile" },
@@ -28,9 +29,16 @@ function SettingsPage({ onClose, avatarUrl, onAvatarChange, coverUrl, onCoverCha
   const [activeSection, setActiveSection] = useState("profile");
   const [email, setEmail] = useState("kateryna.dmytrenko@example.com");
   const [phone, setPhone] = useState("");
-  const [notifNewUni, setNotifNewUni] = useState(true);
-  const [notifDeadlines, setNotifDeadlines] = useState(true);
-  const [notifTips, setNotifTips] = useState(false);
+  // notification settings are saved on this device and used by the bell on Home
+  const [notifPrefs, setNotifPrefs] = useState(loadPrefs);
+  const setPref = (key) => (value) => {
+    const next = { ...notifPrefs, [key]: value };
+    setNotifPrefs(next);
+    savePrefs(next);
+  };
+  const notifNewUni = notifPrefs.newUni, setNotifNewUni = setPref("newUni");
+  const notifDeadlines = notifPrefs.deadlines, setNotifDeadlines = setPref("deadlines");
+  const notifTips = notifPrefs.tips, setNotifTips = setPref("tips");
   const [language, setLanguage] = useState("English");
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [deleting, setDeleting] = useState(false);
