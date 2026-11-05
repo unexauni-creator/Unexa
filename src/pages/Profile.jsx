@@ -1,22 +1,12 @@
 import { useState, useRef } from "react";
-
-const appliedUniversities = [
-  { id: 4, name: "Université de Nîmes", desc: "Nîmes, France", status: "In Review", image: "https://upload.wikimedia.org/wikipedia/commons/1/16/Scines_nimes.jpg" },
-  { id: 5, name: "Université Jean-Monnet", desc: "Loire, France", status: "Submitted", image: "https://www.univ-st-etienne.fr/_richText-file/ametys-internal%253Asites/ujm/ametys-internal%253Acontents/plans-d-acces-2/_attribute/content/_data/Campus-Trefilerie-Pierre-Grasset.jpg" },
-];
-
-const STATUS_COLORS = {
-  "In Review": { bg: "rgba(172,136,118,0.15)", color: "#AC8876" },
-  "Submitted": { bg: "rgba(123,158,135,0.15)", color: "#7B9E87" },
-  "Accepted": { bg: "rgba(123,158,135,0.25)", color: "#4a8c65" },
-  "Rejected": { bg: "rgba(200,100,100,0.15)", color: "#c05050" },
-};
+import { createPortal } from "react-dom";
+import { useNavigate } from "react-router-dom";
+import { supabase } from "../lib/supabaseClient";
 
 const SETTINGS_SECTIONS = [
   { id: "profile", label: "Edit profile" },
   { id: "notifications", label: "Notifications" },
   { id: "security", label: "Security" },
-  { id: "language", label: "Languages" },
 ];
 
 function ToggleSwitch({ checked, onChange }) {
@@ -41,6 +31,9 @@ function SettingsPage({ onClose, avatarUrl, onAvatarChange, coverUrl, onCoverCha
   const [notifDeadlines, setNotifDeadlines] = useState(true);
   const [notifTips, setNotifTips] = useState(false);
   const [language, setLanguage] = useState("English");
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+  const [deleteError, setDeleteError] = useState(null);
   const avatarInputRef = useRef(null);
   const bannerInputRef = useRef(null);
 
@@ -62,9 +55,31 @@ function SettingsPage({ onClose, avatarUrl, onAvatarChange, coverUrl, onCoverCha
     e.target.value = "";
   }
 
+  async function handleDeleteAccount() {
+    setDeleting(true);
+    setDeleteError(null);
+
+    const { error } = await supabase.rpc("delete_user");
+
+    if (error) {
+      setDeleting(false);
+      setDeleteError(error.message);
+      return;
+    }
+
+    // Account is gone server-side: sign out locally and return to landing.
+    await onLogout();
+  }
+
+  function closeDeleteModal() {
+    if (deleting) return;
+    setShowDeleteConfirm(false);
+    setDeleteError(null);
+  }
+
   return (
     <div className="settings-page">
-      {/* ── Header row: back button + tabs + logout. OUTSIDE the scrollable card, same as UniversityDetail ── */}
+      {/* ── Header row: back button + tabs. OUTSIDE the scrollable card, same as UniversityDetail ── */}
       <div className="settings-header-row">
         <button className="settings-back-btn" onClick={onClose} aria-label="Back">
           <img src="/arrow-left.svg" alt="" className="settings-back-icon" />
@@ -81,54 +96,50 @@ function SettingsPage({ onClose, avatarUrl, onAvatarChange, coverUrl, onCoverCha
             </button>
           ))}
         </div>
-
-        <button className="settings-nav-logout" onClick={onLogout}>
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
-            <polyline points="16 17 21 12 16 7" />
-            <line x1="21" y1="12" x2="9" y2="12" />
-          </svg>
-          Log out
-        </button>
       </div>
 
-      {/* ── Card: cover photo, avatar, and all settings content live in here, same scroll container as UniversityDetail ── */}
+      {/* ── Card: all settings content lives in here, same scroll container as UniversityDetail ── */}
       <div className="settings-scroll">
         <div className="settings-body">
-          <div className={`settings-banner ${!coverUrl ? "settings-banner-empty" : ""}`} onClick={() => bannerInputRef.current?.click()}>
-            {coverUrl && <img src={coverUrl} alt="Cover" className="settings-banner-img" />}
-            <div className="settings-banner-action">
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M12 20h9" />
-                <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4Z" />
-              </svg>
-              {coverUrl ? "Change banner" : "Add banner"}
-            </div>
-            <input
-              ref={bannerInputRef}
-              type="file"
-              accept="image/*"
-              style={{ display: "none" }}
-              onChange={handleBannerSelect}
-            />
-          </div>
+          {/* Banner + avatar are only shown on the Edit profile tab */}
+          {activeSection === "profile" && (
+            <>
+              <div className={`settings-banner ${!coverUrl ? "settings-banner-empty" : ""}`} onClick={() => bannerInputRef.current?.click()}>
+                {coverUrl && <img src={coverUrl} alt="Cover" className="settings-banner-img" />}
+                <div className="settings-banner-action">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M12 20h9" />
+                    <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4Z" />
+                  </svg>
+                  {coverUrl ? "Change banner" : "Add banner"}
+                </div>
+                <input
+                  ref={bannerInputRef}
+                  type="file"
+                  accept="image/*"
+                  style={{ display: "none" }}
+                  onChange={handleBannerSelect}
+                />
+              </div>
 
-          <div className="settings-avatar-overlap-wrap" onClick={() => avatarInputRef.current?.click()}>
-            {avatarUrl ? (
-              <img src={avatarUrl} alt="Avatar" className="settings-avatar-overlap-img" />
-            ) : (
-              <div className="settings-avatar-overlap-placeholder">KD</div>
-            )}
-            <input
-              ref={avatarInputRef}
-              type="file"
-              accept="image/*"
-              style={{ display: "none" }}
-              onChange={handleAvatarSelect}
-            />
-          </div>
+              <div className="settings-avatar-overlap-wrap" onClick={() => avatarInputRef.current?.click()}>
+                {avatarUrl ? (
+                  <img src={avatarUrl} alt="Avatar" className="settings-avatar-overlap-img" />
+                ) : (
+                  <div className="settings-avatar-overlap-placeholder">KD</div>
+                )}
+                <input
+                  ref={avatarInputRef}
+                  type="file"
+                  accept="image/*"
+                  style={{ display: "none" }}
+                  onChange={handleAvatarSelect}
+                />
+              </div>
+            </>
+          )}
 
-          <div className="settings-page-content">
+          <div className={`settings-page-content ${activeSection !== "profile" ? "settings-page-content-flush" : ""}`}>
             {activeSection === "profile" && (
               <>
                 <div className="settings-field">
@@ -159,6 +170,19 @@ function SettingsPage({ onClose, avatarUrl, onAvatarChange, coverUrl, onCoverCha
                     <div className="settings-field-hint">Optional</div>
                   </div>
                   <input className="settings-input" type="tel" placeholder="+33 6 12 34 56 78" value={phone} onChange={e => setPhone(e.target.value)} />
+                </div>
+
+                <div className="settings-field">
+                  <div className="settings-field-label-block">
+                    <div className="settings-field-label">Display language</div>
+                    <div className="settings-field-hint">The language Unexa is shown in</div>
+                  </div>
+                  <select className="settings-input settings-select" value={language} onChange={e => setLanguage(e.target.value)}>
+                    <option>English</option>
+                    <option>Українська</option>
+                    <option>Español</option>
+                    <option>Français</option>
+                  </select>
                 </div>
 
                 <div className="settings-page-actions">
@@ -217,50 +241,84 @@ function SettingsPage({ onClose, avatarUrl, onAvatarChange, coverUrl, onCoverCha
                   <input className="settings-input" type="password" placeholder="••••••••" />
                 </div>
 
-                <div className="settings-field settings-field-row">
-                  <div className="settings-field-label-block">
-                    <div className="settings-field-label">Two-factor authentication</div>
-                    <div className="settings-field-hint">Add an extra layer of security to your account</div>
-                  </div>
-                  <ToggleSwitch checked={false} onChange={() => {}} />
-                </div>
-
                 <div className="settings-page-actions">
                   <button className="filter-clear-btn" onClick={onClose}>Cancel</button>
                   <button className="filter-save-btn" onClick={onClose}>Save</button>
                 </div>
-              </>
-            )}
 
-            {activeSection === "language" && (
-              <>
-                <div className="settings-field">
-                  <div className="settings-field-label-block">
-                    <div className="settings-field-label">Display language</div>
+                <div className="settings-account-section">
+                  <div className="settings-account-title">Account</div>
+
+                  <div className="settings-account-row">
+                    <div className="settings-field-label-block">
+                      <div className="settings-field-label">Log out</div>
+                      <div className="settings-field-hint">Sign out of Unexa on this device</div>
+                    </div>
+                    <button className="settings-nav-logout" onClick={onLogout}>
+                      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+                        <polyline points="16 17 21 12 16 7" />
+                        <line x1="21" y1="12" x2="9" y2="12" />
+                      </svg>
+                      Log out
+                    </button>
                   </div>
-                  <select className="settings-input" value={language} onChange={e => setLanguage(e.target.value)}>
-                    <option>English</option>
-                    <option>Українська</option>
-                    <option>Español</option>
-                    <option>Français</option>
-                  </select>
-                </div>
 
-                <div className="settings-page-actions">
-                  <button className="filter-clear-btn" onClick={onClose}>Cancel</button>
-                  <button className="filter-save-btn" onClick={onClose}>Save</button>
+                  <div className="settings-account-row">
+                    <div className="settings-field-label-block">
+                      <div className="settings-field-label">Delete account</div>
+                      <div className="settings-field-hint">Permanently delete your account and all your data. This can't be undone.</div>
+                    </div>
+                    <button className="settings-delete-btn" onClick={() => setShowDeleteConfirm(true)}>
+                      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <polyline points="3 6 5 6 21 6" />
+                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+                      </svg>
+                      Delete account
+                    </button>
+                  </div>
                 </div>
               </>
             )}
           </div>
         </div>
       </div>
+
+      {showDeleteConfirm && createPortal(
+        <div className="settings-modal-overlay" onClick={closeDeleteModal}>
+          <div className="settings-modal" onClick={e => e.stopPropagation()}>
+            <div className="settings-modal-title">Delete your account?</div>
+            <p className="settings-modal-text">
+              This will permanently delete your account and everything linked to it. You won't be able to get it back.
+            </p>
+            {deleteError && <p className="settings-modal-error">{deleteError}</p>}
+            <div className="settings-modal-actions">
+              <button className="filter-clear-btn" onClick={closeDeleteModal} disabled={deleting}>Cancel</button>
+              <button className="settings-delete-confirm-btn" onClick={handleDeleteAccount} disabled={deleting}>
+                {deleting ? "Deleting..." : "Delete account"}
+              </button>
+            </div>
+          </div>
+        </div>,
+        document.body
+      )}
     </div>
   );
 }
 
-export default function Profile({ savedUniversities, onToggleSave, avatarUrl, coverUrl, onAvatarChange, onCoverChange, userName, onLogout }) {
-  const [activeTab, setActiveTab] = useState("saved");
+export default function Profile({
+  savedUniversities = [],
+  savedLoading = false,
+  onToggleSave,
+  onSelectUni,
+  avatarUrl,
+  coverUrl,
+  onAvatarChange,
+  onCoverChange,
+  userName,
+  onLogout,
+}) {
+  const navigate = useNavigate();
   const [showSettings, setShowSettings] = useState(false);
   const [name, setName] = useState(userName || "Kateryna Dmytrenko");
   const [bio, setBio] = useState(
@@ -385,66 +443,50 @@ export default function Profile({ savedUniversities, onToggleSave, avatarUrl, co
         </button>
       </div>
 
-      <div className="profile-tabs">
-        <button className={`profile-tab ${activeTab === "saved" ? "active" : ""}`} onClick={() => setActiveTab("saved")}>
-          Saved Universities
-          {savedUniversities.length > 0 && <span className="community-tab-count">{savedUniversities.length}</span>}
-        </button>
-        <button className={`profile-tab ${activeTab === "applied" ? "active" : ""}`} onClick={() => setActiveTab("applied")}>Applied</button>
-      </div>
-
       <div className="profile-content">
-        {activeTab === "saved" && (
-          savedUniversities.length > 0 ? (
-            <div className="uni-grid">
-              {savedUniversities.map(uni => (
-                <div key={uni.id} className="uni-card-new">
-                  <img src={uni.image} alt={uni.name} className="uni-card-img" />
-                  <div className="uni-card-glass">
-                    <div className="uni-card-glass-blur" />
-                    <div className="uni-card-text">
-                      <div className="uni-card-title">{uni.name}</div>
-                      <div className="uni-card-subtitle">{uni.desc}</div>
-                    </div>
-                    <button
-                      className="uni-card-save saved"
-                      onClick={e => { e.stopPropagation(); onToggleSave(uni); }}
-                      aria-label="Remove from profile"
-                    >
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" strokeWidth="2">
-                        <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" />
-                      </svg>
-                    </button>
-                  </div>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <div className="compare-empty">
-              <div className="compare-empty-icon">🔖</div>
-              <div className="compare-empty-title">No saved universities yet</div>
-              <div className="compare-empty-desc">Go to Home and tap the bookmark icon on any university card to save it here.</div>
-            </div>
-          )
-        )}
+        <div className="profile-section-header">
+          <h2 className="profile-section-title">Saved universities</h2>
+          {savedUniversities.length > 0 && (
+            <span className="profile-section-count">{savedUniversities.length}</span>
+          )}
+        </div>
 
-        {activeTab === "applied" && (
-          <div className="profile-applied-list">
-            {appliedUniversities.map(uni => (
-              <div key={uni.id} className="profile-applied-card">
-                <img src={uni.image} alt={uni.name} className="profile-applied-img" />
-                <div className="profile-applied-info">
-                  <div className="profile-applied-name">{uni.name}</div>
-                  <div className="profile-applied-desc">{uni.desc}</div>
-                </div>
-                <div
-                  className="profile-applied-status"
-                  style={{ background: STATUS_COLORS[uni.status]?.bg, color: STATUS_COLORS[uni.status]?.color }}
-                >
-                  {uni.status}
+        {savedLoading ? (
+          <div className="profile-empty">
+            <div className="profile-empty-desc">Loading saved universities...</div>
+          </div>
+        ) : savedUniversities.length > 0 ? (
+          <div className="uni-grid">
+            {savedUniversities.map(uni => (
+              <div key={uni.id} className="uni-card-new" onClick={() => onSelectUni?.(uni)}>
+                <img src={uni.image} alt={uni.name} className="uni-card-img" />
+                <div className="uni-card-glass">
+                  <div className="uni-card-glass-blur" />
+                  <div className="uni-card-text">
+                    <div className="uni-card-title">{uni.program || uni.name}</div>
+                    <div className="uni-card-subtitle">{uni.program ? uni.name : uni.desc}</div>
+                  </div>
+                  <button
+                    className="uni-card-save saved"
+                    onClick={e => { e.stopPropagation(); onToggleSave?.(uni); }}
+                    aria-label="Remove from saved"
+                  >
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" strokeWidth="2">
+                      <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" />
+                    </svg>
+                  </button>
                 </div>
               </div>
             ))}
+          </div>
+        ) : (
+          <div className="profile-empty">
+            <svg className="profile-empty-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" />
+            </svg>
+            <div className="profile-empty-title">No saved universities yet</div>
+            <div className="profile-empty-desc">Tap the bookmark icon on any university card on Home to save it here.</div>
+            <button className="detail-btn-primary" style={{ marginTop: 16 }} onClick={() => navigate("/app")}>Browse universities</button>
           </div>
         )}
       </div>

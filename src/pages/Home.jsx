@@ -1,4 +1,3 @@
-import { useNavigate } from "react-router-dom";
 import { useState, useRef, useEffect } from "react";
 import { supabase } from "../lib/supabaseClient";
 import { mapSpecialty } from "../lib/mapSpecialty.js";
@@ -10,6 +9,7 @@ const FORMATS = ["On Campus", "Hybrid", "Online"];
 const COUNTRIES = ["France", "Germany", "Spain", "Italy", "United Kingdom", "South Korea", "China", "Japan", "Canada"];
 const MIN_PRICE = 0;
 const MAX_PRICE = 30000;
+const TOP_COUNT = 3; // options shown before "Show more"
 
 const DEFAULT_FILTERS = {
   countries: [], degrees: [], tuitionMin: MIN_PRICE, tuitionMax: MAX_PRICE,
@@ -36,6 +36,70 @@ function CheckItem({ label, checked, onChange }) {
   );
 }
 
+function countBy(list, field) {
+  return list.reduce((acc, item) => {
+    const value = item[field];
+    if (value) acc[value] = (acc[value] || 0) + 1;
+    return acc;
+  }, {});
+}
+
+// Shows the top TOP_COUNT options (ranked by how many programs have that value,
+// ties keep the original order). Anything beyond that sits behind "Show more".
+// Options the user already ticked stay visible even while collapsed.
+function FilterOptionList({ options, selected, onToggle, counts = {} }) {
+  const [expanded, setExpanded] = useState(false);
+
+  const ranked = options
+    .map((value, index) => ({ value, index, count: counts[value] || 0 }))
+    .sort((a, b) => b.count - a.count || a.index - b.index)
+    .map(o => o.value);
+
+  const canCollapse = ranked.length > TOP_COUNT;
+  const top = ranked.slice(0, TOP_COUNT);
+  const visible = !canCollapse || expanded
+    ? ranked
+    : ranked.filter(v => top.includes(v) || selected.includes(v));
+  const hiddenCount = ranked.length - visible.length;
+
+  return (
+    <>
+      {visible.map(value => (
+        <CheckItem key={value} label={value} checked={selected.includes(value)} onChange={() => onToggle(value)} />
+      ))}
+      {canCollapse && (expanded || hiddenCount > 0) && (
+        <button
+          type="button"
+          onClick={() => setExpanded(e => !e)}
+          style={{
+            display: "inline-flex",
+            alignItems: "center",
+            gap: 6,
+            marginTop: 6,
+            padding: "8px 0",
+            background: "none",
+            border: "none",
+            cursor: "pointer",
+            fontFamily: "Nunito, sans-serif",
+            fontSize: 14,
+            fontWeight: 700,
+            color: "#AC8876",
+          }}
+        >
+          {expanded ? "Show less" : `Show ${hiddenCount} more`}
+          <svg
+            width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+            strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round"
+            style={{ transform: expanded ? "rotate(180deg)" : "none", transition: "transform 0.18s" }}
+          >
+            <polyline points="6 9 12 15 18 9" />
+          </svg>
+        </button>
+      )}
+    </>
+  );
+}
+
 function CollapsibleSection({ title, children, selectedCount }) {
   const [open, setOpen] = useState(false);
   return (
@@ -52,10 +116,13 @@ function CollapsibleSection({ title, children, selectedCount }) {
   );
 }
 
-function FilterPanel({ filters, setFilters, onClose, onApply, onClear }) {
+function FilterPanel({ filters, setFilters, universities = [], onClose, onApply, onClear }) {
   function toggle(key, value) {
     setFilters(f => ({ ...f, [key]: f[key].includes(value) ? f[key].filter(x => x !== value) : [...f[key], value] }));
   }
+  const countryCounts = countBy(universities, "country");
+  const degreeCounts = countBy(universities, "degree");
+  const languageCounts = countBy(universities, "language");
   const minPct = ((filters.tuitionMin - MIN_PRICE) / (MAX_PRICE - MIN_PRICE)) * 100;
   const maxPct = ((filters.tuitionMax - MIN_PRICE) / (MAX_PRICE - MIN_PRICE)) * 100;
 
@@ -69,12 +136,13 @@ function FilterPanel({ filters, setFilters, onClose, onApply, onClear }) {
         </div>
         <div className="filter-body">
           <CollapsibleSection title="Country" selectedCount={filters.countries.length}>
-            {COUNTRIES.map(c => <CheckItem key={c} label={c} checked={filters.countries.includes(c)} onChange={() => toggle("countries", c)} />)}
+            <FilterOptionList options={COUNTRIES} selected={filters.countries} counts={countryCounts} onToggle={c => toggle("countries", c)} />
           </CollapsibleSection>
           <CollapsibleSection title="Degree Level" selectedCount={filters.degrees.length}>
-            {DEGREES.map(d => <CheckItem key={d} label={d} checked={filters.degrees.includes(d)} onChange={() => toggle("degrees", d)} />)}
+            <FilterOptionList options={DEGREES} selected={filters.degrees} counts={degreeCounts} onToggle={d => toggle("degrees", d)} />
           </CollapsibleSection>
 
+          {/* Tuition — always open, no arrow */}
           <div className="filter-section">
             <div className="filter-section-header" style={{ cursor: "default" }}>
               <span className="filter-group-title">
@@ -109,7 +177,7 @@ function FilterPanel({ filters, setFilters, onClose, onApply, onClear }) {
           </div>
 
           <CollapsibleSection title="Language of Teaching" selectedCount={filters.languages.length}>
-            {LANGUAGES.map(l => <CheckItem key={l} label={l} checked={filters.languages.includes(l)} onChange={() => toggle("languages", l)} />)}
+            <FilterOptionList options={LANGUAGES} selected={filters.languages} counts={languageCounts} onToggle={l => toggle("languages", l)} />
           </CollapsibleSection>
           <CollapsibleSection title="Language Certification" selectedCount={filters.certification !== null ? 1 : 0}>
             <CheckItem label="Yes" checked={filters.certification === true} onChange={() => setFilters(f => ({ ...f, certification: f.certification === true ? null : true }))} />
@@ -238,7 +306,7 @@ function SearchEmptyState({ query }) {
   );
 }
 
-export default function Home({ onSelectUni, savedUniversities, onToggleSave, currentUser, comparedUniversities = [], onAddToCompare, maxCompare = 4 }) {
+export default function Home({ onSelectUni, savedUniversities, onToggleSave, currentUser }) {
   const [universities, setUniversities] = useState([]);
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState(null);
@@ -251,10 +319,9 @@ export default function Home({ onSelectUni, savedUniversities, onToggleSave, cur
   const [filters, setFilters] = useState(DEFAULT_FILTERS);
   const [appliedFilters, setAppliedFilters] = useState(DEFAULT_FILTERS);
   const [toast, setToast] = useState(null);
-  const [compareMsg, setCompareMsg] = useState(null); // null | "added" | "exists" | "full"
   const searchRef = useRef(null);
-  const navigate = useNavigate();
 
+  // Fetch specialties + their parent university in one query
   useEffect(() => {
     let cancelled = false;
 
@@ -299,14 +366,13 @@ export default function Home({ onSelectUni, savedUniversities, onToggleSave, cur
   function applyFilters() { setAppliedFilters({ ...filters }); setShowFilter(false); }
   function clearFilters() { setFilters(DEFAULT_FILTERS); setAppliedFilters(DEFAULT_FILTERS); }
 
-  // Same pattern as UniversityDetail.jsx: add (or confirm) then show a toast
-  // with a "See ->" button. Navigation only happens when the person clicks it.
-  function handleAddToCompare(e, uni) {
-    console.log("[DEBUG] handleAddToCompare called", uni.id, typeof onAddToCompare);
+  function toggleSave(e, uni) {
     e.stopPropagation();
-    const result = onAddToCompare?.(uni); // "added" | "exists" | "full"
-    setCompareMsg(result);
-    setTimeout(() => setCompareMsg(null), 5000);
+    const isSaved = savedUniversities.some(u => u.id === uni.id);
+    onToggleSave(uni);
+    if (!isSaved) {
+      setToast(`${uni.name} saved to profile`);
+    }
   }
 
   function removeTag(key, value) {
@@ -353,28 +419,6 @@ export default function Home({ onSelectUni, savedUniversities, onToggleSave, cur
 
   return (
     <div className="home-page">
-      {compareMsg && (
-        <div className="compare-toast">
-          <div className="compare-toast-text">
-            {compareMsg === "added" && <span>✓ Added to Dashboard!</span>}
-            {compareMsg === "exists" && <span>Already in your Dashboard</span>}
-            {compareMsg === "full" && <span>Dashboard is full (max {maxCompare}) — remove one first</span>}
-            {compareMsg !== "full" && (
-              <span className="compare-toast-sub">If you want to compare this university go to Dashboard</span>
-            )}
-          </div>
-          <button
-            className="compare-toast-btn"
-            onClick={() => {
-              setCompareMsg(null);
-              navigate("/app/dashboard");
-            }}
-          >
-            See →
-          </button>
-        </div>
-      )}
-
       <div className="home-sticky-header">
         <h1 className="home-title">Welcome back, {currentUser?.name || "there"}</h1>
         <p className="home-desc">Discover design and art universities with Unexa. Everything you need in one place</p>
@@ -455,11 +499,10 @@ export default function Home({ onSelectUni, savedUniversities, onToggleSave, cur
         {!loading && !loadError && (
           <div className="uni-grid">
             {filtered.length > 0 ? filtered.map(uni => {
-              const isCompared = comparedUniversities.some(u => u.id === uni.id);
+              const isSaved = savedUniversities.some(u => u.id === uni.id);
               return (
                 <div key={uni.id} className="uni-card-new" onClick={() => onSelectUni(uni)}>
                   <img src={uni.image} alt={uni.name} className="uni-card-img" />
-
                   <div className="uni-card-glass">
                     <div className="uni-card-glass-blur" />
                     <div className="uni-card-text">
@@ -467,16 +510,13 @@ export default function Home({ onSelectUni, savedUniversities, onToggleSave, cur
                       <div className="uni-card-subtitle">{uni.name}</div>
                     </div>
                     <button
-                      type="button"
-                      className={`uni-card-compare-btn ${isCompared ? "added" : ""}`}
-                      style={{ pointerEvents: "auto", position: "relative", zIndex: 6 }}
-                      onClick={e => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        handleAddToCompare(e, uni);
-                      }}
+                      className={`uni-card-save ${isSaved ? "saved" : ""}`}
+                      onClick={e => toggleSave(e, uni)}
+                      aria-label={isSaved ? "Remove from profile" : "Save to profile"}
                     >
-                      {isCompared ? "Added ✓" : "Add"}
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill={isSaved ? "currentColor" : "none"} stroke="currentColor" strokeWidth="2">
+                        <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" />
+                      </svg>
                     </button>
                   </div>
                 </div>
@@ -497,7 +537,7 @@ export default function Home({ onSelectUni, savedUniversities, onToggleSave, cur
       </div>
 
       {showFilter && (
-        <FilterPanel filters={filters} setFilters={setFilters}
+        <FilterPanel filters={filters} setFilters={setFilters} universities={universities}
           onClose={() => { setFilters(appliedFilters); setShowFilter(false); }}
           onApply={applyFilters} onClear={clearFilters} />
       )}
