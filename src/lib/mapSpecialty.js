@@ -1,6 +1,13 @@
 // Перетворює рядок Supabase (specialties.*, universities(*)) на об'єкт,
 // сумісний з тим, що очікують Home.jsx, Dashboard.jsx, UniversityDetail.jsx
-export function mapSpecialty(row) {
+
+// Значення-заглушки на кшталт "Not in source" / "N/A" вважаємо порожніми,
+// щоб на сайті однаково показувалось "Not specified".
+const PLACEHOLDER = /^(not (in source|specified|stated|available|mentioned|provided)|n\/?a|unknown|none|null|-+)$/i;
+const clean = (v) => (typeof v === "string" && PLACEHOLDER.test(v.trim()) ? null : v);
+
+export function mapSpecialty(rawRow) {
+  const row = Object.fromEntries(Object.entries(rawRow).map(([k, v]) => [k, clean(v)]));
   const uni = row.universities;
 
   return {
@@ -17,14 +24,21 @@ export function mapSpecialty(row) {
     certification: !!row.has_certification,
     format: row.study_format,
     internship: !!row.has_internship,
-    image: uni?.cover_image_url,
+    // власне фото програми (щоб картки однієї школи не були однаковими), інакше фото школи
+    image: row.image_url || uni?.cover_image_url,
+    universityImage: uni?.cover_image_url,
     website: uni?.website_url,
-    description: uni?.description,
+    description: uni?.description || row.description,
 
     // Поля для сторінки деталей (Informations tab)
     duration: row.academic_duration,
     tuition: row.academic_tuition_fee,
     studyMode: row.academic_study_mode,
+    intake: row.intake,
+    applicationDeadline: row.application_deadlines,
+    applicationFee: row.application_fee,
+    classSize: row.class_size,
+    campusFacilities: row.campus_facilities,
     documents: {
       language: row.doc_language,
       diploma: row.doc_diploma,
