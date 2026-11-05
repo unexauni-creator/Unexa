@@ -7,9 +7,26 @@
 .uni-card-glass { position: absolute; bottom: 8px; left: 8px; right: 8px; padding: 16px; border-radius: 12px; display: flex; align-items: center; justify-content: space-between; gap: 8px; overflow: hidden; transform: translateZ(0); }
 .uni-card-glass-blur { position: absolute; inset: 0; background: rgba(15, 10, 8, 0.72); backdrop-filter: blur(40px); -webkit-backdrop-filter: blur(60px); z-index: 0; border-radius: 12px; transform: translateZ(0); will-change: backdrop-filter; }
 .uni-card-glass .uni-card-text, .uni-card-glass .uni-card-save { position: relative; z-index: 1; }
-.uni-card-text { display: flex; flex-direction: column; }
+/* Текст картки завжди однакової висоти: назва програми — 1 рядок, заклад — 1 рядок,
+   а все, що не вміщується, обрізається трикрапкою (повний текст видно при наведенні). */
+.uni-card-text { display: flex; flex-direction: column; flex: 1; min-width: 0; }
+.uni-card-title,
+.uni-card-subtitle { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 1.35; }
 .uni-card-title { font-family: 'Nunito', sans-serif; font-size: 16px; font-weight: 600; color: #ffffff; margin-bottom: 4px; }
 .uni-card-subtitle { font-family: 'Nunito', sans-serif; font-size: 14px; font-weight: 400; color: #ffffff; opacity: 0.85; }
+
+/* Заглушка, коли у закладу немає фото або посилання на фото бите (src/components/UniImage.jsx).
+   Використовується на картках, у профілі, на сторінці деталей і в дашборді. */
+.uni-img-placeholder {
+  display: flex; align-items: center; justify-content: center; overflow: hidden;
+  container-type: inline-size; /* розмір літер рахується від ширини самого фото */
+  background: radial-gradient(120% 90% at 20% 15%, #8a7264 0%, #634F44 55%, #4a3a31 100%);
+}
+.uni-img-placeholder span {
+  font-family: 'Nunito', sans-serif; font-weight: 700; letter-spacing: 0.08em;
+  font-size: clamp(12px, 18cqw, 56px); color: rgba(255, 255, 255, 0.25);
+}
+.uni-card-img.uni-img-placeholder span { margin-bottom: 64px; } /* над склом із назвою */
 .uni-card-save { width: 32px; height: 32px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; background: transparent; border: none; border-radius: 8px; color: #ffffff; cursor: pointer; padding: 0; transition: background 0.18s; }
 .uni-card-save:hover { background: rgba(255, 255, 255, 0.28); }
 .uni-card-save svg { width: 18px; height: 18px; }

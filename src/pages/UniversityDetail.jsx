@@ -4,6 +4,7 @@ import ScholarshipSection from "../components/ScholarshipSection";
 import TeachersSection from "../components/TeachersSection";
 import StudentLife from "./StudentLife";
 import Dorm from "./Dorm";
+import UniImage from "../components/UniImage.jsx";
 
 // Розбиває "Merit Scholarship (GPA above 3.5), Grant X" на окремі пункти,
 // не ламаючи текст усередині дужок
@@ -153,7 +154,7 @@ export default function UniversityDetail({
                 </div>
 
                 <div className="detail-hero-right">
-                  <img src={uni.image} alt={uni.name} className="detail-hero-img" />
+                  <UniImage src={uni.image} name={uni.name} className="detail-hero-img" />
                   <div className="detail-hero-glass">
                     <div className="detail-hero-glass-blur" />
                     <div className="detail-hero-text">

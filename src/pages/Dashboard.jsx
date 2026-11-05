@@ -1,6 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { useState, useRef, useLayoutEffect, useEffect } from "react";
 import { createPortal } from "react-dom";
+import UniImage from "../components/UniImage.jsx";
 
 const ROW_LABELS = [
   { key: "scholarshipsText", label: "Scholarship", info: null },
@@ -145,7 +146,7 @@ export default function Dashboard({ comparedUniversities = [], onRemove, maxComp
           </div>
           {unis.map(u => (
             <div key={u.id} className="dash-table-cell dash-uni-header">
-              <img src={u.image} alt={u.name} className="dash-uni-card-img" />
+              <UniImage src={u.image} name={u.name} className="dash-uni-card-img" />
               <div className="dash-uni-card-info">
                 <div className="dash-uni-card-name" title={u.name}>{truncateName(u.name)}</div>
                 <div className="dash-uni-card-program">{u.program}</div>

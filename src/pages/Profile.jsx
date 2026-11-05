@@ -2,6 +2,7 @@ import { useState, useRef } from "react";
 import { createPortal } from "react-dom";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "../lib/supabaseClient";
+import UniImage from "../components/UniImage.jsx";
 
 const SETTINGS_SECTIONS = [
   { id: "profile", label: "Edit profile" },
@@ -459,7 +460,7 @@ export default function Profile({
           <div className="uni-grid">
             {savedUniversities.map(uni => (
               <div key={uni.id} className="uni-card-new" onClick={() => onSelectUni?.(uni)}>
-                <img src={uni.image} alt={uni.name} className="uni-card-img" />
+                <UniImage src={uni.image} name={uni.name} className="uni-card-img" />
                 <div className="uni-card-glass">
                   <div className="uni-card-glass-blur" />
                   <div className="uni-card-text">

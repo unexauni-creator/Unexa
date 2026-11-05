@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { supabase } from "../lib/supabaseClient";
 import { mapSpecialty } from "../lib/mapSpecialty.js";
+import UniImage from "../components/UniImage.jsx";
 
 const SUGGESTIONS = ["Art Design", "Architecture", "Fine Arts", "Digital Media", "Fashion Design", "France", "Master", "Bachelor", "Online Course"];
 const DEGREES = ["Bachelor", "Master", "Foundation Year", "Short Course", "Summer School", "Online Course"];
@@ -502,12 +503,12 @@ export default function Home({ onSelectUni, savedUniversities, onToggleSave, cur
               const isSaved = savedUniversities.some(u => u.id === uni.id);
               return (
                 <div key={uni.id} className="uni-card-new" onClick={() => onSelectUni(uni)}>
-                  <img src={uni.image} alt={uni.name} className="uni-card-img" />
+                  <UniImage src={uni.image} name={uni.name} className="uni-card-img" />
                   <div className="uni-card-glass">
                     <div className="uni-card-glass-blur" />
                     <div className="uni-card-text">
-                      <div className="uni-card-title">{uni.program}</div>
-                      <div className="uni-card-subtitle">{uni.name}</div>
+                      <div className="uni-card-title" title={uni.program}>{uni.program}</div>
+                      <div className="uni-card-subtitle" title={uni.name}>{uni.name}</div>
                     </div>
                     <button
                       className={`uni-card-save ${isSaved ? "saved" : ""}`}
