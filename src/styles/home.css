@@ -30,6 +30,27 @@
   margin-top: 0;
 }
 
+/* Soft blurred fade at the top of the list so scrolled cards don't look cut off */
+.home-scroll {
+  padding-top: 16px;
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 24px);
+  mask-image: linear-gradient(to bottom, transparent 0, #000 24px);
+}
+.home-scroll::before {
+  content: "";
+  position: sticky;
+  top: 0;
+  z-index: 3;
+  display: block;
+  height: 32px;
+  margin: -16px -32px -16px;
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  -webkit-mask-image: linear-gradient(to bottom, #000, transparent);
+  mask-image: linear-gradient(to bottom, #000, transparent);
+  pointer-events: none;
+}
+
 .home-title { font-family: 'Nunito', sans-serif; font-weight: 600; font-size: 32px; color: #0F0F0F; margin-bottom: 4px; }
 .home-desc { font-family: 'Nunito', sans-serif; font-weight: 400; font-size: 16px; line-height: 150%; color: #0F0F0F; max-width: 439px; }
 

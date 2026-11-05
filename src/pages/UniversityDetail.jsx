@@ -169,13 +169,7 @@ export default function UniversityDetail({
 
                 <div className="detail-hero-right">
                   <UniImage src={uni.image} name={uni.name} className="detail-hero-img" />
-                  <div className="detail-hero-glass">
-                    <div className="detail-hero-glass-blur" />
-                    <div className="detail-hero-text">
-                      <div className="detail-hero-card-title">{uni.name}</div>
-                      <div className="detail-hero-card-subtitle">{uni.desc}</div>
-                    </div>
-                    <button
+                  <button
                       className={`detail-hero-save ${isSaved ? "saved" : ""}`}
                       onClick={handleToggleSave}
                       aria-label={isSaved ? "Remove from profile" : "Save to profile"}
@@ -191,7 +185,6 @@ export default function UniversityDetail({
                         <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" />
                       </svg>
                     </button>
-                  </div>
                 </div>
               </div>
 

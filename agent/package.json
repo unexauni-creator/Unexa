@@ -9,7 +9,8 @@
     "run-agent": "node --env-file-if-exists=.env src/run.js",
     "review": "node --env-file-if-exists=.env src/review.js",
     "models": "node --env-file-if-exists=.env src/models.js",
-    "photos": "node --env-file-if-exists=.env src/photos.js"
+    "photos": "node --env-file-if-exists=.env src/photos.js",
+    "dedupe": "node --env-file-if-exists=.env src/dedupe.js"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^1.5.0",
