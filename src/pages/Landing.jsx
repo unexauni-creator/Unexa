@@ -17,7 +17,7 @@ const GAP_STATS = [
 
 const HEADLINE_WORDS = "82% want clearer info on costs & scholarships".split(" ");
 
-const RESEARCH_VIDEO_SRC = encodeURI("/Unexa Research Film (1).mp4");
+const RESEARCH_VIDEO_SRC = "/research-film.mp4";
 
 const LINKEDIN_URL =
   "https://www.linkedin.com/posts/anastasiia-andriievska-136244223_unexa-uiux-ui-ugcPost-7465337400106573825-TzxU/?utm_source=share&utm_medium=member_desktop&rcm=ACoAAEFKh8UBxAs6Av--VNalFnRJGMm8XyrIoQ0";
@@ -51,21 +51,21 @@ const PROCESS_STEPS = [
   {
     key: "research",
     type: "video",
-    src: "/1.mov",
+    src: "/process-1.mp4",
     title: "Researching the space",
     text: "We studied how university and course-discovery sites look today, grouped by region — Canada, the UK, Korea — to see what actually works.",
   },
   {
     key: "references",
     type: "video",
-    src: "/2.mov",
+    src: "/process-2.mp4",
     title: "Collecting references",
     text: "We pulled together the layouts and UI patterns we liked most, to shape a direction for Unexa's own design.",
   },
   {
     key: "vibecoded",
     type: "video",
-    src: "/3.mov",
+    src: "/process-3.mp4",
     title: "From mockup to a live page",
     text: "After sketching the first mockup in Figma, we vibecoded it into a real, working homepage — search, filters, and university cards included.",
   },
@@ -74,13 +74,13 @@ const PROCESS_STEPS = [
 const TEAM = [
   {
     key: "katia",
-    photo: "/katia.png",
+    photo: "/katia.jpg",
     name: "Kateryna Dmytrenko",
     linkedin: "https://www.linkedin.com/in/kateryna-dmytrenko-059a22266/",
   },
   {
     key: "anastasiia",
-    photo: "/nastya.png",
+    photo: "/nastya.jpg",
     name: "Anastasiia Andriievska",
     linkedin: "https://www.linkedin.com/in/anastasiia-andriievska-136244223/",
   },
@@ -91,6 +91,11 @@ const NAV_ITEMS = [
   { id: "process", label: "Process" },
   { id: "team", label: "Team" },
 ];
+
+// Sections the menu follows. "research" belongs to About, so About stays highlighted there.
+// (stable array, so the section observer isn't rebuilt every render)
+const NAV_IDS = ["showcase", "research", "process", "team"];
+const NAV_ALIASES = { research: "showcase" };
 
 const heySectionVariants = {
   hidden: { opacity: 0, y: 40 },
@@ -154,27 +159,30 @@ function useSmoothScrollProgress() {
   const rafRef = useRef(null);
 
   useEffect(() => {
+    // The easing loop runs only while the value is moving and stops once it settles,
+    // so the page doesn't re-render 60 times a second when nobody is scrolling.
+    function tick() {
+      const diff = targetRef.current - currentRef.current;
+      if (Math.abs(diff) < 0.0005) {
+        currentRef.current = targetRef.current;
+        rafRef.current = null;
+      } else {
+        currentRef.current += diff * 0.12;
+        rafRef.current = requestAnimationFrame(tick);
+      }
+      setSmoothProgress(currentRef.current);
+    }
+
     function updateTarget() {
       const el = sectionRef.current;
       if (!el) return;
       const rect = el.getBoundingClientRect();
       const total = rect.height - window.innerHeight;
-      if (total <= 0) {
-        targetRef.current = 1;
-        return;
+      const next = total <= 0 ? 1 : Math.min(1, Math.max(0, -rect.top / total));
+      targetRef.current = next;
+      if (rafRef.current == null && next !== currentRef.current) {
+        rafRef.current = requestAnimationFrame(tick);
       }
-      const raw = -rect.top / total;
-      targetRef.current = Math.min(1, Math.max(0, raw));
-    }
-
-    function tick() {
-      const diff = targetRef.current - currentRef.current;
-      currentRef.current += diff * 0.09;
-      if (Math.abs(diff) < 0.0005) {
-        currentRef.current = targetRef.current;
-      }
-      setSmoothProgress(currentRef.current);
-      rafRef.current = requestAnimationFrame(tick);
     }
 
     updateTarget();
@@ -182,32 +190,42 @@ function useSmoothScrollProgress() {
 
     window.addEventListener("scroll", updateTarget, { passive: true });
     window.addEventListener("resize", updateTarget);
-    rafRef.current = requestAnimationFrame(tick);
 
     return () => {
       window.removeEventListener("scroll", updateTarget);
       window.removeEventListener("resize", updateTarget);
       clearTimeout(settleTimer);
       if (rafRef.current) cancelAnimationFrame(rafRef.current);
+      rafRef.current = null;
     };
   }, []);
 
   return [sectionRef, smoothProgress];
 }
 
+// Runs fn at most once per animation frame (scroll events can fire far more often).
+function rafThrottle(fn) {
+  let id = null;
+  const run = () => { id = null; fn(); };
+  const throttled = () => { if (id == null) id = requestAnimationFrame(run); };
+  throttled.cancel = () => { if (id != null) cancelAnimationFrame(id); id = null; };
+  return throttled;
+}
+
 function useDocScrollProgress() {
   const [progress, setProgress] = useState(0);
 
   useEffect(() => {
-    function update() {
+    const update = rafThrottle(() => {
       const doc = document.documentElement;
       const total = doc.scrollHeight - window.innerHeight;
       setProgress(total > 0 ? Math.min(1, Math.max(0, window.scrollY / total)) : 0);
-    }
+    });
     update();
     window.addEventListener("scroll", update, { passive: true });
     window.addEventListener("resize", update);
     return () => {
+      update.cancel();
       window.removeEventListener("scroll", update);
       window.removeEventListener("resize", update);
     };
@@ -250,10 +268,11 @@ function useCountUp(target, start, delay = 0, duration = 1000) {
 
 function GapStat({ label, value, start, delay }) {
   const display = useCountUp(value, start, delay);
-  const barHeight = 150 + value * 1.5;
+  // tallest bar (82%) = min(346px, 38vh); the others keep the same proportions
+  const barRatio = (190 + value * 1.9) / 346;
 
   return (
-    <div className="research-zoom-stat-bar" style={{ height: `${barHeight}px` }}>
+    <div className="research-zoom-stat-bar" style={{ height: `calc(${barRatio.toFixed(3)} * min(346px, 38vh))` }}>
       <div className="research-zoom-stat-label">{label}</div>
       <div className="research-zoom-stat-value">{display}%</div>
     </div>
@@ -285,7 +304,7 @@ function useVideoStack(count) {
   );
 
   useEffect(() => {
-    function update() {
+    const update = rafThrottle(function () {
       const el = wrapperRef.current;
       if (!el) return;
       const rect = el.getBoundingClientRect();
@@ -299,14 +318,17 @@ function useVideoStack(count) {
         const adjusted = (raw - DWELL_FRACTION) / (1 - DWELL_FRACTION);
         return Math.max(0, Math.min(1, adjusted));
       });
-      setLayerProgress(progress);
+      // re-render only when a layer actually moved
+      setLayerProgress(prev =>
+        prev.length === progress.length && prev.every((v, i) => Math.abs(v - progress[i]) < 0.001) ? prev : progress
+      );
 
       let idx = 0;
       for (let i = 1; i < count; i++) {
         if (progress[i] > 0.5) idx = i;
       }
       setActiveIndex(idx);
-    }
+    });
 
     update();
     const settleTimer = setTimeout(update, 300);
@@ -314,6 +336,7 @@ function useVideoStack(count) {
     window.addEventListener("resize", update);
 
     return () => {
+      update.cancel();
       window.removeEventListener("scroll", update);
       window.removeEventListener("resize", update);
       clearTimeout(settleTimer);
@@ -396,10 +419,8 @@ export default function Landing() {
   const researchVideoRef = useRef(null);
   const processVideoRefs = useRef([]);
 
-  const navIds = NAV_ITEMS.map(function (n) {
-    return n.id;
-  });
-  const activeSection = useActiveSection(navIds);
+  const observedSection = useActiveSection(NAV_IDS);
+  const activeSection = NAV_ALIASES[observedSection] ?? observedSection;
   const navScrolled = useScrolled();
   const navPillClass = `landing-nav-pill${navScrolled ? " is-scrolled" : ""}${mobileNavOpen ? " is-open" : ""}`;
 
@@ -407,12 +428,13 @@ export default function Landing() {
   const scale = isDesktop ? 0.55 + rawEased * 0.7 : 1;
   const radius = isDesktop ? 30 - rawEased * 10 : 24;
   const headingOpacity = isDesktop ? Math.max(0, 1 - progress / 0.5) : 1;
-  const folderOpacity = isDesktop ? 1 - Math.max(0, (progress - 0.85) / 0.1) : 1;
-  const textOpacity = isDesktop ? Math.min(1, Math.max(0, (progress - 0.82) / 0.18)) : 1;
+  // the video fades out completely (0.78 → 0.88) before the stats fade in (0.88 → 1), so they never overlap
+  const folderOpacity = isDesktop ? Math.max(0, 1 - Math.max(0, (progress - 0.78) / 0.1)) : 1;
+  const textOpacity = isDesktop ? Math.min(1, Math.max(0, (progress - 0.88) / 0.12)) : 1;
 
   const mobileWordCount = useMobileWordReveal(HEADLINE_WORDS.length, mobileStatsInView);
   const wordRevealFraction = isDesktop
-    ? Math.max(0, Math.min(1, (progress - 0.85) / 0.15))
+    ? Math.max(0, Math.min(1, (progress - 0.88) / 0.12))
     : 1;
   const revealedWordCount = isDesktop
     ? Math.round(wordRevealFraction * HEADLINE_WORDS.length)
@@ -690,10 +712,9 @@ export default function Landing() {
               </div>
             </div>
 
-            <a className="linkedin-card" href={LINKEDIN_URL} target="_blank" rel="noopener noreferrer">
-              <img src="/unexapost.png" alt="Unexa LinkedIn survey results post" className="linkedin-card-thumb" />
+            <a className="linkedin-card" href={LINKEDIN_URL} target="_blank" rel="noopener noreferrer" aria-label="View the Unexa survey post on LinkedIn">
+              <img src="/unexapost.png" alt="Unexa LinkedIn survey results post" className="linkedin-card-image" />
               <div className="linkedin-card-info">
-                <div className="linkedin-card-name">Anastasiia Andriievska</div>
                 <span className="linkedin-card-cta">
                   View post <span className="linkedin-card-arrow" aria-hidden="true">↗</span>
                 </span>
@@ -734,6 +755,7 @@ export default function Landing() {
                         className={`process-video-el${step.key === "vibecoded" ? " process-video-el--full-frame" : ""}`}
                         src={step.src}
                         ref={(el) => (processVideoRefs.current[i] = el)}
+                        preload={i === 0 ? "auto" : "metadata"}
                         muted
                         loop
                         playsInline

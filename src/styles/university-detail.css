@@ -110,9 +110,9 @@
 .detail-info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 .detail-info-grid-secondary { margin-top: 4px; padding-top: 14px; border-top: 1px solid rgba(43,31,24,0.06); }
 /* Усі інфо-блоки однакової висоти: назва + 2 рядки значення; довше — трикрапка (повний текст у підказці) */
-.detail-info-item { background: rgba(255,250,246,0.4); border-radius: 12px; padding: 16px; display: flex; flex-direction: column; gap: 4px; height: 92px; box-sizing: border-box; overflow: hidden; }
-.detail-info-label { font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 13px; color: rgba(43,31,24,0.96); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.detail-info-value { font-family: 'Nunito', sans-serif; font-size: 12px; line-height: 1.45; color: #6b5e56; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; line-clamp: 2; overflow: hidden; overflow-wrap: anywhere; }
+.detail-info-item { background: rgba(255,250,246,0.4); border-radius: 12px; padding: 16px 18px; display: flex; flex-direction: column; gap: 6px; height: 108px; box-sizing: border-box; overflow: hidden; }
+.detail-info-label { font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 16px; color: rgba(43,31,24,0.96); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.detail-info-value { font-family: 'Nunito', sans-serif; font-size: 15px; line-height: 1.4; color: #6b5e56; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; line-clamp: 2; overflow: hidden; overflow-wrap: anywhere; }
 .detail-info-value[title] { cursor: help; }
 .detail-info-value.is-empty { opacity: 0.7; }
 
