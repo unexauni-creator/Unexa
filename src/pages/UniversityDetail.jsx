@@ -6,6 +6,8 @@ import StudentLife from "./StudentLife";
 import Dorm from "./Dorm";
 import UniImage from "../components/UniImage.jsx";
 
+const MAX_COMPARE = 4; // same limit as in App.jsx
+
 // Розбиває "Merit Scholarship (GPA above 3.5), Grant X" на окремі пункти,
 // не ламаючи текст усередині дужок
 function parseScholarships(text) {
@@ -67,10 +69,22 @@ export default function UniversityDetail({
   const isCompared = comparedUniversities.some((u) => u.id === uni.id);
   const scholarships = parseScholarships(uni.scholarshipsText);
 
+  function goToDashboard() {
+    setCompareMsg(null);
+    onBack?.(); // close the detail view (needed when it was opened from the Dashboard itself)
+    navigate("/app/dashboard");
+  }
+
+  // Adds the programme to the comparison and opens the Dashboard.
+  // If the Dashboard is full (max 4), stay here and explain why.
   function handleCompare() {
-    const result = onAddToCompare?.(uni);
-    setCompareMsg(result);
-    setTimeout(() => setCompareMsg(null), 5000);
+    if (!isCompared && comparedUniversities.length >= MAX_COMPARE) {
+      setCompareMsg("full");
+      setTimeout(() => setCompareMsg(null), 5000);
+      return;
+    }
+    if (!isCompared) onAddToCompare?.(uni);
+    goToDashboard();
   }
 
   function handleToggleSave(e) {
@@ -92,10 +106,7 @@ export default function UniversityDetail({
           </div>
           <button
             className="compare-toast-btn"
-            onClick={() => {
-              setCompareMsg(null);
-              navigate("/dashboard");
-            }}
+            onClick={goToDashboard}
           >
             See →
           </button>
@@ -162,7 +173,7 @@ export default function UniversityDetail({
                       Official Website
                     </button>
                     <button className="detail-btn-ghost" onClick={handleCompare}>
-                      {isCompared ? "✓ Added to compare" : "Compare to others"}
+                      {isCompared ? "✓ Compare in Dashboard" : "Compare to others"}
                     </button>
                   </div>
                 </div>

@@ -93,7 +93,10 @@
 .detail-btn-group { display: flex; align-items: center; gap: 16px; margin-top: 8px; }
 .detail-btn-primary { padding: 10px 18px; background: #634F44; color: #F5F5F5; border: none; border-radius: 10px; font-family: 'Nunito', sans-serif; font-size: 14px; cursor: pointer; transition: background 0.18s; }
 .detail-btn-primary:hover { background: #4e3d35; }
-.detail-btn-ghost { padding: 10px 14px; background: transparent; color: #303030; border: none; font-family: 'Nunito', sans-serif; font-size: 14px; cursor: pointer; }
+.detail-btn-ghost { padding: 10px 14px; background: transparent; color: #303030; border: none; border-radius: 10px; font-family: 'Nunito', sans-serif; font-size: 14px; cursor: pointer; transition: background 0.18s, color 0.18s; }
+.detail-btn-ghost:hover { background: rgba(172, 136, 118, 0.16); color: #634F44; }
+.detail-btn-ghost:active { background: rgba(172, 136, 118, 0.26); }
+.detail-btn-ghost:focus-visible { outline: 2px solid #AC8876; outline-offset: 2px; }
 
 .detail-section-heading { font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 22px; color: rgba(43,31,24,0.96); }
 
