@@ -22,8 +22,8 @@ const STEPS = [
     sub: "Pick the countries you'd consider.",
     hint: "Dreaming of Paris, Seoul or Toronto? Choose every place you'd move to.",
     options: [
-      "France", "United Kingdom", "Germany", "Netherlands", "Italy", "Spain",
-      "Switzerland", "Denmark", "Canada", "United States", "South Korea", "Japan",
+      "France", "Germany", "Italy", "Spain", "Poland", "Ukraine",
+      "United Kingdom", "Canada", "United States", "South Korea", "Japan", "China",
     ],
   },
   {
@@ -45,7 +45,7 @@ const STEPS = [
     title: "Which languages can you study in?",
     sub: "Choose all that work for you.",
     hint: "No worries if it's more than one. Many programs are taught in two languages.",
-    options: ["English", "French", "German", "Spanish", "Korean", "Happy to learn a new one"],
+    options: ["English", "French", "German", "Spanish", "Italian", "Polish", "Ukrainian", "Korean", "Happy to learn a new one"],
   },
   {
     key: "formats", column: "formats", type: "multi",
@@ -128,6 +128,11 @@ export default function Onboarding({ onLogin }) {
 
   const navigate = useNavigate();
 
+  // onLogin changes on every App render; reading it through a ref keeps this effect from
+  // re-running (and re-fetching the session) in an endless loop.
+  const onLoginRef = useRef(onLogin);
+  onLoginRef.current = onLogin;
+
   useEffect(() => {
     async function loadSession() {
       // Local design preview (npm run dev only; skips Supabase and saving):
@@ -169,14 +174,14 @@ export default function Onboarding({ onLogin }) {
       setUserId(user.id);
       setStatus("ready");
 
-      onLogin({
+      onLoginRef.current({
         id: user.id,
         email: user.email,
         name: resolvedName,
       });
     }
     loadSession();
-  }, [onLogin]);
+  }, []);
 
   // Rotate the loading messages while "preparing"
   useEffect(() => {
@@ -233,7 +238,8 @@ export default function Onboarding({ onLogin }) {
         (acc, s) => ({ ...acc, [s.column]: answers[s.key] }),
         { onboarding_completed: true }
       );
-      const { error } = await supabase.from("profiles").update(payload).eq("id", userId);
+      // upsert: some accounts have no profiles row yet, and update would then silently save nothing
+      const { error } = await supabase.from("profiles").upsert({ id: userId, full_name: name, ...payload });
       if (error) {
         console.error("Onboarding save failed:", error);
         saveFailed = true;

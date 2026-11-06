@@ -276,3 +276,15 @@
 .search-dropdown-sub { font-size: 12px; color: #9e8f86; }
 .search-results-count { font-family: 'Nunito', sans-serif; font-size: 14px; color: #6b5e56; margin: 0 0 12px; }
 .search-results-count strong { color: rgba(43,31,24,0.96); }
+
+/* Recommendations from onboarding answers */
+.home-reco { margin-bottom: 8px; padding-top: 14px; } /* clear of the blur at the top of the list */
+.home-section-title { font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 22px; color: rgba(43,31,24,0.96); margin: 0 0 4px; }
+.home-section-sub { font-family: 'Nunito', sans-serif; font-size: 14px; color: #6b5e56; margin: 0 0 14px; }
+.home-section-all { margin: 28px 0 14px; }
+.uni-card-why { position: absolute; top: 12px; left: 12px; z-index: 2; max-width: calc(100% - 24px); padding: 5px 11px; border-radius: 999px; background: rgba(15,10,8,0.5); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); color: #fff; font-family: 'Nunito', sans-serif; font-size: 12px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.home-reco-prompt { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin: 14px 0 20px; padding: 18px 22px; border-radius: 18px; background: rgba(172,136,118,0.16); text-decoration: none; transition: background 0.18s; }
+.home-reco-prompt:hover { background: rgba(172,136,118,0.26); }
+.home-reco-prompt-text { display: flex; flex-direction: column; gap: 2px; font-family: 'Nunito', sans-serif; font-size: 14px; color: #5c4f47; }
+.home-reco-prompt-text strong { font-size: 16px; color: rgba(43,31,24,0.96); }
+.home-reco-prompt-cta { flex-shrink: 0; font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 14px; color: #F5F5F5; background: #634F44; padding: 9px 16px; border-radius: 10px; }

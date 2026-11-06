@@ -68,6 +68,14 @@ export default function Signup({ onLogin }) {
       return;
     }
 
+    // Email already registered: Supabase returns no error and sends no email,
+    // only a user with an empty identities list. Say so instead of "check your email".
+    if (data.user && data.user.identities?.length === 0) {
+      setLoading(false);
+      setError("An account with this email already exists. Please log in instead.");
+      return;
+    }
+
     // Redundant fallback for the case where a session exists immediately
     // (e.g. email confirmation disabled) — the profiles trigger already
     // handles the normal confirm-by-email path server-side.

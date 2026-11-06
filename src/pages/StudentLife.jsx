@@ -100,6 +100,11 @@ function Lightbox({ section, onClose }) {
           {section.highlights?.length > 0 && (
             <ul className="sl-lightbox-highlights">{section.highlights.slice(0, 4).map((h) => <li key={h}>{h}</li>)}</ul>
           )}
+          {section.credits?.[imgs[i]] && (
+            <a className="sl-lightbox-credit" href={section.credits[imgs[i]].url} target="_blank" rel="noopener noreferrer">
+              Photo: {section.credits[imgs[i]].text}
+            </a>
+          )}
           {section.url && (
             <a className="sl-lightbox-link" href={section.url} target="_blank" rel="noopener noreferrer">Official page <span aria-hidden="true">↗</span></a>
           )}

@@ -1,9 +1,11 @@
 import { useState, useRef, useEffect, useMemo } from "react";
+import { Link } from "react-router-dom";
 import { supabase } from "../lib/supabaseClient";
 import { mapSpecialty } from "../lib/mapSpecialty.js";
 import UniImage from "../components/UniImage.jsx";
 import { searchPrograms, buildSuggestions, highlight } from "../lib/search.js";
 import { buildNotifications, loadPrefs, loadRead, saveRead, timeAgo } from "../lib/notifications.js";
+import { hasPreferences, recommendPrograms } from "../lib/recommendations.js";
 
 const DEGREES = ["Bachelor", "Master", "Foundation Year", "Short Course", "Summer School", "Online Course"];
 const LANGUAGES = ["French", "English", "French/English", "German", "Spanish", "Italian", "Polish", "Ukrainian"];
@@ -327,6 +329,8 @@ export default function Home({ onSelectUni, savedUniversities, onToggleSave, cur
   const [activeIndex, setActiveIndex] = useState(-1);
   const [notifPrefs, setNotifPrefs] = useState(loadPrefs);
   const [readIds, setReadIds] = useState(() => loadRead(currentUser?.id));
+  const [profile, setProfile] = useState(null);
+  const [profileLoaded, setProfileLoaded] = useState(false);
   const [showFilter, setShowFilter] = useState(false);
   const [showNotif, setShowNotif] = useState(false);
   const [filters, setFilters] = useState(DEFAULT_FILTERS);
@@ -359,6 +363,19 @@ export default function Home({ onSelectUni, savedUniversities, onToggleSave, cur
     fetchUniversities();
     return () => { cancelled = true; };
   }, []);
+
+  // Onboarding answers → "Recommended for you"
+  useEffect(() => {
+    if (!currentUser?.id) return undefined;
+    let cancelled = false;
+    supabase.from("profiles").select("*").eq("id", currentUser.id).maybeSingle().then(({ data, error }) => {
+      if (cancelled) return;
+      if (error) console.error("Couldn't load profile:", error.message);
+      setProfile(data ?? null);
+      setProfileLoaded(true);
+    });
+    return () => { cancelled = true; };
+  }, [currentUser?.id]);
 
   useEffect(() => {
     function handleClick(e) {
@@ -501,6 +518,41 @@ export default function Home({ onSelectUni, savedUniversities, onToggleSave, cur
     return true;
   });
 
+  // Recommendations only on the untouched list: a search or filter shows exactly what was asked for
+  const browsing = !search.trim() && activeCount === 0;
+  const recommended = useMemo(
+    () => (browsing && profile ? recommendPrograms(universities, profile) : []),
+    [browsing, profile, universities]
+  );
+  const recommendedIds = new Set(recommended.map((r) => r.program.id));
+  const listed = filtered.filter((u) => !recommendedIds.has(u.id));
+
+  function renderCard(uni, reasons) {
+    const isSaved = savedUniversities.some(u => u.id === uni.id);
+    return (
+      <div key={uni.id} className="uni-card-new" onClick={() => onSelectUni(uni)}>
+        <UniImage src={uni.image} name={uni.name} className="uni-card-img" />
+        {reasons?.length > 0 && <div className="uni-card-why">{reasons.join(" · ")}</div>}
+        <div className="uni-card-glass">
+          <div className="uni-card-glass-blur" />
+          <div className="uni-card-text">
+            <div className="uni-card-title" title={uni.program}>{uni.program}</div>
+            <div className="uni-card-subtitle" title={uni.name}>{uni.name}</div>
+          </div>
+          <button
+            className={`uni-card-save ${isSaved ? "saved" : ""}`}
+            onClick={e => toggleSave(e, uni)}
+            aria-label={isSaved ? "Remove from profile" : "Save to profile"}
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill={isSaved ? "currentColor" : "none"} stroke="currentColor" strokeWidth="2">
+              <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" />
+            </svg>
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   const activeTags = [
     ...appliedFilters.countries.map(v => ({ label: v, key: "countries", value: v })),
     ...appliedFilters.degrees.map(v => ({ label: v, key: "degrees", value: v })),
@@ -600,32 +652,30 @@ export default function Home({ onSelectUni, savedUniversities, onToggleSave, cur
           </div>
         )}
 
+        {!loading && !loadError && browsing && profileLoaded && !hasPreferences(profile) && (
+          <Link to="/onboarding" className="home-reco-prompt">
+            <span className="home-reco-prompt-text">
+              <strong>Get programs picked for you</strong>
+              <span>Answer a few quick questions and we'll recommend programs that fit your goals.</span>
+            </span>
+            <span className="home-reco-prompt-cta">Start <span aria-hidden="true">→</span></span>
+          </Link>
+        )}
+
+        {!loading && !loadError && recommended.length > 0 && (
+          <section className="home-reco" aria-label="Recommended for you">
+            <h2 className="home-section-title">Recommended for you</h2>
+            <p className="home-section-sub">Based on your onboarding answers.</p>
+            <div className="uni-grid">
+              {recommended.map((r) => renderCard(r.program, r.reasons))}
+            </div>
+            <h2 className="home-section-title home-section-all">All programs</h2>
+          </section>
+        )}
+
         {!loading && !loadError && (
           <div className="uni-grid">
-            {filtered.length > 0 ? filtered.map(uni => {
-              const isSaved = savedUniversities.some(u => u.id === uni.id);
-              return (
-                <div key={uni.id} className="uni-card-new" onClick={() => onSelectUni(uni)}>
-                  <UniImage src={uni.image} name={uni.name} className="uni-card-img" />
-                  <div className="uni-card-glass">
-                    <div className="uni-card-glass-blur" />
-                    <div className="uni-card-text">
-                      <div className="uni-card-title" title={uni.program}>{uni.program}</div>
-                      <div className="uni-card-subtitle" title={uni.name}>{uni.name}</div>
-                    </div>
-                    <button
-                      className={`uni-card-save ${isSaved ? "saved" : ""}`}
-                      onClick={e => toggleSave(e, uni)}
-                      aria-label={isSaved ? "Remove from profile" : "Save to profile"}
-                    >
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill={isSaved ? "currentColor" : "none"} stroke="currentColor" strokeWidth="2">
-                        <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" />
-                      </svg>
-                    </button>
-                  </div>
-                </div>
-              );
-            }) : search.trim().length > 0 ? (
+            {listed.length > 0 ? listed.map((uni) => renderCard(uni)) : search.trim().length > 0 ? (
               <div style={{ gridColumn: "1/-1" }}>
                 <SearchEmptyState query={search} />
               </div>

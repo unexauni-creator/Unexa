@@ -309,6 +309,8 @@
 .sl-lightbox-info p { font-family: 'Nunito', sans-serif; font-size: 16px; line-height: 1.6; color: #4a3f38; margin: 0; }
 .sl-lightbox-highlights { list-style: none; display: flex; flex-wrap: wrap; gap: 6px; margin: 0; padding: 0; }
 .sl-lightbox-highlights li { font-family: 'Nunito', sans-serif; font-size: 13px; font-weight: 600; color: #634F44; background: rgba(172,136,118,0.14); border-radius: 8px; padding: 5px 10px; }
+.sl-lightbox-credit { font-family: 'Nunito', sans-serif; font-size: 12px; color: #8a7c70; text-decoration: none; overflow-wrap: anywhere; }
+.sl-lightbox-credit:hover { color: #634F44; }
 .sl-lightbox-link { margin-top: auto; align-self: flex-start; font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 14px; color: #F5F5F5; background: #634F44; padding: 10px 18px; border-radius: 10px; text-decoration: none; transition: background 0.18s; }
 .sl-lightbox-link:hover { background: #4e3d35; }
 .sl-lightbox-close { position: absolute; top: 14px; right: 14px; width: 36px; height: 36px; border: none; border-radius: 50%; background: rgba(255,250,246,0.9); color: #2b1f18; font-size: 14px; cursor: pointer; z-index: 2; }

@@ -73,7 +73,7 @@ function imageSize(b) {
 
 // Фото для обкладинки: справжня картинка, від 800 px завширшки, не надто вузька й не надто висока.
 // Логотипи й значки зазвичай маленькі або дуже видовжені — їх це відсіює.
-async function isUsableImage(url) {
+async function isUsableImage(url, { minWidth = 800, minRatio = 0.9, maxRatio = 2.6 } = {}) {
   try {
     const res = await fetch(url, {
       headers: { "User-Agent": USER_AGENT, Range: "bytes=0-131071" },
@@ -94,7 +94,7 @@ async function isUsableImage(url) {
     const size2d = imageSize(Buffer.concat(chunks));
     if (!size2d) return false;
     const ratio = size2d.w / size2d.h;
-    return size2d.w >= 800 && ratio >= 0.9 && ratio <= 2.6;
+    return size2d.w >= minWidth && ratio >= minRatio && ratio <= maxRatio;
   } catch {
     return false;
   }
@@ -145,19 +145,21 @@ async function pageCandidates(pageUrl) {
 }
 
 // Те саме фото часто лежить у кількох розмірах: "hall-300x200.jpg", "hall.jpg?w=800" → один ключ
-export const photoKey = (url) => decodeURIComponent(url.split(/[?#]/)[0].split("/").pop() ?? "")
+export const photoKey = (url) => (() => { try { return decodeURIComponent(url.split(/[?#]/)[0].split("/").pop() ?? ""); } catch { return url; } })()
   .toLowerCase()
   .replace(/\.[a-z]+$/, "")
   .replace(/[-_]?(\d{2,4}x\d{2,4}|scaled|thumb(nail)?|small|medium|large|full|\d{3,4}w)$/g, "");
 
 const NOT_PHOTO = /organi[gc]ram|diagram|schema|chart|infogra|poster|locandina|manifesto|plakat|banner|flyer/i;
-const isGalleryPhoto = (u) => /\.(jpe?g|webp)(\?|$)/i.test(u) && !NOT_PHOTO.test(decodeURIComponent(u));
+// PNG теж дозволено: схеми й плакати далі відсіє Gemini, який бачить саме зображення
+const isGalleryPhoto = (u) => /\.(jpe?g|webp|png)(\?|$)/i.test(u) && !NOT_PHOTO.test(safeDecode(u));
+const safeDecode = (u) => { try { return decodeURIComponent(u); } catch { return u; } };
 
 /**
  * Фото-кандидати для галереї з кількох сторінок школи: без логотипів, схем і повторів.
  * @returns {Promise<string[]>}
  */
-export async function collectGalleryPhotos(pageUrls, max = 16) {
+export async function collectGalleryPhotos(pageUrls, max = 24) {
   const out = [];
   const keys = new Set();
   for (const pageUrl of pageUrls) {
@@ -165,10 +167,11 @@ export async function collectGalleryPhotos(pageUrls, max = 16) {
     const { social, inPage } = await pageCandidates(pageUrl).catch(() => ({ social: [], inPage: [] }));
     let fromPage = 0;
     for (const url of [...inPage.slice(0, 20), ...social]) {
-      if (out.length >= max || fromPage >= 6) break;
+      if (out.length >= max || fromPage >= 8) break;
       const key = photoKey(url);
       if (!isGalleryPhoto(url) || keys.has(key)) continue;
-      if (await checkImage(url)) {
+      // для галереї достатньо меншого фото, ніж для обкладинки
+      if (await isUsableImage(url, { minWidth: 500, minRatio: 0.7, maxRatio: 2.8 })) {
         keys.add(key);
         out.push(url);
         fromPage++;
