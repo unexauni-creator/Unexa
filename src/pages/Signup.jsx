@@ -111,7 +111,7 @@ export default function Signup({ onLogin }) {
             id="name"
             type="text"
             className="login-input"
-            placeholder="Kateryna Dmytrenko"
+            placeholder="e.g. Jane Doe"
             value={name}
             onChange={(e) => setName(e.target.value)}
             required
@@ -122,7 +122,7 @@ export default function Signup({ onLogin }) {
             id="email"
             type="email"
             className="login-input"
-            placeholder="you@example.com"
+            placeholder="e.g. you@example.com"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
@@ -134,7 +134,6 @@ export default function Signup({ onLogin }) {
               id="password"
               type={showPassword ? "text" : "password"}
               className="login-input login-input-password"
-              placeholder="••••••••"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               minLength={6}
@@ -157,7 +156,6 @@ export default function Signup({ onLogin }) {
               id="confirmPassword"
               type={showConfirmPassword ? "text" : "password"}
               className="login-input login-input-password"
-              placeholder="••••••••"
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
               minLength={6}
