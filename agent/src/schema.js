@@ -64,5 +64,11 @@ Write all text fields in English. Return at most 15 programmes, preferring those
 
 export function buildUserPrompt(uni, pages) {
   const corpus = pages.map((p) => `=== PAGE: ${p.url} ===\n${p.text}`).join("\n\n");
-  return `University: ${uni.name}${uni.city ? ` (${uni.city})` : ""}\n\n${corpus}`;
+  // When updating a school that is already on Unexa, ask only about its known programmes.
+  const known = uni.knownPrograms?.length
+    ? `\n\nThis school already has these programmes on Unexa:\n${uni.knownPrograms.map((n) => `- ${n}`).join("\n")}\n` +
+      "Return information ONLY for these programmes, using EXACTLY these names. Do not add other programmes. " +
+      "If a programme is not described in the pages, still return it with the fields you can find (null for the rest)."
+    : "";
+  return `University: ${uni.name}${uni.city ? ` (${uni.city})` : ""}${known}\n\n${corpus}`;
 }

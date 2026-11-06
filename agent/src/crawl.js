@@ -67,7 +67,7 @@ function extractLinks(html, baseUrl) {
   const links = new Map();
   for (const m of html.matchAll(/<a\s[^>]*href=["']([^"'#]+)["'][^>]*>([\s\S]*?)<\/a>/gi)) {
     try {
-      const url = new URL(m[1], baseUrl);
+      const url = new URL(m[1].replace(/&amp;/gi, "&"), baseUrl); // "&amp;" in HTML links is just "&"
       if (!/^https?:$/.test(url.protocol)) continue;
       const text = htmlToText(m[2]).slice(0, 120);
       links.set(url.href, text);

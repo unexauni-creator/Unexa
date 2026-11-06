@@ -180,6 +180,11 @@ export default function UniversityDetail({
 
                 <div className="detail-hero-right">
                   <UniImage src={uni.image} name={uni.name} className="detail-hero-img" />
+                  {uni.photoCredit && (
+                    <a className="detail-hero-credit" href={uni.photoCredit.url} target="_blank" rel="noopener noreferrer" title={uni.photoCredit.text}>
+                      Photo: {uni.photoCredit.text}
+                    </a>
+                  )}
                   <button
                       className={`detail-hero-save ${isSaved ? "saved" : ""}`}
                       onClick={handleToggleSave}

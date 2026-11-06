@@ -6,6 +6,11 @@
 const PLACEHOLDER = /^(not (in source|specified|stated|available|mentioned|provided)|n\/?a|unknown|none|null|-+)$/i;
 const clean = (v) => (typeof v === "string" && PLACEHOLDER.test(v.trim()) ? null : v);
 
+function photoCredit(note) {
+  const m = String(note ?? "").match(/^Photo: (.+?) — (https?:\/\/\S+)$/m);
+  return m ? { text: m[1], url: m[2] } : null;
+}
+
 export function mapSpecialty(rawRow) {
   const row = Object.fromEntries(Object.entries(rawRow).map(([k, v]) => [k, clean(v)]));
   const uni = row.universities;
@@ -29,6 +34,8 @@ export function mapSpecialty(rawRow) {
     // власне фото програми (щоб картки однієї школи не були однаковими), інакше фото школи
     image: row.image_url || uni?.cover_image_url,
     universityImage: uni?.cover_image_url,
+    // автор і ліцензія фото з Wikimedia Commons (рядок "Photo: … — https://…" у source_note)
+    photoCredit: row.image_url ? photoCredit(row.source_note) : null,
     website: uni?.website_url,
     description: uni?.description || row.description,
 

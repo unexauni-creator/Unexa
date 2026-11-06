@@ -10,7 +10,8 @@
     "review": "node --env-file-if-exists=.env src/review.js",
     "models": "node --env-file-if-exists=.env src/models.js",
     "photos": "node --env-file-if-exists=.env src/photos.js",
-    "dedupe": "node --env-file-if-exists=.env src/dedupe.js"
+    "dedupe": "node --env-file-if-exists=.env src/dedupe.js",
+    "enrich": "node --env-file-if-exists=.env src/enrich.js"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^1.5.0",
