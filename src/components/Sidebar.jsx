@@ -8,7 +8,7 @@ const navItems = [
   { path: "/app/community", label: "Community", icon: "/messages.svg" },
 ];
 
-export default function Sidebar({ avatarUrl, userInitials = "KD", userName = "Kateryna Dmyt..." }) {
+export default function Sidebar({ avatarUrl, userInitials = "U", userName = "" }) {
   const [menuOpen, setMenuOpen] = useState(false);
 
   return (

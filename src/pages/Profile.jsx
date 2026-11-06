@@ -3,6 +3,7 @@ import { createPortal } from "react-dom";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "../lib/supabaseClient";
 import UniImage from "../components/UniImage.jsx";
+import { getInitials } from "../lib/initials.js";
 import { loadPrefs, savePrefs } from "../lib/notifications.js";
 
 const SETTINGS_SECTIONS = [
@@ -25,9 +26,9 @@ function ToggleSwitch({ checked, onChange }) {
   );
 }
 
-function SettingsPage({ onClose, avatarUrl, onAvatarChange, coverUrl, onCoverChange, name, setName, bio, setBio, onLogout }) {
+function SettingsPage({ onClose, avatarUrl, onAvatarChange, coverUrl, onCoverChange, name, setName, bio, setBio, onLogout, userEmail }) {
   const [activeSection, setActiveSection] = useState("profile");
-  const [email, setEmail] = useState("kateryna.dmytrenko@example.com");
+  const [email, setEmail] = useState(userEmail || "");
   const [phone, setPhone] = useState("");
   // notification settings are saved on this device and used by the bell on Home
   const [notifPrefs, setNotifPrefs] = useState(loadPrefs);
@@ -135,7 +136,7 @@ function SettingsPage({ onClose, avatarUrl, onAvatarChange, coverUrl, onCoverCha
                 {avatarUrl ? (
                   <img src={avatarUrl} alt="Avatar" className="settings-avatar-overlap-img" />
                 ) : (
-                  <div className="settings-avatar-overlap-placeholder">KD</div>
+                  <div className="settings-avatar-overlap-placeholder">{getInitials(name)}</div>
                 )}
                 <input
                   ref={avatarInputRef}
@@ -325,14 +326,13 @@ export default function Profile({
   onAvatarChange,
   onCoverChange,
   userName,
+  userEmail,
   onLogout,
 }) {
   const navigate = useNavigate();
   const [showSettings, setShowSettings] = useState(false);
-  const [name, setName] = useState(userName || "Kateryna Dmytrenko");
-  const [bio, setBio] = useState(
-    "Passionate about art and design education. Exploring universities across Europe to find the perfect program. Currently focused on fine arts and digital media."
-  );
+  const [name, setName] = useState(userName || "");
+  const [bio, setBio] = useState("");
   const avatarInputRef = useRef(null);
   const coverInputRef = useRef(null);
 
@@ -358,6 +358,7 @@ export default function Profile({
         bio={bio}
         setBio={setBio}
         onLogout={onLogout}
+        userEmail={userEmail}
       />
     );
   }
@@ -402,7 +403,7 @@ export default function Profile({
             {avatarUrl ? (
               <img src={avatarUrl} alt="Avatar" className="profile-avatar" />
             ) : (
-              <div className="profile-avatar profile-avatar-placeholder">KD</div>
+              <div className="profile-avatar profile-avatar-placeholder">{getInitials(name)}</div>
             )}
 
             <div className="profile-avatar-actions">

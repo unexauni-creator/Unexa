@@ -12,6 +12,7 @@ import UniversityDetail from "./pages/UniversityDetail";
 import Profile from "./pages/Profile";
 import { supabase } from "./lib/supabaseClient";
 import { mapSpecialty } from "./lib/mapSpecialty.js";
+import { getInitials } from "./lib/initials.js";
 import "./styles/base.css";
 import "./styles/community.css";
 import "./styles/landing.css";
@@ -31,6 +32,23 @@ const COMPARED_UNIS_KEY = "unexa_compared_universities";
 const JOINED_GROUPS_KEY = "unexa_joined_groups";
 const AVATAR_KEY = "unexa_profile_avatar";
 const COVER_KEY = "unexa_profile_cover";
+
+function readUserImage(key, userId) {
+  if (!userId) return null;
+  try {
+    return localStorage.getItem(`${key}_${userId}`) || null;
+  } catch {
+    return null;
+  }
+}
+
+function writeUserImage(key, userId, url) {
+  if (!userId) return;
+  try {
+    if (url) localStorage.setItem(`${key}_${userId}`, url);
+    else localStorage.removeItem(`${key}_${userId}`);
+  } catch {}
+}
 const AUTH_KEY = "unexa_auth_user";
 const MAX_COMPARE = 4;
 
@@ -69,21 +87,25 @@ export default function App() {
     }
   });
 
-  const [avatarUrl, setAvatarUrl] = useState(() => {
-    try {
-      return localStorage.getItem(AVATAR_KEY) || null;
-    } catch {
-      return null;
-    }
-  });
+  // Profile photos are stored per user, so someone else on this browser never sees them.
+  const [avatarUrl, setAvatarUrl] = useState(() => readUserImage(AVATAR_KEY, authUser?.id));
+  const [coverUrl, setCoverUrl] = useState(() => readUserImage(COVER_KEY, authUser?.id));
 
-  const [coverUrl, setCoverUrl] = useState(() => {
-    try {
-      return localStorage.getItem(COVER_KEY) || null;
-    } catch {
-      return null;
-    }
-  });
+  function changeAvatar(url) {
+    setAvatarUrl(url);
+    writeUserImage(AVATAR_KEY, authUser?.id, url);
+  }
+
+  function changeCover(url) {
+    setCoverUrl(url);
+    writeUserImage(COVER_KEY, authUser?.id, url);
+  }
+
+  // Another account signed in: show that account's own photos (or its initials)
+  useEffect(() => {
+    setAvatarUrl(readUserImage(AVATAR_KEY, authUser?.id));
+    setCoverUrl(readUserImage(COVER_KEY, authUser?.id));
+  }, [authUser?.id]);
 
   // Saved universities live in the account (table: saved_universities).
   // Load them whenever the signed-in user changes; clear them on logout.
@@ -167,26 +189,6 @@ export default function App() {
   }, [joinedGroupIds]);
 
   useEffect(() => {
-    try {
-      if (avatarUrl) {
-        localStorage.setItem(AVATAR_KEY, avatarUrl);
-      } else {
-        localStorage.removeItem(AVATAR_KEY);
-      }
-    } catch {}
-  }, [avatarUrl]);
-
-  useEffect(() => {
-    try {
-      if (coverUrl) {
-        localStorage.setItem(COVER_KEY, coverUrl);
-      } else {
-        localStorage.removeItem(COVER_KEY);
-      }
-    } catch {}
-  }, [coverUrl]);
-
-  useEffect(() => {
     setSelectedUni(null);
   }, [location.pathname]);
 
@@ -267,9 +269,7 @@ export default function App() {
     navigate("/");
   }
 
-  const userInitials = authUser?.name
-    ? authUser.name.split(" ").map(w => w[0]).slice(0, 2).join("").toUpperCase()
-    : "U";
+  const userInitials = getInitials(authUser?.name);
 
   return (
     <Routes>
@@ -340,9 +340,10 @@ export default function App() {
                           onSelectUni={setSelectedUni}
                           avatarUrl={avatarUrl}
                           coverUrl={coverUrl}
-                          onAvatarChange={setAvatarUrl}
-                          onCoverChange={setCoverUrl}
+                          onAvatarChange={changeAvatar}
+                          onCoverChange={changeCover}
                           userName={authUser.name}
+                          userEmail={authUser.email}
                           onLogout={handleLogout}
                         />
                       }

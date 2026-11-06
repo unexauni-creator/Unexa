@@ -491,7 +491,11 @@
   .profile-left { padding-left: 8px; gap: 10px; width: 100%; }
   .profile-avatar-wrap { width: 96px; height: 96px; margin-top: -48px; }
   .profile-avatar-placeholder { font-size: 30px; }
-  .profile-avatar-actions { opacity: 1; }
+  /* no hover on phones: keep the photo/initials visible, with the pencil as a small corner badge */
+  .profile-avatar-actions { opacity: 1; inset: auto -2px -2px auto; width: 34px; height: 34px; background: #634F44; border: 2px solid #F7F1EA; box-sizing: border-box; }
+  .profile-avatar-wrap { overflow: visible; }
+  .profile-avatar-actions { width: auto; min-width: 34px; height: 34px; padding: 0 4px; border-radius: 999px; gap: 2px; }
+  .profile-avatar-actions .profile-avatar-action-btn { background: transparent; width: 26px; height: 26px; }
   .profile-name { font-size: 20px; }
   .profile-settings-btn { margin-top: 14px; margin-left: 8px; }
   .profile-content { padding: 28px 16px 48px; }
