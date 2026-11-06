@@ -4,7 +4,7 @@
 import { z } from "zod";
 
 const DEGREES = ["Bachelor", "Master", "Foundation Year", "Short Course", "Summer School", "Online Course"];
-const LANGUAGES = ["French", "English", "French/English", "German", "Spanish"];
+const LANGUAGES = ["French", "English", "French/English", "German", "Spanish", "Italian", "Polish", "Ukrainian"];
 const FORMATS = ["On Campus", "Hybrid", "Online"];
 
 const Specialty = z.object({
@@ -56,7 +56,15 @@ You receive plain text of pages from one university's official website. Return o
 
 Unexa is only for CREATIVE studies. Return only creative programmes: fine art, graphic and visual communication design, product/industrial design, interior and spatial design, fashion and textile, architecture and landscape, illustration and animation, film, photography, sound and media arts, music, dance, theatre and scenography, circus, curatorial and creative-industry programmes. Ignore every non-creative programme (sciences, law, business, engineering, history and so on). If the pages show no creative programme, return an empty list.
 
-Map French diplomas to the platform's degree levels: Licence, DNA, DN MADE, Diplôme d'études en architecture → Bachelor; Master, DNSEP, DSAA, Diplôme d'État d'architecte → Master; preparatory class (classe préparatoire) → Foundation Year; summer programmes → Summer School; short or certificate courses → Short Course.
+Map national diplomas to the platform's degree levels:
+- France: Licence, DNA, DN MADE, Diplôme d'études en architecture → Bachelor; Master, DNSEP, DSAA, Diplôme d'État d'architecte → Master; classe préparatoire → Foundation Year.
+- Italy: Diploma Accademico di I livello (triennio), Laurea → Bachelor; Diploma Accademico di II livello (biennio), Laurea Magistrale → Master.
+- Spain: Grado, Título Superior de Enseñanzas Artísticas → Bachelor; Máster → Master.
+- Germany: Bachelor, Diplom (first degree) → Bachelor; Master, Meisterschüler, Diplom after a first degree → Master.
+- Poland: studia I stopnia (licencjat, inżynier) → Bachelor; studia II stopnia, jednolite studia magisterskie → Master.
+- Ukraine: бакалавр → Bachelor; магістр → Master.
+Summer programmes → Summer School; short or certificate courses → Short Course.
+Pages may be in French, Italian, Spanish, German, Polish or Ukrainian: read them in that language, but write every text field in English.
 
 Keep every text field short (under 120 characters) — it is shown in a small box; put longer detail into curriculum_summary. Never write placeholder text such as "Not in source", "Not specified" or "N/A": use null.
 

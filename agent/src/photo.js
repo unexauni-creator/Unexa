@@ -225,11 +225,11 @@ export async function findImagePool(websiteUrl, want = 6) {
 // so they can be credited.
 const COMMONS_API = "https://commons.wikimedia.org/w/api.php";
 const COMMONS_UA = "UnexaAgent/0.1 (https://github.com/unexauni-creator/Unexa)";
-const COMMONS_SKIP = /logo|wappen|siegel|seal|emblem|gedenktafel|tafel|plaque|plakette|portrait|signature|map|karte|plan\b|relief|diagram|svg|pride|protest|demo\b|1[89]\d\d|\bwith\b|secretary|minister|president|council|press|expo|award|ceremony|conference|rencontre|museum|monument|hospital|medicine|hairstyle|poster|post-it|victim|mayor|funeral|\bat the\b|\bwith\b|students? at|meeting|visit|discussion|panel|lecture|talk\b|graduat|workshop|hackathon|edit-?a-?thon|\bblt\b|river|bridge|mississippi/i;
+const COMMONS_SKIP = /logo|wappen|siegel|seal|emblem|gedenktafel|tafel|plaque|plakette|portrait|signature|map|karte|plan\b|relief|diagram|svg|pride|protest|demo\b|1[89]\d\d|\bwith\b|secretary|minister|president|council|press|expo|award|ceremony|conference|rencontre|museum|monument|hospital|medicine|hairstyle|poster|post-it|victim|mayor|funeral|\bat the\b|\bwith\b|students? at|meeting|visit|discussion|panel|lecture|talk\b|graduat|workshop|hackathon|spotkanie|treffen|incontro|tourist|panoramio|derhexer|square|\bplac\b|piazza|plaza|student|studentki|millennium|at night|old town|altstadt|edit-?a-?thon|\bblt\b|river|bridge|mississippi/i;
 const STOP = new Set("university universitat universite universita universidad of the and de des der die la le les del di for in at school college arts art institute national superieure ecole hochschule academy accademia nuova belle".split(" "));
 
 // words that describe a place, so a photo of a building/campus is likely (not a person or an event)
-const PLACE_HINT = /college|campus|building|hall\b|library|bibliothe|biblioteca|center|centre|gebaude|haus\b|square|platz|plaza|exhibition|ausstellung|studio|atelier|gallery|galerie|facade|facana|fachada|entrance|eingang|courtyard|auditorium|theater|theatre|konzertsaal/;
+const PLACE_HINT = /college|campus|building|hall\b|library|bibliothe|biblioteca|center|centre|gebaude|haus\b|exhibition|ausstellung|studio|atelier|gallery|galerie|facade|facana|fachada|entrance|eingang|courtyard|auditorium|theater|theatre|konzertsaal/;
 const fold = (s) => (s ?? "").normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
 const stripTags = (s) => (s ?? "").replace(/<[^>]+>/g, "").replace(/\s+/g, " ").trim();
 
@@ -356,7 +356,8 @@ export async function findCommonsImages(schoolName, want = 10) {
     // a file that doesn't name the school needs at least a readable (Latin) title — skips camera codes
     // like "2019-515-OSEC-KJC-0043" and press photos titled in other scripts
     if (!nameHit(title) && !PLACE_HINT.test(fold(title))) continue;
-    if (deep && !PLACE_HINT.test(fold(title)) && !nameHit(title)) continue;
+    // subcategories also hold general city photos — from there only files that name the school
+    if (deep && !nameHit(title)) continue;
     const subject = subjectOf(title);
     if (seenSubjects.has(subject)) continue;
     seenSubjects.add(subject);

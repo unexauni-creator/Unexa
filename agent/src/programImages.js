@@ -4,6 +4,7 @@
 //   2) ще не використане фото з набору фото школи (головна + сторінки майстерень, проєктів…).
 // Якщо різних фото не вистачило — програма лишається без власного фото і показує фото школи.
 import { findImagePool, findPageImage, findCommonsImages } from "./photo.js";
+import { mirrorImage } from "./storage.js";
 
 const urlsIn = (text) => (text ?? "").match(/https?:\/\/[^\s,;]+/g) ?? [];
 
@@ -53,6 +54,11 @@ export async function assignProgramImages(supabase, uni, { dryRun = false, log =
     }
     used.add(image);
     log(`   ✓ ${spec.name}${credit ? " (Wikimedia Commons)" : ""}`);
+    // фото з Commons зберігаємо у своєму сховищі (Wikimedia обмежує кількість запитів)
+    if (credit && !dryRun) {
+      try { image = await mirrorImage(supabase, image, `commons-${spec.id}`); }
+      catch (e) { log(`     ! не вдалося скопіювати фото (${e.message}), лишаю посилання на Commons`); }
+    }
     if (!dryRun) {
       // автора й ліцензію фото з Commons зберігаємо поруч із джерелами (їх треба вказувати на сайті)
       const update = { image_url: image };

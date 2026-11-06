@@ -6,9 +6,9 @@ import { searchPrograms, buildSuggestions, highlight } from "../lib/search.js";
 import { buildNotifications, loadPrefs, loadRead, saveRead, timeAgo } from "../lib/notifications.js";
 
 const DEGREES = ["Bachelor", "Master", "Foundation Year", "Short Course", "Summer School", "Online Course"];
-const LANGUAGES = ["French", "English", "French/English", "German", "Spanish"];
+const LANGUAGES = ["French", "English", "French/English", "German", "Spanish", "Italian", "Polish", "Ukrainian"];
 const FORMATS = ["On Campus", "Hybrid", "Online"];
-const COUNTRIES = ["France", "Germany", "Spain", "Italy", "United Kingdom", "South Korea", "China", "Japan", "Canada"];
+const COUNTRIES = ["France", "Germany", "Spain", "Italy", "Poland", "Ukraine", "United Kingdom", "South Korea", "China", "Japan", "Canada"];
 const MIN_PRICE = 0;
 const MAX_PRICE = 30000;
 const TOP_COUNT = 3; // options shown before "Show more"

@@ -8,7 +8,7 @@
 // npm run run-agent -- --limit 3 --dry-run             не писати в Supabase, тільки у agent/out/
 import { mkdir, writeFile } from "node:fs/promises";
 import { parseArgs } from "node:util";
-import { fetchFrenchInstitutions } from "./registry/france.js";
+import { fetchInstitutions, REGISTRIES } from "./registry/index.js";
 import { crawlUniversity } from "./crawl.js";
 import { extractUniversityData, aiProvider } from "./extract.js";
 import { getSupabase, saveDraft } from "./db.js";
@@ -16,6 +16,8 @@ import { getSupabase, saveDraft } from "./db.js";
 const { values: args } = parseArgs({
   options: {
     limit: { type: "string", default: "3" },
+    country: { type: "string", default: "fr" }, // fr | ua | pl | es | it | de
+    url: { type: "string" }, // інша адреса сайту, якщо в реєстрі вона застаріла
     only: { type: "string" },
     scope: { type: "string", default: "creative" }, // creative | universities | all
     "dry-run": { type: "boolean", default: false },
@@ -26,10 +28,12 @@ const { values: args } = parseArgs({
 const dryRun = args["dry-run"];
 const supabase = dryRun ? null : getSupabase();
 
-let list = await fetchFrenchInstitutions({ scope: args.scope });
+let list = await fetchInstitutions(args.country, { scope: args.scope });
 if (args.only) list = list.filter((u) => `${u.name} ${u.nameLocal}`.toLowerCase().includes(args.only.toLowerCase()));
 list = list.slice(0, Number(args.limit));
+if (args.url) list = list.map((u) => ({ ...u, websiteUrl: args.url }));
 
+console.log(`Реєстр: ${REGISTRIES[args.country.toLowerCase()].label}`);
 console.log(`Агент обробить ${list.length} заклад(и), AI: ${aiProvider}${dryRun ? " (dry-run: без запису в базу)" : ""}\n`);
 await mkdir("out", { recursive: true });
 

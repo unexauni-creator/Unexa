@@ -120,9 +120,19 @@ if (command === "list") {
   const sameName = (a, b) => normalize(a) === normalize(b);
   const isEmpty = (v) => v === null || v === undefined || v === "" || (typeof v === "string" && /^not (in source|specified)$/i.test(v.trim()));
 
+  // Same programme at two levels ("Drawing" Bachelor + "Drawing" Master) → add the level to the name,
+  // so the cards don't look like duplicates and dedupe doesn't merge them.
+  const pendingDrafts = d.agent_specialty_drafts.filter((x) => x.status === "pending");
+  for (const s of pendingDrafts) {
+    const twins = pendingDrafts.filter((x) => normalize(x.payload.name) === normalize(s.payload.name));
+    if (twins.length > 1 && new Set(twins.map((x) => x.payload.degree)).size > 1 && s.payload.degree) {
+      s.payload = { ...s.payload, name: `${s.payload.name} (${s.payload.degree})` };
+    }
+  }
+
   let added = 0;
   let updated = 0;
-  for (const s of d.agent_specialty_drafts.filter((x) => x.status === "pending")) {
+  for (const s of pendingDrafts) {
     if ((s.confidence ?? 0) < minConfidence) {
       console.log(`  пропущено (впевненість ${s.confidence}): ${s.payload.name}`);
       continue;
