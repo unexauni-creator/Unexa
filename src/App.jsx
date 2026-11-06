@@ -13,6 +13,7 @@ import Profile from "./pages/Profile";
 import { supabase } from "./lib/supabaseClient";
 import { mapSpecialty } from "./lib/mapSpecialty.js";
 import { getInitials } from "./lib/initials.js";
+import { loadProfile, removeProfilePhoto, saveProfilePhoto, saveProfileText } from "./lib/profileStore.js";
 import "./styles/base.css";
 import "./styles/community.css";
 import "./styles/landing.css";
@@ -42,11 +43,9 @@ function readUserImage(key, userId) {
   }
 }
 
-function writeUserImage(key, userId, url) {
-  if (!userId) return;
+function clearUserImage(key, userId) {
   try {
-    if (url) localStorage.setItem(`${key}_${userId}`, url);
-    else localStorage.removeItem(`${key}_${userId}`);
+    localStorage.removeItem(`${key}_${userId}`);
   } catch {}
 }
 const AUTH_KEY = "unexa_auth_user";
@@ -87,24 +86,74 @@ export default function App() {
     }
   });
 
-  // Profile photos are stored per user, so someone else on this browser never sees them.
-  const [avatarUrl, setAvatarUrl] = useState(() => readUserImage(AVATAR_KEY, authUser?.id));
-  const [coverUrl, setCoverUrl] = useState(() => readUserImage(COVER_KEY, authUser?.id));
+  // Name, bio and photos live in the account, so they follow the user to any device.
+  const [avatarUrl, setAvatarUrl] = useState(null);
+  const [coverUrl, setCoverUrl] = useState(null);
+  const [bio, setBio] = useState("");
+  const [photoError, setPhotoError] = useState(null);
 
-  function changeAvatar(url) {
-    setAvatarUrl(url);
-    writeUserImage(AVATAR_KEY, authUser?.id, url);
+  async function changePhoto(kind, dataUrl) {
+    const [current, setCurrent] = kind === "avatar" ? [avatarUrl, setAvatarUrl] : [coverUrl, setCoverUrl];
+    setPhotoError(null);
+    setCurrent(dataUrl); // show it right away, then replace it with the stored copy
+    try {
+      if (dataUrl) setCurrent(await saveProfilePhoto(authUser.id, kind, dataUrl, current));
+      else await removeProfilePhoto(authUser.id, kind, current);
+    } catch (err) {
+      console.error("Couldn't save photo:", err.message);
+      setCurrent(current);
+      setPhotoError("We couldn't save your photo. Please try again.");
+    }
   }
 
-  function changeCover(url) {
-    setCoverUrl(url);
-    writeUserImage(COVER_KEY, authUser?.id, url);
+  async function saveProfile({ name, bio: nextBio }) {
+    await saveProfileText(authUser.id, { name, bio: nextBio });
+    setBio(nextBio);
+    handleLogin({ ...authUser, name });
   }
 
-  // Another account signed in: show that account's own photos (or its initials)
+  // Load the signed-in account's profile. Photos saved earlier only in this browser move into the account.
   useEffect(() => {
-    setAvatarUrl(readUserImage(AVATAR_KEY, authUser?.id));
-    setCoverUrl(readUserImage(COVER_KEY, authUser?.id));
+    const userId = authUser?.id;
+    setAvatarUrl(null);
+    setCoverUrl(null);
+    setBio("");
+    setPhotoError(null);
+    if (!userId) return undefined;
+    let cancelled = false;
+
+    async function load() {
+      let profile;
+      try {
+        profile = await loadProfile(userId);
+      } catch (err) {
+        console.error("Couldn't load profile:", err.message);
+        return;
+      }
+      if (cancelled) return;
+      setBio(profile?.bio ?? "");
+      setAvatarUrl(profile?.avatar_url ?? null);
+      setCoverUrl(profile?.cover_url ?? null);
+
+      for (const [kind, key, stored, setCurrent] of [
+        ["avatar", AVATAR_KEY, profile?.avatar_url, setAvatarUrl],
+        ["cover", COVER_KEY, profile?.cover_url, setCoverUrl],
+      ]) {
+        const local = readUserImage(key, userId);
+        if (!local) continue;
+        if (stored) { clearUserImage(key, userId); continue; }
+        try {
+          const url = await saveProfilePhoto(userId, kind, local, null);
+          clearUserImage(key, userId);
+          if (!cancelled) setCurrent(url);
+        } catch (err) {
+          console.error("Couldn't move photo to account:", err.message);
+          if (!cancelled) setCurrent(local);
+        }
+      }
+    }
+    load();
+    return () => { cancelled = true; };
   }, [authUser?.id]);
 
   // Saved universities live in the account (table: saved_universities).
@@ -340,8 +389,11 @@ export default function App() {
                           onSelectUni={setSelectedUni}
                           avatarUrl={avatarUrl}
                           coverUrl={coverUrl}
-                          onAvatarChange={changeAvatar}
-                          onCoverChange={changeCover}
+                          onAvatarChange={(url) => changePhoto("avatar", url)}
+                          onCoverChange={(url) => changePhoto("cover", url)}
+                          photoError={photoError}
+                          bio={bio}
+                          onSaveProfile={saveProfile}
                           userName={authUser.name}
                           userEmail={authUser.email}
                           onLogout={handleLogout}

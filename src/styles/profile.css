@@ -511,3 +511,5 @@
   .settings-body { padding: 16px 16px 24px; }
   .settings-account-row { flex-direction: column; align-items: flex-start; gap: 12px; }
 }
+.settings-save-error { font-family: 'Nunito', sans-serif; font-size: 14px; color: #b2452a; margin: 0 0 12px; }
+.settings-input[readonly] { color: #8a7c70; cursor: default; }

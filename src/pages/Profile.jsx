@@ -26,9 +26,13 @@ function ToggleSwitch({ checked, onChange }) {
   );
 }
 
-function SettingsPage({ onClose, avatarUrl, onAvatarChange, coverUrl, onCoverChange, name, setName, bio, setBio, onLogout, userEmail }) {
+function SettingsPage({ onClose, avatarUrl, onAvatarChange, coverUrl, onCoverChange, photoError, userName, bio, onSaveProfile, onLogout, userEmail }) {
   const [activeSection, setActiveSection] = useState("profile");
-  const [email, setEmail] = useState(userEmail || "");
+  // edits stay here until Save; Cancel simply leaves them behind
+  const [name, setName] = useState(userName || "");
+  const [draftBio, setDraftBio] = useState(bio || "");
+  const [saving, setSaving] = useState(false);
+  const [saveError, setSaveError] = useState(null);
   const [phone, setPhone] = useState("");
   // notification settings are saved on this device and used by the bell on Home
   const [notifPrefs, setNotifPrefs] = useState(loadPrefs);
@@ -63,6 +67,24 @@ function SettingsPage({ onClose, avatarUrl, onAvatarChange, coverUrl, onCoverCha
     reader.onload = () => onCoverChange(reader.result);
     reader.readAsDataURL(file);
     e.target.value = "";
+  }
+
+  async function handleSave() {
+    const trimmed = name.trim();
+    if (!trimmed) {
+      setSaveError("Please enter your name.");
+      return;
+    }
+    setSaving(true);
+    setSaveError(null);
+    try {
+      await onSaveProfile({ name: trimmed, bio: draftBio.trim() });
+      onClose();
+    } catch (err) {
+      console.error("Couldn't save profile:", err.message);
+      setSaveError("We couldn't save your changes. Please try again.");
+      setSaving(false);
+    }
   }
 
   async function handleDeleteAccount() {
@@ -163,7 +185,7 @@ function SettingsPage({ onClose, avatarUrl, onAvatarChange, coverUrl, onCoverCha
                   <div className="settings-field-label-block">
                     <div className="settings-field-label">Email</div>
                   </div>
-                  <input className="settings-input" type="email" value={email} onChange={e => setEmail(e.target.value)} />
+                  <input className="settings-input" type="email" value={userEmail || ""} readOnly />
                 </div>
 
                 <div className="settings-field">
@@ -171,7 +193,7 @@ function SettingsPage({ onClose, avatarUrl, onAvatarChange, coverUrl, onCoverCha
                     <div className="settings-field-label">Bio</div>
                     <div className="settings-field-hint">A short line about you and what you're looking for</div>
                   </div>
-                  <textarea className="settings-input settings-textarea" value={bio} onChange={e => setBio(e.target.value)} rows={4} />
+                  <textarea className="settings-input settings-textarea" value={draftBio} onChange={e => setDraftBio(e.target.value)} rows={4} />
                 </div>
 
                 <div className="settings-field">
@@ -195,9 +217,11 @@ function SettingsPage({ onClose, avatarUrl, onAvatarChange, coverUrl, onCoverCha
                   </select>
                 </div>
 
+                {(saveError || photoError) && <p className="settings-save-error" role="alert">{saveError || photoError}</p>}
+
                 <div className="settings-page-actions">
-                  <button className="filter-clear-btn" onClick={onClose}>Cancel</button>
-                  <button className="filter-save-btn" onClick={onClose}>Save</button>
+                  <button className="filter-clear-btn" onClick={onClose} disabled={saving}>Cancel</button>
+                  <button className="filter-save-btn" onClick={handleSave} disabled={saving}>{saving ? "Saving..." : "Save"}</button>
                 </div>
               </>
             )}
@@ -327,12 +351,14 @@ export default function Profile({
   onCoverChange,
   userName,
   userEmail,
+  bio = "",
+  onSaveProfile,
+  photoError,
   onLogout,
 }) {
   const navigate = useNavigate();
   const [showSettings, setShowSettings] = useState(false);
-  const [name, setName] = useState(userName || "");
-  const [bio, setBio] = useState("");
+  const name = userName || "";
   const avatarInputRef = useRef(null);
   const coverInputRef = useRef(null);
 
@@ -353,10 +379,10 @@ export default function Profile({
         onAvatarChange={onAvatarChange}
         coverUrl={coverUrl}
         onCoverChange={onCoverChange}
-        name={name}
-        setName={setName}
+        photoError={photoError}
+        userName={userName}
         bio={bio}
-        setBio={setBio}
+        onSaveProfile={onSaveProfile}
         onLogout={onLogout}
         userEmail={userEmail}
       />
@@ -441,7 +467,8 @@ export default function Profile({
           </div>
           <div className="profile-info">
             <div className="profile-name">{name}</div>
-            <div className="profile-bio">{bio}</div>
+            {bio && <div className="profile-bio">{bio}</div>}
+            {photoError && <p className="settings-save-error" role="alert">{photoError}</p>}
           </div>
         </div>
         <button className="profile-settings-btn" onClick={() => setShowSettings(true)}>
