@@ -6,6 +6,10 @@
 // npm run run-agent -- --only "Beaux-Arts"             лише заклади з цим словом у назві
 // npm run run-agent -- --scope universities --limit 3  творчі програми в університетах
 // npm run run-agent -- --limit 3 --dry-run             не писати в Supabase, тільки у agent/out/
+// npm run run-agent -- --country us --only "Pratt|Cooper" --limit 2   кілька шкіл через |
+//
+// --limit рахує школи, які вдалося зібрати. Якщо сайт блокує агента або на ньому не видно програм,
+// школа НЕ додається: агент просто переходить до наступної. Школи, які вже є на сайті, пропускаються.
 import { mkdir, writeFile } from "node:fs/promises";
 import { parseArgs } from "node:util";
 import { fetchInstitutions, REGISTRIES } from "./registry/index.js";
@@ -29,25 +33,40 @@ const dryRun = args["dry-run"];
 const supabase = dryRun ? null : getSupabase();
 
 let list = await fetchInstitutions(args.country, { scope: args.scope });
-if (args.only) list = list.filter((u) => `${u.name} ${u.nameLocal}`.toLowerCase().includes(args.only.toLowerCase()));
-list = list.slice(0, Number(args.limit));
+if (args.only) {
+  const wanted = args.only.toLowerCase().split("|").map((w) => w.trim());
+  const position = (u) => wanted.findIndex((w) => `${u.name} ${u.nameLocal}`.toLowerCase().includes(w));
+  list = list.filter((u) => position(u) >= 0).sort((a, b) => position(a) - position(b)); // у вказаному порядку
+}
 if (args.url) list = list.map((u) => ({ ...u, websiteUrl: args.url }));
 
+// школи, які вже є на сайті, не обробляємо вдруге
+if (supabase) {
+  const norm = (s) => (s ?? "").normalize("NFD").replace(/\p{M}/gu, "").toLowerCase().replace(/[^a-z0-9]+/g, " ").trim();
+  const host = (u) => { try { return new URL(u).hostname.replace(/^www\./, ""); } catch { return null; } };
+  const { data: existing } = await supabase.from("universities").select("name, website_url");
+  const names = new Set(existing.map((u) => norm(u.name)));
+  const hosts = new Set(existing.map((u) => host(u.website_url)).filter(Boolean));
+  list = list.filter((u) => !names.has(norm(u.name)) && !hosts.has(host(u.websiteUrl)));
+}
+const limit = Number(args.limit);
+
 console.log(`Реєстр: ${REGISTRIES[args.country.toLowerCase()].label}`);
-console.log(`Агент обробить ${list.length} заклад(и), AI: ${aiProvider}${dryRun ? " (dry-run: без запису в базу)" : ""}\n`);
+console.log(`Кандидатів: ${list.length}, мета: ${limit} шкіл, AI: ${aiProvider}${dryRun ? " (dry-run: без запису в базу)" : ""}\n`);
 await mkdir("out", { recursive: true });
 
 let ok = 0;
 for (const uni of list) {
+  if (ok >= limit) break;
   console.log(`▶ ${uni.name} — ${uni.websiteUrl}`);
   try {
     const pages = await crawlUniversity(uni.websiteUrl, { maxPages: Number(args.pages), log: console.log });
-    if (!pages.length) throw new Error("не вдалося прочитати жодної сторінки");
+    if (!pages.length) throw new Error("сайт блокує агента або не відкривається: школу не додаю");
 
     const result = await extractUniversityData(uni, pages);
     const n = result.data.specialties.length;
     if (n === 0) {
-      console.log("   – творчих програм не знайдено, пропускаю");
+      console.log("   – програм на сайті не видно: школу не додаю");
       console.log();
       continue;
     }
@@ -64,8 +83,10 @@ for (const uni of list) {
     ok++;
   } catch (err) {
     console.log(`   ✗ пропущено: ${err.message}`);
+    // ліміт Gemini: далі немає сенсу, запустіть цю ж команду пізніше
+    if (/ліміт/i.test(err.message)) break;
   }
   console.log();
 }
 
-console.log(`Готово: ${ok} з ${list.length}.${supabase ? " Перевірте чернетки: npm run review" : ""}`);
+console.log(`Готово: зібрано ${ok} з ${limit}.${supabase ? " Перевірте чернетки: npm run review" : ""}`);

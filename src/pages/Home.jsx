@@ -10,7 +10,7 @@ import { hasPreferences, recommendPrograms } from "../lib/recommendations.js";
 const DEGREES = ["Bachelor", "Master", "Foundation Year", "Short Course", "Summer School", "Online Course"];
 const LANGUAGES = ["French", "English", "French/English", "German", "Spanish", "Italian", "Polish", "Ukrainian"];
 const FORMATS = ["On Campus", "Hybrid", "Online"];
-const COUNTRIES = ["France", "Germany", "Spain", "Italy", "Poland", "Ukraine", "United Kingdom", "South Korea", "China", "Japan", "Canada"];
+const COUNTRIES = ["France", "Germany", "Spain", "Italy", "Poland", "Ukraine", "United Kingdom", "United States", "South Korea", "China", "Japan", "Canada"];
 const MIN_PRICE = 0;
 const MAX_PRICE = 30000;
 const TOP_COUNT = 3; // options shown before "Show more"

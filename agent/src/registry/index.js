@@ -12,6 +12,8 @@ export const REGISTRIES = {
   es: { label: "Іспанія (реєстр ROR)", fetch: (o) => fetchRorInstitutions("ES", o) },
   it: { label: "Італія (реєстр ROR)", fetch: (o) => fetchRorInstitutions("IT", o) },
   de: { label: "Німеччина (реєстр ROR)", fetch: (o) => fetchRorInstitutions("DE", o) },
+  us: { label: "США (реєстр ROR)", fetch: (o) => fetchRorInstitutions("US", o) },
+  gb: { label: "Англія (реєстр ROR)", fetch: (o) => fetchRorInstitutions("GB", o) },
 };
 
 export async function fetchInstitutions(country = "fr", opts = {}) {
