@@ -34,16 +34,16 @@ const PLACEHOLDER_IMAGES = {
     "https://images.unsplash.com/photo-1555854877-bab0e564b8d5?auto=format&fit=crop&w=600&q=80",
 };
 
-// Один інфо-блок: однакова висота для всіх, довгий текст обрізається трикрапкою,
-// повний текст видно при наведенні.
+// Один інфо-блок. Текст показується повністю; блоки в одному ряду однакової висоти,
+// а довгий текст (напр. Campus Facilities) займає весь рядок, щоб читатися зручно.
+const WIDE_AT = 60; // символів
 function InfoItem({ label, value }) {
   const text = typeof value === "string" ? value.trim() : value;
+  const wide = typeof text === "string" && text.length > WIDE_AT;
   return (
-    <div className="detail-info-item">
+    <div className={`detail-info-item ${wide ? "is-wide" : ""} ${text ? "" : "is-empty"}`}>
       <div className="detail-info-label">{label}</div>
-      <div className={`detail-info-value ${text ? "" : "is-empty"}`} title={text || undefined}>
-        {text || "Not specified"}
-      </div>
+      <div className="detail-info-value">{text || "Not specified"}</div>
     </div>
   );
 }
@@ -149,7 +149,7 @@ export default function UniversityDetail({
         <div className="detail-body">
           {/* ── INFO TAB ── */}
           {activeTab === "info" && viewingStudentLife && (
-        <StudentLife onBack={() => setViewingStudentLife(false)} />
+        <StudentLife uni={uni} onBack={() => setViewingStudentLife(false)} />
       )}
       {activeTab === "info" && viewingDorm && (
         <Dorm onBack={() => setViewingDorm(false)} />
@@ -203,8 +203,6 @@ export default function UniversityDetail({
                     </button>
                 </div>
               </div>
-
-              <div className="detail-section-heading">Details for enrol</div>
 
               <div className="detail-details-row">
                 <div className="detail-info-box">
@@ -275,7 +273,7 @@ export default function UniversityDetail({
                       className="detail-social-img"
                     />
                   </div>
-                  <div className="detail-social-label">Student live</div>
+                  <div className="detail-social-label">Student life</div>
                 </div>
                 <div className="detail-social-card detail-social-card-clickable" onClick={() => setViewingDorm(true)}>
                   <div className="detail-social-stack">

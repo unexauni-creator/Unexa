@@ -37,6 +37,9 @@ export function mapSpecialty(rawRow) {
     // автор і ліцензія фото з Wikimedia Commons (рядок "Photo: … — https://…" у source_note)
     photoCredit: row.image_url ? photoCredit(row.source_note) : null,
     website: uni?.website_url,
+    // студентське життя, яке зібрав агент з офіційного сайту (universities.student_life)
+    studentLife: uni?.student_life ?? null,
+    studentLifeImage: uni?.student_life?.sections?.find((s) => s.image)?.image ?? null,
     description: uni?.description || row.description,
 
     // Поля для сторінки деталей (Informations tab)

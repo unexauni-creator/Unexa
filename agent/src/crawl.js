@@ -83,12 +83,31 @@ const BOOST = ["incoming", "international-student", "venir", "accueil", "welcome
 // Сторінки для власних студентів, які їдуть за кордон, новини тощо — нам не потрібні
 const PENALTY = ["etudier-a-letranger", "depart", "outgoing", "remboursement", "actualite", "news", "agenda", "event", "login", "intranet"];
 
-function score(url, text) {
+const PROGRAMS_FOCUS = { keywords: KEYWORDS, boost: BOOST, penalty: PENALTY };
+
+// Профіль для сторінок студентського життя (кількома мовами)
+export const STUDENT_LIFE_FOCUS = {
+  keywords: [
+    "student-life", "student life", "campus life", "students", "student", "club", "association", "society", "sport",
+    "housing", "accommodation", "residence", "dorm", "wellbeing", "well-being", "support", "counsel", "health",
+    "culture", "events", "community", "union", "international",
+    "vie-etudiante", "vie étudiante", "logement", "bde", "associations",
+    "vida-estudiantil", "vida estudiantil", "alojamiento", "residencia", "deportes",
+    "vita studentesca", "servizi", "alloggi", "residenze",
+    "studentisches leben", "studierende", "wohnen", "wohnheim", "hochschulsport", "asta",
+    "życie studenckie", "studenci", "samorząd", "akademik", "akademiki", "koła naukowe",
+    "студент", "гуртожит", "самоврядуван", "студентське життя",
+  ],
+  boost: ["student-life", "student life", "campus life", "vie-etudiante", "vida-estudiantil", "studentisches", "studenckie", "студентське", "housing", "wohnheim", "akademik", "гуртожит"],
+  penalty: ["login", "intranet", "news/20", "press", "procurement", "przetarg", "tender", "career-staff", "jobs"],
+};
+
+function score(url, text, focus = PROGRAMS_FOCUS) {
   const hay = `${url} ${text}`.toLowerCase();
-  let s = KEYWORDS.reduce((acc, k) => acc + (hay.includes(k) ? 1 : 0), 0);
+  let s = focus.keywords.reduce((acc, k) => acc + (hay.includes(k) ? 1 : 0), 0);
   if (s === 0) return 0;
-  s += BOOST.reduce((acc, k) => acc + (hay.includes(k) ? 2 : 0), 0);
-  s -= PENALTY.reduce((acc, k) => acc + (hay.includes(k) ? 4 : 0), 0);
+  s += focus.boost.reduce((acc, k) => acc + (hay.includes(k) ? 2 : 0), 0);
+  s -= focus.penalty.reduce((acc, k) => acc + (hay.includes(k) ? 4 : 0), 0);
   return s;
 }
 
@@ -96,7 +115,7 @@ function score(url, text) {
  * Читає головну сторінку та найрелевантніші внутрішні сторінки.
  * @returns {Promise<Array<{url: string, text: string}>>}
  */
-export async function crawlUniversity(websiteUrl, { maxPages = MAX_PAGES, log = () => {} } = {}) {
+export async function crawlUniversity(websiteUrl, { maxPages = MAX_PAGES, log = () => {}, focus = PROGRAMS_FOCUS } = {}) {
   const start = new URL(websiteUrl);
   const origin = start.origin;
   // дозволяємо піддомени університету (напр. international.univ-x.fr)
@@ -131,7 +150,7 @@ export async function crawlUniversity(websiteUrl, { maxPages = MAX_PAGES, log = 
     }
 
     for (const [link, linkText] of extractLinks(page.body, page.url)) {
-      const s = score(link, linkText);
+      const s = score(link, linkText, focus);
       if (s > 0 && !seen.has(link)) queue.push({ url: link, score: s });
     }
   }

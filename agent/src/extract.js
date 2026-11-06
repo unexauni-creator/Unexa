@@ -15,4 +15,8 @@ try {
 }
 
 export const extractUniversityData = impl.extractUniversityData;
+// поки що лише для Gemini; Claude-версія може бути додана так само
+export const generateStructured = impl.generateStructured ?? (() => {
+  throw new Error("Збір студентського життя зараз працює лише з AI_PROVIDER=gemini");
+});
 export const aiProvider = provider;

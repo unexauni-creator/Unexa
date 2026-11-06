@@ -48,12 +48,15 @@
   background: rgba(208, 208, 208, 0.2);
   border: 1px solid rgba(43, 31, 24, 0.06);
   box-shadow: 0 12px 32px rgba(43, 31, 24, 0.07);
-  scrollbar-width: thin;
-  scrollbar-color: rgba(172, 136, 118, 0.4) transparent;
   position: relative;
 }
-.detail-scroll::-webkit-scrollbar { width: 5px; }
-.detail-scroll::-webkit-scrollbar-track { background: transparent; margin: 32px 6px; }
+/* Chrome ignores the ::-webkit-scrollbar styles below (incl. the top/bottom gap) as soon as
+   scrollbar-width / scrollbar-color are set, so those two are only for Firefox. */
+@supports not selector(::-webkit-scrollbar) {
+  .detail-scroll { scrollbar-width: thin; scrollbar-color: rgba(172, 136, 118, 0.4) transparent; }
+}
+.detail-scroll::-webkit-scrollbar { width: 4px; }
+.detail-scroll::-webkit-scrollbar-track { background: transparent; margin: 28px 0; }
 .detail-scroll::-webkit-scrollbar-thumb {
   background: rgba(172, 136, 118, 0.45);
   border-radius: 8px;
@@ -113,11 +116,13 @@
 .detail-info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 .detail-info-grid-secondary { margin-top: 4px; padding-top: 14px; border-top: 1px solid rgba(43,31,24,0.06); }
 /* Усі інфо-блоки однакової висоти: назва + 2 рядки значення; довше — трикрапка (повний текст у підказці) */
-.detail-info-item { background: rgba(255,250,246,0.4); border-radius: 12px; padding: 16px 18px; display: flex; flex-direction: column; gap: 6px; height: 108px; box-sizing: border-box; overflow: hidden; }
-.detail-info-label { font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 16px; color: rgba(43,31,24,0.96); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.detail-info-value { font-family: 'Nunito', sans-serif; font-size: 15px; line-height: 1.4; color: #6b5e56; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; line-clamp: 2; overflow: hidden; overflow-wrap: anywhere; }
-.detail-info-value[title] { cursor: help; }
-.detail-info-value.is-empty { opacity: 0.7; }
+.detail-info-item { background: rgba(255,250,246,0.55); border: 1px solid rgba(43,31,24,0.04); border-radius: 14px; padding: 16px 18px; display: flex; flex-direction: column; gap: 6px; min-height: 96px; box-sizing: border-box; transition: background 0.18s; }
+.detail-info-item:hover { background: rgba(255,250,246,0.85); }
+/* long answers take the whole row so they read in 1–2 lines instead of a narrow column */
+.detail-info-item.is-wide { grid-column: 1 / -1; min-height: 0; }
+.detail-info-label { font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 16px; color: rgba(43,31,24,0.96); }
+.detail-info-value { font-family: 'Nunito', sans-serif; font-size: 15px; line-height: 1.45; color: #6b5e56; overflow-wrap: anywhere; }
+.detail-info-item.is-empty .detail-info-value { opacity: 0.6; }
 
 .detail-social-row { display: flex; gap: 28px; flex-wrap: wrap; }
 .detail-social-card { flex: 1; min-width: 220px; display: flex; flex-direction: column; align-items: center; gap: 14px; }

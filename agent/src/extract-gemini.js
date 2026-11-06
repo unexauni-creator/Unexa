@@ -17,20 +17,23 @@ if (!process.env.GEMINI_API_KEY) {
 }
 const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 
-// JSON-схема для Gemini, побудована з тієї ж zod-схеми, що й для Claude
-const { $schema, ...jsonSchema } = z.toJSONSchema(Extraction);
+// JSON-схема для Gemini, побудована з zod-схеми
+const toJsonSchema = (schema) => {
+  const { $schema, ...rest } = z.toJSONSchema(schema);
+  return rest;
+};
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 const shortError = (err) => String(err.message).match(/"message":"([^"]{0,90})/)?.[1] ?? err.message;
 
-async function callModel(model, uni, pages) {
+async function callModel(model, { system, user, schema }) {
   const response = await ai.models.generateContent({
     model,
-    contents: buildUserPrompt(uni, pages),
+    contents: user,
     config: {
-      systemInstruction: SYSTEM_PROMPT,
+      systemInstruction: system,
       responseMimeType: "application/json",
-      responseJsonSchema: jsonSchema,
+      responseJsonSchema: toJsonSchema(schema),
       temperature: 0.1,
       maxOutputTokens: 32768,
     },
@@ -50,7 +53,7 @@ async function callModel(model, uni, pages) {
   } catch {
     throw badAnswer("відповідь не є коректним JSON");
   }
-  const parsed = Extraction.safeParse(json);
+  const parsed = schema.safeParse(json);
   if (!parsed.success) throw badAnswer(`неправильний формат: ${parsed.error.issues[0]?.message}`);
 
   return {
@@ -63,12 +66,17 @@ async function callModel(model, uni, pages) {
   };
 }
 
-export async function extractUniversityData(uni, pages) {
+export function extractUniversityData(uni, pages) {
+  return generateStructured({ system: SYSTEM_PROMPT, user: buildUserPrompt(uni, pages), schema: Extraction });
+}
+
+// Будь-який структурований витяг (програми, студентське життя…) з тими самими повторами й запасними моделями
+export async function generateStructured(request) {
   let lastError;
   for (let round = 1; round <= ROUNDS; round++) {
     for (const model of MODELS) {
       try {
-        return await callModel(model, uni, pages);
+        return await callModel(model, request);
       } catch (err) {
         lastError = err;
         // 503 перевантажено, 429 ліміт, 404 модель недоступна для ключа, 5xx збій — пробуємо іншу модель
