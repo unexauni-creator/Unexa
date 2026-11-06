@@ -29,16 +29,16 @@ function CategoryIcon({ category, size = 28 }) {
 
 const imagesOf = (s) => (s.images?.length ? s.images : s.image ? [s.image] : []);
 
-// Rows of a 4-column grid, so there are never empty holes: 2+1+1, then 1+1+2, …
-// what's left at the end fills its row (one tile = 4 columns, two tiles = 2+2).
+// Rows of a 4-column grid: 2+1+1, then 1+1+2, … A tile is never wider than half the page,
+// even when a school has one activity. Four left at the end become 2+2 and 2+2, so no holes.
 function tileSpans(count) {
   const spans = [];
   let left = count;
   let flip = false;
   while (left > 0) {
-    if (left >= 3) { spans.push(...(flip ? [1, 1, 2] : [2, 1, 1])); left -= 3; flip = !flip; }
-    else if (left === 2) { spans.push(2, 2); left = 0; }
-    else { spans.push(4); left = 0; }
+    if (left === 4 || left === 2) { spans.push(2, 2); left -= 2; }
+    else if (left === 1) { spans.push(2); left = 0; }
+    else { spans.push(...(flip ? [1, 1, 2] : [2, 1, 1])); left -= 3; flip = !flip; }
   }
   return spans;
 }

@@ -55,14 +55,10 @@
 @supports not selector(::-webkit-scrollbar) {
   .detail-scroll { scrollbar-width: thin; scrollbar-color: rgba(172, 136, 118, 0.4) transparent; }
 }
-.detail-scroll::-webkit-scrollbar { width: 4px; }
+.detail-scroll::-webkit-scrollbar { width: 8px; }
 .detail-scroll::-webkit-scrollbar-track { background: transparent; margin: 28px 0; }
-.detail-scroll::-webkit-scrollbar-thumb {
-  background: rgba(172, 136, 118, 0.45);
-  border-radius: 8px;
-  border: 1.5px solid transparent;
-  background-clip: content-box;
-}
+.detail-scroll::-webkit-scrollbar-thumb { background: rgba(172, 136, 118, 0.6); border-radius: 8px; }
+.detail-scroll::-webkit-scrollbar-thumb:hover { background: rgba(172, 136, 118, 0.85); }
 
 /* Plain content wrapper — no background, no radius, no min-height trick.
    It scrolls freely inside the fixed .detail-scroll frame above. */
