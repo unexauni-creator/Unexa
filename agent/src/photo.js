@@ -145,6 +145,22 @@ async function pageCandidates(pageUrl) {
 }
 
 /**
+ * Кілька придатних фото зі сторінки (для галереї), яких ще немає в `used`.
+ */
+export async function findPageImages(pageUrl, used = new Set(), max = 3) {
+  const { social, inPage } = await pageCandidates(pageUrl);
+  const out = [];
+  // галерея — це фотографії: схеми, плакати й графіка зазвичай у PNG/SVG/GIF
+  const NOT_PHOTO = /organi[gc]ram|diagram|schema|chart|infogra|poster|locandina|manifesto|plakat|banner|flyer/i;
+  const isPhoto = (u) => /\.(jpe?g|webp)(\?|$)/i.test(u) && !NOT_PHOTO.test(decodeURIComponent(u));
+  for (const url of [...inPage.slice(0, 20), ...social]) {
+    if (out.length >= max) break;
+    if (isPhoto(url) && !used.has(url) && !out.includes(url) && (await checkImage(url))) out.push(url);
+  }
+  return out;
+}
+
+/**
  * Перше придатне фото зі сторінки, якого ще немає в `used`.
  * @param {string} pageUrl
  * @param {Set<string>} [used] фото, які вже зайняті (школою чи іншими програмами)

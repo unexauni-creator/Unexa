@@ -1,68 +1,114 @@
-import { useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { createPortal } from "react-dom";
 
-// Student life of one school, collected by the Unexa agent from the school's official website
-// (universities.student_life). Nothing here is invented: each card links to its source page.
+// Student life of one school as a photo gallery of student ACTIVITIES, collected by the Unexa agent
+// from the school's official website (universities.student_life). Housing lives on the Dorm page,
+// so it (and fees, grants, offices) is never shown here.
 const CATEGORY = {
-  clubs: { label: "Clubs & associations", short: "Clubs" },
-  sports: { label: "Sport", short: "Sport" },
-  events: { label: "Events & culture", short: "Events" },
-  support: { label: "Student support", short: "Support" },
-  housing: { label: "Housing", short: "Housing" },
-  international: { label: "International students", short: "International" },
-  wellbeing: { label: "Well-being", short: "Well-being" },
-  facilities: { label: "Campus & facilities", short: "Campus" },
+  clubs: "Clubs",
+  sports: "Sport",
+  events: "Events",
+  exhibitions: "Exhibitions",
+  workshops: "Workshops",
+  community: "Community",
+  wellbeing: "Well-being",
+  trips: "Trips",
 };
 
-function CategoryIcon({ category }) {
-  const common = { width: 26, height: 26, viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: 1.6, strokeLinecap: "round", strokeLinejoin: "round" };
+function CategoryIcon({ category, size = 28 }) {
+  const p = { width: size, height: size, viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: 1.6, strokeLinecap: "round", strokeLinejoin: "round" };
   switch (category) {
-    case "clubs": return <svg {...common}><circle cx="9" cy="8" r="3" /><circle cx="17" cy="9" r="2.5" /><path d="M3 19c0-3.3 2.7-5.5 6-5.5s6 2.2 6 5.5M15 14.2c3 .2 5 2 5 4.8" /></svg>;
-    case "sports": return <svg {...common}><circle cx="12" cy="12" r="8" /><path d="M4.5 9.5c3 1 5 3.5 5.5 10.3M19.5 14.5c-3-1-5-3.5-5.5-10.3" /></svg>;
-    case "events": return <svg {...common}><path d="M5 20V5l8-1 6 3-6 3-8 1" /><path d="M5 20h4" /></svg>;
-    case "support": return <svg {...common}><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z" /></svg>;
-    case "housing": return <svg {...common}><path d="M4 11l8-6 8 6v9H4z" /><path d="M10 20v-5h4v5" /></svg>;
-    case "international": return <svg {...common}><circle cx="12" cy="12" r="8" /><path d="M4 12h16M12 4c2.5 2.5 2.5 13.5 0 16M12 4c-2.5 2.5-2.5 13.5 0 16" /></svg>;
-    case "wellbeing": return <svg {...common}><path d="M12 21c4-3 7-6 7-10a7 7 0 0 0-14 0c0 4 3 7 7 10z" /><path d="M9 11h6M12 8v6" /></svg>;
-    default: return <svg {...common}><rect x="4" y="5" width="16" height="14" rx="2" /><path d="M4 10h16M9 5v14" /></svg>;
+    case "clubs": return <svg {...p}><circle cx="9" cy="8" r="3" /><circle cx="17" cy="9" r="2.5" /><path d="M3 19c0-3.3 2.7-5.5 6-5.5s6 2.2 6 5.5M15 14.2c3 .2 5 2 5 4.8" /></svg>;
+    case "sports": return <svg {...p}><circle cx="12" cy="12" r="8" /><path d="M4.5 9.5c3 1 5 3.5 5.5 10.3M19.5 14.5c-3-1-5-3.5-5.5-10.3" /></svg>;
+    case "exhibitions": return <svg {...p}><rect x="4" y="4" width="16" height="12" rx="1.5" /><path d="M4 13l4-4 4 4 3-3 5 5M9 20h6M12 16v4" /></svg>;
+    case "workshops": return <svg {...p}><path d="M14 4l6 6-9 9H5v-6z" /><path d="M12 6l6 6" /></svg>;
+    case "community": return <svg {...p}><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z" /></svg>;
+    case "wellbeing": return <svg {...p}><path d="M12 21c4-3 7-6 7-10a7 7 0 0 0-14 0c0 4 3 7 7 10z" /><path d="M9 11h6M12 8v6" /></svg>;
+    case "trips": return <svg {...p}><path d="M3 12l18-8-8 18-2-8z" /></svg>;
+    default: return <svg {...p}><path d="M5 20V5l8-1 6 3-6 3-8 1" /><path d="M5 20h4" /></svg>;
   }
 }
 
-function SectionCard({ section }) {
+const imagesOf = (s) => (s.images?.length ? s.images : s.image ? [s.image] : []);
+
+// Tile sizes give the gallery its rhythm: a big first tile, then tall and regular tiles.
+const SIZES = ["is-large", "is-tall", "", "", "is-tall", "", "is-wide", ""];
+
+function Tile({ section, size, onOpen }) {
   const [broken, setBroken] = useState(false);
-  const meta = CATEGORY[section.category] ?? CATEGORY.facilities;
+  const imgs = imagesOf(section);
+  const cover = !broken ? imgs[0] : null;
   return (
-    <article className="sl-card">
-      <div className={`sl-card-media ${section.image && !broken ? "" : "is-placeholder"}`}>
-        {section.image && !broken ? (
-          <img src={section.image} alt="" loading="lazy" onError={() => setBroken(true)} />
-        ) : (
-          <div className="sl-card-icon"><CategoryIcon category={section.category} /></div>
-        )}
-        <span className="sl-card-pill">{meta.label}</span>
+    <button type="button" className={`sl-tile ${size} ${cover ? "" : "is-placeholder"}`} onClick={onOpen}>
+      {cover ? (
+        <img src={cover} alt="" loading="lazy" onError={() => setBroken(true)} />
+      ) : (
+        <span className="sl-tile-icon"><CategoryIcon category={section.category} size={34} /></span>
+      )}
+      <span className="sl-tile-pill">{CATEGORY[section.category] ?? "Activity"}</span>
+      {imgs.length > 1 && <span className="sl-tile-count">{imgs.length} photos</span>}
+      <span className="sl-tile-caption">
+        <span className="sl-tile-title">{section.title}</span>
+        <span className="sl-tile-text">{section.text}</span>
+      </span>
+    </button>
+  );
+}
+
+function Lightbox({ section, onClose }) {
+  const imgs = imagesOf(section);
+  const [i, setI] = useState(0);
+  const prev = useCallback(() => setI((n) => (n - 1 + imgs.length) % imgs.length), [imgs.length]);
+  const next = useCallback(() => setI((n) => (n + 1) % imgs.length), [imgs.length]);
+
+  useEffect(() => {
+    const onKey = (e) => {
+      if (e.key === "Escape") onClose();
+      if (imgs.length > 1 && e.key === "ArrowLeft") prev();
+      if (imgs.length > 1 && e.key === "ArrowRight") next();
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [imgs.length, onClose, prev, next]);
+
+  return createPortal(
+    <div className="sl-lightbox" role="dialog" aria-modal="true" aria-label={section.title} onClick={onClose}>
+      <div className="sl-lightbox-panel" onClick={(e) => e.stopPropagation()}>
+        <div className={`sl-lightbox-media ${imgs.length ? "" : "is-placeholder"}`}>
+          {imgs.length ? <img key={imgs[i]} src={imgs[i]} alt="" /> : <span className="sl-tile-icon"><CategoryIcon category={section.category} size={44} /></span>}
+          {imgs.length > 1 && (
+            <>
+              <button type="button" className="sl-lightbox-nav is-prev" onClick={prev} aria-label="Previous photo">‹</button>
+              <button type="button" className="sl-lightbox-nav is-next" onClick={next} aria-label="Next photo">›</button>
+              <div className="sl-lightbox-dots">{imgs.map((u, n) => <span key={u} className={n === i ? "is-active" : ""} />)}</div>
+            </>
+          )}
+        </div>
+        <div className="sl-lightbox-info">
+          <span className="sl-lightbox-pill"><CategoryIcon category={section.category} size={16} /> {CATEGORY[section.category] ?? "Activity"}</span>
+          <h3>{section.title}</h3>
+          <p>{section.text}</p>
+          {section.highlights?.length > 0 && (
+            <ul className="sl-lightbox-highlights">{section.highlights.slice(0, 4).map((h) => <li key={h}>{h}</li>)}</ul>
+          )}
+          {section.url && (
+            <a className="sl-lightbox-link" href={section.url} target="_blank" rel="noopener noreferrer">Official page <span aria-hidden="true">↗</span></a>
+          )}
+        </div>
+        <button type="button" className="sl-lightbox-close" onClick={onClose} aria-label="Close">✕</button>
       </div>
-      <div className="sl-card-body">
-        <h3 className="sl-card-title">{section.title}</h3>
-        <p className="sl-card-text">{section.text}</p>
-        {section.highlights?.length > 0 && (
-          <ul className="sl-card-highlights">
-            {section.highlights.slice(0, 4).map((h) => <li key={h}>{h}</li>)}
-          </ul>
-        )}
-        {section.url && (
-          <a className="sl-card-link" href={section.url} target="_blank" rel="noopener noreferrer">
-            Official page <span aria-hidden="true">↗</span>
-          </a>
-        )}
-      </div>
-    </article>
+    </div>,
+    document.body
   );
 }
 
 export default function StudentLife({ onBack, uni }) {
   const data = uni?.studentLife;
-  const sections = useMemo(() => data?.sections ?? [], [data]);
+  // only activities — older data may still contain housing / payments / offices
+  const sections = useMemo(() => (data?.sections ?? []).filter((s) => CATEGORY[s.category]), [data]);
   const categories = useMemo(() => [...new Set(sections.map((s) => s.category))], [sections]);
   const [active, setActive] = useState("all");
+  const [open, setOpen] = useState(null);
   const shown = active === "all" ? sections : sections.filter((s) => s.category === active);
 
   return (
@@ -73,19 +119,17 @@ export default function StudentLife({ onBack, uni }) {
         </button>
         <div className="sl-heading">
           <div className="sl-heading-title">Student Life</div>
-          <div className="sl-heading-desc">{uni?.name ? `What studying at ${uni.name} feels like` : "Clubs, events, and campus culture."}</div>
+          <div className="sl-heading-desc">{uni?.name ? `Clubs, events and creative life at ${uni.name}` : "Clubs, events, and campus culture."}</div>
         </div>
       </div>
 
       {sections.length === 0 ? (
         <div className="sl-empty">
           <div className="sl-empty-icon"><CategoryIcon category="clubs" /></div>
-          <div className="sl-empty-title">We haven't collected student life for this school yet</div>
-          <p className="sl-empty-text">Clubs, sport, housing and student support will appear here once our agent has read the school's official website.</p>
+          <div className="sl-empty-title">We haven't collected student activities for this school yet</div>
+          <p className="sl-empty-text">Clubs, events, exhibitions and sport will appear here once our agent has read the school's official website.</p>
           {uni?.website && (
-            <a className="sl-card-link" href={uni.website} target="_blank" rel="noopener noreferrer">
-              Visit the official website <span aria-hidden="true">↗</span>
-            </a>
+            <a className="sl-lightbox-link" href={uni.website} target="_blank" rel="noopener noreferrer">Visit the official website <span aria-hidden="true">↗</span></a>
           )}
         </div>
       ) : (
@@ -96,20 +140,22 @@ export default function StudentLife({ onBack, uni }) {
             <div className="sl-chips" role="tablist">
               <button role="tab" aria-selected={active === "all"} className={`sl-chip ${active === "all" ? "is-active" : ""}`} onClick={() => setActive("all")}>All</button>
               {categories.map((c) => (
-                <button key={c} role="tab" aria-selected={active === c} className={`sl-chip ${active === c ? "is-active" : ""}`} onClick={() => setActive(c)}>
-                  {CATEGORY[c]?.short ?? c}
-                </button>
+                <button key={c} role="tab" aria-selected={active === c} className={`sl-chip ${active === c ? "is-active" : ""}`} onClick={() => setActive(c)}>{CATEGORY[c]}</button>
               ))}
             </div>
           )}
 
-          <div className="sl-cards">
-            {shown.map((s, i) => <SectionCard key={`${s.category}-${i}`} section={s} />)}
+          <div className="sl-gallery">
+            {shown.map((s, i) => (
+              <Tile key={`${s.category}-${s.title}`} section={s} size={SIZES[i % SIZES.length]} onOpen={() => setOpen(s)} />
+            ))}
           </div>
 
-          <p className="sl-source">Collected from {uni?.name}'s official website. Details can change — check the linked pages before you apply.</p>
+          <p className="sl-source">Collected from {uni?.name}'s official website. Click a photo to see details and the source page.</p>
         </>
       )}
+
+      {open && <Lightbox section={open} onClose={() => setOpen(null)} />}
     </div>
   );
 }

@@ -11,7 +11,7 @@ import { z } from "zod";
 import { crawlUniversity, STUDENT_LIFE_FOCUS } from "./crawl.js";
 import { generateStructured, aiProvider } from "./extract.js";
 import { getSupabase } from "./db.js";
-import { findPageImage } from "./photo.js";
+import { findPageImages } from "./photo.js";
 
 const { values: args } = parseArgs({
   options: {
@@ -24,23 +24,26 @@ const { values: args } = parseArgs({
   },
 });
 
-const CATEGORIES = ["clubs", "sports", "events", "support", "housing", "international", "wellbeing", "facilities"];
+// Лише студентські АКТИВНОСТІ. Житло має окрему сторінку Dorm; оплати, гранти, візи — не сюди.
+const CATEGORIES = ["clubs", "sports", "events", "exhibitions", "workshops", "community", "wellbeing", "trips"];
 
 const Section = z.object({
   category: z.enum(CATEGORIES),
-  title: z.string().describe("Short heading, e.g. 'Student associations', 'University sport', 'Halls of residence'"),
-  text: z.string().describe("1-2 sentences in English (under 220 characters) about what students actually get here"),
-  highlights: z.array(z.string()).describe("Up to 4 concrete names or facts from the page, each under 40 characters, e.g. 'Film club', 'Free gym', '3 residences'"),
+  title: z.string().describe("Short heading, e.g. 'Student associations', 'Annual graduate show', 'University sport'"),
+  text: z.string().describe("1-2 sentences in English (under 220 characters) about what students actually do here"),
+  highlights: z.array(z.string()).describe("Up to 4 concrete names from the page, each under 40 characters, e.g. 'Film club', 'Summer exhibition', 'Climbing group'"),
   url: z.string().nullable().describe("Official page this section comes from"),
 });
 const StudentLife = z.object({
   summary: z.string().nullable().describe("1-2 sentences in English about student life at this school"),
-  sections: z.array(Section).describe("3 to 6 sections, only what the pages state"),
+  sections: z.array(Section).describe("3 to 8 activities, only what the pages state"),
 });
 
 const SYSTEM = `You describe STUDENT LIFE at one school for Unexa, a platform for students choosing where to study creative subjects abroad.
 
-You receive plain text of pages from the school's official website (they may be in any language). Describe only what the pages state: student associations and clubs, sport, events and culture, student support and counselling, housing and residences, help for international students, well-being, campus facilities students can use. Never invent numbers, names or services. If a topic is not on the pages, leave that section out. If the pages say almost nothing about student life, return an empty sections list.
+You receive plain text of pages from the school's official website (they may be in any language). Describe only student ACTIVITIES the pages mention: student associations and clubs, sport, events and festivals, exhibitions and graduate shows, workshops and open studios, community and volunteering projects, well-being activities, study trips and summer schools.
+
+Do NOT include: housing or residences (the site has a separate dorm page), tuition, fees, payments, grants, scholarships, visas, insurance, administration or offices. Never invent names, numbers or events. If the pages say almost nothing about student activities, return an empty sections list.
 
 Write in English, short and concrete, in a friendly tone. Each section's url must be the page it comes from.`;
 
@@ -94,14 +97,15 @@ for (const uni of list) {
 
     const corpus = pages.map((p) => `=== PAGE: ${p.url} ===\n${p.text}`).join("\n\n");
     const result = await generateStructured({ system: SYSTEM, user: `School: ${uni.name}${uni.city ? ` (${uni.city})` : ""}\n\n${corpus}`, schema: StudentLife });
-    const sections = result.data.sections.slice(0, 6);
+    const sections = result.data.sections.slice(0, 8);
     if (!sections.length) { console.log("   – на сайті майже немає інформації про студентське життя"); continue; }
 
-    // фото до розділу — зі сторінки, звідки взято текст (офіційний сайт школи)
+    // до 3 фото на активність — зі сторінки, звідки взято текст (офіційний сайт школи), для галереї
     const used = new Set();
     for (const s of sections) {
-      s.image = s.url ? await findPageImage(s.url, used).catch(() => null) : null;
-      if (s.image) used.add(s.image);
+      s.images = s.url ? await findPageImages(s.url, used, 3).catch(() => []) : [];
+      s.images.forEach((u) => used.add(u));
+      s.image = s.images[0] ?? null;
     }
 
     const data = { summary: result.data.summary, sections, collected_at: new Date().toISOString(), source_urls: pages.map((p) => p.url) };
