@@ -34,14 +34,12 @@ const PLACEHOLDER_IMAGES = {
     "https://images.unsplash.com/photo-1555854877-bab0e564b8d5?auto=format&fit=crop&w=600&q=80",
 };
 
-// Один інфо-блок. Текст показується повністю; блоки в одному ряду однакової висоти,
-// а довгий текст (напр. Campus Facilities) займає весь рядок, щоб читатися зручно.
-const WIDE_AT = 60; // символів
+// Один рядок інфо-блоку: підпис ліворуч, значення праворуч. Текст показується повністю,
+// а сітка лишається рівною при будь-якій довжині тексту.
 function InfoItem({ label, value }) {
   const text = typeof value === "string" ? value.trim() : value;
-  const wide = typeof text === "string" && text.length > WIDE_AT;
   return (
-    <div className={`detail-info-item ${wide ? "is-wide" : ""} ${text ? "" : "is-empty"}`}>
+    <div className={`detail-info-item ${text ? "" : "is-empty"}`}>
       <div className="detail-info-label">{label}</div>
       <div className="detail-info-value">{text || "Not specified"}</div>
     </div>

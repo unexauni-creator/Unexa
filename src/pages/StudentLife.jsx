@@ -131,7 +131,6 @@ export default function StudentLife({ onBack, uni }) {
             <div className="sl-heading-desc">{uni?.name ? `Clubs, events and creative life at ${uni.name}` : "Clubs, events, and campus culture."}</div>
           </div>
         </div>
-        {sections.length > 0 && data.summary && <p className="sl-summary">{data.summary}</p>}
       </header>
 
       <div className="sl-scroll">
