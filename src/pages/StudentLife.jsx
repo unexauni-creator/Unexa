@@ -120,8 +120,8 @@ export default function StudentLife({ onBack, uni }) {
 
   return (
     <div className="student-life-page">
-      {/* stays in place while the gallery scrolls under it */}
-      <header className="sl-sticky-header">
+      {/* like Home: the header stays put, only the gallery below scrolls and fades out at the top */}
+      <header className="sl-page-header">
         <div className="sl-top-row">
           <button className="sl-back-icon-btn" onClick={onBack} aria-label="Go back">
             <img src="/arrow-left.svg" alt="" className="sl-back-icon" />
@@ -134,6 +134,7 @@ export default function StudentLife({ onBack, uni }) {
         {sections.length > 0 && data.summary && <p className="sl-summary">{data.summary}</p>}
       </header>
 
+      <div className="sl-scroll">
       {sections.length === 0 ? (
         <div className="sl-empty">
           <div className="sl-empty-icon"><CategoryIcon category="clubs" /></div>
@@ -154,6 +155,7 @@ export default function StudentLife({ onBack, uni }) {
           <p className="sl-source">Collected from {uni?.name}'s official website. Click a photo to see details and the source page.</p>
         </>
       )}
+      </div>
 
       {open && <Lightbox section={open} onClose={() => setOpen(null)} />}
     </div>

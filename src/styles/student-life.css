@@ -253,8 +253,17 @@
 .sl-back-icon { width: 18px; height: 18px; filter: brightness(0); }
 
 /* ══ Student life from the school's own website (cards, chips, empty state) ══ */
-/* Title + summary stay in place while the gallery scrolls underneath */
-.sl-sticky-header { position: sticky; top: 0; z-index: 5; display: flex; flex-direction: column; gap: 12px; margin: -24px -24px -12px; padding: 24px 24px 16px; background: rgba(232, 230, 230, 0.86); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); }
+/* Same principle as Home: fixed header, the gallery scrolls in its own area and fades out at the top */
+.detail-scroll:has(.student-life-page) { overflow: hidden; display: flex; flex-direction: column; }
+.detail-scroll:has(.student-life-page) > .detail-body { flex: 1; min-height: 0; padding: 0; gap: 0; }
+.student-life-page { flex: 1; min-height: 0; gap: 0; padding: 0; }
+.sl-page-header { flex-shrink: 0; display: flex; flex-direction: column; gap: 12px; padding: 24px 24px 8px; }
+.sl-scroll { flex: 1; min-height: 0; overflow-y: auto; display: flex; flex-direction: column; gap: 20px; padding: 16px 24px 28px; -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 24px); mask-image: linear-gradient(to bottom, transparent 0, #000 24px); }
+.sl-scroll::before { content: ""; position: sticky; top: -16px; z-index: 3; flex-shrink: 0; display: block; height: 32px; margin: -16px -24px -36px; backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); -webkit-mask-image: linear-gradient(to bottom, #000, transparent); mask-image: linear-gradient(to bottom, #000, transparent); pointer-events: none; }
+.sl-scroll::-webkit-scrollbar { width: 4px; }
+.sl-scroll::-webkit-scrollbar-track { background: transparent; margin: 28px 0; }
+.sl-scroll::-webkit-scrollbar-thumb { background: rgba(172, 136, 118, 0.45); border-radius: 8px; }
+.sl-gallery { flex-shrink: 0; }
 .sl-summary { font-family: 'Nunito', sans-serif; font-size: 16px; line-height: 1.5; color: #3a322c; max-width: 900px; margin: 0; }
 
 /* Gallery: photo tiles of different sizes (dense grid fills the gaps) */
@@ -316,7 +325,11 @@
   .sl-tile.span-4 { grid-column: span 2; }
   .sl-tile-title { font-size: 15px; }
   .sl-tile.span-2 .sl-tile-title, .sl-tile.span-4 .sl-tile-title { font-size: 19px; }
-  .sl-sticky-header { position: static; background: none; backdrop-filter: none; -webkit-backdrop-filter: none; }
+  /* phone: the summary would take half the screen, so the whole page scrolls together */
+  .detail-scroll:has(.student-life-page) { overflow-y: auto; display: block; }
+  .student-life-page { display: block; }
+  .sl-scroll { overflow: visible; -webkit-mask-image: none; mask-image: none; padding: 12px 24px 28px; }
+  .sl-scroll::before { display: none; }
   .sl-summary { font-size: 15px; }
   .sl-lightbox { padding: 0; align-items: flex-end; }
   .sl-lightbox-panel { grid-template-columns: 1fr; max-height: 92vh; border-radius: 24px 24px 0 0; }
