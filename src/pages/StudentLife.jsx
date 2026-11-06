@@ -11,7 +11,6 @@ const CATEGORY = {
   exhibitions: "Exhibitions",
   workshops: "Workshops",
   community: "Community",
-  wellbeing: "Well-being",
   trips: "Trips",
 };
 
@@ -23,7 +22,6 @@ function CategoryIcon({ category, size = 28 }) {
     case "exhibitions": return <svg {...p}><rect x="4" y="4" width="16" height="12" rx="1.5" /><path d="M4 13l4-4 4 4 3-3 5 5M9 20h6M12 16v4" /></svg>;
     case "workshops": return <svg {...p}><path d="M14 4l6 6-9 9H5v-6z" /><path d="M12 6l6 6" /></svg>;
     case "community": return <svg {...p}><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z" /></svg>;
-    case "wellbeing": return <svg {...p}><path d="M12 21c4-3 7-6 7-10a7 7 0 0 0-14 0c0 4 3 7 7 10z" /><path d="M9 11h6M12 8v6" /></svg>;
     case "trips": return <svg {...p}><path d="M3 12l18-8-8 18-2-8z" /></svg>;
     default: return <svg {...p}><path d="M5 20V5l8-1 6 3-6 3-8 1" /><path d="M5 20h4" /></svg>;
   }
@@ -31,15 +29,26 @@ function CategoryIcon({ category, size = 28 }) {
 
 const imagesOf = (s) => (s.images?.length ? s.images : s.image ? [s.image] : []);
 
-// Tile sizes give the gallery its rhythm: a big first tile, then tall and regular tiles.
-const SIZES = ["is-large", "is-tall", "", "", "is-tall", "", "is-wide", ""];
+// Rows of a 4-column grid, so there are never empty holes: 2+1+1, then 1+1+2, …
+// what's left at the end fills its row (one tile = 4 columns, two tiles = 2+2).
+function tileSpans(count) {
+  const spans = [];
+  let left = count;
+  let flip = false;
+  while (left > 0) {
+    if (left >= 3) { spans.push(...(flip ? [1, 1, 2] : [2, 1, 1])); left -= 3; flip = !flip; }
+    else if (left === 2) { spans.push(2, 2); left = 0; }
+    else { spans.push(4); left = 0; }
+  }
+  return spans;
+}
 
-function Tile({ section, size, onOpen }) {
+function Tile({ section, span, onOpen }) {
   const [broken, setBroken] = useState(false);
   const imgs = imagesOf(section);
   const cover = !broken ? imgs[0] : null;
   return (
-    <button type="button" className={`sl-tile ${size} ${cover ? "" : "is-placeholder"}`} onClick={onOpen}>
+    <button type="button" className={`sl-tile span-${span} ${cover ? "" : "is-placeholder"}`} onClick={onOpen}>
       {cover ? (
         <img src={cover} alt="" loading="lazy" onError={() => setBroken(true)} />
       ) : (
@@ -106,22 +115,24 @@ export default function StudentLife({ onBack, uni }) {
   const data = uni?.studentLife;
   // only activities — older data may still contain housing / payments / offices
   const sections = useMemo(() => (data?.sections ?? []).filter((s) => CATEGORY[s.category]), [data]);
-  const categories = useMemo(() => [...new Set(sections.map((s) => s.category))], [sections]);
-  const [active, setActive] = useState("all");
+  const spans = useMemo(() => tileSpans(sections.length), [sections.length]);
   const [open, setOpen] = useState(null);
-  const shown = active === "all" ? sections : sections.filter((s) => s.category === active);
 
   return (
     <div className="student-life-page">
-      <div className="sl-top-row">
-        <button className="sl-back-icon-btn" onClick={onBack} aria-label="Go back">
-          <img src="/arrow-left.svg" alt="" className="sl-back-icon" />
-        </button>
-        <div className="sl-heading">
-          <div className="sl-heading-title">Student Life</div>
-          <div className="sl-heading-desc">{uni?.name ? `Clubs, events and creative life at ${uni.name}` : "Clubs, events, and campus culture."}</div>
+      {/* stays in place while the gallery scrolls under it */}
+      <header className="sl-sticky-header">
+        <div className="sl-top-row">
+          <button className="sl-back-icon-btn" onClick={onBack} aria-label="Go back">
+            <img src="/arrow-left.svg" alt="" className="sl-back-icon" />
+          </button>
+          <div className="sl-heading">
+            <div className="sl-heading-title">Student Life</div>
+            <div className="sl-heading-desc">{uni?.name ? `Clubs, events and creative life at ${uni.name}` : "Clubs, events, and campus culture."}</div>
+          </div>
         </div>
-      </div>
+        {sections.length > 0 && data.summary && <p className="sl-summary">{data.summary}</p>}
+      </header>
 
       {sections.length === 0 ? (
         <div className="sl-empty">
@@ -134,20 +145,9 @@ export default function StudentLife({ onBack, uni }) {
         </div>
       ) : (
         <>
-          {data.summary && <p className="sl-summary">{data.summary}</p>}
-
-          {categories.length > 1 && (
-            <div className="sl-chips" role="tablist">
-              <button role="tab" aria-selected={active === "all"} className={`sl-chip ${active === "all" ? "is-active" : ""}`} onClick={() => setActive("all")}>All</button>
-              {categories.map((c) => (
-                <button key={c} role="tab" aria-selected={active === c} className={`sl-chip ${active === c ? "is-active" : ""}`} onClick={() => setActive(c)}>{CATEGORY[c]}</button>
-              ))}
-            </div>
-          )}
-
           <div className="sl-gallery">
-            {shown.map((s, i) => (
-              <Tile key={`${s.category}-${s.title}`} section={s} size={SIZES[i % SIZES.length]} onOpen={() => setOpen(s)} />
+            {sections.map((s, i) => (
+              <Tile key={`${s.category}-${s.title}`} section={s} span={spans[i]} onOpen={() => setOpen(s)} />
             ))}
           </div>
 

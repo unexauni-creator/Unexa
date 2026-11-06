@@ -144,6 +144,40 @@ async function pageCandidates(pageUrl) {
   return { social: social.filter((u) => !LOGO_HINTS.test(u)), inPage, links };
 }
 
+// Те саме фото часто лежить у кількох розмірах: "hall-300x200.jpg", "hall.jpg?w=800" → один ключ
+export const photoKey = (url) => decodeURIComponent(url.split(/[?#]/)[0].split("/").pop() ?? "")
+  .toLowerCase()
+  .replace(/\.[a-z]+$/, "")
+  .replace(/[-_]?(\d{2,4}x\d{2,4}|scaled|thumb(nail)?|small|medium|large|full|\d{3,4}w)$/g, "");
+
+const NOT_PHOTO = /organi[gc]ram|diagram|schema|chart|infogra|poster|locandina|manifesto|plakat|banner|flyer/i;
+const isGalleryPhoto = (u) => /\.(jpe?g|webp)(\?|$)/i.test(u) && !NOT_PHOTO.test(decodeURIComponent(u));
+
+/**
+ * Фото-кандидати для галереї з кількох сторінок школи: без логотипів, схем і повторів.
+ * @returns {Promise<string[]>}
+ */
+export async function collectGalleryPhotos(pageUrls, max = 16) {
+  const out = [];
+  const keys = new Set();
+  for (const pageUrl of pageUrls) {
+    if (out.length >= max) break;
+    const { social, inPage } = await pageCandidates(pageUrl).catch(() => ({ social: [], inPage: [] }));
+    let fromPage = 0;
+    for (const url of [...inPage.slice(0, 20), ...social]) {
+      if (out.length >= max || fromPage >= 6) break;
+      const key = photoKey(url);
+      if (!isGalleryPhoto(url) || keys.has(key)) continue;
+      if (await checkImage(url)) {
+        keys.add(key);
+        out.push(url);
+        fromPage++;
+      }
+    }
+  }
+  return out;
+}
+
 /**
  * Кілька придатних фото зі сторінки (для галереї), яких ще немає в `used`.
  */
