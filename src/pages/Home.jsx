@@ -331,6 +331,7 @@ export default function Home({ onSelectUni, savedUniversities, onToggleSave, cur
   const [readIds, setReadIds] = useState(() => loadRead(currentUser?.id));
   const [profile, setProfile] = useState(null);
   const [profileLoaded, setProfileLoaded] = useState(false);
+  const [homeTab, setHomeTab] = useState("foryou"); // foryou | all
   const [showFilter, setShowFilter] = useState(false);
   const [showNotif, setShowNotif] = useState(false);
   const [filters, setFilters] = useState(DEFAULT_FILTERS);
@@ -521,11 +522,20 @@ export default function Home({ onSelectUni, savedUniversities, onToggleSave, cur
   // Recommendations only on the untouched list: a search or filter shows exactly what was asked for
   const browsing = !search.trim() && activeCount === 0;
   const recommended = useMemo(
-    () => (browsing && profile ? recommendPrograms(universities, profile) : []),
-    [browsing, profile, universities]
+    () => (profile ? recommendPrograms(universities, profile, 12) : []),
+    [profile, universities]
   );
-  const recommendedIds = new Set(recommended.map((r) => r.program.id));
-  const listed = filtered.filter((u) => !recommendedIds.has(u.id));
+  // a search or a filter always shows the full list, so results are never hidden behind "For you"
+  const tab = browsing ? homeTab : "all";
+  const listed = filtered;
+
+  function openTab(next) {
+    if (next === "foryou" && !browsing) {
+      setSearch("");
+      clearFilters();
+    }
+    setHomeTab(next);
+  }
 
   function renderCard(uni, reasons) {
     const isSaved = savedUniversities.some(u => u.id === uni.id);
@@ -631,8 +641,21 @@ export default function Home({ onSelectUni, savedUniversities, onToggleSave, cur
             <button className="filter-clear-all-btn" onClick={clearFilters}>Clear all</button>
           </div>
         )}
+
+        {/* same tabs as Community */}
+        <div className="community-tabs home-tabs" role="tablist">
+          <button role="tab" aria-selected={tab === "foryou"} className={`community-tab ${tab === "foryou" ? "active" : ""}`} onClick={() => openTab("foryou")}>
+            For you
+            {recommended.length > 0 && <span className="community-tab-count">{recommended.length}</span>}
+          </button>
+          <button role="tab" aria-selected={tab === "all"} className={`community-tab ${tab === "all" ? "active" : ""}`} onClick={() => openTab("all")}>
+            All programs
+            {!loading && <span className="community-tab-count">{filtered.length}</span>}
+          </button>
+        </div>
       </div>
 
+      <div className="home-panel">
       <div className="home-scroll">
         {loading && (
           <div style={{ textAlign: "center", padding: "48px 0", fontFamily: "Nunito", color: "#8a7c70" }}>
@@ -652,7 +675,7 @@ export default function Home({ onSelectUni, savedUniversities, onToggleSave, cur
           </div>
         )}
 
-        {!loading && !loadError && browsing && profileLoaded && !hasPreferences(profile) && (
+        {!loading && !loadError && tab === "foryou" && profileLoaded && !hasPreferences(profile) && (
           <Link to="/onboarding" className="home-reco-prompt">
             <span className="home-reco-prompt-text">
               <strong>Get programs picked for you</strong>
@@ -662,18 +685,21 @@ export default function Home({ onSelectUni, savedUniversities, onToggleSave, cur
           </Link>
         )}
 
-        {!loading && !loadError && recommended.length > 0 && (
-          <section className="home-reco" aria-label="Recommended for you">
-            <h2 className="home-section-title">Recommended for you</h2>
-            <p className="home-section-sub">Based on your onboarding answers.</p>
+        {!loading && !loadError && tab === "foryou" && hasPreferences(profile) && (
+          recommended.length > 0 ? (
             <div className="uni-grid">
               {recommended.map((r) => renderCard(r.program, r.reasons))}
             </div>
-            <h2 className="home-section-title home-section-all">All programs</h2>
-          </section>
+          ) : (
+            <div className="home-reco-empty">
+              <strong>No close matches yet</strong>
+              <span>We're adding new schools every week. Meanwhile, browse all programs.</span>
+              <button className="filter-clear-btn" onClick={() => setHomeTab("all")}>See all programs</button>
+            </div>
+          )
         )}
 
-        {!loading && !loadError && (
+        {!loading && !loadError && tab === "all" && (
           <div className="uni-grid">
             {listed.length > 0 ? listed.map((uni) => renderCard(uni)) : search.trim().length > 0 ? (
               <div style={{ gridColumn: "1/-1" }}>
@@ -688,6 +714,7 @@ export default function Home({ onSelectUni, savedUniversities, onToggleSave, cur
             )}
           </div>
         )}
+      </div>
       </div>
 
       {showFilter && (

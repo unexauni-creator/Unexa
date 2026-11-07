@@ -278,13 +278,25 @@
 .search-results-count strong { color: rgba(43,31,24,0.96); }
 
 /* Recommendations from onboarding answers */
-.home-reco { margin-bottom: 8px; padding-top: 14px; } /* clear of the blur at the top of the list */
-.home-section-title { font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 22px; color: rgba(43,31,24,0.96); margin: 0 0 4px; }
-.home-section-sub { font-family: 'Nunito', sans-serif; font-size: 14px; color: #6b5e56; margin: 0 0 14px; }
-.home-section-all { margin: 28px 0 14px; }
-.uni-card-why { position: absolute; top: 12px; left: 12px; z-index: 2; max-width: calc(100% - 24px); padding: 5px 11px; border-radius: 999px; background: rgba(15,10,8,0.5); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); color: #fff; font-family: 'Nunito', sans-serif; font-size: 12px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.home-reco-prompt { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin: 14px 0 20px; padding: 18px 22px; border-radius: 18px; background: rgba(172,136,118,0.16); text-decoration: none; transition: background 0.18s; }
+.home-sticky-header { padding-bottom: 0; }
+.home-tabs { margin-top: 24px; }
+/* cards sit in a frosted container, like Community; only the inside scrolls */
+.home-panel { flex: 1; min-height: 0; display: flex; flex-direction: column; margin: 0 32px 28px; border-radius: 0 24px 24px 24px; overflow: hidden; background: rgba(208, 208, 208, 0.20); backdrop-filter: blur(24px) saturate(180%); -webkit-backdrop-filter: blur(24px) saturate(180%); }
+.home-panel .home-scroll { padding: 22px 20px 28px; }
+.home-panel .home-scroll::before { margin: -22px -20px -10px; }
+.uni-card-why { position: absolute; top: 12px; left: 12px; z-index: 2; max-width: calc(100% - 24px); padding: 5px 11px; border-radius: 999px; background: rgba(255,255,255,0.18); border: 1px solid rgba(255,255,255,0.35); backdrop-filter: blur(14px) saturate(140%); -webkit-backdrop-filter: blur(14px) saturate(140%); color: #fff; text-shadow: 0 1px 2px rgba(0,0,0,0.25); font-family: 'Nunito', sans-serif; font-size: 12px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.home-reco-prompt { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin: 0 0 20px; padding: 18px 22px; border-radius: 18px; background: rgba(172,136,118,0.16); text-decoration: none; transition: background 0.18s; }
 .home-reco-prompt:hover { background: rgba(172,136,118,0.26); }
 .home-reco-prompt-text { display: flex; flex-direction: column; gap: 2px; font-family: 'Nunito', sans-serif; font-size: 14px; color: #5c4f47; }
 .home-reco-prompt-text strong { font-size: 16px; color: rgba(43,31,24,0.96); }
 .home-reco-prompt-cta { flex-shrink: 0; font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 14px; color: #F5F5F5; background: #634F44; padding: 9px 16px; border-radius: 10px; }
+.home-reco-empty { display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 48px 16px; text-align: center; font-family: 'Nunito', sans-serif; color: #6b5e56; }
+.home-reco-empty strong { font-size: 17px; color: rgba(43,31,24,0.96); }
+.home-reco-empty button { margin-top: 6px; }
+
+@media (max-width: 768px) {
+  .home-panel { margin: 0 16px 16px; }
+  .home-panel .home-scroll { padding: 16px 12px 20px; }
+  .home-panel .home-scroll::before { margin: -16px -12px -10px; }
+}
+.home-panel .uni-grid { margin-top: 0; }

@@ -25,14 +25,37 @@ function parseScholarships(text) {
     });
 }
 
-const PLACEHOLDER_IMAGES = {
-  teacher:
-    "https://images.unsplash.com/photo-1580894732444-8ecded7900cd?auto=format&fit=crop&w=600&q=80",
-  studentLife:
-    "https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&w=600&q=80",
-  dorm:
-    "https://images.unsplash.com/photo-1555854877-bab0e564b8d5?auto=format&fit=crop&w=600&q=80",
+// Three photos per card: the front one and two behind it (the fanned stack)
+const STACK_IMAGES = {
+  teachers: ["https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?auto=format&fit=crop&w=600&q=80", "https://images.unsplash.com/photo-1580894732444-8ecded7900cd?auto=format&fit=crop&w=600&q=80", "https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&w=600&q=80"],
+  studentLife: ["https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&w=600&q=80", "https://images.unsplash.com/photo-1529156069898-49953e39b3ac?auto=format&fit=crop&w=600&q=80", "https://images.unsplash.com/photo-1543269865-cbf427effbad?auto=format&fit=crop&w=600&q=80"],
+  dorm: ["https://images.unsplash.com/photo-1555854877-bab0e564b8d5?auto=format&fit=crop&w=600&q=80", "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=600&q=80", "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&w=600&q=80"],
 };
+
+// A frosted-glass "polaroid": photo inset at the top, name underneath; two more cards fanned out behind it
+function PhotoStack({ images, label, onClick }) {
+  const [front, middle, back] = images;
+  return (
+    <button type="button" className="detail-social-card" onClick={onClick} aria-label={label}>
+      <span className="polaroid-stack">
+        <span className="polaroid polaroid-back2"><img src={back} alt="" loading="lazy" /></span>
+        <span className="polaroid polaroid-back1"><img src={middle} alt="" loading="lazy" /></span>
+        <span className="polaroid polaroid-front">
+          <img src={front} alt="" loading="lazy" />
+          <span className="polaroid-label">{label}</span>
+        </span>
+      </span>
+    </button>
+  );
+}
+
+// school's own student-life photos first, stock photos only to fill the stack
+function withFallback(own, fallback) {
+  const list = [...new Set((own ?? []).filter(Boolean))];
+  for (const f of fallback) if (list.length < 3 && !list.includes(f)) list.push(f);
+  return list.slice(0, 3);
+}
+
 
 // Один рядок інфо-блоку: підпис ліворуч, значення праворуч. Текст показується повністю,
 // а сітка лишається рівною при будь-якій довжині тексту.
@@ -249,40 +272,13 @@ export default function UniversityDetail({
               <div className="detail-section-heading">Teachers & social life</div>
 
               <div className="detail-social-row">
-                <div
-  className="detail-social-card"
-  onClick={() => setViewingTeachers(true)}
-  style={{ cursor: "pointer" }}
->
-                  <div className="detail-social-stack">
-                    <img
-                      src={uni.teacherImage || PLACEHOLDER_IMAGES.teacher}
-                      alt="Teachers"
-                      className="detail-social-img"
-                    />
-                  </div>
-                  <div className="detail-social-label">Teachers</div>
-                </div>
-                <div className="detail-social-card detail-social-card-clickable" onClick={() => setViewingStudentLife(true)}>
-                  <div className="detail-social-stack">
-                    <img
-                      src={uni.studentLifeImage || PLACEHOLDER_IMAGES.studentLife}
-                      alt="Student life"
-                      className="detail-social-img"
-                    />
-                  </div>
-                  <div className="detail-social-label">Student life</div>
-                </div>
-                <div className="detail-social-card detail-social-card-clickable" onClick={() => setViewingDorm(true)}>
-                  <div className="detail-social-stack">
-                    <img
-                      src={uni.dormImage || PLACEHOLDER_IMAGES.dorm}
-                      alt="Dorm"
-                      className="detail-social-img"
-                    />
-                  </div>
-                  <div className="detail-social-label">Dorm</div>
-                </div>
+                <PhotoStack label="Teachers" images={STACK_IMAGES.teachers} onClick={() => setViewingTeachers(true)} />
+                <PhotoStack
+                  label="Student life"
+                  images={withFallback(uni.studentLife?.sections?.flatMap((s) => s.images ?? []), STACK_IMAGES.studentLife)}
+                  onClick={() => setViewingStudentLife(true)}
+                />
+                <PhotoStack label="Dorm" images={STACK_IMAGES.dorm} onClick={() => setViewingDorm(true)} />
               </div>
             </>
           )}

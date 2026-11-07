@@ -5,7 +5,7 @@
 //   npm run enrich -- --dry-run                 показати, що буде заповнено (без запису)
 //   npm run enrich                              усі школи
 //   npm run enrich -- --only "UdK" --pages 14   лише одна школа
-import { mkdir, writeFile } from "node:fs/promises";
+import { access, mkdir, writeFile } from "node:fs/promises";
 import { parseArgs } from "node:util";
 import { crawlUniversity } from "./crawl.js";
 import { extractUniversityData, aiProvider } from "./extract.js";
@@ -18,6 +18,7 @@ const { values: args } = parseArgs({
     pages: { type: "string", default: "12" },
     "min-confidence": { type: "string", default: "0.6" },
     "dry-run": { type: "boolean", default: false },
+    force: { type: "boolean", default: false }, // доповнити й ті школи, що вже доповнювались
   },
 });
 
@@ -55,6 +56,12 @@ if (sErr) throw new Error(sErr.message);
 
 let list = unis.filter((u) => u.website_url && specs.some((s) => s[SPECIALTY_FK] === u.id));
 if (args.only) list = list.filter((u) => norm(u.name).includes(norm(args.only)));
+// школи, які вже доповнювались (є agent/out/enrich-<id>.json), пропускаємо — щоб не витрачати ліміт Gemini
+const done = async (u) => access(`out/enrich-${u.id}.json`).then(() => true, () => false);
+if (!args.force) {
+  const flags = await Promise.all(list.map(done));
+  list = list.filter((_, i) => !flags[i]);
+}
 list = list.slice(0, Number(args.limit));
 
 console.log(`Доповню ${list.length} школ(и), AI: ${aiProvider}${dryRun ? " (dry-run: без запису)" : ""}\n`);
@@ -109,6 +116,8 @@ for (const uni of list) {
     totalFields += fields;
   } catch (err) {
     console.log(`   ✗ пропущено: ${err.message}`);
+    // ліміт Gemini: далі немає сенсу; наступний запуск продовжить з цього місця
+    if (/ліміт/i.test(err.message)) { console.log("\nЛіміт Gemini вичерпано. Запустіть цю ж команду пізніше."); break; }
   }
   console.log();
 }
