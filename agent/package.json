@@ -13,7 +13,8 @@
     "dedupe": "node --env-file-if-exists=.env src/dedupe.js",
     "enrich": "node --env-file-if-exists=.env src/enrich.js",
     "mirror": "node --env-file-if-exists=.env src/mirror.js",
-    "student-life": "node --env-file-if-exists=.env src/studentLife.js"
+    "student-life": "node --env-file-if-exists=.env src/studentLife.js",
+    "audit-photos": "node --env-file-if-exists=.env src/auditPhotos.js"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^1.5.0",

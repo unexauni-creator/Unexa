@@ -542,7 +542,6 @@ export default function Home({ onSelectUni, savedUniversities, onToggleSave, cur
     return (
       <div key={uni.id} className="uni-card-new" onClick={() => onSelectUni(uni)}>
         <UniImage src={uni.image} name={uni.name} className="uni-card-img" />
-        {reasons?.length > 0 && <div className="uni-card-why">{reasons.join(" · ")}</div>}
         <div className="uni-card-glass">
           {/* the card photo again, heavily blurred: frosted glass that works in every browser */}
           {uni.image && <img src={uni.image} alt="" aria-hidden="true" className="card-glass-photo" />}

@@ -6,7 +6,7 @@ body .detail-tab,
 body .community-tab,
 body .settings-tab {
   background: linear-gradient(180deg, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0.22) 100%);
-  border: 1px solid rgba(255,255,255,0.75);
+  border: 1px solid rgba(255,255,255,0.35);
   border-bottom: none;
   border-radius: 14px 14px 0 0;
   backdrop-filter: blur(14px) saturate(140%);
@@ -25,7 +25,7 @@ body .detail-tab.active,
 body .community-tab.active,
 body .settings-tab.active {
   background: linear-gradient(180deg, #b8927f 0%, #AC8876 100%);
-  border-color: rgba(255,255,255,0.35);
+  border-color: rgba(255,255,255,0.15);
   color: #fff;
   box-shadow: 0 8px 18px rgba(172,136,118,0.35), inset 0 1px 0 rgba(255,255,255,0.3);
   z-index: 1;
@@ -37,8 +37,8 @@ body .community-content,
 body .home-panel,
 body .settings-scroll {
   background: linear-gradient(160deg, rgba(255,255,255,0.42) 0%, rgba(255,255,255,0.16) 100%);
-  border: 1.5px solid rgba(255,255,255,0.85);
-  box-shadow: 0 18px 40px rgba(43,31,24,0.06), inset 0 1px 0 rgba(255,255,255,0.6);
+  border: 1px solid rgba(255,255,255,0.4);
+  box-shadow: 0 18px 40px rgba(43,31,24,0.05), inset 0 1px 0 rgba(255,255,255,0.35);
   backdrop-filter: blur(20px) saturate(140%);
   -webkit-backdrop-filter: blur(20px) saturate(140%);
 }
@@ -64,5 +64,3 @@ body .settings-scroll {
   .uni-card-glass, .community-card-glass { --plate-gap: 8px; --card-ratio: 16 / 9; }
 }
 
-/* the "Fine Arts · Ukraine" pill: darker frosted so it reads on light photos too */
-body .uni-card-why { background: rgba(30, 26, 22, 0.45); border-color: rgba(255,255,255,0.35); }

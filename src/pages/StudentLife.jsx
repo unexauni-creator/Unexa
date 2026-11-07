@@ -1,5 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
-import { createPortal } from "react-dom";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 // Student life of one school as a photo gallery of student ACTIVITIES, collected by the Unexa agent
 // from the school's official website (universities.student_life). Housing lives on the Dorm page,
@@ -29,90 +28,42 @@ function CategoryIcon({ category, size = 28 }) {
 
 const imagesOf = (s) => (s.images?.length ? s.images : s.image ? [s.image] : []);
 
-// Rows of a 4-column grid: 2+1+1, then 1+1+2, … A tile is never wider than half the page,
-// even when a school has one activity. Four left at the end become 2+2 and 2+2, so no holes.
-function tileSpans(count) {
-  const spans = [];
-  let left = count;
-  let flip = false;
-  while (left > 0) {
-    if (left === 4 || left === 2) { spans.push(2, 2); left -= 2; }
-    else if (left === 1) { spans.push(2); left = 0; }
-    else { spans.push(...(flip ? [1, 1, 2] : [2, 1, 1])); left -= 3; flip = !flip; }
-  }
-  return spans;
-}
-
-function Tile({ section, span, onOpen }) {
+// Pinterest-style board: every photo keeps its own shape, with the activity's text on the photo.
+// The first photo of an activity carries its full description, extra photos only the title.
+function Pin({ section, image, main }) {
   const [broken, setBroken] = useState(false);
-  const imgs = imagesOf(section);
-  const cover = !broken ? imgs[0] : null;
-  return (
-    <button type="button" className={`sl-tile span-${span} ${cover ? "" : "is-placeholder"}`} onClick={onOpen}>
-      {cover ? (
-        <img src={cover} alt="" loading="lazy" onError={() => setBroken(true)} />
-      ) : (
-        <span className="sl-tile-icon"><CategoryIcon category={section.category} size={34} /></span>
-      )}
-      <span className="sl-tile-pill">{CATEGORY[section.category] ?? "Activity"}</span>
-      {imgs.length > 1 && <span className="sl-tile-count">{imgs.length} photos</span>}
-      <span className="sl-tile-caption">
-        <span className="sl-tile-title">{section.title}</span>
-        <span className="sl-tile-text">{section.text}</span>
-      </span>
-    </button>
-  );
-}
-
-function Lightbox({ section, onClose }) {
-  const imgs = imagesOf(section);
-  const [i, setI] = useState(0);
-  const prev = useCallback(() => setI((n) => (n - 1 + imgs.length) % imgs.length), [imgs.length]);
-  const next = useCallback(() => setI((n) => (n + 1) % imgs.length), [imgs.length]);
-
+  const [pinHeight, setPinHeight] = useState(0);
+  const pinRef = useRef(null);
+  const showImage = image && !broken;
+  // the blurred photo inside the glass plate lines up with the photo behind it
   useEffect(() => {
-    const onKey = (e) => {
-      if (e.key === "Escape") onClose();
-      if (imgs.length > 1 && e.key === "ArrowLeft") prev();
-      if (imgs.length > 1 && e.key === "ArrowRight") next();
-    };
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, [imgs.length, onClose, prev, next]);
-
-  return createPortal(
-    <div className="sl-lightbox" role="dialog" aria-modal="true" aria-label={section.title} onClick={onClose}>
-      <div className="sl-lightbox-panel" onClick={(e) => e.stopPropagation()}>
-        <div className={`sl-lightbox-media ${imgs.length ? "" : "is-placeholder"}`}>
-          {imgs.length ? <img key={imgs[i]} src={imgs[i]} alt="" /> : <span className="sl-tile-icon"><CategoryIcon category={section.category} size={44} /></span>}
-          {imgs.length > 1 && (
-            <>
-              <button type="button" className="sl-lightbox-nav is-prev" onClick={prev} aria-label="Previous photo">‹</button>
-              <button type="button" className="sl-lightbox-nav is-next" onClick={next} aria-label="Next photo">›</button>
-              <div className="sl-lightbox-dots">{imgs.map((u, n) => <span key={u} className={n === i ? "is-active" : ""} />)}</div>
-            </>
-          )}
-        </div>
-        <div className="sl-lightbox-info">
-          <span className="sl-lightbox-pill"><CategoryIcon category={section.category} size={16} /> {CATEGORY[section.category] ?? "Activity"}</span>
-          <h3>{section.title}</h3>
-          <p>{section.text}</p>
-          {section.highlights?.length > 0 && (
-            <ul className="sl-lightbox-highlights">{section.highlights.slice(0, 4).map((h) => <li key={h}>{h}</li>)}</ul>
-          )}
-          {section.credits?.[imgs[i]] && (
-            <a className="sl-lightbox-credit" href={section.credits[imgs[i]].url} target="_blank" rel="noopener noreferrer">
-              Photo: {section.credits[imgs[i]].text}
-            </a>
-          )}
-          {section.url && (
-            <a className="sl-lightbox-link" href={section.url} target="_blank" rel="noopener noreferrer">Official page <span aria-hidden="true">↗</span></a>
-          )}
-        </div>
-        <button type="button" className="sl-lightbox-close" onClick={onClose} aria-label="Close">✕</button>
+    const el = pinRef.current;
+    if (!el) return;
+    const ro = new ResizeObserver(() => setPinHeight(el.offsetHeight));
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
+  if (!showImage && !main) return null;
+  const credit = section.credits?.[image];
+  return (
+    <article className={`sl-pin ${main ? "is-main" : "is-extra"} ${showImage ? "" : "is-placeholder"}`} ref={pinRef} style={{ "--pin-h": `${pinHeight}px` }}>
+      {showImage ? (
+        <img className="sl-pin-img" src={image} alt="" loading="lazy" onError={() => setBroken(true)} />
+      ) : (
+        <div className="sl-pin-icon"><CategoryIcon category={section.category} size={36} /></div>
+      )}
+      <span className="sl-pin-pill">{CATEGORY[section.category] ?? "Activity"}</span>
+      <div className="sl-pin-caption">
+        {/* same frosted plate as the programme cards: a blurred copy of the photo, works in every browser */}
+        {showImage && <img className="sl-pin-frost" src={image} alt="" aria-hidden="true" loading="lazy" />}
+        <div className="sl-pin-tint" aria-hidden="true" />
+        <h3 className="sl-pin-title">{section.title}</h3>
+        {main && section.text && <div className="sl-pin-more"><p className="sl-pin-text">{section.text}</p></div>}
+        {credit && (
+          <a className="sl-pin-credit" href={credit.url} target="_blank" rel="noopener noreferrer">Photo: {credit.text}</a>
+        )}
       </div>
-    </div>,
-    document.body
+    </article>
   );
 }
 
@@ -120,8 +71,14 @@ export default function StudentLife({ onBack, uni }) {
   const data = uni?.studentLife;
   // only activities — older data may still contain housing / payments / offices
   const sections = useMemo(() => (data?.sections ?? []).filter((s) => CATEGORY[s.category]), [data]);
-  const spans = useMemo(() => tileSpans(sections.length), [sections.length]);
-  const [open, setOpen] = useState(null);
+  // first photo of each activity with its text, then the extra photos spread through the board
+  const pins = useMemo(() => {
+    const main = sections.map((sec) => ({ section: sec, image: imagesOf(sec)[0] ?? null, main: true }));
+    const extra = sections.flatMap((sec) => imagesOf(sec).slice(1).map((image) => ({ section: sec, image, main: false })));
+    const out = [];
+    main.forEach((p, i) => { out.push(p); if (extra[i]) out.push(extra[i]); });
+    return [...out, ...extra.slice(main.length)];
+  }, [sections]);
 
   return (
     <div className="student-life-page">
@@ -150,18 +107,15 @@ export default function StudentLife({ onBack, uni }) {
         </div>
       ) : (
         <>
-          <div className="sl-gallery">
-            {sections.map((s, i) => (
-              <Tile key={`${s.category}-${s.title}`} section={s} span={spans[i]} onOpen={() => setOpen(s)} />
-            ))}
+          <div className="sl-board">
+            {pins.map((p, i) => <Pin key={`${p.section.title}-${i}`} {...p} />)}
           </div>
 
-          <p className="sl-source">Collected from {uni?.name}'s official website. Click a photo to see details and the source page.</p>
+          <p className="sl-source">Collected from {uni?.name}'s official website. Details can change, so check the linked pages before you apply.</p>
         </>
       )}
       </div>
 
-      {open && <Lightbox section={open} onClose={() => setOpen(null)} />}
     </div>
   );
 }

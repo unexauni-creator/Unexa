@@ -5,6 +5,12 @@
 // Якщо різних фото не вистачило — програма лишається без власного фото і показує фото школи.
 import { findImagePool, findPageImage, findCommonsImages } from "./photo.js";
 import { mirrorImage } from "./storage.js";
+import { readFileSync } from "node:fs";
+
+// photos rejected by `npm run audit-photos` (maps, diagrams, very light…) are never picked again
+const rejected = (() => {
+  try { return new Set(JSON.parse(readFileSync("out/rejected-images.json", "utf8"))); } catch { return new Set(); }
+})();
 
 const urlsIn = (text) => (text ?? "").match(/https?:\/\/[^\s,;]+/g) ?? [];
 
@@ -26,7 +32,7 @@ export async function assignProgramImages(supabase, uni, { dryRun = false, log =
   if (!todo.length) return 0;
 
   // фото, які вже зайняті: обкладинка школи й фото інших програм
-  const used = new Set([uni.cover_image_url, ...specs.map((s) => s.image_url)].filter(Boolean));
+  const used = new Set([uni.cover_image_url, ...specs.map((s) => s.image_url), ...rejected].filter(Boolean));
   let pool = null; // набір фото школи завантажуємо лише якщо знадобиться
   let commons = null; // запасне джерело: Wikimedia Commons (вільні ліцензії)
 
