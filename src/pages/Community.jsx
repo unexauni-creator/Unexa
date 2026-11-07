@@ -254,8 +254,8 @@ export default function Community({ currentUser, avatarUrl, legacyJoinedIds = []
                     {group.image_url && <img src={group.image_url} alt="" aria-hidden="true" className="card-glass-photo" />}
                     <div className="community-card-glass-blur" />
                     <div className="community-card-text">
-                      <div className="community-card-title">{group.name}</div>
-                      <div className="community-card-subtitle">{[group.city, group.country].filter(Boolean).join(", ")}</div>
+                      <div className="community-card-title" title={group.name}>{group.name}</div>
+                      <div className="community-card-subtitle" title={[group.city, group.country].filter(Boolean).join(", ")}>{[group.city, group.country].filter(Boolean).join(", ")}</div>
                       <div className="community-card-members">
                         {group.members != null ? membersLabel(group.members) : group.member_count}
                         {group.posts > 0 && ` · ${group.posts} ${group.posts === 1 ? "post" : "posts"}`}
