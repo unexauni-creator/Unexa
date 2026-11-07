@@ -9,6 +9,11 @@ import { parseArgs } from "node:util";
 import { getSupabase } from "./db.js";
 import { findCoverImage } from "./photo.js";
 import { assignProgramImages } from "./programImages.js";
+import { readFileSync } from "node:fs";
+
+const rejected = (() => {
+  try { return new Set(JSON.parse(readFileSync("out/rejected-images.json", "utf8"))); } catch { return new Set(); }
+})();
 
 const { values: args } = parseArgs({ options: { "dry-run": { type: "boolean", default: false }, "fix-broken": { type: "boolean", default: false }, programs: { type: "boolean", default: false } } });
 const supabase = getSupabase();
@@ -39,7 +44,8 @@ console.log(`Без фото або з битим фото: ${missing.length} з
 
 let filled = 0;
 for (const u of missing) {
-  const cover = await findCoverImage(u.website_url).catch(() => null);
+  const found = await findCoverImage(u.website_url).catch(() => null);
+  const cover = found && !rejected.has(found) ? found : null; // never put back a photo the audit rejected
   if (!cover) {
     console.log(`– ${u.name}: фото не знайдено (лишиться заглушка)`);
     continue;

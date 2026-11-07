@@ -54,7 +54,7 @@ function Pin({ section, image, main, href, onHover }) {
       href={href || undefined}
       target="_blank"
       rel="noopener noreferrer"
-      onMouseEnter={() => href && onHover(true)}
+      onMouseEnter={(e) => href && onHover(true, e)}
       onMouseLeave={() => onHover(false)}
     >
       {showImage ? (
@@ -118,18 +118,23 @@ export default function StudentLife({ onBack, uni }) {
         </div>
       ) : (
         <>
-          <div className="sl-board" onMouseMove={(e) => cursor && setCursor({ x: e.clientX, y: e.clientY })}>
+          <div
+            className="sl-board"
+            // only moves the cursor while it is shown (over a card); reading the latest state avoids bringing it back after leaving a card
+            onMouseMove={(e) => { const x = e.clientX, y = e.clientY; setCursor((c) => (c ? { x, y } : c)); }}
+            onMouseLeave={() => setCursor(null)}
+          >
             {pins.map((p, i) => (
               <Pin
                 key={`${p.section.title}-${i}`}
                 {...p}
                 href={p.section.url || uni?.website}
-                onHover={(on) => setCursor(on ? { x: -999, y: -999 } : null)}
+                onHover={(on, e) => setCursor(on ? { x: e.clientX, y: e.clientY } : null)}
               />
             ))}
           </div>
           {/* outside the page in the DOM, so the glass containers above can't shift a fixed-position element */}
-          {cursor && cursor.x > -999 && createPortal(
+          {cursor && createPortal(
             <div className="sl-hover-cursor" style={{ left: cursor.x, top: cursor.y }}>Official page ↗</div>,
             document.body,
           )}

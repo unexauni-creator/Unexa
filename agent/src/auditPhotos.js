@@ -1,4 +1,4 @@
-// Checks the programme card photos with Gemini (it sees the images) and removes unsuitable ones:
+// Checks the school cover photos and programme card photos with Gemini (it sees the images) and removes unsuitable ones:
 // maps, diagrams, screenshots, logos, text graphics and very light photos (white card text would not read).
 // Removed photos are remembered in agent/out/rejected-images.json so they are never picked again;
 // then run `npm run photos -- --programs` to give those programmes new photos.
@@ -47,14 +47,14 @@ async function download(url) {
   return bytes.length > 3_000_000 ? null : { mimeType: type, data: bytes.toString("base64") };
 }
 
-const { data: unis, error } = await supabase.from("universities").select("id, name, specialties(id, name, image_url)").order("name");
+const { data: unis, error } = await supabase.from("universities").select("id, name, cover_image_url, specialties(id, name, image_url)").order("name");
 if (error) throw new Error(error.message);
 const norm = (s) => (s ?? "").toLowerCase();
 const list = args.only ? unis.filter((u) => norm(u.name).includes(norm(args.only))) : unis;
 
 let removed = 0;
 for (const uni of list) {
-  const urls = [...new Set(uni.specialties.map((s) => s.image_url).filter((u) => u && !audited.has(u)))].slice(0, 20);
+  const urls = [...new Set([uni.cover_image_url, ...uni.specialties.map((s) => s.image_url)].filter((u) => u && !audited.has(u)))].slice(0, 20);
   if (!urls.length) continue;
   const loaded = [];
   for (const url of urls) {
@@ -88,6 +88,16 @@ for (const uni of list) {
         if (e) console.log(`     ✗ ${e.message}`);
         else removed++;
       }
+    }
+  }
+  // a bad school cover is replaced by one of the school's own programme photos that passed the check
+  if (rejected.has(uni.cover_image_url)) {
+    const good = uni.specialties.map((s) => s.image_url).find((u) => u && audited.has(u) && !rejected.has(u)) ?? null;
+    console.log(`   – фото школи: ${good ? "замінено фото однієї з програм" : "прибрано"}`);
+    if (!args["dry-run"]) {
+      const { error: e } = await supabase.from("universities").update({ cover_image_url: good }).eq("id", uni.id);
+      if (e) console.log(`     ✗ ${e.message}`);
+      else removed++;
     }
   }
   if (!args["dry-run"]) {
