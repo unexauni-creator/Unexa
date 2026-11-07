@@ -170,3 +170,20 @@ a.dm-listing:hover .dm-listing-go span { transform: translateX(3px); }
   .dm-facts > div { flex: 1; padding: 10px 12px; }
   .dm-facts strong { font-size: 15px; white-space: normal; }
 }
+
+/* one stat fills the row instead of leaving an empty cell */
+.tc-stats { grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); }
+/* teacher rows: name, role, then a short career */
+.tc-row { grid-template-columns: 34px 48px minmax(0, 1fr) 24px; align-items: start; }
+.tc-row .tc-num, .tc-row .tc-mono { margin-top: 2px; }
+.tc-row .tc-arrow { margin-top: 4px; }
+.tc-bio { font-size: 14px; line-height: 1.55; color: #3a2f28; margin-top: 8px; max-width: 620px; }
+.tc-others { margin-top: 26px; }
+.tc-others summary { list-style: none; display: flex; justify-content: space-between; cursor: pointer; font-size: 11px; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; color: #8a7c70; padding: 0 6px 10px; border-bottom: 1px solid rgba(43,31,24,0.2); }
+.tc-others summary::-webkit-details-marker { display: none; }
+.tc-others summary span:first-child::before { content: "▸ "; display: inline-block; transition: transform 0.2s; }
+.tc-others[open] summary span:first-child::before { content: "▾ "; }
+.tc-others .tc-row { padding: 12px 6px; }
+.tc-others .tc-mono { width: 38px; height: 38px; font-size: 13px; }
+.tc-others .tc-name { font-size: 15px; }
+@media (max-width: 640px) { .tc-row { grid-template-columns: 40px minmax(0, 1fr) 20px; } }

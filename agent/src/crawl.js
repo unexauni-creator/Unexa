@@ -20,7 +20,7 @@ const KEYWORDS = [
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
-async function get(url) {
+export async function get(url) {
   const res = await fetch(url, {
     headers: { "User-Agent": USER_AGENT, "Accept-Language": "en,fr;q=0.8" },
     redirect: "follow",
@@ -63,7 +63,7 @@ export function htmlToText(html) {
     .trim();
 }
 
-function extractLinks(html, baseUrl) {
+export function extractLinks(html, baseUrl) {
   const links = new Map();
   for (const m of html.matchAll(/<a\s[^>]*href=["']([^"'#]+)["'][^>]*>([\s\S]*?)<\/a>/gi)) {
     try {
