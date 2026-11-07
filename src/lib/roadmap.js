@@ -126,3 +126,33 @@ export const STAGES = [
 export function fmt(d, withYear = true) {
   return d.toLocaleDateString("en-GB", { day: "numeric", month: "short", ...(withYear ? { year: "numeric" } : {}) });
 }
+
+// ── Editable to-do list ──────────────────────────────────────────────────────
+// The plan above only seeds the list; after that the student owns it: rename, re-date, add, delete, move.
+// Saved in profiles.roadmap_progress as { version: 2, tasks: [...] }.
+export const iso = (d) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+export const fromIso = (s) => (s ? new Date(`${s}T00:00:00`) : null);
+export const newId = () => Math.random().toString(36).slice(2, 10);
+
+export function seedTasks(plan) {
+  const tasks = plan.steps
+    .filter((s) => s.id !== "apply")
+    .map((s) => ({ id: s.id, title: s.title, note: s.hint, date: iso(s.date), stage: s.stage, status: "todo" }));
+  return tasks;
+}
+
+/** One "Apply" task per saved programme, added when the programme is saved; never removed automatically. */
+export function withProgramTasks(tasks, plan, programs) {
+  const have = new Set(tasks.filter((t) => t.programId).map((t) => String(t.programId)));
+  const added = programs
+    .filter((p) => !have.has(String(p.id)))
+    .map((p) => {
+      const d = plan.deadlines.find((x) => x.program.id === p.id)?.deadline;
+      return {
+        id: `apply-${p.id}`, programId: p.id, stage: "apply", status: "todo",
+        title: `Apply: ${p.program}`, note: `${p.name}${d?.expected ? " · date based on last year" : ""}`,
+        date: d ? iso(d.date) : "",
+      };
+    });
+  return added.length ? [...tasks, ...added] : tasks;
+}
