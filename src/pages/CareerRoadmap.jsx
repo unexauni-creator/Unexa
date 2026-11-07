@@ -107,7 +107,8 @@ export default function CareerRoadmap({ savedUniversities = [], currentUser, onS
   const [tasks, setTasks] = useState(null); // null until loaded
   const [inAccount, setInAccount] = useState(true);
   const [view, setView] = useState("list");
-  const [closed, setClosed] = useState({}); // collapsed groups
+  const [folder, setFolder] = useState(null); // the stage folder that is open, or null for all folders
+  const [notes, setNotes] = useState({}); // free notes written inside each folder
   const [justAdded, setJustAdded] = useState(null);
   const [dragId, setDragId] = useState(null);
   const saveTimer = useRef(null);
@@ -121,6 +122,8 @@ export default function CareerRoadmap({ savedUniversities = [], currentUser, onS
       setStartYear(r.startYear);
       setInAccount(r.inAccount);
       const saved = r.progress?.version === 2 ? r.progress.tasks : null;
+      setNotes(r.progress?.notes ?? {});
+      latest.current = { ...latest.current, notes: r.progress?.notes ?? {} };
       setTasks(saved ?? "seed");
     };
     if (!userId) done({ startYear: null, progress: {}, inAccount: false });
@@ -137,12 +140,24 @@ export default function CareerRoadmap({ savedUniversities = [], currentUser, onS
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tasks, plan, savedUniversities]);
 
-  function commit(next) {
-    setTasks(next);
+  // tasks and notes are saved together, a moment after the last change
+  const latest = useRef({ tasks: [], notes: {} });
+  function persist() {
     clearTimeout(saveTimer.current);
     saveTimer.current = setTimeout(() => {
-      if (userId) saveProgress(userId, { version: 2, tasks: next }, inAccount).catch((e) => console.error("Couldn't save the roadmap:", e.message));
+      if (userId) saveProgress(userId, { version: 2, ...latest.current }, inAccount).catch((e) => console.error("Couldn't save the roadmap:", e.message));
     }, 500);
+  }
+  function commit(next) {
+    setTasks(next);
+    latest.current = { ...latest.current, tasks: next };
+    persist();
+  }
+  function writeNote(stageId, text) {
+    const next = { ...latest.current.notes, [stageId]: text };
+    setNotes(next);
+    latest.current = { ...latest.current, notes: next };
+    persist();
   }
 
   const list = Array.isArray(tasks) ? tasks : [];
@@ -200,8 +215,6 @@ export default function CareerRoadmap({ savedUniversities = [], currentUser, onS
       <div className="rm-panel">
         <div className="rm-scroll">
           <div className="rm-doc">
-            <h2 className="rm-doc-title">My application plan</h2>
-
             <div className="rm-callout">
               <span className="rm-callout-icon" aria-hidden="true">💡</span>
               <div>Every line here is yours. Click a task to rename it, click a date to change it, and add your own with <b>+ New task</b>. Saved programmes appear as <b>Apply</b> tasks with their deadline.</div>
@@ -242,7 +255,7 @@ export default function CareerRoadmap({ savedUniversities = [], currentUser, onS
             {/* views */}
             <div className="rm-views">
               <div className="rm-view-tabs" role="tablist">
-                <button role="tab" aria-selected={view === "list"} className={view === "list" ? "active" : ""} onClick={() => setView("list")}>☰ List</button>
+                <button role="tab" aria-selected={view === "list"} className={view === "list" ? "active" : ""} onClick={() => { setView("list"); setFolder(null); }}>📁 Folders</button>
                 <button role="tab" aria-selected={view === "board"} className={view === "board" ? "active" : ""} onClick={() => setView("board")}>▦ Board</button>
                 <button role="tab" aria-selected={view === "gallery"} className={view === "gallery" ? "active" : ""} onClick={() => setView("gallery")}>🖼 Programmes</button>
               </div>
@@ -283,28 +296,62 @@ export default function CareerRoadmap({ savedUniversities = [], currentUser, onS
                   <span>+</span>Save more programmes on Home
                 </button>
               </div>
-            ) : view === "list" ? (
-              <div className="rm-groups">
+            ) : view === "list" && !folder ? (
+              /* every stage is a folder; open one to see its tasks and write notes */
+              <div className="rm-folders">
                 {STAGES.map((st) => {
-                  const items = list.filter((t) => t.stage === st.id).sort(byDate);
-                  const open = !closed[st.id];
+                  const items = list.filter((t) => t.stage === st.id);
+                  const done = items.filter((t) => t.status === "done").length;
+                  const next = items.filter((t) => t.status !== "done" && t.date).sort(byDate)[0];
                   return (
-                    <section key={st.id} className="rm-group">
-                      <button className="rm-group-head" onClick={() => setClosed((c) => ({ ...c, [st.id]: open }))} aria-expanded={open}>
-                        <span className={`rm-caret ${open ? "open" : ""}`}>▸</span>
-                        <span className={`rm-tag ${st.color}`}><span aria-hidden="true">{st.emoji}</span> {st.label}</span>
-                        <span className="rm-group-count">{items.filter((t) => t.status === "done").length}/{items.length}</span>
-                      </button>
-                      {open && (
-                        <div className="rm-group-body">
-                          {items.map((t) => renderRow(t))}
-                          <button className="rm-add" onClick={() => add({ stage: st.id })}>+ New task</button>
-                        </div>
-                      )}
-                    </section>
+                    <button key={st.id} className={`rm-folder ${st.color}`} onClick={() => setFolder(st.id)}>
+                      <span className="rm-folder-tab" aria-hidden="true" />
+                      <span className="rm-folder-emoji" aria-hidden="true">{st.emoji}</span>
+                      <span className="rm-folder-name">{st.label}</span>
+                      <span className="rm-folder-meta">{done}/{items.length} done{notes[st.id]?.trim() ? " · 📝 notes" : ""}</span>
+                      <span className="rm-folder-bar"><span style={{ width: `${items.length ? (done / items.length) * 100 : 0}%` }} /></span>
+                      {next && <span className="rm-folder-next">Next: {next.title} · {fmt(fromIso(next.date), false)}</span>}
+                    </button>
                   );
                 })}
               </div>
+            ) : view === "list" ? (
+              (() => {
+                const st = STAGES.find((x) => x.id === folder);
+                const items = list.filter((t) => t.stage === folder).sort(byDate);
+                const done = items.filter((t) => t.status === "done").length;
+                return (
+                  <div className={`rm-folder-page ${st.color}`}>
+                    <div className="rm-crumbs">
+                      <button className="rm-crumb" onClick={() => setFolder(null)}>📁 Folders</button>
+                      <span aria-hidden="true">/</span>
+                      <span>{st.emoji} {st.label}</span>
+                    </div>
+                    <div className="rm-folder-head">
+                      <span className="rm-folder-head-emoji" aria-hidden="true">{st.emoji}</span>
+                      <div>
+                        <h2 className="rm-folder-title">{st.label}</h2>
+                        <div className="rm-faint">{done} of {items.length} done</div>
+                      </div>
+                    </div>
+
+                    <div className="rm-section-label">Notes</div>
+                    <textarea
+                      className="rm-notes"
+                      value={notes[folder] ?? ""}
+                      onChange={(e) => writeNote(folder, e.target.value)}
+                      placeholder={`Write anything about ${st.label.toLowerCase()}: ideas, links, questions for the school…`}
+                      rows={Math.max(4, (notes[folder] ?? "").split("\n").length + 1)}
+                    />
+
+                    <div className="rm-section-label">Tasks</div>
+                    <div className="rm-folder-tasks">
+                      {items.map((t) => renderRow(t))}
+                      <button className="rm-add" onClick={() => add({ stage: folder })}>+ New task</button>
+                    </div>
+                  </div>
+                );
+              })()
             ) : (
               <div className="rm-board">
                 {STATUSES.map((s) => {
