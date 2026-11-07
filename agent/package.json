@@ -15,7 +15,8 @@
     "mirror": "node --env-file-if-exists=.env src/mirror.js",
     "student-life": "node --env-file-if-exists=.env src/studentLife.js",
     "audit-photos": "node --env-file-if-exists=.env src/auditPhotos.js",
-    "seed-groups": "node --env-file-if-exists=.env src/seedGroups.js"
+    "seed-groups": "node --env-file-if-exists=.env src/seedGroups.js",
+    "campus": "node --env-file-if-exists=.env src/campusInfo.js"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^1.5.0",

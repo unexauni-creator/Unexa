@@ -102,6 +102,37 @@ export const STUDENT_LIFE_FOCUS = {
   penalty: ["login", "intranet", "news/20", "press", "procurement", "przetarg", "tender", "career-staff", "jobs"],
 };
 
+// Профіль для сторінок викладачів (кількома мовами)
+export const FACULTY_FOCUS = {
+  keywords: [
+    "faculty", "staff", "teachers", "teaching staff", "lecturers", "professors", "tutors", "people", "our team", "academic staff", "visiting",
+    "enseignants", "équipe pédagogique", "professeurs", "intervenants",
+    "profesores", "profesorado", "docentes", "claustro",
+    "docenti", "corpo docente", "professori",
+    "lehrende", "professorinnen", "professoren", "dozenten", "personen",
+    "kadra", "wykładowcy", "pracownicy", "nauczyciele akademiccy",
+    "викладач", "кафедр", "професор", "склад",
+    "studio", "workshop", "werkstatt", "pracownia", "atelier", "laboratori", "майстерн",
+  ],
+  boost: ["faculty", "teaching staff", "lehrende", "docenti", "profesorado", "kadra", "wykładowcy", "викладач", "enseignants", "people"],
+  penalty: ["login", "intranet", "news/20", "press", "procurement", "przetarg", "tender", "jobs", "vacanc", "career", "admin"],
+};
+
+// Профіль для сторінок житла (кількома мовами)
+export const HOUSING_FOCUS = {
+  keywords: [
+    "housing", "accommodation", "residence", "residences", "halls", "dorm", "living", "rent", "international students",
+    "logement", "résidence", "crous", "hébergement",
+    "alojamiento", "residencia", "colegio mayor", "vivienda",
+    "alloggi", "alloggio", "residenze", "housing office", "dsu",
+    "wohnen", "wohnheim", "studierendenwerk", "unterkunft",
+    "akademik", "akademiki", "dom studenta", "zakwaterowanie",
+    "гуртожит", "поселен", "проживан",
+  ],
+  boost: ["housing", "accommodation", "residence", "logement", "alojamiento", "alloggi", "wohnheim", "akademik", "гуртожит", "crous", "studierendenwerk"],
+  penalty: ["login", "intranet", "news/20", "press", "procurement", "przetarg", "tender", "jobs", "staff"],
+};
+
 function score(url, text, focus = PROGRAMS_FOCUS) {
   const hay = `${url} ${text}`.toLowerCase();
   let s = focus.keywords.reduce((acc, k) => acc + (hay.includes(k) ? 1 : 0), 0);

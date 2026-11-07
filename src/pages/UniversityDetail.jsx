@@ -173,10 +173,10 @@ export default function UniversityDetail({
         <StudentLife uni={uni} onBack={() => setViewingStudentLife(false)} />
       )}
       {activeTab === "info" && viewingDorm && (
-        <Dorm onBack={() => setViewingDorm(false)} />
+        <Dorm uni={uni} onBack={() => setViewingDorm(false)} />
       )}
       {activeTab === "info" && viewingTeachers && (
-  <TeachersSection onBack={() => setViewingTeachers(false)} />
+  <TeachersSection uni={uni} onBack={() => setViewingTeachers(false)} />
 )}
 
 {activeTab === "info" && !viewingTeachers && !viewingStudentLife && !viewingDorm && (
@@ -272,13 +272,13 @@ export default function UniversityDetail({
               <div className="detail-section-heading">Teachers & social life</div>
 
               <div className="detail-social-row">
-                <PhotoStack label="Teachers" images={STACK_IMAGES.teachers} onClick={() => setViewingTeachers(true)} />
+                <PhotoStack label="Teachers" images={withFallback([uni.image, ...(uni.studentLife?.sections ?? []).filter((s) => /workshops|exhibitions/.test(s.category)).flatMap((s) => s.images ?? [])], STACK_IMAGES.teachers)} onClick={() => setViewingTeachers(true)} />
                 <PhotoStack
                   label="Student life"
                   images={withFallback(uni.studentLife?.sections?.flatMap((s) => s.images ?? []), STACK_IMAGES.studentLife)}
                   onClick={() => setViewingStudentLife(true)}
                 />
-                <PhotoStack label="Dorm" images={STACK_IMAGES.dorm} onClick={() => setViewingDorm(true)} />
+                <PhotoStack label="Dorm" images={withFallback([uni.universityImage], STACK_IMAGES.dorm)} onClick={() => setViewingDorm(true)} />
               </div>
             </>
           )}

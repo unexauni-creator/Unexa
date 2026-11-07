@@ -39,6 +39,9 @@ export function mapSpecialty(rawRow) {
     website: uni?.website_url,
     // студентське життя, яке зібрав агент з офіційного сайту (universities.student_life)
     studentLife: uni?.student_life ?? null,
+    // викладачі й житло, які агент зібрав з офіційного сайту (universities.faculty / housing)
+    faculty: uni?.faculty ?? null,
+    housing: uni?.housing ?? null,
     studentLifeImage: uni?.student_life?.sections?.find((s) => s.image)?.image ?? null,
     description: uni?.description || row.description,
 
