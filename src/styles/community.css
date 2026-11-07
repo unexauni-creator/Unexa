@@ -167,3 +167,30 @@
   .cm-join { width: 100%; }
   .cm-post { padding: 12px; }
 }
+
+/* like Home: header, search and tabs stay put, only the frosted box with groups scrolls */
+.community-header { height: 100%; box-sizing: border-box; display: flex; flex-direction: column; overflow: hidden; padding-bottom: 28px; }
+.community-title, .community-desc, .community-search-row { flex-shrink: 0; }
+.community-content { flex: 1; min-height: 0; overflow-y: auto; scrollbar-width: thin; scrollbar-color: rgba(172,136,118,0.5) transparent; }
+@supports selector(::-webkit-scrollbar) { .community-content { scrollbar-width: auto; scrollbar-color: auto; } }
+.community-content::-webkit-scrollbar { width: 6px; }
+.community-content::-webkit-scrollbar-track { background: transparent; margin: 28px 0; }
+.community-content::-webkit-scrollbar-thumb { background: rgba(172,136,118,0.4); border-radius: 6px; }
+
+/* phone: the whole page scrolls together, as on Home */
+@media (max-width: 768px) {
+  .community-header { height: auto; overflow: visible; }
+  .community-content { flex: none; overflow: visible; }
+}
+
+/* the frosted box stays still; the list inside scrolls and fades out at the top, as on Home */
+.community-content { display: flex; flex-direction: column; overflow: hidden; padding: 0; }
+.community-scroll { flex: 1; min-height: 0; overflow-y: auto; padding: 24px 20px 28px;
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 24px); mask-image: linear-gradient(to bottom, transparent 0, #000 24px); }
+.community-scroll::-webkit-scrollbar { width: 6px; }
+.community-scroll::-webkit-scrollbar-track { background: transparent; margin: 28px 0; }
+.community-scroll::-webkit-scrollbar-thumb { background: rgba(172,136,118,0.4); border-radius: 6px; }
+@media (max-width: 768px) {
+  .community-content { overflow: visible; }
+  .community-scroll { overflow: visible; -webkit-mask-image: none; mask-image: none; padding: 20px 16px; }
+}

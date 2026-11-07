@@ -236,6 +236,7 @@ export default function Community({ currentUser, avatarUrl, legacyJoinedIds = []
       </div>
 
       <div className="community-content">
+        <div className="community-scroll">
         {loading && <div className="cm-muted-center">Loading groups…</div>}
         {!loading && loadError && <div className="cm-error-box">Couldn't load groups: {loadError}</div>}
 
@@ -275,6 +276,7 @@ export default function Community({ currentUser, avatarUrl, legacyJoinedIds = []
             </div>
           )
         )}
+        </div>
       </div>
     </div>
   );
