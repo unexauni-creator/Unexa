@@ -1,0 +1,51 @@
+/* Shared frosted glass for tabs and their content containers (programme page, Home, Community, Settings).
+   "body" in front makes these win over the per-page styles. */
+
+/* tabs: light frosted glass with a thin white edge; the active one is brand brown with a soft shadow */
+body .detail-tab,
+body .community-tab,
+body .settings-tab {
+  background: linear-gradient(180deg, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0.22) 100%);
+  border: 1px solid rgba(255,255,255,0.75);
+  border-bottom: none;
+  border-radius: 14px 14px 0 0;
+  backdrop-filter: blur(14px) saturate(140%);
+  -webkit-backdrop-filter: blur(14px) saturate(140%);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.6);
+  color: #1f1813;
+  position: relative;
+}
+body .detail-tab + .detail-tab,
+body .community-tab + .community-tab,
+body .settings-tab + .settings-tab { margin-left: -1px; }
+body .detail-tab:hover:not(.active),
+body .community-tab:hover:not(.active),
+body .settings-tab:hover:not(.active) { background: linear-gradient(180deg, rgba(255,255,255,0.68) 0%, rgba(255,255,255,0.34) 100%); }
+body .detail-tab.active,
+body .community-tab.active,
+body .settings-tab.active {
+  background: linear-gradient(180deg, #b8927f 0%, #AC8876 100%);
+  border-color: rgba(255,255,255,0.35);
+  color: #fff;
+  box-shadow: 0 8px 18px rgba(172,136,118,0.35), inset 0 1px 0 rgba(255,255,255,0.3);
+  z-index: 1;
+}
+
+/* containers: frosted glass, thin white edge, soft shadow */
+body .detail-scroll,
+body .community-content,
+body .home-panel,
+body .settings-scroll {
+  background: linear-gradient(160deg, rgba(255,255,255,0.42) 0%, rgba(255,255,255,0.16) 100%);
+  border: 1.5px solid rgba(255,255,255,0.85);
+  box-shadow: 0 18px 40px rgba(43,31,24,0.06), inset 0 1px 0 rgba(255,255,255,0.6);
+  backdrop-filter: blur(20px) saturate(140%);
+  -webkit-backdrop-filter: blur(20px) saturate(140%);
+}
+
+/* roomier tabs on larger screens, like the design */
+@media (min-width: 769px) {
+  body .detail-tab,
+  body .community-tab,
+  body .settings-tab { padding: 12px 34px; font-size: 17px; }
+}

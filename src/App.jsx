@@ -22,6 +22,7 @@ import "./styles/university-detail.css";
 import "./styles/student-life.css";
 import "./styles/dorm.css";
 import "./styles/teachers-section.css";
+import "./styles/glass.css"; // shared glass tabs and containers, loaded last
 import Onboarding from "./pages/Onboarding";
 import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
