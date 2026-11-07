@@ -47,5 +47,22 @@ body .settings-scroll {
 @media (min-width: 769px) {
   body .detail-tab,
   body .community-tab,
-  body .settings-tab { padding: 12px 34px; font-size: 17px; }
+  body .settings-tab { padding: 10px 24px; font-size: 15px; }
 }
+
+/* Frosted card plates. The card photo is repeated inside the plate and blurred with `filter`,
+   which works in every browser (backdrop-filter does not work everywhere inside other glass). */
+.card-glass-photo {
+  position: absolute; z-index: 0; pointer-events: none;
+  left: calc(-1 * var(--plate-gap, 10px)); bottom: calc(-1 * var(--plate-gap, 10px));
+  width: calc(100% + 2 * var(--plate-gap, 10px)); aspect-ratio: var(--card-ratio, 316 / 247);
+  object-fit: cover; filter: blur(16px) saturate(120%); transform: scale(1.12); transform-origin: 50% 100%;
+}
+.uni-card-glass { --plate-gap: 10px; }
+.community-card-glass { --plate-gap: 8px; }
+@media (max-width: 768px) {
+  .uni-card-glass, .community-card-glass { --plate-gap: 8px; --card-ratio: 16 / 9; }
+}
+
+/* the "Fine Arts · Ukraine" pill: darker frosted so it reads on light photos too */
+body .uni-card-why { background: rgba(30, 26, 22, 0.45); border-color: rgba(255,255,255,0.35); }

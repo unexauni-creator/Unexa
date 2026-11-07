@@ -544,6 +544,8 @@ export default function Home({ onSelectUni, savedUniversities, onToggleSave, cur
         <UniImage src={uni.image} name={uni.name} className="uni-card-img" />
         {reasons?.length > 0 && <div className="uni-card-why">{reasons.join(" · ")}</div>}
         <div className="uni-card-glass">
+          {/* the card photo again, heavily blurred: frosted glass that works in every browser */}
+          {uni.image && <img src={uni.image} alt="" aria-hidden="true" className="card-glass-photo" />}
           <div className="uni-card-glass-blur" />
           <div className="uni-card-text">
             <div className="uni-card-title" title={uni.program}>{uni.program}</div>

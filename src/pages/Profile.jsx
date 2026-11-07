@@ -498,6 +498,7 @@ export default function Profile({
               <div key={uni.id} className="uni-card-new" onClick={() => onSelectUni?.(uni)}>
                 <UniImage src={uni.image} name={uni.name} className="uni-card-img" />
                 <div className="uni-card-glass">
+                  {uni.image && <img src={uni.image} alt="" aria-hidden="true" className="card-glass-photo" />}
                   <div className="uni-card-glass-blur" />
                   <div className="uni-card-text">
                     <div className="uni-card-title">{uni.program || uni.name}</div>

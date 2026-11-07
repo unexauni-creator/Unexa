@@ -99,6 +99,7 @@ export default function Community({ joinedGroupIds = [], onToggleJoin }) {
                 <div key={group.id} className="community-card">
                   <img src={group.image_url} alt={group.name} className="community-card-img" />
                   <div className="community-card-glass">
+                    {group.image_url && <img src={group.image_url} alt="" aria-hidden="true" className="card-glass-photo" />}
                     <div className="community-card-glass-blur" />
                     <div className="community-card-text">
                       <div className="community-card-title">{group.name}</div>
