@@ -171,6 +171,52 @@
   margin: 0;
 }
 
+
+.sl-flip-card-front, .sl-flip-card-back {
+  position: absolute;
+  inset: 0;
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+  border-radius: 20px;
+  overflow: hidden;
+}
+
+.sl-flip-card-front { background: #ffffff; }
+.sl-flip-card-img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.sl-flip-card-title {
+  position: absolute;
+  left: 0; right: 0; bottom: 0;
+  padding: 16px 18px;
+  background: linear-gradient(to top, rgba(15,15,15,0.72), transparent);
+  color: #ffffff;
+  font-family: 'Nunito', sans-serif;
+  font-weight: 700;
+  font-size: 15px;
+}
+
+.sl-flip-card-back {
+  transform: rotateY(180deg);
+  background: #634F44;
+  padding: 22px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 8px;
+}
+.sl-flip-card-back-title {
+  font-family: 'Nunito', sans-serif;
+  font-weight: 700;
+  font-size: 15px;
+  color: #ffffff;
+}
+.sl-flip-card-back-text {
+  font-family: 'Nunito', sans-serif;
+  font-size: 13px;
+  line-height: 1.6;
+  color: rgba(255,255,255,0.92);
+  margin: 0;
+}
+
 /* ── Custom circular cursor that follows the mouse over the grid ── */
 .sl-hover-cursor {
   position: fixed;
@@ -261,7 +307,7 @@
 .sl-scroll { flex: 1; min-height: 0; overflow-y: auto; display: flex; flex-direction: column; gap: 20px; padding: 16px 24px 28px; -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 24px); mask-image: linear-gradient(to bottom, transparent 0, #000 24px); }
 .sl-scroll::before { content: ""; position: sticky; top: -16px; z-index: 3; flex-shrink: 0; display: block; height: 32px; margin: -16px -24px -36px; backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); -webkit-mask-image: linear-gradient(to bottom, #000, transparent); mask-image: linear-gradient(to bottom, #000, transparent); pointer-events: none; }
 .sl-scroll::-webkit-scrollbar { width: 8px; }
-.sl-scroll::-webkit-scrollbar-track { background: transparent; margin: 28px 0; }
+.sl-scroll::-webkit-scrollbar-track { background: transparent; margin: 90px 0; } /* a shorter scrollbar */
 .sl-scroll::-webkit-scrollbar-thumb { background: rgba(172, 136, 118, 0.6); border-radius: 8px; }
 .sl-scroll::-webkit-scrollbar-thumb:hover { background: rgba(172, 136, 118, 0.85); }
 .sl-gallery { flex-shrink: 0; }
@@ -269,7 +315,7 @@
 
 /* Pinterest-style board: photos keep their own shape, text sits under the photo */
 .sl-board { column-count: 3; column-gap: 16px; }
-.sl-pin { position: relative; break-inside: avoid; display: block; margin: 0 0 16px; border-radius: 22px; overflow: hidden; background: #e9e2dc; }
+.sl-pin { color: inherit; text-decoration: none; position: relative; break-inside: avoid; display: block; margin: 0 0 16px; border-radius: 22px; overflow: hidden; background: #e9e2dc; }
 .sl-pin-img { display: block; width: 100%; height: auto; object-fit: cover; }
 .sl-pin.is-main .sl-pin-img { min-height: 300px; }
 .sl-pin.is-extra .sl-pin-img { min-height: 200px; }
@@ -287,6 +333,7 @@
 .sl-pin-text { font-family: 'Nunito', sans-serif; font-size: 14px; line-height: 1.45; color: rgba(255,255,255,0.9); margin: 0; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 4; overflow: hidden; }
 /* the description opens smoothly on hover; on touch screens (no hover) it is always shown */
 @media (hover: hover) {
+  .sl-pin[href] { cursor: none; }
   .sl-pin-more { display: grid; grid-template-rows: 0fr; opacity: 0; transform: translateY(6px); transition: grid-template-rows 0.45s cubic-bezier(.22,1,.36,1), opacity 0.35s ease, transform 0.45s cubic-bezier(.22,1,.36,1); }
   .sl-pin-more { margin-top: -6px; } /* cancels the caption gap while closed */
   .sl-pin-more > .sl-pin-text { min-height: 0; padding-top: 6px; }
@@ -314,3 +361,7 @@
   .sl-scroll { flex: 1 0 auto; overflow: visible; -webkit-mask-image: none; mask-image: none; padding: 12px 24px 28px; }
   .sl-scroll::before { display: none; }
 }
+
+/* the same round cursor as on the Teachers page, following the mouse over a photo */
+.sl-hover-cursor { position: fixed; transform: translate(-50%, -50%); width: 96px; height: 96px; border-radius: 50%; background: #AC8876; display: flex; align-items: center; justify-content: center; text-align: center; font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 12px; letter-spacing: 0.02em; color: #fff; pointer-events: none; z-index: 999; }
+@media (hover: none), (max-width: 900px) { .sl-hover-cursor { display: none; } }

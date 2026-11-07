@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 
 // Student life of one school as a photo gallery of student ACTIVITIES, collected by the Unexa agent
 // from the school's official website (universities.student_life). Housing lives on the Dorm page,
@@ -30,7 +31,7 @@ const imagesOf = (s) => (s.images?.length ? s.images : s.image ? [s.image] : [])
 
 // Pinterest-style board: every photo keeps its own shape, with the activity's text on the photo.
 // The first photo of an activity carries its full description, extra photos only the title.
-function Pin({ section, image, main }) {
+function Pin({ section, image, main, href, onHover }) {
   const [broken, setBroken] = useState(false);
   const [pinHeight, setPinHeight] = useState(0);
   const pinRef = useRef(null);
@@ -46,7 +47,16 @@ function Pin({ section, image, main }) {
   if (!showImage && !main) return null;
   const credit = section.credits?.[image];
   return (
-    <article className={`sl-pin ${main ? "is-main" : "is-extra"} ${showImage ? "" : "is-placeholder"}`} ref={pinRef} style={{ "--pin-h": `${pinHeight}px` }}>
+    <a
+      className={`sl-pin ${main ? "is-main" : "is-extra"} ${showImage ? "" : "is-placeholder"}`}
+      ref={pinRef}
+      style={{ "--pin-h": `${pinHeight}px` }}
+      href={href || undefined}
+      target="_blank"
+      rel="noopener noreferrer"
+      onMouseEnter={() => href && onHover(true)}
+      onMouseLeave={() => onHover(false)}
+    >
       {showImage ? (
         <img className="sl-pin-img" src={image} alt="" loading="lazy" onError={() => setBroken(true)} />
       ) : (
@@ -58,17 +68,18 @@ function Pin({ section, image, main }) {
         {showImage && <img className="sl-pin-frost" src={image} alt="" aria-hidden="true" loading="lazy" />}
         <div className="sl-pin-tint" aria-hidden="true" />
         <h3 className="sl-pin-title">{section.title}</h3>
-        {main && section.text && <div className="sl-pin-more"><p className="sl-pin-text">{section.text}</p></div>}
+        {section.text && <div className="sl-pin-more"><p className="sl-pin-text">{section.text}</p></div>}
         {credit && (
           <a className="sl-pin-credit" href={credit.url} target="_blank" rel="noopener noreferrer">Photo: {credit.text}</a>
         )}
       </div>
-    </article>
+    </a>
   );
 }
 
 export default function StudentLife({ onBack, uni }) {
   const data = uni?.studentLife;
+  const [cursor, setCursor] = useState(null); // where the round "Official page" cursor is, or null
   // only activities — older data may still contain housing / payments / offices
   const sections = useMemo(() => (data?.sections ?? []).filter((s) => CATEGORY[s.category]), [data]);
   // first photo of each activity with its text, then the extra photos spread through the board
@@ -107,9 +118,21 @@ export default function StudentLife({ onBack, uni }) {
         </div>
       ) : (
         <>
-          <div className="sl-board">
-            {pins.map((p, i) => <Pin key={`${p.section.title}-${i}`} {...p} />)}
+          <div className="sl-board" onMouseMove={(e) => cursor && setCursor({ x: e.clientX, y: e.clientY })}>
+            {pins.map((p, i) => (
+              <Pin
+                key={`${p.section.title}-${i}`}
+                {...p}
+                href={p.section.url || uni?.website}
+                onHover={(on) => setCursor(on ? { x: -999, y: -999 } : null)}
+              />
+            ))}
           </div>
+          {/* outside the page in the DOM, so the glass containers above can't shift a fixed-position element */}
+          {cursor && cursor.x > -999 && createPortal(
+            <div className="sl-hover-cursor" style={{ left: cursor.x, top: cursor.y }}>Official page ↗</div>,
+            document.body,
+          )}
 
           <p className="sl-source">Collected from {uni?.name}'s official website. Details can change, so check the linked pages before you apply.</p>
         </>
