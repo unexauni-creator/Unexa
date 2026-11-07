@@ -370,7 +370,7 @@ export default function App() {
                         />
                       }
                     />
-                    <Route path="career-roadmap" element={<CareerRoadmap savedUniversities={savedUniversities} currentUser={authUser} />} />
+                    <Route path="career-roadmap" element={<CareerRoadmap savedUniversities={savedUniversities} currentUser={authUser} onSelectUni={setSelectedUni} onToggleSave={toggleSaveUni} />} />
                     <Route
                       path="community"
                       element={

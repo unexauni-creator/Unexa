@@ -42,6 +42,53 @@ function EditableText({ value, onChange, placeholder, className, autoFocus }) {
   );
 }
 
+// A small menu instead of the browser's own select: frosted glass, a check next to the chosen option.
+function Dropdown({ value, options, onChange }) {
+  const [open, setOpen] = useState(false);
+  const ref = useRef(null);
+  useEffect(() => {
+    if (!open) return;
+    const close = (e) => { if (!ref.current?.contains(e.target)) setOpen(false); };
+    const esc = (e) => { if (e.key === "Escape") setOpen(false); };
+    document.addEventListener("mousedown", close);
+    document.addEventListener("keydown", esc);
+    return () => { document.removeEventListener("mousedown", close); document.removeEventListener("keydown", esc); };
+  }, [open]);
+  return (
+    <div className="rm-dd" ref={ref}>
+      <button type="button" className={`rm-dd-btn ${open ? "open" : ""}`} onClick={() => setOpen((o) => !o)} aria-haspopup="listbox" aria-expanded={open}>
+        {value}
+        <svg viewBox="0 0 12 12" aria-hidden="true"><path d="M2.5 4.5l3.5 3.5 3.5-3.5" /></svg>
+      </button>
+      {open && (
+        <div className="rm-dd-menu" role="listbox">
+          {options.map((o) => (
+            <button key={o} type="button" role="option" aria-selected={o === value} className={`rm-dd-opt ${o === value ? "is-on" : ""}`} onClick={() => { onChange(o); setOpen(false); }}>
+              <span>{o}</span>
+              {o === value && <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3.5 8.5l3 3 6-7" /></svg>}
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+// Circular progress, like a dashboard gauge.
+function ProgressRing({ done, total }) {
+  const pct = total ? Math.round((done / total) * 100) : 0;
+  const r = 34, c = 2 * Math.PI * r;
+  return (
+    <div className="rm-ring" role="img" aria-label={`${pct}% done`}>
+      <svg viewBox="0 0 84 84">
+        <circle cx="42" cy="42" r={r} className="rm-ring-track" />
+        <circle cx="42" cy="42" r={r} className="rm-ring-fill" strokeDasharray={c} strokeDashoffset={c * (1 - pct / 100)} />
+      </svg>
+      <span>{pct}%</span>
+    </div>
+  );
+}
+
 function DateChip({ value, onChange, tone }) {
   const date = fromIso(value);
   return (
@@ -52,7 +99,7 @@ function DateChip({ value, onChange, tone }) {
   );
 }
 
-export default function CareerRoadmap({ savedUniversities = [], currentUser }) {
+export default function CareerRoadmap({ savedUniversities = [], currentUser, onSelectUni, onToggleSave }) {
   const navigate = useNavigate();
   const userId = currentUser?.id;
   const today = useMemo(() => new Date(), []);
@@ -146,38 +193,49 @@ export default function CareerRoadmap({ savedUniversities = [], currentUser }) {
 
   return (
     <div className="rm-page">
+      <header className="rm-header">
+        <h1 className="rm-title">Roadmap</h1>
+        <p className="rm-desc">Your plan to get into art school, step by step.<br />Everything you need in one place.</p>
+      </header>
       <div className="rm-panel">
         <div className="rm-scroll">
           <div className="rm-doc">
-            <div className="rm-icon" aria-hidden="true">🗺️</div>
-            <h1 className="rm-title">Roadmap</h1>
-            <p className="rm-desc">Your plan to get into art school. Every line is yours: click to rename it, change the date, add your own tasks.</p>
+            <h2 className="rm-doc-title">My application plan</h2>
 
-            {/* properties, like a Notion page */}
-            <div className="rm-props">
-              <div className="rm-prop">
-                <span className="rm-prop-name">Start</span>
-                <select className="rm-prop-select" value={startYear ?? "Not sure yet"} onChange={(e) => changeIntake(e.target.value)}>
-                  {INTAKES.map((o) => <option key={o} value={o}>{o}</option>)}
-                </select>
+            <div className="rm-callout">
+              <span className="rm-callout-icon" aria-hidden="true">💡</span>
+              <div>Every line here is yours. Click a task to rename it, click a date to change it, and add your own with <b>+ New task</b>. Saved programmes appear as <b>Apply</b> tasks with their deadline.</div>
+            </div>
+
+            {/* widgets: progress ring, the next deadline as a sticky note, the intake */}
+            <div className="rm-widgets">
+              <div className="rm-widget rm-ring-card">
+                <ProgressRing done={doneCount} total={list.length} />
+                <div>
+                  <div className="rm-widget-label">Progress</div>
+                  <div className="rm-widget-big">{doneCount} of {list.length}</div>
+                  <div className="rm-faint">tasks done</div>
+                </div>
               </div>
-              <div className="rm-prop">
-                <span className="rm-prop-name">Next deadline</span>
+
+              <div className={`rm-sticker ${nextDeadline ? dueTone(fromIso(nextDeadline.date), today, false) : "empty"}`}>
+                <span className="rm-sticker-tape" aria-hidden="true" />
+                <div className="rm-sticker-label">📌 Next deadline</div>
                 {nextDeadline ? (
-                  <span className="rm-prop-value">
-                    {fmt(fromIso(nextDeadline.date))} · {nextDeadline.title.replace(/^Apply: /, "")}
-                    <span className={`rm-pill ${dueTone(fromIso(nextDeadline.date), today, false)}`}>{Math.max(0, daysBetween(today, fromIso(nextDeadline.date)))} days</span>
-                  </span>
+                  <>
+                    <div className="rm-sticker-days">{Math.max(0, daysBetween(today, fromIso(nextDeadline.date)))}<span> days left</span></div>
+                    <div className="rm-sticker-title">{nextDeadline.title.replace(/^Apply: /, "")}</div>
+                    <div className="rm-sticker-date">{fmt(fromIso(nextDeadline.date))}</div>
+                  </>
                 ) : (
-                  <span className="rm-prop-value rm-faint">{savedUniversities.length ? "No deadline listed for your programmes" : "Save programmes on Home to see deadlines"}</span>
+                  <div className="rm-sticker-title">{savedUniversities.length ? "No deadline listed for your programmes yet" : "Save programmes on Home to see their deadlines"}</div>
                 )}
               </div>
-              <div className="rm-prop">
-                <span className="rm-prop-name">Progress</span>
-                <span className="rm-prop-value">
-                  <span className="rm-bar"><span style={{ width: `${list.length ? (doneCount / list.length) * 100 : 0}%` }} /></span>
-                  {doneCount} of {list.length} done
-                </span>
+
+              <div className="rm-widget rm-start-card">
+                <div className="rm-widget-label">🎓 I want to start</div>
+                <Dropdown value={startYear ?? "Not sure yet"} options={INTAKES} onChange={changeIntake} />
+                <div className="rm-faint">Dates in your plan follow this intake.</div>
               </div>
             </div>
 
@@ -186,11 +244,46 @@ export default function CareerRoadmap({ savedUniversities = [], currentUser }) {
               <div className="rm-view-tabs" role="tablist">
                 <button role="tab" aria-selected={view === "list"} className={view === "list" ? "active" : ""} onClick={() => setView("list")}>☰ List</button>
                 <button role="tab" aria-selected={view === "board"} className={view === "board" ? "active" : ""} onClick={() => setView("board")}>▦ Board</button>
+                <button role="tab" aria-selected={view === "gallery"} className={view === "gallery" ? "active" : ""} onClick={() => setView("gallery")}>🖼 Programmes</button>
               </div>
               <button className="rm-ghost" onClick={resetPlan}>Reset plan</button>
             </div>
 
-            {view === "list" ? (
+            {view === "gallery" ? (
+              <div className="rm-gallery">
+                {savedUniversities.map((p) => {
+                  const t = list.find((x) => String(x.programId) === String(p.id));
+                  const date = fromIso(t?.date);
+                  const done = t?.status === "done";
+                  return (
+                    <div key={p.id} className="rm-gitem">
+                      {/* the same programme card as on Home */}
+                      <div className="uni-card-new" onClick={() => onSelectUni?.(p)}>
+                        <UniImage src={p.image} name={p.name} className="uni-card-img" />
+                        <div className="uni-card-glass">
+                          {p.image && <img src={p.image} alt="" aria-hidden="true" className="card-glass-photo" />}
+                          <div className="uni-card-glass-blur" />
+                          <div className="uni-card-text">
+                            <div className="uni-card-title" title={p.program}>{p.program}</div>
+                            <div className="uni-card-subtitle" title={p.name}>{p.name}</div>
+                          </div>
+                          <button className="uni-card-save saved" onClick={(e) => { e.stopPropagation(); onToggleSave?.(p); }} aria-label="Remove from saved">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" strokeWidth="2"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" /></svg>
+                          </button>
+                        </div>
+                      </div>
+                      <div className="rm-gitem-meta">
+                        <span className={`rm-tag small ${done ? "green" : "orange"}`}>{done ? "✅ Applied" : "📮 To apply"}</span>
+                        {date ? <span className={`rm-pill ${dueTone(date, today, done)}`}>Deadline {fmt(date)}</span> : <span className="rm-faint">No deadline listed</span>}
+                      </div>
+                    </div>
+                  );
+                })}
+                <button className="rm-gadd" onClick={() => navigate("/app")}>
+                  <span>+</span>Save more programmes on Home
+                </button>
+              </div>
+            ) : view === "list" ? (
               <div className="rm-groups">
                 {STAGES.map((st) => {
                   const items = list.filter((t) => t.stage === st.id).sort(byDate);
@@ -199,7 +292,7 @@ export default function CareerRoadmap({ savedUniversities = [], currentUser }) {
                     <section key={st.id} className="rm-group">
                       <button className="rm-group-head" onClick={() => setClosed((c) => ({ ...c, [st.id]: open }))} aria-expanded={open}>
                         <span className={`rm-caret ${open ? "open" : ""}`}>▸</span>
-                        <span className="rm-group-name">{st.label}</span>
+                        <span className={`rm-tag ${st.color}`}><span aria-hidden="true">{st.emoji}</span> {st.label}</span>
                         <span className="rm-group-count">{items.filter((t) => t.status === "done").length}/{items.length}</span>
                       </button>
                       {open && (
@@ -233,7 +326,7 @@ export default function CareerRoadmap({ savedUniversities = [], currentUser }) {
                             {p && <UniImage src={p.image} name={p.name} className="rm-card-thumb" />}
                             <EditableText value={t.title} onChange={(v) => update(t.id, { title: v })} placeholder="Write a task…" autoFocus={t.id === justAdded} className="rm-card-title" />
                             <div className="rm-card-meta">
-                              <span className="rm-stage-tag">{STAGES.find((x) => x.id === t.stage)?.label}</span>
+                              {(() => { const st = STAGES.find((x) => x.id === t.stage); return st && <span className={`rm-tag small ${st.color}`}>{st.emoji} {st.label}</span>; })()}
                               <DateChip value={t.date} onChange={(v) => update(t.id, { date: v })} tone={dueTone(fromIso(t.date), today, t.status === "done")} />
                               <button className="rm-row-del" onClick={() => remove(t.id)} aria-label="Delete task" title="Delete">
                                 <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8" /></svg>

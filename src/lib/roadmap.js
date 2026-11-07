@@ -114,13 +114,14 @@ export function buildPlan({ programs, startYear, today = new Date() }) {
   return { start: startDate, startKnown: Boolean(start), deadlines: dated, undated: withDeadlines.filter((x) => !x.deadline).map((x) => x.program), steps };
 }
 
+// emoji and a Notion-like colour for each stage
 export const STAGES = [
-  { id: "research", label: "Research" },
-  { id: "portfolio", label: "Portfolio" },
-  { id: "tests", label: "Tests" },
-  { id: "apply", label: "Apply" },
-  { id: "visa", label: "Visa & housing" },
-  { id: "start", label: "Start" },
+  { id: "research", label: "Research", emoji: "🔎", color: "blue" },
+  { id: "portfolio", label: "Portfolio", emoji: "🎨", color: "purple" },
+  { id: "tests", label: "Tests", emoji: "📝", color: "yellow" },
+  { id: "apply", label: "Apply", emoji: "📮", color: "orange" },
+  { id: "visa", label: "Visa & housing", emoji: "🛂", color: "green" },
+  { id: "start", label: "Start", emoji: "🎓", color: "pink" },
 ];
 
 export function fmt(d, withYear = true) {
