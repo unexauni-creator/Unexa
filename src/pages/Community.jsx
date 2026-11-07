@@ -254,7 +254,7 @@ export default function Community({ currentUser, avatarUrl, legacyJoinedIds = []
                     <div className="community-card-glass-blur" />
                     <div className="community-card-text">
                       <div className="community-card-title">{group.name}</div>
-                      <div className="community-card-subtitle">{group.city}, {group.country}</div>
+                      <div className="community-card-subtitle">{[group.city, group.country].filter(Boolean).join(", ")}</div>
                       <div className="community-card-members">
                         {group.members != null ? membersLabel(group.members) : group.member_count}
                         {group.posts > 0 && ` · ${group.posts} ${group.posts === 1 ? "post" : "posts"}`}

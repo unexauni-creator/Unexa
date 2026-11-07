@@ -14,7 +14,8 @@
     "enrich": "node --env-file-if-exists=.env src/enrich.js",
     "mirror": "node --env-file-if-exists=.env src/mirror.js",
     "student-life": "node --env-file-if-exists=.env src/studentLife.js",
-    "audit-photos": "node --env-file-if-exists=.env src/auditPhotos.js"
+    "audit-photos": "node --env-file-if-exists=.env src/auditPhotos.js",
+    "seed-groups": "node --env-file-if-exists=.env src/seedGroups.js"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^1.5.0",
