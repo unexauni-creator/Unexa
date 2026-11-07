@@ -297,11 +297,6 @@ export default function App() {
     setComparedUniversities(prev => prev.filter(u => u.id !== id));
   }
 
-  function toggleJoinGroup(id) {
-    setJoinedGroupIds(prev =>
-      prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]
-    );
-  }
 
   function handleLogin(user) {
     setAuthUser(user);
@@ -375,8 +370,10 @@ export default function App() {
                       path="community"
                       element={
                         <Community
-                          joinedGroupIds={joinedGroupIds}
-                          onToggleJoin={toggleJoinGroup}
+                          currentUser={authUser}
+                          avatarUrl={avatarUrl}
+                          legacyJoinedIds={joinedGroupIds}
+                          onLegacyMigrated={() => setJoinedGroupIds([])}
                         />
                       }
                     />
