@@ -411,3 +411,5 @@
   .dash-corner-cell .dash-corner-top,
   .dash-corner-cell .dash-corner-bottom { font-size: 12px; }
 }
+/* close the table with a line after the last column too */
+.dash-table-cell:last-child { border-right: 1px solid rgba(43,31,24,0.05); }
