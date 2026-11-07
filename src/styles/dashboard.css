@@ -299,3 +299,115 @@
   .dash-warning-title { font-size: 14px; }
   .dash-warning-desc { font-size: 11.5px; }
 }
+/* ── Glass design, matching Home: title + description, then a frosted container; only the inside scrolls ── */
+.dashboard-page { height: 100%; box-sizing: border-box; padding: 32px 32px 28px; gap: 24px; }
+.dash-title { font-weight: 600; font-size: 32px; }
+.dash-desc-sub { font-size: 16px; line-height: 150%; }
+.dash-panel { flex: 0 1 auto; min-height: 0; display: flex; flex-direction: column; border-radius: 24px; overflow: hidden; }
+.dash-panel .dash-table-scroll { flex: 0 1 auto; min-height: 0; overflow: auto; padding: 16px; box-sizing: border-box; }
+.dash-panel .dash-table-scroll:has(.dash-table-full) { overflow-x: hidden; }
+.dash-table-scroll::-webkit-scrollbar { width: 6px; height: 6px; }
+.dash-table-scroll::-webkit-scrollbar-track { background: transparent; margin: 28px; }
+.dash-table-scroll::-webkit-scrollbar-thumb { background: rgba(172, 136, 118, 0.4); border-radius: 6px; }
+.dash-locked-wrap { flex: 1; min-height: 0; display: flex; flex-direction: column; }
+.dash-locked-content { flex: 1; min-height: 0; }
+
+/* the table sits straight on the container's glass */
+.dash-table { border-radius: 18px; overflow: clip; } /* clip, not hidden: "hidden" made the table its own scroller, so the criteria column would not stay in place */
+.dash-table::before { background: transparent; backdrop-filter: none; -webkit-backdrop-filter: none; }
+.dash-table-row { border-bottom: 1px solid rgba(43,31,24,0.06); transition: background 0.18s; }
+.dash-table-row:not(.dash-header-row):hover { background: rgba(255,255,255,0.35); }
+.dash-header-row { border-bottom: 1px solid rgba(43,31,24,0.08); }
+.dash-table-cell { border-right: 1px solid rgba(43,31,24,0.05); color: rgba(43,31,24,0.85); }
+.dash-table-label-cell { border-right: 1px solid rgba(43,31,24,0.06); font-weight: 600; color: #1f1813; }
+/* the criteria column stays put while scrolling sideways, so it needs a near-solid light glass */
+.dash-table-label-cell::before { background: transparent; transition: background 0.2s, box-shadow 0.2s; backdrop-filter: none; -webkit-backdrop-filter: none; }
+.dash-corner-svg line { stroke: rgba(43,31,24,0.12); }
+
+/* column heads: small programme cards with the same frosted plate as on Home */
+.dash-uni-header { padding: 10px; min-height: 0; align-items: stretch; }
+.dash-uni-card { position: relative; width: 100%; aspect-ratio: 16 / 11; border-radius: 16px; overflow: hidden; }
+.dash-uni-card .dash-uni-card-img { position: absolute; inset: 0; width: 100%; height: 100%; border-radius: 16px; object-fit: cover; }
+.dash-uni-card-glass { --plate-gap: 8px; --card-ratio: 16 / 11; position: absolute; left: 8px; right: 8px; bottom: 8px; padding: 10px 12px; border-radius: 12px; overflow: hidden; transform: translateZ(0); }
+.dash-uni-card-glass::after { content: ""; position: absolute; inset: 0; z-index: 0; border-radius: 12px; background: linear-gradient(160deg, rgba(38,36,30,0.42) 0%, rgba(70,68,60,0.30) 55%, rgba(140,138,128,0.30) 100%); border: 1px solid rgba(255,255,255,0.45); box-shadow: inset 0 1px 0 rgba(255,255,255,0.18); }
+.dash-uni-card-glass .dash-uni-card-info { position: relative; z-index: 1; padding: 0; }
+.dash-uni-card .dash-uni-card-program { font-size: 15px; font-weight: 500; color: #fff; margin-bottom: 2px; }
+.dash-uni-card .dash-uni-card-name { font-size: 12px; font-weight: 400; color: rgba(255,255,255,0.9); margin: 0; }
+.dash-uni-card .dash-remove-btn { top: 8px; right: 8px; width: 28px; height: 28px; z-index: 2; background: rgba(15,10,8,0.32); border: 1px solid rgba(255,255,255,0.35); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); }
+.dash-uni-card .dash-remove-btn:hover { opacity: 1; background: rgba(15,10,8,0.5); }
+.dash-uni-card .dash-remove-icon { width: 16px; height: 16px; background-color: #fff; }
+
+@media (max-width: 768px) {
+  .dashboard-page { padding: 24px 16px 16px; gap: 16px; }
+  .dash-title { font-size: 24px; }
+  .dash-desc-sub { font-size: 14px; }
+  .dash-panel .dash-table-scroll { padding: 10px; }
+  .dash-uni-card .dash-uni-card-program { font-size: 13px; }
+  .dash-uni-card .dash-uni-card-name { font-size: 11px; }
+  .dash-uni-card-glass { padding: 8px 10px; left: 6px; right: 6px; bottom: 6px; --plate-gap: 6px; }
+}
+
+/* "Maximum reached" note: light glass instead of a green box */
+.dash-max-popup { background: rgba(255,255,255,0.62); border: 1px solid rgba(255,255,255,0.6); color: #4a3f38; backdrop-filter: blur(18px) saturate(140%); -webkit-backdrop-filter: blur(18px) saturate(140%); box-shadow: 0 12px 32px rgba(43,31,24,0.14); }
+.dash-panel > .compare-empty { margin: auto; }
+/* the criteria column sticks to the container edge, so nothing scrolls into the gap on its left */
+.dash-table-scroll.is-scrolled .dash-table-label-cell::before { background: #F2F0EE; box-shadow: 8px 0 16px -12px rgba(43,31,24,0.3); }
+/* criteria read like the other cells: no strip, a calmer label */
+.dash-table-label-cell { font-weight: 600; color: rgba(43,31,24,0.6); border-right-color: rgba(43,31,24,0.05); }
+.dash-panel > .compare-empty { padding: 72px 20px; }
+/* all table text black; a shorter, thinner sideways scrollbar */
+.dash-table-label-cell, .dash-table-cell, .dash-corner-top, .dash-corner-bottom { color: #0F0F0F; }
+.dash-table-scroll::-webkit-scrollbar { height: 4px; }
+.dash-table-scroll::-webkit-scrollbar-track { margin: 28px 140px; }
+/* bigger corner labels */
+.dash-corner-top, .dash-corner-bottom { font-size: 15px; font-weight: 600; }
+/* while scrolling sideways the criteria column is a rounded card with a gap from the container edge */
+.dash-header-row .dash-table-label-cell::before { border-radius: 14px 14px 0 0; }
+.dash-table-row:last-child .dash-table-label-cell::before { border-radius: 0 0 14px 14px; }
+@media (max-width: 768px) { .dash-corner-top, .dash-corner-bottom { font-size: 13px; } }
+/* like Home: when the table scrolls up, it fades out before the container's top edge instead of being cut */
+/* the 16px padding on the left and top stays an empty gap: what scrolls into it is hidden, so the criteria card floats with space around it */
+.dash-panel .dash-table-scroll {
+  -webkit-mask-image: linear-gradient(to right, transparent 16px, #000 16px), linear-gradient(to bottom, transparent 16px, #000 16px);
+  -webkit-mask-composite: source-in;
+  mask-image: linear-gradient(to right, transparent 16px, #000 16px), linear-gradient(to bottom, transparent 16px, #000 16px);
+  mask-composite: intersect;
+}
+@media (max-width: 768px) {
+  .dash-panel .dash-table-scroll {
+    -webkit-mask-image: linear-gradient(to right, transparent 10px, #000 10px), linear-gradient(to bottom, transparent 10px, #000 10px);
+    mask-image: linear-gradient(to right, transparent 10px, #000 10px), linear-gradient(to bottom, transparent 10px, #000 10px);
+  }
+}
+
+/* corner: "Universities" on top, a horizontal line, "Criteria" below */
+.dash-corner-cell { justify-content: center; gap: 12px; }
+.dash-corner-top, .dash-corner-bottom { align-self: flex-start; text-align: left; }
+.dash-corner-line { display: block; width: 100%; height: 1px; background: rgba(43,31,24,0.12); }
+
+/* one table: "Universities" labels the cards row, "Criteria" heads the rows below */
+.dash-corner-cell { justify-content: center; }
+.dash-table-body { display: flex; flex-direction: column; min-width: fit-content; }
+.dash-criteria-title-row { border-bottom: 1px solid rgba(43,31,24,0.08); }
+.dash-criteria-title-row:hover { background: none !important; }
+.dash-criteria-title { font-size: 15px; padding-top: 18px; padding-bottom: 12px; border-right: none; }
+.dash-table-body .dash-table-row:last-child { border-bottom: none; }
+/* while scrolled sideways the sticky criteria column keeps a clean left edge (nothing peeks through rounded corners) */
+.dash-table-scroll.is-scrolled .dash-table-label-cell::before { border-radius: 0 !important; }
+
+/* corner: "Universities" at the top, "Criteria" at the bottom, right above the rows it names */
+.dash-corner-cell { justify-content: space-between; }
+.dash-corner-bottom { font-size: 15px; }
+.dash-corner-svg { display: block; }
+.dash-corner-svg line { stroke: rgba(43,31,24,0.14); stroke-width: 1; }
+.dash-corner-cell .dash-corner-top { align-self: center; text-align: center; }
+.dash-corner-cell { justify-content: space-evenly; }
+/* corner labels: one size, the same space from the top and bottom edge, never touching the corner-to-corner line */
+.dash-corner-cell { justify-content: space-between; padding: 16px 14px; }
+.dash-corner-cell .dash-corner-top,
+.dash-corner-cell .dash-corner-bottom { font-size: 15px; font-weight: 600; line-height: 1.2; }
+@media (max-width: 768px) {
+  .dash-corner-cell { padding: 10px 10px; }
+  .dash-corner-cell .dash-corner-top,
+  .dash-corner-cell .dash-corner-bottom { font-size: 12px; }
+}

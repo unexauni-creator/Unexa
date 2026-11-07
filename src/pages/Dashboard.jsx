@@ -13,14 +13,6 @@ const ROW_LABELS = [
   { key: "tuition", label: "Tuition fees", info: null },
 ];
 
-const MAX_NAME_LENGTH = 22;
-
-function truncateName(name, maxLength = MAX_NAME_LENGTH) {
-  if (!name) return "";
-  if (name.length <= maxLength) return name;
-  return name.slice(0, maxLength - 1).trimEnd() + "…";
-}
-
 function InfoTooltip({ text }) {
   const [visible, setVisible] = useState(false);
   const [pos, setPos] = useState({ top: 0, left: 0 });
@@ -94,6 +86,7 @@ export default function Dashboard({ comparedUniversities = [], onRemove, maxComp
   const isLocked = count === 1;
 
   const [showMaxPopup, setShowMaxPopup] = useState(false);
+  const [scrolledX, setScrolledX] = useState(false); // the criteria column gets a background only while columns slide under it
 
   useEffect(() => {
     if (isFull) {
@@ -121,24 +114,28 @@ export default function Dashboard({ comparedUniversities = [], onRemove, maxComp
             </p>
           </div>
         </div>
-        <div className="compare-empty">
-          <div className="compare-empty-icon" />
-          <div className="compare-empty-title">No universities added</div>
-          <div className="compare-empty-desc">Go to Home and open a university card, then click "Compare to others" to add it here.</div>
-          <button className="detail-btn-primary" style={{ marginTop: 16 }} onClick={() => navigate("/app")}>Browse Universities</button>
+        <div className="dash-panel">
+          <div className="compare-empty">
+            <div className="compare-empty-icon" />
+            <div className="compare-empty-title">No universities added</div>
+            <div className="compare-empty-desc">Go to Home and open a university card, then click "Compare to others" to add it here.</div>
+            <button className="dash-warning-btn" style={{ marginTop: 16 }} onClick={() => navigate("/app")}>Browse universities →</button>
+          </div>
         </div>
       </div>
     );
   }
 
   const table = (
-    <div className="dash-table-scroll">
+    <div className="dash-panel">
+    <div className={`dash-table-scroll${scrolledX ? " is-scrolled" : ""}`} onScroll={(e) => setScrolledX(e.currentTarget.scrollLeft > 0)}>
       <div className={`dash-table${isFull ? " dash-table-full" : ""}`} style={{ "--uni-count": count }}>
 
         {/* Header row */}
         <div className="dash-table-row dash-header-row">
           <div className="dash-table-label-cell dash-corner-cell">
-            <svg className="dash-corner-svg" preserveAspectRatio="none" viewBox="0 0 100 100">
+            {/* a diagonal line splits the corner: "Universities" above it, "Criteria" below */}
+            <svg className="dash-corner-svg" preserveAspectRatio="none" viewBox="0 0 100 100" aria-hidden="true">
               <line x1="0" y1="0" x2="100" y2="100" vectorEffect="non-scaling-stroke" />
             </svg>
             <span className="dash-corner-top">Universities</span>
@@ -146,19 +143,25 @@ export default function Dashboard({ comparedUniversities = [], onRemove, maxComp
           </div>
           {unis.map(u => (
             <div key={u.id} className="dash-table-cell dash-uni-header">
-              <UniImage src={u.image} name={u.name} className="dash-uni-card-img" />
-              <div className="dash-uni-card-info">
-                <div className="dash-uni-card-name" title={u.name}>{truncateName(u.name)}</div>
-                <div className="dash-uni-card-program">{u.program}</div>
+              <div className="dash-uni-card">
+                <UniImage src={u.image} name={u.name} className="dash-uni-card-img" />
+                <div className="dash-uni-card-glass">
+                  {u.image && <img src={u.image} alt="" aria-hidden="true" className="card-glass-photo" onError={(e) => { e.currentTarget.style.display = "none"; }} />}
+                  <div className="dash-uni-card-info">
+                    <div className="dash-uni-card-program" title={u.program}>{u.program}</div>
+                    <div className="dash-uni-card-name" title={u.name}>{u.name}</div>
+                  </div>
+                </div>
+                <button className="dash-remove-btn" onClick={() => removeUni(u.id)} aria-label={`Remove ${u.name}`}>
+                  <span className="dash-remove-icon" />
+                </button>
               </div>
-              <button className="dash-remove-btn" onClick={() => removeUni(u.id)}>
-                <span className="dash-remove-icon" />
-              </button>
             </div>
           ))}
         </div>
 
-        {/* Data rows */}
+        {/* Data rows: a block of their own, apart from the universities row */}
+        <div className="dash-table-body">
         {ROW_LABELS.map(row => (
           <div key={row.key} className="dash-table-row">
             <div className="dash-table-label-cell">
@@ -172,8 +175,10 @@ export default function Dashboard({ comparedUniversities = [], onRemove, maxComp
             ))}
           </div>
         ))}
+        </div>
 
       </div>
+    </div>
     </div>
   );
 
