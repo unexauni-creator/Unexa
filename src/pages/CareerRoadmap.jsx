@@ -1,211 +1,242 @@
-import { useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import UniImage from "../components/UniImage.jsx";
+import { STAGES, buildPlan, daysBetween, fmt, programChecklist } from "../lib/roadmap.js";
+import { loadRoadmap, saveProgress, saveStartYear } from "../lib/roadmapStore.js";
+import "../styles/roadmap-plan.css";
 
-const MILESTONES = [
-  {
-    stage: "Foundation Year",
-    title: "Building the Foundation",
-    description: "Focus on core studies and foundational skills. This is the time to explore your field and build strong basics before specializing.",
-  },
-  {
-    stage: "First Steps",
-    title: "First Steps into the Field",
-    description: "Start applying your skills through internships or entry-level roles while sharpening your practical experience.",
-  },
-  {
-    stage: "Building Experience",
-    title: "Deepening Your Craft",
-    description: "Take on more responsibility, expand your network, and start shaping the direction you want your career to take.",
-  },
-  {
-    stage: "Gaining Momentum",
-    title: "Gaining Momentum",
-    description: "Your experience starts compounding. This is a good time to specialize further or explore leadership opportunities.",
-  },
-  {
-    stage: "Establishing Your Career",
-    title: "Establishing Your Career",
-    description: "By now you should have a clear direction, with a portfolio of experience and a defined path forward.",
-  },
-];
+// Personal application plan: what to do and by when, from the saved programmes and the chosen intake.
+const INTAKES = ["Fall 2027", "Spring 2028", "Fall 2028", "2029 or later", "Not sure yet"];
 
-const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-const MARKER_INDICES = [0, 2, 4, 6, 8, 10]; // 6 clickable month markers: Jan, Mar, May, Jul, Sep, Nov
-
-const CHART_LEFT = 0;
-const CHART_RIGHT = 980;
-const CHART_STEP = (CHART_RIGHT - CHART_LEFT) / (MONTHS.length - 1);
-const WAVE_X = MONTHS.map((_, i) => CHART_LEFT + i * CHART_STEP);
-
-// Finer curve resolution: 4 points per month (48 total across the year)
-// so the wave has noticeably more steps/detail than one point per month.
-const STEPS_PER_MONTH = 4;
-const TOTAL_STEPS = (MONTHS.length - 1) * STEPS_PER_MONTH + 1;
-const FINE_X = Array.from({ length: TOTAL_STEPS }, (_, i) => {
-  const t = i / (TOTAL_STEPS - 1);
-  return CHART_LEFT + t * (CHART_RIGHT - CHART_LEFT);
-});
-
-function getYearPoints(yearIndex) {
-  const baseY = 170 - yearIndex * 14;
-  return FINE_X.map((_, i) => {
-    const t = i / (TOTAL_STEPS - 1);
-    const trend = t * 50;
-    const wobble = Math.sin(t * Math.PI * 2.4 + yearIndex) * 22;
-    const microStep = Math.sin(t * Math.PI * 16 + yearIndex * 2) * 3; // extra small steps
-    return baseY - trend + wobble + microStep;
-  });
+function Check({ checked, onChange, label }) {
+  return (
+    <button type="button" className={`rm-check ${checked ? "is-on" : ""}`} onClick={onChange} aria-pressed={checked} aria-label={label}>
+      <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3.5 8.5l3 3 6-7" /></svg>
+    </button>
+  );
 }
 
-// Map a month index (0-11) to its corresponding index in the fine point array
-function monthToFineIndex(monthIndex) {
-  return monthIndex * STEPS_PER_MONTH;
+function dueLabel(date, today) {
+  const d = daysBetween(today, date);
+  if (d < 0) return { text: `${-d} days late`, tone: "late" };
+  if (d === 0) return { text: "Today", tone: "soon" };
+  if (d <= 14) return { text: `In ${d} days`, tone: "soon" };
+  return { text: fmt(date), tone: "" };
 }
 
-function buildWavePath(points) {
-  let d = `M ${FINE_X[0]} ${points[0]}`;
-  for (let i = 0; i < FINE_X.length - 1; i++) {
-    const x1 = FINE_X[i] + (FINE_X[i + 1] - FINE_X[i]) / 2;
-    const x2 = x1;
-    d += ` C ${x1} ${points[i]}, ${x2} ${points[i + 1]}, ${FINE_X[i + 1]} ${points[i + 1]}`;
-  }
-  return d;
-}
+export default function CareerRoadmap({ savedUniversities = [], currentUser }) {
+  const navigate = useNavigate();
+  const userId = currentUser?.id;
+  const today = useMemo(() => new Date(), []);
+  const [startYear, setStartYear] = useState(null);
+  const [progress, setProgress] = useState({});
+  const [inAccount, setInAccount] = useState(true);
+  const [loaded, setLoaded] = useState(false);
+  const saveTimer = useRef(null);
 
-const TODAY = new Date();
-const CURRENT_YEAR = TODAY.getFullYear();
+  useEffect(() => {
+    if (!userId) { setLoaded(true); return; }
+    let cancelled = false;
+    loadRoadmap(userId)
+      .then((r) => { if (!cancelled) { setStartYear(r.startYear); setProgress(r.progress || {}); setInAccount(r.inAccount); } })
+      .catch((e) => console.error("Couldn't load the roadmap:", e.message))
+      .finally(() => !cancelled && setLoaded(true));
+    return () => { cancelled = true; };
+  }, [userId]);
 
-function getCalendarYear(yearIndex) {
-  return CURRENT_YEAR + yearIndex;
-}
+  const plan = useMemo(() => buildPlan({ programs: savedUniversities, startYear, today }), [savedUniversities, startYear, today]);
 
-function clampPercent(pct, min = 12, max = 88) {
-  return Math.min(max, Math.max(min, pct));
-}
-
-export default function CareerRoadmap() {
-  const [activeYear, setActiveYear] = useState(0);
-  const [activeMonth, setActiveMonth] = useState(0);
-  const [hoveredMonth, setHoveredMonth] = useState(null);
-
-  const current = MILESTONES[activeYear];
-  const currentCalendarYear = getCalendarYear(activeYear);
-  const points = getYearPoints(activeYear);
-
-  function handleYearChange(i) {
-    setActiveYear(i);
-    setActiveMonth(0);
-    setHoveredMonth(null);
+  function toggle(key) {
+    setProgress((prev) => {
+      const next = { ...prev, [key]: !prev[key] };
+      if (!next[key]) delete next[key];
+      clearTimeout(saveTimer.current);
+      saveTimer.current = setTimeout(() => {
+        if (userId) saveProgress(userId, next, inAccount).catch((e) => console.error("Couldn't save the roadmap:", e.message));
+      }, 400);
+      return next;
+    });
   }
 
-  const calloutMonth = hoveredMonth;
-  const rawPct = calloutMonth !== null ? (WAVE_X[calloutMonth] / 980) * 100 : 0;
-  const calloutLeftPct = clampPercent(rawPct);
+  async function changeIntake(value) {
+    setStartYear(value);
+    if (userId) saveStartYear(userId, value).catch((e) => console.error("Couldn't save the intake:", e.message));
+  }
+
+  const stepKey = (s) => `step:${s.id}`;
+  const itemKey = (p, i) => `p:${p.id}:${i.id}`;
+  const stepsDone = plan.steps.filter((s) => progress[stepKey(s)]).length;
+  const upNext = plan.steps.filter((s) => !progress[stepKey(s)]).slice(0, 3);
+  const nextDeadline = plan.deadlines.find((d) => !progress[`p:${d.program.id}:submitted`]) ?? null;
+
+  // timeline from this month to the start month
+  const months = [];
+  for (let d = new Date(today.getFullYear(), today.getMonth(), 1); d <= plan.start && months.length < 36; d = new Date(d.getFullYear(), d.getMonth() + 1, 1)) months.push(d);
+  const span = Math.max(1, daysBetween(months[0] ?? today, plan.start));
+  const pos = (date) => `${Math.min(100, Math.max(0, (daysBetween(months[0] ?? today, date) / span) * 100))}%`;
 
   return (
-    <div className="roadmap-page">
-      <div className="roadmap-header">
-        <div className="roadmap-title">Roadmap</div>
-        <div className="roadmap-subtitle">Discover your career path with Unexa<br />Everything you need in one place</div>
-      </div>
+    <div className="rm-page">
+      <header className="rm-header">
+        <div>
+          <h1 className="rm-title">Roadmap</h1>
+          <p className="rm-desc">Your plan from today to your first day at school: what to do, and by when.</p>
+        </div>
+        <label className="rm-intake">
+          <span>I want to start</span>
+          <select value={startYear ?? "Not sure yet"} onChange={(e) => changeIntake(e.target.value)}>
+            {INTAKES.map((o) => <option key={o} value={o}>{o}</option>)}
+          </select>
+        </label>
+      </header>
 
-      <div className="roadmap-tabs">
-        {MILESTONES.map((_, i) => (
-          <button
-            key={i}
-            className={`roadmap-tab ${i === activeYear ? "active" : ""}`}
-            onClick={() => handleYearChange(i)}
-          >
-            {getCalendarYear(i)}
-          </button>
-        ))}
-      </div>
+      <div className="rm-panel">
+        <div className="rm-scroll">
+          {!plan.startKnown && loaded && (
+            <div className="rm-note">Pick when you want to start (top right), and the dates below will fit your intake. For now they assume about 8 months after the first deadline.</div>
+          )}
 
-      <div className="roadmap-content">
-
-        <div className="roadmap-top-row">
-          <div className="roadmap-wave-box">
-
-            <div className="roadmap-wave-top">
-              <div className="roadmap-wave-top-title">Your Career Roadmap</div>
-              <button className="roadmap-test-btn" onClick={() => alert("Career quiz coming soon!")}>
-                Take the test
-              </button>
-            </div>
-
-            <div className="roadmap-wave-graph-wrap">
-              <svg className="roadmap-wave-svg" viewBox="0 0 980 180" preserveAspectRatio="none">
-                <path d={buildWavePath(points)} className="roadmap-wave-path" fill="none" strokeWidth="4" />
-                {MARKER_INDICES.map(i => {
-                  const fineIdx = monthToFineIndex(i);
-                  return (
-                    <g
-                      key={i}
-                      onMouseEnter={() => setHoveredMonth(i)}
-                      onMouseLeave={() => setHoveredMonth(null)}
-                      onClick={() => setActiveMonth(i)}
-                      style={{ cursor: "pointer" }}
-                    >
-                      <line x1={WAVE_X[i]} y1={points[fineIdx]} x2={WAVE_X[i]} y2={points[fineIdx] - 30} className="roadmap-wave-stem" />
-                      <circle
-                        cx={WAVE_X[i]}
-                        cy={points[fineIdx]}
-                        r={i === activeMonth ? 11 : 7}
-                        className={`roadmap-wave-dot ${i === activeMonth ? "active" : ""} ${i === hoveredMonth ? "hovered" : ""}`}
-                      />
-                    </g>
-                  );
-                })}
-              </svg>
-
-              {calloutMonth !== null && (
-                <div
-                  className="roadmap-wave-callout"
-                  style={{ left: `${calloutLeftPct}%` }}
-                >
-                  <div className="roadmap-wave-callout-year">{MONTHS[calloutMonth]} {currentCalendarYear}</div>
-                  <div className="roadmap-wave-callout-title">{current.title}</div>
-                </div>
+          {/* summary */}
+          <section className="rm-summary">
+            <div className="rm-card rm-countdown">
+              <div className="rm-card-label">Next deadline</div>
+              {nextDeadline ? (
+                <>
+                  <div className="rm-big">{Math.max(0, daysBetween(today, nextDeadline.deadline.date))}<span> days</span></div>
+                  <div className="rm-countdown-prog">{nextDeadline.program.program}</div>
+                  <div className="rm-muted">{nextDeadline.program.name} · {fmt(nextDeadline.deadline.date)}{nextDeadline.deadline.expected ? " (expected)" : ""}</div>
+                </>
+              ) : (
+                <div className="rm-muted">{savedUniversities.length ? "Your saved programmes don't list a deadline yet. Check their official pages." : "Save programmes on Home to see their deadlines here."}</div>
               )}
             </div>
 
-            <div className="roadmap-wave-month-axis">
-              {MONTHS.map((m, i) => (
-                <span
-                  key={i}
-                  className={`roadmap-wave-month-item ${MARKER_INDICES.includes(i) ? "marker" : ""} ${i === activeMonth ? "active" : ""}`}
-                  style={{ left: `${(WAVE_X[i] / 980) * 100}%` }}
-                  onMouseEnter={() => MARKER_INDICES.includes(i) && setHoveredMonth(i)}
-                  onMouseLeave={() => setHoveredMonth(null)}
-                  onClick={() => MARKER_INDICES.includes(i) && setActiveMonth(i)}
-                >
-                  {m}
-                </span>
-              ))}
+            <div className="rm-card rm-next">
+              <div className="rm-card-label">Up next</div>
+              {upNext.length ? upNext.map((s) => {
+                const due = dueLabel(s.date, today);
+                return (
+                  <div key={s.id} className="rm-next-row">
+                    <Check checked={false} onChange={() => toggle(stepKey(s))} label={`Mark "${s.title}" done`} />
+                    <span className="rm-next-title">{s.title}</span>
+                    <span className={`rm-due ${due.tone}`}>{due.text}</span>
+                  </div>
+                );
+              }) : <div className="rm-muted">Everything is done. Good luck!</div>}
             </div>
+
+            <div className="rm-card rm-progress">
+              <div className="rm-card-label">Your progress</div>
+              <div className="rm-big">{stepsDone}<span> of {plan.steps.length} steps</span></div>
+              <div className="rm-stages">
+                {STAGES.map((st) => {
+                  const all = plan.steps.filter((s) => s.stage === st.id);
+                  const done = all.filter((s) => progress[stepKey(s)]).length;
+                  return (
+                    <div key={st.id} className={`rm-stage ${all.length && done === all.length ? "is-done" : done ? "is-part" : ""}`} title={`${st.label}: ${done} of ${all.length}`}>
+                      <span className="rm-stage-bar" />
+                      <span className="rm-stage-label">{st.label}</span>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          </section>
+
+          {/* timeline */}
+          <section className="rm-card rm-timeline-card">
+            <div className="rm-section-head">
+              <h2>Timeline</h2>
+              <span className="rm-muted">Today → {fmt(plan.start)}</span>
+            </div>
+            <div className="rm-timeline-scroll">
+              <div className="rm-timeline" style={{ "--months": months.length }}>
+                <div className="rm-axis" />
+                <div className="rm-today" style={{ left: pos(today) }}><span>Today</span></div>
+                {plan.steps.map((s) => (
+                  <div key={s.id} className={`rm-tick ${progress[stepKey(s)] ? "is-done" : ""} ${s.id === "start" ? "is-start" : ""}`} style={{ left: pos(s.date) }} title={`${s.title} · ${fmt(s.date)}`} />
+                ))}
+                {plan.deadlines.map(({ program, deadline }) => (
+                  <div key={program.id} className="rm-deadline" style={{ left: pos(deadline.date) }} title={`${program.program} · ${fmt(deadline.date)}`}>
+                    <UniImage src={program.image} name={program.name} className="rm-deadline-img" />
+                    <span>{fmt(deadline.date, false)}</span>
+                  </div>
+                ))}
+                <div className="rm-months">
+                  {months.map((m) => (
+                    <span key={m.toISOString()} style={{ left: pos(m) }}>{m.toLocaleDateString("en-GB", { month: "short" })}{m.getMonth() === 0 ? ` ${m.getFullYear()}` : ""}</span>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <div className="rm-columns">
+            {/* all steps */}
+            <section className="rm-card rm-steps">
+              <div className="rm-section-head"><h2>Your steps</h2><span className="rm-muted">{stepsDone} done</span></div>
+              {plan.steps.map((s) => {
+                const done = !!progress[stepKey(s)];
+                const due = dueLabel(s.date, today);
+                return (
+                  <div key={s.id} className={`rm-step ${done ? "is-done" : ""}`}>
+                    <Check checked={done} onChange={() => toggle(stepKey(s))} label={`${done ? "Unmark" : "Mark"} "${s.title}"`} />
+                    <div className="rm-step-text">
+                      <div className="rm-step-title">{s.title}</div>
+                      <div className="rm-step-hint">{s.hint}</div>
+                    </div>
+                    <span className={`rm-due ${done ? "" : due.tone}`}>{done ? "Done" : due.text}</span>
+                  </div>
+                );
+              })}
+            </section>
+
+            {/* per programme */}
+            <section className="rm-programs">
+              {savedUniversities.length === 0 ? (
+                <div className="rm-card rm-empty">
+                  <div className="rm-empty-title">No saved programmes yet</div>
+                  <p className="rm-muted">Tap the bookmark on any programme on Home. Its deadline and what it asks for will appear here.</p>
+                  <button className="rm-btn" onClick={() => navigate("/app")}>Browse programmes →</button>
+                </div>
+              ) : savedUniversities.map((p) => {
+                const d = plan.deadlines.find((x) => x.program.id === p.id)?.deadline;
+                const items = programChecklist(p);
+                const done = items.filter((i) => progress[itemKey(p, i)]).length;
+                return (
+                  <article key={p.id} className="rm-card rm-program">
+                    <div className="rm-program-photo">
+                      <UniImage src={p.image} name={p.name} className="rm-program-img" />
+                      <div className="rm-program-glass">
+                        {p.image && <img src={p.image} alt="" aria-hidden="true" className="card-glass-photo" onError={(e) => { e.currentTarget.style.display = "none"; }} />}
+                        <div className="rm-program-name">{p.program}</div>
+                        <div className="rm-program-school">{p.name}</div>
+                      </div>
+                    </div>
+                    <div className="rm-program-meta">
+                      <div><span className="rm-muted">Deadline</span><strong>{d ? `${fmt(d.date)}${d.expected ? " (expected)" : ""}` : "Not listed"}</strong></div>
+                      <div><span className="rm-muted">Ready</span><strong>{done} of {items.length}</strong></div>
+                    </div>
+                    {p.applicationDeadline && d?.expected && <div className="rm-source">School says: “{p.applicationDeadline}”</div>}
+                    <div className="rm-items">
+                      {items.map((i) => {
+                        const on = !!progress[itemKey(p, i)];
+                        return (
+                          <div key={i.id} className={`rm-item ${on ? "is-done" : ""}`}>
+                            <Check checked={on} onChange={() => toggle(itemKey(p, i))} label={`${on ? "Unmark" : "Mark"} "${i.label}"`} />
+                            <span>{i.label}</span>
+                          </div>
+                        );
+                      })}
+                    </div>
+                    {p.website && <a className="rm-link" href={p.website} target="_blank" rel="noopener noreferrer">Official page ↗</a>}
+                  </article>
+                );
+              })}
+            </section>
           </div>
-
-          <div className="roadmap-side-card">
-            <div className="roadmap-side-header">
-              <span className="roadmap-side-icon">🎯</span>
-              <div className="roadmap-side-title">Career Focus</div>
-            </div>
-
-            <div className="roadmap-side-stage">{current.stage}</div>
-
-            <div className="roadmap-side-progress">
-              {MILESTONES.map((_, i) => (
-                <span key={i} className={`roadmap-side-progress-dot ${i <= activeYear ? "filled" : ""} ${i === activeYear ? "current" : ""}`} />
-              ))}
-            </div>
-            <div className="roadmap-side-progress-label">Year {activeYear + 1} of {MILESTONES.length}</div>
-          </div>
+          <p className="rm-foot">Dates marked “expected” are based on last year's deadlines. Always check the school's official page.</p>
         </div>
-
-        <div className="roadmap-bottom-card">
-          <div className="roadmap-bottom-label">{current.title}</div>
-          <div className="roadmap-bottom-value">{current.description}</div>
-        </div>
-
       </div>
     </div>
   );
