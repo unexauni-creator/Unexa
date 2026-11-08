@@ -9,16 +9,20 @@ const AVAILABLE = {
   unknown: { label: "Housing not stated", tone: "grey" },
 };
 
+// When the site gives a bare number ("318 / month"), show the school country's currency
+const CURRENCY = { "United Kingdom": "£", "United States": "$", Canada: "C$", Poland: "zł", Ukraine: "₴", "South Korea": "₩", Japan: "¥", China: "¥", Switzerland: "CHF" };
+const currencyOf = (country) => CURRENCY[country] ?? "€";
+
 // "£230, £249, or £264 per week" → { value: 230, text: "£230 / week" }
-function parsePrice(s) {
+function parsePrice(s, fallbackCur = "") {
   if (!s) return null;
   const m = String(s).match(/([£€$₴]|zł|PLN|EUR|GBP|USD|UAH)?\s?(\d[\d.,\s]*\d|\d)\s?([£€$₴]|zł|PLN|EUR|GBP|USD|UAH)?/i);
   if (!m) return null;
   const value = Number(m[2].replace(/[\s,]/g, "").replace(/\.(?=\d{3}\b)/g, ""));
   if (!value) return null;
-  const cur = m[1] || m[3] || "";
+  const cur = m[1] || m[3] || fallbackCur;
   const per = (String(s).match(/\b(week|month|year|term|semester|night)\b/i) || [])[1];
-  const amount = /^[£€$₴]$/.test(cur) ? `${cur}${value.toLocaleString("en-GB")}` : `${value.toLocaleString("en-GB")} ${cur}`.trim();
+  const amount = /^([£€$₴₩¥]|C\$)$/.test(cur) ? `${cur}${value.toLocaleString("en-GB")}` : `${value.toLocaleString("en-GB")} ${cur}`.trim();
   return { value, text: per ? `${amount} / ${per.toLowerCase()}` : amount };
 }
 
@@ -35,7 +39,8 @@ export default function Dorm({ onBack, uni }) {
   const hasAny = h && (h.summary || options.length || h.how_to_apply || h.available !== "unknown");
   const photo = uni?.universityImage || uni?.image;
   const badge = AVAILABLE[h?.available] ?? AVAILABLE.unknown;
-  const prices = options.map((o) => parsePrice(o.price)).filter(Boolean).sort((a, b) => a.value - b.value);
+  const cur = currencyOf(uni?.country);
+  const prices = options.map((o) => parsePrice(o.price, cur)).filter(Boolean).sort((a, b) => a.value - b.value);
   const opens = firstDate(h?.how_to_apply);
 
   return (
@@ -88,7 +93,7 @@ export default function Dorm({ onBack, uni }) {
               <div className="dm-listings">
                 {options.map((o, i) => {
                   const Card = o.url ? "a" : "div";
-                  const price = parsePrice(o.price);
+                  const price = parsePrice(o.price, cur);
                   return (
                     <Card key={o.name} className="dm-listing" {...(o.url ? { href: o.url, target: "_blank", rel: "noopener noreferrer" } : {})}>
                       <div className="dm-listing-top">

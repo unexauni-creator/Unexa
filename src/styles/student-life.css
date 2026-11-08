@@ -6,87 +6,9 @@
 }
 
 /* ── Hero ── */
-.sl-hero {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 32px;
-  background: #ffffff;
-  border-radius: 24px;
-  padding: 36px 40px;
-  flex-wrap: wrap;
-  box-shadow: 0 4px 20px rgba(43,31,24,0.06);
-}
-.sl-hero-text { flex: 1; min-width: 260px; display: flex; flex-direction: column; justify-content: center; gap: 4px; }
-.sl-hero-title {
-  font-family: 'Nunito', sans-serif;
-  font-weight: 700;
-  font-size: 30px;
-  color: #0F0F0F;
-  margin-bottom: 10px;
-  position: relative;
-  display: inline-block;
-}
-.sl-hero-title::after {
-  content: "";
-  position: absolute;
-  left: 2px;
-  bottom: -4px;
-  width: 92%;
-  height: 6px;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 10'%3E%3Cpath d='M0,5 Q10,0 20,5 T40,5 T60,5 T80,5 T100,5' stroke='%23AC8876' stroke-width='2.2' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
-  background-repeat: repeat-x;
-  background-size: 34px 9px;
-}
-.sl-hero-sub { font-family: 'Nunito', sans-serif; font-size: 15px; color: #6b5f57; line-height: 1.7; max-width: 460px; margin-top: 14px; }
-
-.sl-hero-images { position: relative; width: 220px; height: 150px; flex-shrink: 0; }
-.sl-hero-img {
-  position: absolute;
-  width: 165px;
-  height: 130px;
-  object-fit: cover;
-  border-radius: 999px 999px 999px 24px;
-  border: 4px solid #ffffff;
-  box-shadow: 0 8px 24px rgba(43,31,24,0.15);
-}
-.sl-hero-img-back { top: 0; left: 40px; transform: rotate(6deg); z-index: 1; }
-.sl-hero-img-front { top: 24px; left: 0; transform: rotate(-8deg); z-index: 2; }
-.sl-hero-tag {
-  position: absolute;
-  bottom: -30px;
-  right: -14px;
-  font-family: 'Nunito', sans-serif;
-  font-weight: 600;
-  font-size: 12px;
-  color: #4a3f38;
-  background: #ffffff;
-  border-radius: 12px;
-  padding: 7px 14px;
-  box-shadow: 0 4px 14px rgba(43,31,24,0.12);
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  white-space: nowrap;
-}
-.sl-hero-tag-arrow { color: #AC8876; }
 
 /* ── Category pills ── */
-.sl-categories { display: flex; gap: 10px; flex-wrap: wrap; }
-.sl-category-pill {
-  font-family: 'Nunito', sans-serif;
-  font-weight: 600;
-  font-size: 13px;
-  color: #4a3f38;
-  background: #ffffff;
-  border: none;
-  border-radius: 999px;
-  padding: 10px 20px;
-  cursor: pointer;
-  transition: background 0.18s, color 0.18s;
-  box-shadow: 0 2px 8px rgba(43,31,24,0.05);
-}
-.sl-category-pill:hover { background: #f2efec; }
+
 .sl-category-pill.active {
   background: #0F0F0F;
   color: #ffffff;
@@ -94,128 +16,12 @@
 }
 
 /* ── Grid ── */
-.sl-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 20px;
-}
-@media (max-width: 900px) {
-  .sl-grid { grid-template-columns: repeat(2, 1fr); }
-}
+
 @media (max-width: 600px) {
-  .sl-grid { grid-template-columns: 1fr; }
-  .sl-hero { flex-direction: column; align-items: flex-start; }
   .student-life-page { padding: 20px 16px; }
 }
 
 /* ── Flip cards: hover flips to reveal a short description ── */
-.sl-flip-card {
-  perspective: 1200px;
-  height: 220px;
-  cursor: none;
-}
-.sl-flip-card-inner {
-  position: relative;
-  width: 100%;
-  height: 100%;
-  transition: transform 0.5s;
-  transform-style: preserve-3d;
-  border-radius: 20px;
-  box-shadow: 0 4px 20px rgba(43,31,24,0.08);
-}
-.sl-flip-card-inner.flipped { transform: rotateY(180deg); }
-.sl-flip-card { cursor: pointer; }
-
-.sl-flip-card-front, .sl-flip-card-back {
-  position: absolute;
-  inset: 0;
-  -webkit-backface-visibility: hidden;
-  backface-visibility: hidden;
-  border-radius: 20px;
-  overflow: hidden;
-}
-
-.sl-flip-card-front { background: #ffffff; }
-.sl-flip-card-img { width: 100%; height: 100%; object-fit: cover; display: block; }
-.sl-flip-card-title {
-  position: absolute;
-  left: 0; right: 0; bottom: 0;
-  padding: 16px 18px;
-  background: linear-gradient(to top, rgba(15,15,15,0.72), transparent);
-  color: #ffffff;
-  font-family: 'Nunito', sans-serif;
-  font-weight: 700;
-  font-size: 15px;
-}
-
-.sl-flip-card-back {
-  transform: rotateY(180deg);
-  background: #634F44;
-  padding: 22px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  gap: 8px;
-}
-.sl-flip-card-back-title {
-  font-family: 'Nunito', sans-serif;
-  font-weight: 700;
-  font-size: 15px;
-  color: #ffffff;
-}
-.sl-flip-card-back-text {
-  font-family: 'Nunito', sans-serif;
-  font-size: 13px;
-  line-height: 1.6;
-  color: rgba(255,255,255,0.92);
-  margin: 0;
-}
-
-
-.sl-flip-card-front, .sl-flip-card-back {
-  position: absolute;
-  inset: 0;
-  -webkit-backface-visibility: hidden;
-  backface-visibility: hidden;
-  border-radius: 20px;
-  overflow: hidden;
-}
-
-.sl-flip-card-front { background: #ffffff; }
-.sl-flip-card-img { width: 100%; height: 100%; object-fit: cover; display: block; }
-.sl-flip-card-title {
-  position: absolute;
-  left: 0; right: 0; bottom: 0;
-  padding: 16px 18px;
-  background: linear-gradient(to top, rgba(15,15,15,0.72), transparent);
-  color: #ffffff;
-  font-family: 'Nunito', sans-serif;
-  font-weight: 700;
-  font-size: 15px;
-}
-
-.sl-flip-card-back {
-  transform: rotateY(180deg);
-  background: #634F44;
-  padding: 22px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  gap: 8px;
-}
-.sl-flip-card-back-title {
-  font-family: 'Nunito', sans-serif;
-  font-weight: 700;
-  font-size: 15px;
-  color: #ffffff;
-}
-.sl-flip-card-back-text {
-  font-family: 'Nunito', sans-serif;
-  font-size: 13px;
-  line-height: 1.6;
-  color: rgba(255,255,255,0.92);
-  margin: 0;
-}
 
 /* ── Custom circular cursor that follows the mouse over the grid ── */
 .sl-hover-cursor {
@@ -239,23 +45,7 @@
 
 @media (max-width: 900px) {
   .sl-hover-cursor { display: none; }
-  .sl-flip-card { cursor: pointer; }
 }
-
-.sl-back-btn {
-  width: 40px;
-  height: 40px;
-  border-radius: 12px;
-  background: #ffffff;
-  border: none;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  margin-bottom: -8px;
-  box-shadow: 0 2px 8px rgba(43,31,24,0.05);
-}
-.sl-back-btn:hover { background: #f2efec; }
 .sl-back-icon { width: 18px; height: 18px; }
 
 .sl-heading {
@@ -310,8 +100,6 @@
 .sl-scroll::-webkit-scrollbar-track { background: transparent; margin: 90px 0; } /* a shorter scrollbar */
 .sl-scroll::-webkit-scrollbar-thumb { background: rgba(172, 136, 118, 0.6); border-radius: 8px; }
 .sl-scroll::-webkit-scrollbar-thumb:hover { background: rgba(172, 136, 118, 0.85); }
-.sl-gallery { flex-shrink: 0; }
-.sl-summary { font-family: 'Nunito', sans-serif; font-size: 16px; line-height: 1.5; color: #3a322c; max-width: 900px; margin: 0; }
 
 /* Pinterest-style board: photos keep their own shape, text sits under the photo */
 .sl-board { column-count: 3; column-gap: 16px; }
@@ -355,7 +143,6 @@
   .sl-board { column-count: 1; }
 }
 @media (max-width: 768px) {
-  .sl-summary { font-size: 15px; }
   .detail-scroll:has(.student-life-page) { overflow-y: auto; }
   .detail-scroll:has(.student-life-page) > .detail-body, .student-life-page { flex: 1 0 auto; }
   .sl-scroll { flex: 1 0 auto; overflow: visible; -webkit-mask-image: none; mask-image: none; padding: 12px 24px 28px; }

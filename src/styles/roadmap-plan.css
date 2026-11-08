@@ -15,11 +15,6 @@
 .rm-doc { padding: 20px 24px 32px; }
 
 /* Notion-like cover: the first saved programme's photo (or a warm gradient), the page icon on its edge */
-.rm-cover { position: relative; height: 150px; border-radius: 18px; margin-bottom: 44px;
-  background: linear-gradient(180deg, rgba(43,31,24,0) 40%, rgba(43,31,24,0.25) 100%), var(--cover, linear-gradient(120deg, #e9d6c8 0%, #c9a894 45%, #8a6d5c 100%)) center / cover no-repeat; }
-.rm-cover-icon { position: absolute; left: 24px; bottom: -34px; width: 72px; height: 72px; border-radius: 20px; display: flex; align-items: center; justify-content: center; font-size: 42px;
-  background: rgba(255,255,255,0.75); border: 1px solid rgba(255,255,255,0.9); box-shadow: 0 10px 24px rgba(43,31,24,0.12); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
-.rm-doc-title { font-size: 30px; font-weight: 700; margin: 0 0 14px; letter-spacing: -0.01em; }
 
 /* callout block */
 .rm-callout { display: flex; gap: 12px; align-items: flex-start; padding: 14px 16px; margin-bottom: 18px; border-radius: 12px; background: rgba(172,136,118,0.13); font-size: 14px; line-height: 1.55; color: #3a2f28; }
@@ -36,18 +31,11 @@
 .rm-tag.pink { background: rgba(193,76,138,0.15); color: #9a2f6a; }
 
 /* properties */
-.rm-props { display: flex; flex-direction: column; gap: 2px; padding-bottom: 18px; border-bottom: 1px solid rgba(43,31,24,0.08); }
-.rm-prop { display: flex; align-items: center; min-height: 34px; gap: 8px; }
-.rm-prop-name { width: 140px; flex-shrink: 0; font-size: 14px; color: #8a7c70; }
-.rm-prop-value { display: flex; align-items: center; gap: 10px; font-size: 14px; flex-wrap: wrap; }
+
 .rm-faint { color: #a99c92; }
-.rm-prop-select { font: inherit; font-size: 14px; font-weight: 600; color: #1f1813; background: transparent; border: none; border-radius: 6px; padding: 4px 6px; margin-left: -6px; cursor: pointer; }
-.rm-prop-select:hover { background: rgba(43,31,24,0.05); }
 .rm-pill { font-size: 12px; font-weight: 700; padding: 2px 8px; border-radius: 6px; background: rgba(43,31,24,0.06); color: #6b5f57; }
 .rm-pill.soon, .rm-date.soon { background: rgba(172,136,118,0.2); color: #8a5a3c; }
 .rm-pill.late, .rm-date.late { background: rgba(214,96,72,0.14); color: #a3402e; }
-.rm-bar { width: 120px; height: 6px; border-radius: 6px; background: rgba(43,31,24,0.08); overflow: hidden; }
-.rm-bar span { display: block; height: 100%; background: #AC8876; border-radius: 6px; transition: width 0.3s; }
 
 /* view switcher */
 .rm-views { display: flex; align-items: center; justify-content: space-between; margin: 18px 0 8px; border-bottom: 1px solid rgba(43,31,24,0.08); }
@@ -60,13 +48,8 @@
 
 /* list: toggle groups */
 .rm-group { margin-top: 10px; }
-.rm-group-head { display: flex; align-items: center; gap: 6px; width: 100%; font: inherit; background: none; border: none; padding: 6px 4px; border-radius: 6px; cursor: pointer; text-align: left; }
-.rm-group-head:hover { background: rgba(43,31,24,0.04); }
-.rm-caret { display: inline-block; width: 16px; font-size: 12px; color: #8a7c70; transition: transform 0.15s; }
 .rm-caret.open { transform: rotate(90deg); }
-.rm-group-name { font-size: 15px; font-weight: 700; }
 .rm-group-count { font-size: 13px; color: #a99c92; margin-left: 4px; }
-.rm-group-body { padding-left: 22px; }
 
 .rm-row { display: flex; align-items: center; gap: 10px; padding: 4px 6px; border-radius: 8px; min-height: 40px; }
 .rm-row:hover { background: rgba(255,255,255,0.55); }
@@ -120,7 +103,6 @@
 .rm-card-thumb { width: 100%; aspect-ratio: 16 / 7; border-radius: 7px; object-fit: cover; display: block; margin-bottom: 8px; font-size: 12px; }
 .rm-card-title { font-size: 14px; font-weight: 600; }
 .rm-card-meta { display: flex; align-items: center; gap: 6px; margin-top: 6px; }
-.rm-stage-tag { font-size: 11px; font-weight: 700; color: #8a5a3c; background: rgba(172,136,118,0.18); padding: 2px 7px; border-radius: 5px; }
 .rm-card-meta .rm-row-del { margin-left: auto; }
 
 .rm-hint { font-size: 13px; color: #8a7c70; margin: 22px 0 0; line-height: 1.5; }
@@ -141,11 +123,6 @@
   .rm-header .rm-title { font-size: 24px; }
   .rm-header .rm-desc { font-size: 14px; }
   .rm-doc { padding: 12px 12px 24px; }
-  .rm-cover { height: 110px; margin-bottom: 36px; }
-  .rm-cover-icon { width: 58px; height: 58px; font-size: 32px; bottom: -28px; left: 16px; }
-  .rm-doc-title { font-size: 24px; }
-  .rm-prop-name { width: 100px; }
-  .rm-group-body { padding-left: 4px; }
   .rm-panel { flex: 1 0 auto; overflow: visible; }
   .rm-scroll { overflow: visible; }
 }
@@ -209,12 +186,10 @@
 .rm-sticker { grid-column: auto; order: 0; display: flex; flex-direction: column; justify-content: center; }
 @media (max-width: 1000px) { .rm-widgets { grid-template-columns: repeat(3, minmax(0, 1fr)); } .rm-sticker { grid-column: auto; order: 0; } .rm-ring-card { flex-direction: column; align-items: flex-start; gap: 10px; } }
 @media (max-width: 640px) { .rm-widgets { grid-template-columns: 1fr; } }
-.rm-doc-title { margin-top: 4px; }
 /* the tip only as wide as it needs; the page title the same size as "Roadmap" */
 .rm-callout { display: inline-flex; max-width: 640px; padding: 10px 14px; font-size: 13px; }
 .rm-callout-icon { font-size: 15px; }
-.rm-doc-title { font-size: 32px; font-weight: 600; letter-spacing: 0; color: #0F0F0F; }
-@media (max-width: 768px) { .rm-doc-title { font-size: 24px; } .rm-callout { display: flex; } }
+@media (max-width: 768px) { .rm-callout { display: flex; } }
 
 /* a bit bigger tip text */
 .rm-callout { font-size: 14.5px; padding: 12px 16px; }

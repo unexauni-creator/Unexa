@@ -198,3 +198,9 @@
 /* like the programme cards: one line each, the rest cut with "…", so every card keeps the same height */
 .community-card-text { flex: 1; min-width: 0; }
 .community-card-title, .community-card-subtitle, .community-card-members { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+@media (max-width: 768px) {
+  .cm-composer textarea { min-height: 4.6em; }
+  .cm-composer.compact textarea { min-height: 2.4em; }
+  .cm-hint { display: none; }
+}
+@media (max-width: 768px) { .cm-composer-foot { justify-content: flex-end; } }

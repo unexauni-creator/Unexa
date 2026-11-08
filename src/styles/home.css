@@ -161,89 +161,11 @@
 .save-toast svg { flex-shrink: 0; color: #7BA986; }
 
 /* Three-dot menu — kept for reference, currently unused after menu removal */
-.uni-card-menu-wrap {
-  position: absolute;
-  top: 12px;
-  right: 12px;
-  z-index: 5;
-  pointer-events: auto;
-}
-
-.uni-card-menu-btn {
-  width: 30px;
-  height: 30px;
-  border-radius: 10px;
-  background: transparent;
-  color: #ffffff;
-  border: none;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: background 0.18s;
-}
-.uni-card-menu-btn:hover { background: rgba(0,0,0,0.28); }
-
-.uni-card-menu {
-  position: absolute;
-  top: 36px;
-  right: 0;
-  background: #ffffff;
-  border-radius: 12px;
-  box-shadow: 0 10px 28px rgba(0,0,0,0.18);
-  padding: 6px;
-  min-width: 190px;
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  z-index: 10;
-  animation: fadeIn 0.15s ease;
-}
-
-.uni-card-menu-item {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 10px 12px;
-  border: none;
-  background: none;
-  border-radius: 8px;
-  font-family: 'Nunito', sans-serif;
-  font-size: 13.5px;
-  font-weight: 600;
-  color: #4a3f38;
-  cursor: pointer;
-  text-align: left;
-  transition: background 0.15s;
-}
-.uni-card-menu-item:hover { background: rgba(172,136,118,0.12); }
-.uni-card-menu-item-remove { color: #c05050; }
-.uni-card-menu-item-remove:hover { background: rgba(200,80,80,0.08); }
 
 /* Add-to-Dashboard button — solid, opaque pill so text stays legible over
    any photo. z-index/pointer-events are also set inline in the JSX as a
    belt-and-suspenders guarantee against any overlay stacking above it. */
-.uni-card-compare-btn {
-  flex-shrink: 0;
-  padding: 10px 20px;
-  border-radius: 8px;
-  border: none;
-  background: #634F44;
-  cursor: pointer;
-  white-space: nowrap;
-  transition: background 0.18s, transform 0.12s;
-  box-shadow: 0 4px 14px rgba(0,0,0,0.28);
-}
-.uni-card-compare-btn,
-.uni-card-compare-btn span {
-  color: #ffffff !important;
-  font-family: 'Nunito', sans-serif;
-  font-size: 13.5px;
-  font-weight: 800;
-  text-shadow: 0 1px 2px rgba(0,0,0,0.35);
-  opacity: 1;
-}
-.uni-card-compare-btn:hover { background: #4e3d35; transform: translateY(-1px); }
+
 .uni-card-compare-btn.added { background: #AC8876; }
 .uni-card-compare-btn.added:hover { background: #9a7664; }
 
@@ -285,7 +207,6 @@
 .home-panel { flex: 1; min-height: 0; display: flex; flex-direction: column; margin: 0 32px 28px; border-radius: 0 24px 24px 24px; overflow: hidden; background: rgba(208, 208, 208, 0.20); backdrop-filter: blur(24px) saturate(180%); -webkit-backdrop-filter: blur(24px) saturate(180%); }
 .home-panel .home-scroll { padding: 22px 20px 28px; }
 .home-panel .home-scroll::before { margin: -22px -20px -10px; }
-.uni-card-why { position: absolute; top: 12px; left: 12px; z-index: 2; max-width: calc(100% - 24px); padding: 5px 11px; border-radius: 999px; background: rgba(255,255,255,0.18); border: 1px solid rgba(255,255,255,0.35); backdrop-filter: blur(14px) saturate(140%); -webkit-backdrop-filter: blur(14px) saturate(140%); color: #fff; text-shadow: 0 1px 2px rgba(0,0,0,0.25); font-family: 'Nunito', sans-serif; font-size: 12px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .home-reco-prompt { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin: 0 0 20px; padding: 18px 22px; border-radius: 18px; background: rgba(172,136,118,0.16); text-decoration: none; transition: background 0.18s; }
 .home-reco-prompt:hover { background: rgba(172,136,118,0.26); }
 .home-reco-prompt-text { display: flex; flex-direction: column; gap: 2px; font-family: 'Nunito', sans-serif; font-size: 14px; color: #5c4f47; }

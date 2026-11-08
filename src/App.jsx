@@ -1,15 +1,6 @@
-import { useState, useEffect } from "react";
+import { lazy, Suspense, useState, useEffect } from "react";
 import { Routes, Route, Navigate, useLocation, useNavigate } from "react-router-dom";
 import Sidebar from "./components/Sidebar";
-import Landing from "./pages/Landing";
-import Login from "./pages/Login";
-import Signup from "./pages/Signup";
-import Home from "./pages/Home";
-import Dashboard from "./pages/Dashboard";
-import CareerRoadmap from "./pages/CareerRoadmap";
-import Community from "./pages/Community";
-import UniversityDetail from "./pages/UniversityDetail";
-import Profile from "./pages/Profile";
 import { supabase } from "./lib/supabaseClient";
 import { mapSpecialty } from "./lib/mapSpecialty.js";
 import { getInitials } from "./lib/initials.js";
@@ -21,11 +12,22 @@ import "./styles/profile.css";
 import "./styles/university-detail.css";
 import "./styles/student-life.css";
 import "./styles/dorm.css";
-import "./styles/teachers-section.css";
 import "./styles/glass.css"; // shared glass tabs and containers, loaded last
-import Onboarding from "./pages/Onboarding";
-import ForgotPassword from "./pages/ForgotPassword";
-import ResetPassword from "./pages/ResetPassword";
+
+// Each page loads only when it is opened, so the first visit downloads much less code.
+const Landing = lazy(() => import("./pages/Landing"));
+const Login = lazy(() => import("./pages/Login"));
+const Signup = lazy(() => import("./pages/Signup"));
+const Home = lazy(() => import("./pages/Home"));
+const Dashboard = lazy(() => import("./pages/Dashboard"));
+const CareerRoadmap = lazy(() => import("./pages/CareerRoadmap"));
+const Community = lazy(() => import("./pages/Community"));
+const UniversityDetail = lazy(() => import("./pages/UniversityDetail"));
+const Profile = lazy(() => import("./pages/Profile"));
+const Onboarding = lazy(() => import("./pages/Onboarding"));
+const ForgotPassword = lazy(() => import("./pages/ForgotPassword"));
+const ResetPassword = lazy(() => import("./pages/ResetPassword"));
+const PreviewHome = lazy(() => import("./pages/PreviewHome"));
 
 // Saved universities used to live only in this browser; this key is now read once
 // to import them into the account, then removed.
@@ -317,7 +319,10 @@ export default function App() {
   const userInitials = getInitials(authUser?.name);
 
   return (
+    <Suspense fallback={<div className="page-loading" aria-label="Loading" />}>
     <Routes>
+      {/* a still picture of the home page, shown inside the landing's browser window */}
+      <Route path="/preview/home" element={<PreviewHome />} />
       {/* ── Public: always reachable, regardless of login state ── */}
       <Route path="/" element={<Landing />} />
            <Route path="/login" element={<Login onLogin={handleLogin} />} />
@@ -422,5 +427,6 @@ export default function App() {
       {/* Anything else falls back to Landing */}
       <Route path="*" element={<Landing />} />
     </Routes>
+    </Suspense>
   );
 }

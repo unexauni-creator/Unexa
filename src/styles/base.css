@@ -4,8 +4,6 @@
 body, #root { height: 100vh; font-family: 'DM Sans', sans-serif; background: #e2e0e0; }
 .app { display: flex; height: 100vh; overflow: hidden; background: url('/paper-texture.jpg') center/cover no-repeat; }
 .main { flex: 1; overflow-y: hidden; background: transparent; scrollbar-gutter: stable; }
-.page-title { font-family: 'DM Serif Display', serif; font-size: 32px; color: #2c2420; margin-bottom: 6px; }
-.page-subtitle { font-size: 15px; color: #9e8f86; margin-bottom: 28px; line-height: 1.5; }
 .page-header { margin-bottom: 28px; }
 
 /* Shared keyframes used across multiple components */
@@ -24,3 +22,12 @@ body, #root { height: 100vh; font-family: 'DM Sans', sans-serif; background: #e2
   .app { flex-direction: column; }
   .main { overflow-y: auto; }
 }
+
+/* shown for a moment while a page's code is loading */
+.page-loading { min-height: 100vh; }
+
+/* the landing's preview of the app: a fixed 1440×900 screen, no scrolling, no clicks */
+.preview-still { width: 1440px; height: 900px; pointer-events: none; user-select: none; }
+.preview-still .home-icon-btn { position: relative; display: inline-flex; align-items: center; justify-content: center; }
+.preview-still *::-webkit-scrollbar { display: none; }
+.preview-still * { scrollbar-width: none; }

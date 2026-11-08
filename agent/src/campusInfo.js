@@ -36,7 +36,7 @@ const Person = z.object({
 const Option = z.object({
   name: z.string().describe("Name of the residence or housing option"),
   type: z.string().nullable().describe("e.g. 'Single room', 'Shared flat', 'Partner residence'"),
-  price: z.string().nullable().describe("Price exactly as stated, with currency and period, e.g. '€450 / month'"),
+  price: z.string().nullable().describe("Price as stated, ALWAYS with its currency symbol and period, e.g. '€450 / month'. If the page shows only a number, add the currency used on that page"),
   distance: z.string().nullable().describe("Distance or travel time to campus if stated"),
   url: z.string().nullable(),
 });

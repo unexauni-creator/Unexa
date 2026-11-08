@@ -1,11 +1,8 @@
-@media (max-width: 768px) {
-  .dash-narrow-wrap { max-width: 100%; }
-}
+
 
 .dashboard-page { padding: 32px; display: flex; flex-direction: column; gap: 28px; }
 .dashboard-header { display: flex; flex-direction: column; gap: 4px; }
 .dash-title { font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 28px; color: #0F0F0F; }
-.dash-subtitle { font-family: 'Nunito', sans-serif; font-size: 15px; }
 
 .dash-corner-cell {
   z-index: 3;
@@ -171,7 +168,6 @@
 .compare-empty-desc { font-family: 'Nunito', sans-serif; font-size: 14px; color: #9e8f86; max-width: 360px; text-align: center; line-height: 1.6; }
 
 .dash-desc-block { display: flex; flex-direction: column; gap: 8px; }
-.dash-desc-main { font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 16px; color: #0F0F0F; }
 .dash-desc-sub { font-family: 'Nunito', sans-serif; font-size: 14px; color: #0F0F0F; line-height: 1.7; }
 
 .dash-info-wrap { display: inline-flex; align-items: center; margin-left: 6px; }
@@ -226,13 +222,6 @@
   padding-left: 14px;
   padding-right: 14px;
   word-break: break-word;
-}
-
-.dash-narrow-wrap {
-  max-width: 640px;
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
 }
 
 /* ── Tablet & phone: switch full-width squeeze mode to fixed-width
@@ -383,14 +372,10 @@
 /* corner: "Universities" on top, a horizontal line, "Criteria" below */
 .dash-corner-cell { justify-content: center; gap: 12px; }
 .dash-corner-top, .dash-corner-bottom { align-self: flex-start; text-align: left; }
-.dash-corner-line { display: block; width: 100%; height: 1px; background: rgba(43,31,24,0.12); }
 
 /* one table: "Universities" labels the cards row, "Criteria" heads the rows below */
 .dash-corner-cell { justify-content: center; }
 .dash-table-body { display: flex; flex-direction: column; min-width: fit-content; }
-.dash-criteria-title-row { border-bottom: 1px solid rgba(43,31,24,0.08); }
-.dash-criteria-title-row:hover { background: none !important; }
-.dash-criteria-title { font-size: 15px; padding-top: 18px; padding-bottom: 12px; border-right: none; }
 .dash-table-body .dash-table-row:last-child { border-bottom: none; }
 /* while scrolled sideways the sticky criteria column keeps a clean left edge (nothing peeks through rounded corners) */
 .dash-table-scroll.is-scrolled .dash-table-label-cell::before { border-radius: 0 !important; }

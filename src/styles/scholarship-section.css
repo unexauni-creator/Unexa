@@ -39,8 +39,6 @@
 }
 .scholarship-row-btn:hover { background: #4e3d35; }
 
-.scholarship-empty { font-family: 'Nunito', sans-serif; font-size: 14px; color: #6b5e56; padding: 20px; }
-
 .scholarship-featured {
   flex: 1;
   min-width: 220px;
