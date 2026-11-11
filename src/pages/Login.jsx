@@ -88,7 +88,7 @@ export default function Login({ onLogin }) {
             id="email"
             type="email"
             className="login-input"
-            placeholder="you@example.com"
+            placeholder="e.g. you@example.com"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
@@ -103,7 +103,6 @@ export default function Login({ onLogin }) {
               id="password"
               type={showPassword ? "text" : "password"}
               className="login-input login-input-password"
-              placeholder="••••••••"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required

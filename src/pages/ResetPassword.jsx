@@ -87,7 +87,6 @@ export default function ResetPassword() {
                 id="password"
                 type={showPassword ? "text" : "password"}
                 className="login-input login-input-password"
-                placeholder="••••••••"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 minLength={6}
@@ -109,7 +108,6 @@ export default function ResetPassword() {
               id="confirmPassword"
               type={showPassword ? "text" : "password"}
               className="login-input"
-              placeholder="••••••••"
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
               minLength={6}
