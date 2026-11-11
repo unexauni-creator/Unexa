@@ -201,7 +201,7 @@ function SettingsPage({ onClose, avatarUrl, onAvatarChange, coverUrl, onCoverCha
                     <div className="settings-field-label">Phone number</div>
                     <div className="settings-field-hint">Optional</div>
                   </div>
-                  <input className="settings-input" type="tel" placeholder="+33 6 12 34 56 78" value={phone} onChange={e => setPhone(e.target.value)} />
+                  <input className="settings-input" type="tel" value={phone} onChange={e => setPhone(e.target.value)} />
                 </div>
 
                 <div className="settings-field">
