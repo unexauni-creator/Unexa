@@ -44,7 +44,6 @@ function SettingsPage({ onClose, avatarUrl, onAvatarChange, coverUrl, onCoverCha
   const notifNewUni = notifPrefs.newUni, setNotifNewUni = setPref("newUni");
   const notifDeadlines = notifPrefs.deadlines, setNotifDeadlines = setPref("deadlines");
   const notifTips = notifPrefs.tips, setNotifTips = setPref("tips");
-  const [language, setLanguage] = useState("English");
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [deleteError, setDeleteError] = useState(null);
@@ -202,19 +201,6 @@ function SettingsPage({ onClose, avatarUrl, onAvatarChange, coverUrl, onCoverCha
                     <div className="settings-field-hint">Optional</div>
                   </div>
                   <input className="settings-input" type="tel" value={phone} onChange={e => setPhone(e.target.value)} />
-                </div>
-
-                <div className="settings-field">
-                  <div className="settings-field-label-block">
-                    <div className="settings-field-label">Display language</div>
-                    <div className="settings-field-hint">The language Unexa is shown in</div>
-                  </div>
-                  <select className="settings-input settings-select" value={language} onChange={e => setLanguage(e.target.value)}>
-                    <option>English</option>
-                    <option>Українська</option>
-                    <option>Español</option>
-                    <option>Français</option>
-                  </select>
                 </div>
 
                 {(saveError || photoError) && <p className="settings-save-error" role="alert">{saveError || photoError}</p>}
