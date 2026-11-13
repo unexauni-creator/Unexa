@@ -77,7 +77,74 @@ function InfoTooltip({ text }) {
   );
 }
 
-export default function Dashboard({ comparedUniversities = [], onRemove, maxCompare = 4 }) {
+// Universities removed from the comparison. Laid out like the table above: a small photo,
+// the programme and the university, plus two actions — add back, or delete for good.
+function ComparisonHistory({ items, canAdd, onRestore, onDelete }) {
+  if (!items.length) return null;
+
+  return (
+    <section className="dash-history" aria-label="Comparison history">
+      <div className="dash-history-header">
+        <h2 className="dash-history-title">History</h2>
+        <span className="dash-history-count">{items.length}</span>
+        <span className="dash-history-sub">Universities you removed from the comparison</span>
+      </div>
+
+      <div className="dash-panel dash-history-panel">
+        <div className="dash-history-table">
+          <div className="dash-history-row dash-history-headrow">
+            <span className="dash-history-col-program">Programme</span>
+            <span className="dash-history-col-name">University</span>
+          </div>
+
+          {items.map(u => (
+            <div key={u.id} className="dash-history-row">
+              <UniImage src={u.image} name={u.name} className="dash-history-img" />
+              <div className="dash-history-program" title={u.program || u.name}>{u.program || u.name}</div>
+              <div className="dash-history-name" title={u.name}>{u.name}</div>
+              <div className="dash-history-actions">
+                <button
+                  type="button"
+                  className="dash-history-add"
+                  onClick={() => onRestore?.(u)}
+                  disabled={!canAdd}
+                  title={canAdd ? "Add back to the comparison" : "The comparison is full — remove one first"}
+                >
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                    <line x1="12" y1="5" x2="12" y2="19" />
+                    <line x1="5" y1="12" x2="19" y2="12" />
+                  </svg>
+                  <span className="dash-history-add-label">Add to compare</span>
+                </button>
+                <button
+                  type="button"
+                  className="dash-history-delete"
+                  onClick={() => onDelete?.(u.id)}
+                  aria-label={`Delete ${u.name} from history`}
+                  title="Delete from history"
+                >
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                    <polyline points="3 6 5 6 21 6" />
+                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+export default function Dashboard({
+  comparedUniversities = [],
+  onRemove,
+  historyUniversities = [],
+  onRestore,
+  onDeleteHistory,
+  maxCompare = 4,
+}) {
   const navigate = useNavigate();
 
   const unis = comparedUniversities;
@@ -101,6 +168,15 @@ export default function Dashboard({ comparedUniversities = [], onRemove, maxComp
     onRemove?.(id);
   }
 
+  const history = (
+    <ComparisonHistory
+      items={historyUniversities}
+      canAdd={count < maxCompare}
+      onRestore={onRestore}
+      onDelete={onDeleteHistory}
+    />
+  );
+
   if (count === 0) {
     return (
       <div className="dashboard-page">
@@ -122,6 +198,7 @@ export default function Dashboard({ comparedUniversities = [], onRemove, maxComp
             <button className="dash-warning-btn" style={{ marginTop: 16 }} onClick={() => navigate("/app")}>Browse universities →</button>
           </div>
         </div>
+        {history}
       </div>
     );
   }
@@ -221,6 +298,7 @@ export default function Dashboard({ comparedUniversities = [], onRemove, maxComp
             </div>
           </div>
         </div>
+        {history}
       </div>
     );
   }
@@ -230,6 +308,7 @@ export default function Dashboard({ comparedUniversities = [], onRemove, maxComp
       {header}
       {maxPopup}
       {table}
+      {history}
     </div>
   );
 }

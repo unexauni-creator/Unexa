@@ -33,6 +33,9 @@ const PreviewHome = lazy(() => import("./pages/PreviewHome"));
 // to import them into the account, then removed.
 const LEGACY_SAVED_KEY = "unexa_saved_universities";
 const COMPARED_UNIS_KEY = "unexa_compared_universities";
+// Universities removed from the comparison stay here so they can be added back or deleted for good.
+const COMPARE_HISTORY_KEY = "unexa_compare_history";
+const MAX_HISTORY = 10;
 const JOINED_GROUPS_KEY = "unexa_joined_groups";
 const AVATAR_KEY = "unexa_profile_avatar";
 const COVER_KEY = "unexa_profile_cover";
@@ -74,6 +77,15 @@ export default function App() {
   const [comparedUniversities, setComparedUniversities] = useState(() => {
     try {
       const stored = localStorage.getItem(COMPARED_UNIS_KEY);
+      return stored ? JSON.parse(stored) : [];
+    } catch {
+      return [];
+    }
+  });
+
+  const [compareHistory, setCompareHistory] = useState(() => {
+    try {
+      const stored = localStorage.getItem(COMPARE_HISTORY_KEY);
       return stored ? JSON.parse(stored) : [];
     } catch {
       return [];
@@ -236,6 +248,12 @@ export default function App() {
 
   useEffect(() => {
     try {
+      localStorage.setItem(COMPARE_HISTORY_KEY, JSON.stringify(compareHistory));
+    } catch {}
+  }, [compareHistory]);
+
+  useEffect(() => {
+    try {
       localStorage.setItem(JOINED_GROUPS_KEY, JSON.stringify(joinedGroupIds));
     } catch {}
   }, [joinedGroupIds]);
@@ -280,23 +298,27 @@ export default function App() {
   }
 
   function addToCompare(uni) {
-    let result = "added";
-    setComparedUniversities(prev => {
-      if (prev.some(u => u.id === uni.id)) {
-        result = "exists";
-        return prev;
-      }
-      if (prev.length >= MAX_COMPARE) {
-        result = "full";
-        return prev;
-      }
-      return [...prev, uni];
-    });
-    return result;
+    if (comparedUniversities.some(u => u.id === uni.id)) return "exists";
+    if (comparedUniversities.length >= MAX_COMPARE) return "full";
+
+    setComparedUniversities(prev => (prev.some(u => u.id === uni.id) ? prev : [...prev, uni]));
+    // a university that is back in the comparison no longer belongs in the history
+    setCompareHistory(prev => prev.filter(u => u.id !== uni.id));
+    return "added";
   }
 
+  // Removing from the comparison keeps the university in the history (newest first).
   function removeFromCompare(id) {
+    const removed = comparedUniversities.find(u => u.id === id);
     setComparedUniversities(prev => prev.filter(u => u.id !== id));
+    if (removed) {
+      setCompareHistory(prev => [removed, ...prev.filter(u => u.id !== id)].slice(0, MAX_HISTORY));
+    }
+  }
+
+  // Deleting from the history removes the university from the comparison page entirely.
+  function deleteFromHistory(id) {
+    setCompareHistory(prev => prev.filter(u => u.id !== id));
   }
 
 
@@ -366,6 +388,9 @@ export default function App() {
                         <Dashboard
                           comparedUniversities={comparedUniversities}
                           onRemove={removeFromCompare}
+                          historyUniversities={compareHistory}
+                          onRestore={addToCompare}
+                          onDeleteHistory={deleteFromHistory}
                           maxCompare={MAX_COMPARE}
                         />
                       }
