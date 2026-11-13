@@ -402,9 +402,10 @@
 .dashboard-page::-webkit-scrollbar { width: 4px; }
 .dashboard-page::-webkit-scrollbar-track { background: transparent; }
 .dashboard-page::-webkit-scrollbar-thumb { background: rgba(172, 136, 118, 0.4); border-radius: 6px; }
-/* the table / locked view never gets squeezed flat — the page scrolls instead */
-.dashboard-page > .dash-panel { min-height: 320px; }
-.dash-locked-wrap { min-height: 420px; }
+/* the comparison keeps its full height no matter how long the history grows —
+   the page scrolls to the history instead of squeezing the table */
+.dashboard-page > .dash-panel { flex: none; }
+.dashboard-page > .dash-locked-wrap { flex: none; min-height: 0; }
 
 /* ── Comparison history: removed universities, kept so they can come back ── */
 .dash-history { display: flex; flex-direction: column; gap: 12px; flex: none; }
