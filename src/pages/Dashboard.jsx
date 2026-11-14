@@ -284,9 +284,9 @@ export default function Dashboard({
   if (isLocked) {
     return (
       <div className="dashboard-page">
+        {header}
         <div className="dash-locked-wrap">
           <div className="dash-locked-content">
-            {header}
             {table}
           </div>
           <div className="dash-warning-overlay">
