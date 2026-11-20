@@ -392,6 +392,10 @@ export default function App() {
                           onRestore={addToCompare}
                           onDeleteHistory={deleteFromHistory}
                           maxCompare={MAX_COMPARE}
+                          onAdd={addToCompare}
+                          onAddToCompare={addToCompare}
+                          savedUniversities={savedUniversities}
+                          onToggleSave={toggleSaveUni}
                         />
                       }
                     />
