@@ -513,3 +513,23 @@
 }
 .settings-save-error { font-family: 'Nunito', sans-serif; font-size: 14px; color: #b2452a; margin: 0 0 12px; }
 .settings-input[readonly] { color: #8a7c70; cursor: default; }
+
+/* One button size across Profile and Settings, the same as the rest of the app */
+.settings-page .filter-clear-btn,
+.settings-page .filter-save-btn,
+.settings-page .settings-nav-logout,
+.settings-page .settings-delete-btn,
+.settings-page .settings-delete-confirm-btn,
+.settings-modal .filter-clear-btn,
+.settings-modal .settings-delete-confirm-btn,
+.profile-page .profile-settings-btn,
+.profile-page .detail-btn-primary {
+  padding: 9px 16px;
+  font-size: 13px;
+  line-height: 1.2;
+  border-radius: 10px;
+}
+.settings-page .settings-page-actions { gap: 8px; }
+.settings-page .settings-nav-logout svg,
+.settings-page .settings-delete-btn svg,
+.profile-page .profile-settings-btn svg { width: 14px; height: 14px; }

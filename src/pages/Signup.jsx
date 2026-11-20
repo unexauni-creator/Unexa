@@ -113,11 +113,13 @@ export default function Signup({ onLogin }) {
           <p className="login-subtitle">Sign up to get started with Unexa.</p>
         </div>
 
-        <form className="login-form" onSubmit={handleSubmit}>
+        <form className="login-form" onSubmit={handleSubmit} method="post" action="/signup" autoComplete="on">
           <label className="login-label" htmlFor="name">Full name</label>
           <input
             id="name"
+            name="name"
             type="text"
+            autoComplete="name"
             className="login-input"
             placeholder="e.g. Jane Doe"
             value={name}
@@ -128,7 +130,10 @@ export default function Signup({ onLogin }) {
           <label className="login-label" htmlFor="email">Email</label>
           <input
             id="email"
+            name="email"
             type="email"
+            autoComplete="username"
+            inputMode="email"
             className="login-input"
             placeholder="e.g. you@example.com"
             value={email}
@@ -140,6 +145,8 @@ export default function Signup({ onLogin }) {
           <div className="login-password-wrap">
             <input
               id="password"
+              name="new-password"
+              autoComplete="new-password"
               type={showPassword ? "text" : "password"}
               className="login-input login-input-password"
               value={password}
@@ -162,6 +169,8 @@ export default function Signup({ onLogin }) {
           <div className="login-password-wrap">
             <input
               id="confirmPassword"
+              name="confirm-password"
+              autoComplete="new-password"
               type={showConfirmPassword ? "text" : "password"}
               className="login-input login-input-password"
               value={confirmPassword}

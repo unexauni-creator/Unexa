@@ -82,11 +82,14 @@ export default function Login({ onLogin }) {
           <p className="login-subtitle">Log in to continue to Unexa.</p>
         </div>
 
-        <form className="login-form" onSubmit={handleSubmit}>
+        <form className="login-form" onSubmit={handleSubmit} method="post" action="/login" autoComplete="on">
           <label className="login-label" htmlFor="email">Email</label>
           <input
             id="email"
+            name="email"
             type="email"
+            autoComplete="username"
+            inputMode="email"
             className="login-input"
             placeholder="e.g. you@example.com"
             value={email}
@@ -101,6 +104,8 @@ export default function Login({ onLogin }) {
           <div className="login-password-wrap">
             <input
               id="password"
+              name="password"
+              autoComplete="current-password"
               type={showPassword ? "text" : "password"}
               className="login-input login-input-password"
               value={password}
