@@ -1,7 +1,7 @@
 // The moving parts of the landing page: the poster strip under the hero, the manifesto that fills
 // with ink as you scroll, and the city that changes in the hero title.
 import { useEffect, useRef, useState } from "react";
-import { AnimatePresence, motion, useScroll, useTransform } from "framer-motion";
+import { AnimatePresence, motion, useScroll, useSpring, useTransform } from "framer-motion";
 
 const EASE = [0.22, 1, 0.36, 1];
 
@@ -34,7 +34,7 @@ function Poster({ p }) {
   return (
     <article className="ux-poster">
       <div className="ux-poster-art" style={p.bg ? { background: p.bg } : undefined}>
-        <img src={p.photo} alt="" loading="lazy" decoding="async" />
+        <img src={p.photo} alt="" decoding="async" />
       </div>
       <div className="ux-poster-cap">
         <SchoolLogo site={p.site} />
@@ -49,10 +49,20 @@ function Poster({ p }) {
 
 /** An endless, slowly moving strip of posters; hovering pauses it. */
 export function PosterStrip() {
+  // the strip slides sideways as you scroll down the page, eased so it never jumps
+  const ref = useRef(null);
+  const { scrollYProgress } = useScroll({ target: ref, offset: ["start end", "end start"] });
+  const x = useSpring(useTransform(scrollYProgress, [0, 1], ["4%", "-46%"]), { stiffness: 80, damping: 24, mass: 0.4 });
   return (
-    <section className="ux-strip" aria-label="What you'll find on Unexa">
-      <div className="ux-strip-row">
-        {[...POSTERS, ...POSTERS].map((p, i) => <Poster key={i} p={p} />)}
+    <section className="ux-strip" ref={ref} aria-label="Schools on Unexa">
+      <div className="ux-strip-head">
+        <h2>Study where art is made</h2>
+        <p>From a painting studio in Venice to a design lab in New York. Every programme is checked against the school's own website.</p>
+      </div>
+      <div className="ux-strip-view">
+        <motion.div className="ux-strip-row" style={{ x }}>
+          {[...POSTERS, ...POSTERS.slice(0, 4)].map((p, i) => <Poster key={i} p={p} />)}
+        </motion.div>
       </div>
     </section>
   );

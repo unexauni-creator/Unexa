@@ -57,6 +57,8 @@ const FEATURES = [
     facts: ["Deadline countdown", "Your own tasks", "Notes in folders"] },
 ];
 
+// shown in the Questions section; until it is set, the section points to LinkedIn
+const CONTACT_EMAIL = "";
 const LINKEDIN_COMPANY_URL = "https://www.linkedin.com/company/unexauni/?viewAsMember=true";
 
 const TEAM = [
@@ -362,6 +364,11 @@ function Faq() {
       <motion.div className="landing-faq-head" initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.5 }} variants={mobileRevealVariants}>
         <SectionTag n="05">Questions</SectionTag>
         <BlurWords lines={["Good to know"]} />
+        <p className="landing-faq-contact">
+          Still have a question? {CONTACT_EMAIL
+            ? <>Write to us at <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>, we answer every message.</>
+            : <>Message us on <a href={LINKEDIN_COMPANY_URL} target="_blank" rel="noopener noreferrer">LinkedIn</a>, we answer every message.</>}
+        </p>
       </motion.div>
       <div className="landing-faq-list">
         {FAQ.map((f, i) => {

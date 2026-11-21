@@ -2283,3 +2283,35 @@ html[data-footer-open] .scroll-blur-stack { opacity: 0 !important; transition: o
   .ux-stat-top strong { font-size: 56px; }
   .ux-stat-chart { min-height: 0; }
 }
+
+/* photo strip: a heading, then the strip slides with the scroll */
+.ux-strip { -webkit-mask-image: none; mask-image: none; padding: 0; }
+.ux-strip-head { max-width: 1180px; margin: 0 auto 34px; padding: 0 24px; display: flex; align-items: flex-end; justify-content: space-between; gap: 40px; font-family: 'Nunito', sans-serif; }
+.ux-strip-head h2 { margin: 0; font-size: clamp(32px, 4.2vw, 52px); font-weight: 800; line-height: 1.05; letter-spacing: -0.025em; color: #2b1f18; max-width: 560px; }
+.ux-strip-head p { margin: 0; max-width: 420px; font-size: 16px; line-height: 1.6; color: #6b5e56; }
+.ux-strip-view { overflow: hidden; padding: 10px 0 20px; -webkit-mask-image: linear-gradient(90deg, transparent, #000 5%, #000 95%, transparent); mask-image: linear-gradient(90deg, transparent, #000 5%, #000 95%, transparent); }
+.ux-strip-row { animation: none !important; }
+.ux-strip:hover .ux-strip-row { animation-play-state: running; }
+@media (max-width: 768px) {
+  .ux-strip-head { flex-direction: column; align-items: flex-start; gap: 12px; padding: 0 20px; margin-bottom: 24px; }
+  .ux-strip-head p { font-size: 15px; }
+}
+
+/* groups card: the topics fill the whole width, rows drifting up */
+.sc-ticker-col { flex-direction: row; flex-wrap: wrap; align-content: flex-start; gap: 8px; }
+.sc-ticker-col span, .sc-ticker-col span:nth-child(3n+2), .sc-ticker-col span:nth-child(3n) { margin-left: 0; align-self: auto; }
+.sc-ticker-col { display: block; }
+.sc-ticker-block { display: flex; flex-wrap: wrap; gap: 8px; padding-bottom: 8px; }
+.sc-ticker-block span { display: inline-flex; align-items: center; gap: 8px; padding: 8px 14px; border-radius: 12px; font-family: 'Nunito', sans-serif; font-size: 14px; font-weight: 700; color: #2b1f18; background: #fffdf9; border: 1px solid rgba(43,31,24,0.08); }
+.sc-ticker-block span i { font-style: normal; color: #AC8876; }
+
+/* feature cards: a light, quiet backdrop behind the screen, and a smaller label */
+.ux-stack-media { background: #F1EBE4; border: 1px solid rgba(43,31,24,0.05); }
+.ux-stack-card .ux-stack-n { font-size: 11px; letter-spacing: 0.1em; }
+.scr { box-shadow: 0 14px 34px rgba(43,31,24,0.12); }
+.scr-bar { background: #fbf8f4; }
+
+/* FAQ: no line above the first question; a contact line under the title */
+.landing-faq-item:first-child { border-top: none; }
+.landing-faq-contact { margin: 16px 0 0; max-width: 320px; font-family: 'Nunito', sans-serif; font-size: 16px; line-height: 1.6; color: #6b5e56; }
+.landing-faq-contact a { color: #2b1f18; font-weight: 700; text-decoration: underline; text-decoration-color: #AC8876; text-underline-offset: 3px; }

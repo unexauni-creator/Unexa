@@ -62,12 +62,11 @@ export function CountryChips({ countries }) {
 
 /** Student groups: their topics, scrolling up slowly. */
 export function GroupTicker({ groups }) {
-  const list = [...groups, ...groups];
+  // two identical blocks, so moving up by exactly one block loops without a jump
+  const block = (k) => <div className="sc-ticker-block" key={k}>{groups.map((g) => <span key={g}><i>✳</i>{g}</span>)}</div>;
   return (
     <div className="sc-ticker" aria-hidden="true">
-      <div className="sc-ticker-col">
-        {list.map((g, i) => <span key={i}><i>✳</i>{g}</span>)}
-      </div>
+      <div className="sc-ticker-col">{block("a")}{block("b")}</div>
     </div>
   );
 }
