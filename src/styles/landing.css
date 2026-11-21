@@ -2186,3 +2186,12 @@ html[data-footer-open] .scroll-blur-stack { opacity: 0 !important; transition: o
 /* the photo hero sits under the floating menu, so no spacer above it */
 .landing-nav-spacer { display: none; }
 .landing-hero-wrap { margin-top: 0 !important; }
+
+/* Questions: same width and left edge as the other sections, title on the left, list on the right */
+.landing-faq { max-width: 1180px; padding: 0 24px; display: grid; grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.4fr); gap: 48px; align-items: start; }
+.landing-faq-head { margin: 0; position: sticky; top: 120px; }
+.landing-faq-head h2 { text-align: left; }
+@media (max-width: 900px) {
+  .landing-faq { grid-template-columns: 1fr; gap: 20px; padding: 0 20px; }
+  .landing-faq-head { position: static; }
+}
