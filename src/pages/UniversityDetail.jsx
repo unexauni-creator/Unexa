@@ -197,6 +197,12 @@ export default function UniversityDetail({
                       {isCompared ? "✓ Compare in Dashboard" : "Compare to others"}
                     </button>
                   </div>
+                  {uni.verifiedAt && (
+                    <p className="detail-verified">
+                      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5" /></svg>
+                      Checked on the official website · {new Date(uni.verifiedAt).toLocaleDateString("en-GB", { month: "long", year: "numeric" })}
+                    </p>
+                  )}
                 </div>
 
                 <div className="detail-hero-right">

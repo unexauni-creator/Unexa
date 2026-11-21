@@ -71,6 +71,39 @@ export default function App() {
     }
   });
 
+  // The app remembers who is logged in (authUser) for a fast first paint, but the real login is
+  // the Supabase session. Keep the two in step: when the session is gone (expired, logged out in
+  // another tab, account deleted), forget the user, so the app doesn't look logged in while
+  // saving, profile and community quietly fail. Logging in as someone else in another tab switches here too.
+  useEffect(() => {
+    const forget = () => {
+      setAuthUser(null);
+      try { localStorage.removeItem(AUTH_KEY); } catch {}
+    };
+    const fromSession = (u) => ({ id: u.id, email: u.email, name: u.user_metadata?.full_name || u.email.split("@")[0] });
+    let active = true;
+
+    supabase.auth.getSession().then(({ data, error }) => {
+      if (!active || error) return; // a network error is not a logout
+      let stored = null;
+      try { stored = JSON.parse(localStorage.getItem(AUTH_KEY)); } catch {}
+      if (stored && stored.id !== "preview-user" && !data.session) forget();
+    });
+
+    const { data: listener } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === "SIGNED_OUT") return forget();
+      if (!session?.user) return;
+      setAuthUser((prev) => {
+        if (!prev || prev.id === session.user.id) return prev;
+        const next = fromSession(session.user);
+        try { localStorage.setItem(AUTH_KEY, JSON.stringify(next)); } catch {}
+        return next;
+      });
+    });
+
+    return () => { active = false; listener.subscription.unsubscribe(); };
+  }, []);
+
   const [savedUniversities, setSavedUniversities] = useState([]);
   const [savedLoading, setSavedLoading] = useState(() => Boolean(authUser?.id));
 

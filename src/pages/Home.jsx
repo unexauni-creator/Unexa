@@ -8,7 +8,7 @@ import { buildNotifications, loadPrefs, loadRead, saveRead, timeAgo } from "../l
 import { hasPreferences, recommendPrograms } from "../lib/recommendations.js";
 
 const DEGREES = ["Bachelor", "Master", "Foundation Year", "Short Course", "Summer School", "Online Course"];
-const LANGUAGES = ["French", "English", "French/English", "German", "Spanish", "Italian", "Polish", "Ukrainian"];
+const LANGUAGES = ["French", "English", "French/English", "German", "Spanish", "Italian", "Polish", "Ukrainian", "Korean", "Japanese", "Chinese"];
 const FORMATS = ["On Campus", "Hybrid", "Online"];
 const COUNTRIES = ["France", "Germany", "Spain", "Italy", "Poland", "Ukraine", "United Kingdom", "United States", "South Korea", "China", "Japan", "Canada"];
 const MIN_PRICE = 0;

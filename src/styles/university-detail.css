@@ -151,3 +151,15 @@
 
 /* Shared "Go back" pill used across Teachers, Student Life, Dorm pages */
 
+
+/* "Checked on the official website · November 2026" under the hero buttons */
+.detail-verified {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin: 12px 0 0;
+  font-family: 'Nunito', sans-serif;
+  font-size: 12px;
+  color: #8a7a70;
+}
+.detail-verified svg { color: #6f9a6a; flex-shrink: 0; }

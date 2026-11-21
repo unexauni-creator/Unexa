@@ -4,7 +4,7 @@
 import { z } from "zod";
 
 const DEGREES = ["Bachelor", "Master", "Foundation Year", "Short Course", "Summer School", "Online Course"];
-const LANGUAGES = ["French", "English", "French/English", "German", "Spanish", "Italian", "Polish", "Ukrainian"];
+const LANGUAGES = ["French", "English", "French/English", "German", "Spanish", "Italian", "Polish", "Ukrainian", "Korean", "Japanese", "Chinese"];
 const FORMATS = ["On Campus", "Hybrid", "Online"];
 
 const Specialty = z.object({
@@ -63,8 +63,9 @@ Map national diplomas to the platform's degree levels:
 - Germany: Bachelor, Diplom (first degree) → Bachelor; Master, Meisterschüler, Diplom after a first degree → Master.
 - Poland: studia I stopnia (licencjat, inżynier) → Bachelor; studia II stopnia, jednolite studia magisterskie → Master.
 - Ukraine: бакалавр → Bachelor; магістр → Master.
+- South Korea, Japan, China: 학사 / 学士 / 学士学位 → Bachelor; 석사 / 修士 / 硕士 → Master.
 Summer programmes → Summer School; short or certificate courses → Short Course.
-Pages may be in French, Italian, Spanish, German, Polish or Ukrainian: read them in that language, but write every text field in English.
+Pages may be in French, Italian, Spanish, German, Polish, Ukrainian, Korean, Japanese or Chinese: read them in that language, but write every text field in English.
 
 Keep every text field short (under 120 characters) — it is shown in a small box; put longer detail into curriculum_summary. Never write placeholder text such as "Not in source", "Not specified" or "N/A": use null.
 

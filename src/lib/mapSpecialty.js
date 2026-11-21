@@ -37,6 +37,8 @@ export function mapSpecialty(rawRow) {
     // автор і ліцензія фото з Wikimedia Commons (рядок "Photo: … — https://…" у source_note)
     photoCredit: row.image_url ? photoCredit(row.source_note) : null,
     website: uni?.website_url,
+    // коли агент востаннє звірив школу з офіційним сайтом (universities.verified_at)
+    verifiedAt: uni?.verified_at ?? null,
     // студентське життя, яке зібрав агент з офіційного сайту (universities.student_life)
     studentLife: uni?.student_life ?? null,
     // викладачі й житло, які агент зібрав з офіційного сайту (universities.faculty / housing)

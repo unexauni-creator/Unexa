@@ -26,10 +26,14 @@ const toJsonSchema = (schema) => {
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 const shortError = (err) => String(err.message).match(/"message":"([^"]{0,90})/)?.[1] ?? err.message;
 
-async function callModel(model, { system, user, schema }) {
+async function callModel(model, { system, user, schema, pdfs = [] }) {
+  // PDF-файли (вартість, правила вступу) йдуть разом з текстом як окремі частини
+  const contents = pdfs.length
+    ? [{ role: "user", parts: [{ text: user }, ...pdfs.map((p) => ({ inlineData: { mimeType: "application/pdf", data: p.data } }))] }]
+    : user;
   const response = await ai.models.generateContent({
     model,
-    contents: user,
+    contents,
     config: {
       systemInstruction: system,
       responseMimeType: "application/json",
