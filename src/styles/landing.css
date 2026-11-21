@@ -2136,3 +2136,53 @@ html[data-footer-open] .scroll-blur-stack { opacity: 0 !important; transition: o
   .ux-reveal-foot .ux-reveal-pills { justify-content: flex-start; }
   .ux-reveal-bottom { align-items: flex-start; text-align: left; }
 }
+
+/* ═════════════ hero: full-screen photos of real schools ═════════════ */
+.landing-hero-wrap { margin-top: -84px; }
+.hf { position: relative; height: 100vh; height: 100svh; min-height: 620px; overflow: hidden; display: flex; align-items: center; justify-content: center; text-align: center; color: #fffdf9; background: #2b1f18; }
+.hf-bg { position: absolute; inset: -6% 0 -12%; }
+.hf-bg img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.hf-shade { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(30,20,14,0.55) 0%, rgba(30,20,14,0.32) 40%, rgba(30,20,14,0.6) 100%); }
+.hf-content { position: relative; z-index: 2; max-width: 960px; padding: 0 24px; font-family: 'Nunito', sans-serif; }
+.hf-eyebrow { font-size: 14px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; color: rgba(255,253,249,0.85); }
+.hf-title { margin: 22px 0 22px; font-size: clamp(56px, 9vw, 132px); font-weight: 800; line-height: 0.92; letter-spacing: -0.045em; color: #fffdf9; }
+.hf-sub { margin: 0 auto 34px; max-width: 600px; font-size: 20px; line-height: 1.5; color: rgba(255,253,249,0.9); }
+.hf-ctas { display: flex; justify-content: center; gap: 12px; flex-wrap: wrap; }
+.hf-btn { display: inline-flex; align-items: center; gap: 10px; padding: 15px 26px; border-radius: 999px; font: inherit; font-size: 16px; font-weight: 700; text-decoration: none; cursor: pointer; border: none; transition: transform 0.3s var(--ease-premium), background 0.3s; }
+.hf-btn:hover { transform: translateY(-2px); }
+.hf-btn-light { background: #fffdf9; color: #2b1f18; }
+.hf-btn-dark { background: #2b1f18; color: #fffdf9; }
+.hf-btn-dark:hover { background: #3a2c24; }
+.hf-caption { position: absolute; z-index: 2; left: 0; right: 0; bottom: 28px; display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 0 32px;
+  font-family: 'Nunito', sans-serif; font-size: 13px; font-weight: 700; letter-spacing: 0.04em; color: rgba(255,253,249,0.8); }
+.hf-dots { display: inline-flex; gap: 6px; }
+.hf-dots i { width: 22px; height: 3px; border-radius: 2px; background: rgba(255,253,249,0.35); transition: background 0.4s, width 0.4s; }
+.hf-dots i.on { width: 36px; background: #fffdf9; }
+.ux-strip { margin-top: 90px; }
+@media (max-width: 768px) {
+  .landing-hero-wrap { margin-top: -76px; }
+  .hf-title { font-size: clamp(48px, 15vw, 72px); }
+  .hf-sub { font-size: 16px; }
+  .hf-eyebrow { font-size: 12px; }
+  .hf-btn { padding: 13px 20px; font-size: 15px; }
+  .hf-caption { padding: 0 20px; bottom: 20px; font-size: 12px; }
+  .ux-strip { margin-top: 60px; }
+}
+.hf-shade { background: linear-gradient(180deg, rgba(30,20,14,0.6) 0%, rgba(30,20,14,0.45) 45%, rgba(30,20,14,0.66) 100%); }
+
+/* hero: one frame that shrinks into a card on the way out; text always readable */
+.hf { background: transparent; overflow: visible; }
+.hf-frame { position: absolute; inset: 0; overflow: hidden; background: #2b1f18; transform-origin: 50% 100%; display: flex; align-items: center; justify-content: center; will-change: transform; }
+.hf-shade { background: linear-gradient(180deg, rgba(25,17,12,0.62) 0%, rgba(25,17,12,0.38) 42%, rgba(25,17,12,0.7) 100%); }
+.hf-focus { position: absolute; inset: 0; background: radial-gradient(ellipse 60% 48% at 50% 50%, rgba(25,17,12,0.45) 0%, rgba(25,17,12,0.15) 60%, transparent 100%); }
+.hf-dim { position: absolute; inset: 0; z-index: 3; pointer-events: none; }
+.hf-content, .hf-caption { text-shadow: 0 2px 18px rgba(20,12,8,0.45); }
+.hf-btn { text-shadow: none; }
+
+/* manifesto now follows the hero, the poster strip after it */
+.ux-manifesto { margin-top: 130px; }
+.ux-strip { margin-top: 100px; }
+@media (max-width: 768px) { .ux-manifesto { margin-top: 80px; } .ux-strip { margin-top: 60px; } }
+/* the photo hero sits under the floating menu, so no spacer above it */
+.landing-nav-spacer { display: none; }
+.landing-hero-wrap { margin-top: 0 !important; }

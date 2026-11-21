@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, MotionConfig, motion, useMotionValueEvent, useScroll, useTransform } from "framer-motion";
-import { CitySwap, Manifesto, PosterStrip } from "../components/landing/Showcase";
+import { Manifesto, PosterStrip } from "../components/landing/Showcase";
 import Journey from "../components/landing/Journey";
+import Hero from "../components/landing/Hero";
 import Mascot from "../components/Mascot";
 import { Deadline, Globe, PaperPlane, School, Palette as PaletteIllo } from "../components/landing/Illustrations";
 import { supabase } from "../lib/supabaseClient";
@@ -10,7 +11,6 @@ import { useNavigate } from "react-router-dom";
 // A few of the schools on Unexa, for the running strip (replaced by the live list when the page can reach the database)
 const FALLBACK_SCHOOLS = ["Beaux-arts de Paris", "Rhode Island School of Design", "Goldsmiths", "Tokyo University of the Arts", "Academy of Media Arts Cologne", "Accademia di Belle Arti di Venezia", "Berlin University of the Arts", "ArtCenter College of Design", "NABA", "Elisava", "Hongik University", "Seoul National University", "Lviv National Academy of Arts", "Brera Academy of Fine Arts", "School of Visual Arts", "Maryland Institute College of Art", "Academy of Fine Arts in Gdańsk", "Kharkiv State Academy of Design and Arts", "Sheridan College", "Łódź Film School", "Arts University Bournemouth", "University of Art and Design Offenbach"];
 
-const CITIES = ["Paris", "Seoul", "Berlin", "Tokyo", "Venice", "London", "Kraków", "Providence"];
 const MANIFESTO = "Choosing an art school abroad means forty open tabs, three languages and deadlines nobody warns you about. *Unexa puts every programme, fee and date from the schools' own websites in one calm place, so your energy goes where it matters: *your *portfolio.";
 
 const FAQ = [
@@ -231,9 +231,6 @@ function NavLink({ item, isActive, onClick }) {
 
 const EASE = [0.22, 1, 0.36, 1];
 
-// Hero: lines rise in one after another
-const heroContainer = { hidden: {}, visible: (delay = 0.05) => ({ transition: { staggerChildren: 0.12, delayChildren: delay } }) };
-const heroItem = { hidden: { opacity: 0, y: 26, filter: "blur(6px)" }, visible: { opacity: 1, y: 0, filter: "blur(0px)", transition: { duration: 0.85, ease: EASE } } };
 
 
 // Real numbers from the database; falls back to the last known ones
@@ -731,35 +728,12 @@ export default function Landing() {
       />
 
       <div ref={heroRef} className="landing-hero-wrap">
-        <motion.section className="landing-hero" id="showcase" variants={heroContainer} initial="hidden" animate="visible" custom={withIntro ? INTRO_HOLD + 0.45 : 0.05}>
-          <motion.div className="landing-hero-kicker" variants={heroItem}>
-            <span className="landing-live-dot" aria-hidden="true" /> {liveStats.schools} art & design schools · {liveStats.countries} countries
-          </motion.div>
-          <h1 className="landing-hero-title ux-hero-title">
-            <motion.span className="landing-hero-line" variants={heroItem}>
-              Study art & design <span className="landing-hero-accent">✳</span>
-            </motion.span>
-            <motion.span className="landing-hero-line" variants={heroItem}>
-              in <CitySwap cities={CITIES} delay={withIntro ? INTRO_HOLD + 1.2 : 1.2} />
-            </motion.span>
-          </h1>
-          <motion.p className="landing-hero-desc" variants={heroItem}>
-            Built for students still figuring out where to study next. Discover programmes across the world,
-            compare them side by side, and plan every step: deadlines, portfolio, tests and housing.
-          </motion.p>
-          <motion.div className="landing-hero-ctas" variants={heroItem}>
-            <a className="landing-btn landing-btn-primary" href="#features">Learn more <span aria-hidden="true">↓</span></a>
-          </motion.div>
-          <motion.div className="ux-proof" variants={heroItem}>
-            <span>Data from <b>{liveStats.schools} schools'</b> official websites, checked every month</span>
-          </motion.div>
-        </motion.section>
-
+        <Hero delay={withIntro ? INTRO_HOLD + 0.4 : 0} onSignup={goToSignup} />
       </div>
 
-      <PosterStrip />
-
       <Manifesto text={MANIFESTO} />
+
+      <PosterStrip />
 
       {/* live numbers, as illustrated tiles */}
       <section className="ux-stats">

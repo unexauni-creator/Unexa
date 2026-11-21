@@ -74,13 +74,15 @@ function Word({ word, progress, range }) {
 }
 
 /** "Study art & design in Paris." The city changes every couple of seconds. */
-export function CitySwap({ cities, delay = 0 }) {
-  const [i, setI] = useState(0);
+export function CitySwap({ cities, delay = 0, index }) {
+  const [own, setI] = useState(0);
+  const i = index ?? own; // the hero can drive it, so the photo and the city change together
   useEffect(() => {
+    if (index != null) return undefined;
     let id;
     const start = setTimeout(() => { id = setInterval(() => setI((n) => (n + 1) % cities.length), 2200); }, delay * 1000);
     return () => { clearTimeout(start); clearInterval(id); };
-  }, [cities.length, delay]);
+  }, [cities.length, delay, index]);
   return (
     <span className="ux-city">
       <AnimatePresence mode="popLayout" initial={false}>
