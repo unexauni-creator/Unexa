@@ -109,7 +109,8 @@ function Chip({ label, selected, disabled, onClick }) {
   );
 }
 
-export default function Onboarding({ onLogin }) {
+// demo: the landing page shows this real screen (at /preview/onboarding); it picks a few fields by itself
+export default function Onboarding({ onLogin, demo = false }) {
   const [status, setStatus] = useState("loading"); // loading | ready | error
   const [name, setName] = useState("");
   const [userId, setUserId] = useState(null);
@@ -138,8 +139,8 @@ export default function Onboarding({ onLogin }) {
       // Local design preview (npm run dev only; skips Supabase and saving):
       //   /onboarding?preview=ready&step=3     /onboarding?preview=preparing
       const params = new URLSearchParams(window.location.search);
-      const preview = params.get("preview");
-      if (preview && import.meta.env.DEV) {
+      const preview = demo ? "ready" : params.get("preview");
+      if (preview && (demo || import.meta.env.DEV)) {
         setIsPreview(true);
         setName("Kateryna");
         if (preview === "preparing") {
@@ -147,7 +148,7 @@ export default function Onboarding({ onLogin }) {
           setPreparing(true);
         } else {
           setStatus(preview);
-          setStep(Math.min(LAST_STEP, Math.max(0, Number(params.get("step")) || 0)));
+          setStep(demo ? 1 : Math.min(LAST_STEP, Math.max(0, Number(params.get("step")) || 0)));
         }
         return;
       }
@@ -194,6 +195,16 @@ export default function Onboarding({ onLogin }) {
   }, [preparing]);
 
   useEffect(() => () => clearTimeout(reactionTimer.current), []);
+
+  useEffect(() => {
+    if (!demo) return undefined;
+    const picks = ["Graphic Design", "Illustration", "Photography"];
+    const timers = picks.map((p, i) => setTimeout(() => {
+      setAnswers((a) => ({ ...a, fields: a.fields.includes(p) ? a.fields : [...a.fields, p] }));
+      setPulse((n) => n + 1);
+    }, 1200 + i * 900));
+    return () => timers.forEach(clearTimeout);
+  }, [demo]);
 
   function say(text) {
     setReaction(text);

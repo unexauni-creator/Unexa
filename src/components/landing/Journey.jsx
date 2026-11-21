@@ -2,28 +2,19 @@
 // a live scene on the right that changes with each step. Hover pauses, a click jumps to a step.
 import { useRef, useState } from "react";
 import { AnimatePresence, motion, useInView } from "framer-motion";
-import { Deadline, OfferLetter, Palette, Sketchbook } from "./Illustrations";
+import { Deadline, OfferLetter, Sketchbook } from "./Illustrations";
+import Screen from "./Screen";
 
 const EASE = [0.22, 1, 0.36, 1];
 const STEP_MS = 5200;
 
 const pop = (i) => ({ initial: { opacity: 0, y: 14, scale: 0.96 }, animate: { opacity: 1, y: 0, scale: 1 }, transition: { duration: 0.5, ease: EASE, delay: 0.25 + i * 0.18 } });
 
+// the real onboarding of Unexa, picking a few fields by itself
 function SceneLove() {
-  const chips = ["Graphic Design", "Illustration", "Italy", "Germany", "English", "Under €5,000"];
   return (
-    <div className="jr-scene jr-love">
-      <div className="jr-illo"><Palette /></div>
-      <div className="jr-card">
-        <b>What would you love to study?</b>
-        <div className="jr-chips">
-          {chips.map((c, i) => (
-            <motion.span key={c} className="jr-chip" {...pop(i)}>
-              <motion.i initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ delay: 0.5 + i * 0.18, type: "spring", stiffness: 300, damping: 16 }}>✓</motion.i>{c}
-            </motion.span>
-          ))}
-        </div>
-      </div>
+    <div className="jr-scene jr-onb">
+      <Screen src="/preview/onboarding" label="unexa.app/onboarding" w={720} h={620} />
     </div>
   );
 }

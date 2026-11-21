@@ -51,9 +51,9 @@ export default function Hero({ delay = 0, onSignup }) {
 
       <motion.div className="hf-content" style={{ y: textY, opacity: textOpacity }}>
         <motion.div className="hf-eyebrow" {...rise(0.1)}>For art & design students</motion.div>
-        <motion.h1 className="hf-title" {...rise(0.22)}>Find your<br />art school.</motion.h1>
+        <motion.h1 className="hf-title" {...rise(0.22)}><span className="hf-t1">Find your</span><span className="hf-t2">art school.</span></motion.h1>
         <motion.p className="hf-sub" {...rise(0.36)}>
-          Compare art & design programmes abroad, plan every deadline, and apply with confidence. Free.
+          Compare programmes abroad, plan every deadline and apply with confidence. Free for students.
         </motion.p>
         <motion.div className="hf-ctas" {...rise(0.5)}>
           <button type="button" className="hf-btn hf-btn-light" onClick={onSignup}>Create free account <span aria-hidden="true">↗</span></button>

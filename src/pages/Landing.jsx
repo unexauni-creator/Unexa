@@ -748,11 +748,14 @@ export default function Landing() {
         >
           <motion.div className="footer-cta" variants={footerCtaVariants}>
             <div className="footer-cta-eyebrow">Free for students</div>
-            <div className="ux-footer-illo" aria-hidden="true">
-              <div className="ux-footer-globe"><Globe /></div>
-              <div className="ux-footer-plane"><PaperPlane /></div>
-            </div>
-            <h2 className="footer-cta-title">Find your art school</h2>
+            <h2 className="footer-cta-title">
+              Find your art school
+              {/* beside the title on desktop; on small screens it sits in the space after "school" */}
+              <span className="ux-footer-illo" aria-hidden="true">
+                <span className="ux-footer-globe"><Globe /></span>
+                <span className="ux-footer-plane"><PaperPlane /></span>
+              </span>
+            </h2>
             <p className="footer-cta-desc">
               Make an account, tell us what you'd love to study, and get programmes picked for you, with every deadline in your plan.
             </p>

@@ -384,6 +384,7 @@ export default function App() {
       <Route path="/preview/dashboard" element={<PreviewDashboard />} />
       <Route path="/preview/roadmap" element={<PreviewRoadmap />} />
       <Route path="/preview/detail" element={<PreviewDetail />} />
+      <Route path="/preview/onboarding" element={<Onboarding demo onLogin={() => {}} />} />
       {/* ── Public: always reachable, regardless of login state ── */}
       <Route path="/" element={<Landing />} />
            <Route path="/login" element={<Login onLogin={handleLogin} />} />

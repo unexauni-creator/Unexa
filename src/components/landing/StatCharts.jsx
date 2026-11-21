@@ -60,13 +60,24 @@ export function CountryChips({ countries }) {
   );
 }
 
-/** Student groups: their topics, scrolling up slowly. */
+/** Student groups: their topics in three rows that drift sideways in opposite directions. */
 export function GroupTicker({ groups }) {
-  // two identical blocks, so moving up by exactly one block loops without a jump
-  const block = (k) => <div className="sc-ticker-block" key={k}>{groups.map((g) => <span key={g}><i>✳</i>{g}</span>)}</div>;
+  const per = Math.ceil(groups.length / 3);
+  const rows = [0, 1, 2].map((r) => groups.slice(r * per, (r + 1) * per)).filter((r) => r.length);
+  // each row holds its topics twice, so sliding by exactly one copy loops without a jump
   return (
-    <div className="sc-ticker" aria-hidden="true">
-      <div className="sc-ticker-col">{block("a")}{block("b")}</div>
+    <div className="sc-rows" aria-hidden="true">
+      {rows.map((row, r) => (
+        <div key={r} className={`sc-row ${r % 2 ? "is-reverse" : ""}`}>
+          <div className="sc-row-track">
+            {[0, 1].map((copy) => (
+              <div key={copy} className="sc-row-copy">
+                {row.map((g) => <span key={g}><i>✳</i>{g}</span>)}
+              </div>
+            ))}
+          </div>
+        </div>
+      ))}
     </div>
   );
 }
