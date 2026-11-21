@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, MotionConfig, motion, useMotionValueEvent, useScroll, useTransform } from "framer-motion";
 import { CitySwap, Manifesto, PosterStrip } from "../components/landing/Showcase";
 import Journey from "../components/landing/Journey";
+import Mascot from "../components/Mascot";
 import { Deadline, Globe, PaperPlane, School, Palette as PaletteIllo } from "../components/landing/Illustrations";
 import { supabase } from "../lib/supabaseClient";
 import { useNavigate } from "react-router-dom"; 
@@ -488,34 +489,32 @@ function FooterReveal({ children, onTop }) {
   const y = useTransform(scrollYProgress, [0, 1], ["-45%", "0%"]);
   const opacity = useTransform(scrollYProgress, [0, 0.6, 1], [0.2, 0.85, 1]);
   const wordScale = useTransform(scrollYProgress, [0, 1], [0.86, 1]);
-  // a colour, not opacity: opacity tied to scroll is handed to the browser, which measured it wrong here
-  const shade = useTransform(scrollYProgress, (p) => `rgba(43,31,24,${(Math.min(1, Math.max(0, p)) * 0.72).toFixed(3)})`);
-  const sink = useTransform(scrollYProgress, [0, 1], [1, 0.93]);
+  const [pulse, setPulse] = useState(0); // the mascot hops when you point at it
   // over the brown footer the light fade under the menu would show as a grey band, so switch it off
   useMotionValueEvent(scrollYProgress, "change", (p) => { document.documentElement.toggleAttribute("data-footer-open", p > 0.35); });
   useEffect(() => () => document.documentElement.removeAttribute("data-footer-open"), []);
   return (
     <footer className="ux-reveal">
-      <motion.div className="ux-reveal-panel" style={{ scale: sink }}>
-        {children}
-        <motion.div className="ux-reveal-shade" style={{ backgroundColor: shade }} aria-hidden="true" />
-      </motion.div>
+      <div className="ux-reveal-panel">{children}</div>
       <div className="ux-reveal-ears" aria-hidden="true" />
       <div className="ux-reveal-under" ref={underRef}>
         <motion.div className="ux-reveal-inner" style={{ y, opacity }}>
-          <div className="ux-reveal-top">
-            <span className="ux-reveal-tag">Find your art school <i aria-hidden="true">✳</i></span>
-            <nav className="ux-reveal-links" aria-label="Footer">
-              <a href="#features">Features</a>
-              <a href="#how">How it works</a>
-              <a href="#team">Team</a>
-              <a href="#faq">Questions</a>
-              <a href="/login">Log in</a>
-              <a href="/signup">Create account</a>
-            </nav>
+          <span className="ux-reveal-tag">Find your art school <i aria-hidden="true">✳</i></span>
+          <div className="ux-reveal-head">
+            <motion.div className="ux-reveal-word" style={{ scale: wordScale }} aria-hidden="true">Unexa</motion.div>
             <button type="button" className="ux-reveal-totop" onClick={onTop}>Back to top <span aria-hidden="true">↑</span></button>
           </div>
-          <motion.div className="ux-reveal-word" style={{ scale: wordScale }} aria-hidden="true">Unexa</motion.div>
+          <div className="ux-reveal-mascot" onMouseEnter={() => setPulse((n) => n + 1)}>
+            <Mascot size={240} pulse={pulse} />
+          </div>
+          <nav className="ux-reveal-links" aria-label="Footer">
+            <a href="#features">Features</a>
+            <a href="#how">How it works</a>
+            <a href="#team">Team</a>
+            <a href="#faq">Questions</a>
+            <a href="/login">Log in</a>
+            <a href="/signup">Create account</a>
+          </nav>
           <div className="ux-reveal-bottom">
             <span>© 2026 Unexa · Built by Kateryna & Anastasiia</span>
             <div className="ux-reveal-pills">
