@@ -2,35 +2,42 @@
 // with ink as you scroll, and the city that changes in the hero title.
 import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion, useScroll, useTransform } from "framer-motion";
-import { Sketchbook, PaperPlane, School, OfferLetter, Deadline, Passport, Palette, FilmStrip, Globe, PALETTE as C } from "./Illustrations";
 
 const EASE = [0.22, 1, 0.36, 1];
 
 // Big rounded posters, like a gallery: Unexa illustrations mixed with real school photos.
 const POSTERS = [
-  { Illo: Sketchbook, bg: C.sand, title: "Portfolio, page by page", sub: "15 works + 1 sketchbook" },
-  { photo: "https://upload.wikimedia.org/wikipedia/commons/thumb/3/37/Paris_6_-_ENSBA_01.jpg/1280px-Paris_6_-_ENSBA_01.jpg", title: "Fine Arts (DNSAP)", sub: "Beaux-arts de Paris" },
-  { Illo: Deadline, bg: "#F3DCD2", title: "Every deadline in one plan", sub: "Rhode Island School of Design · 5 Jan" },
-  { Illo: PaperPlane, bg: "#DCE6EC", title: "One search, many countries", sub: "From Paris to Seoul" },
-  { photo: "https://www.geidai.ac.jp/english/wp-content/uploads/2024/10/H8A2884-Pano-scaled.jpg", title: "Global Arts", sub: "Tokyo University of the Arts" },
-  { Illo: School, bg: "#EFE3D3", title: "Straight from the source", sub: "Read from official school sites" },
-  { Illo: OfferLetter, bg: "#F1E4C8", title: "The letter you're waiting for", sub: "Plan it, then open it" },
-  { photo: "https://www.accademiavenezia.it/upload/eventi/crop/Mostra_Extra_Ordinario_Workshop_VII_Edizione.jpg", title: "Painting", sub: "Accademia di Belle Arti di Venezia" },
-  { Illo: FilmStrip, bg: "#E2DEEA", title: "Film & Animation", sub: "Film, animation, media arts" },
-  { Illo: Passport, bg: "#E4E8DD", title: "Visa & documents", sub: "What to send, and when" },
-  { photo: "https://www.manchester.ac.uk/study/international/oxford-road-campus-shot-v2.webp", title: "Creative Writing", sub: "The University of Manchester" },
-  { Illo: Palette, bg: "#F4E1D8", title: "Painting, design, film…", sub: "Creative programmes only" },
-  { Illo: Globe, bg: "#DFE7E9", title: "Study where you dream", sub: "Europe, North America, East Asia" },
+  { photo: "https://www.accademiavenezia.it/upload/eventi/crop/Mostra_Extra_Ordinario_Workshop_VII_Edizione.jpg", title: "Painting", sub: "Accademia di Belle Arti di Venezia", site: "accademiavenezia.it" },
+  { photo: "https://www.risd.edu/themes/custom/risd_base_theme/src/patterns/pages/home/assets/HP_Asset_01-opt.jpg", title: "Graphic Design", sub: "Rhode Island School of Design", site: "risd.edu" },
+  { photo: "https://www.eram.cat/wp-content/uploads/masteriniteractiondesign-eram02-scaled.jpg", title: "Interaction Design", sub: "ERAM · Girona", site: "eram.cat" },
+  { photo: "https://upload.wikimedia.org/wikipedia/commons/thumb/3/37/Paris_6_-_ENSBA_01.jpg/1280px-Paris_6_-_ENSBA_01.jpg", title: "Fine Arts", sub: "Beaux-arts de Paris", site: "beauxartsparis.fr" },
+  { photo: "https://assets.sva.edu/homepageStripSlideshow/144-sva-vap-selects-jermcohen-2025-1793011602.jpg", title: "Visual Arts", sub: "School of Visual Arts · New York", site: "sva.edu" },
+  { photo: "https://www.ravensbourne.ac.uk/sites/default/files/2026-03/FIT_4865%201.jpg", title: "Fashion", sub: "Ravensbourne · London", site: "ravensbourne.ac.uk" },
+  { photo: "https://www.geidai.ac.jp/english/wp-content/uploads/2024/10/H8A2884-Pano-scaled.jpg", title: "Global Arts", sub: "Tokyo University of the Arts", site: "geidai.ac.jp" },
+  { photo: "https://assets.mica.edu/files/pages/wide_lrg_dsc07485-enhanced-nr-2.jpg", title: "Exhibitions", sub: "MICA · Baltimore", site: "mica.edu" },
+  { photo: "https://www.ensad.fr/sites/default/files/styles/1920_auto/public/2024-10/Workshop%20DMU%20-%20Issy%20les%20Moulineaux%20%C2%A9Beryl%20Libault%20%2843%29.jpg?itok=WQOkLlEo", title: "Decorative Arts", sub: "École des Arts Décoratifs · Paris", site: "ensad.fr" },
+  { photo: "https://arqa.com/wp-content/uploads/2023/11/01-hongik-university-seoul-campus-image-by-negativ-courtesy-of-oma.jpg", title: "Design", sub: "Hongik University · Seoul", site: "hongik.ac.kr" },
 ];
+
+// the school's own icon from its website (via Google's favicon service); falls back to the ✳ mark
+function SchoolLogo({ site }) {
+  const [failed, setFailed] = useState(false);
+  if (!site || failed) return <span className="ux-poster-mark" aria-hidden="true">✳</span>;
+  return (
+    <span className="ux-poster-logo" aria-hidden="true">
+      <img src={`https://www.google.com/s2/favicons?domain=${site}&sz=128`} alt="" loading="lazy" onError={() => setFailed(true)} />
+    </span>
+  );
+}
 
 function Poster({ p }) {
   return (
     <article className="ux-poster">
       <div className="ux-poster-art" style={p.bg ? { background: p.bg } : undefined}>
-        {p.photo ? <img src={p.photo} alt="" loading="lazy" decoding="async" /> : <p.Illo />}
+        <img src={p.photo} alt="" loading="lazy" decoding="async" />
       </div>
       <div className="ux-poster-cap">
-        <span className="ux-poster-mark" aria-hidden="true">✳</span>
+        <SchoolLogo site={p.site} />
         <div>
           <b>{p.title}</b>
           <small>{p.sub}</small>

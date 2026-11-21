@@ -3,8 +3,10 @@ import { AnimatePresence, MotionConfig, motion, useMotionValueEvent, useScroll, 
 import { Manifesto, PosterStrip } from "../components/landing/Showcase";
 import Journey from "../components/landing/Journey";
 import Hero from "../components/landing/Hero";
+import Screen from "../components/landing/Screen";
+import { CountryBars, CountryChips, DegreeSplit, GroupTicker } from "../components/landing/StatCharts";
 import Mascot from "../components/Mascot";
-import { Deadline, Globe, PaperPlane, School, Palette as PaletteIllo } from "../components/landing/Illustrations";
+import { Globe, PaperPlane } from "../components/landing/Illustrations";
 import { supabase } from "../lib/supabaseClient";
 import { useNavigate } from "react-router-dom"; 
 
@@ -22,13 +24,37 @@ const FAQ = [
 ];
 
 // What Unexa holds today (refreshed from the database when the page can reach it)
-const FALLBACK_STATS = { schools: 42, programmes: 262, countries: 12, groups: 20 };
+const FALLBACK_STATS = {
+  schools: 42, programmes: 262, countries: 12, groups: 20,
+  byCountry: { Germany: 6, Spain: 5, "United Kingdom": 5, Ukraine: 5, Italy: 5, Poland: 4, "United States": 4, France: 3, "South Korea": 2, Canada: 1, Japan: 1, China: 1 },
+  byDegree: { Bachelor: 114, Master: 111, "Bachelor & Master": 18, "Short & foundation": 8, Other: 11 },
+  groupNames: ["Portfolio Reviews", "IELTS & Language Tests", "Scholarships & Funding", "Visa & Moving Abroad", "Housing & Roommates", "Graphic Design", "Fine Arts", "Film & Animation", "Studying in France", "Studying in Italy", "Studying in East Asia"],
+};
+// programmes' degree text, grouped into the few levels the chart shows
+function degreeGroup(d) {
+  if (!d) return "Other";
+  const b = /bachelor|undergrad/i.test(d), m = /master|postgrad/i.test(d);
+  if (b && m) return "Bachelor & Master";
+  if (b) return "Bachelor";
+  if (m) return "Master";
+  if (/short|summer|foundation/i.test(d)) return "Short & foundation";
+  return "Other";
+}
 
+// Each feature shows the real screen of the app, filled with real programmes from the database
 const FEATURES = [
-  { key: "discover", eyebrow: "Discover", title: "Every programme, from the school's own website", text: "Our agent reads official sites, so deadlines, fees, languages and teachers come from the source, not from forums." },
-  { key: "compare", eyebrow: "Compare", title: "Side by side, without twenty open tabs", text: "Put up to four programmes next to each other: tuition, language level, duration, scholarships." },
-  { key: "plan", eyebrow: "Plan", title: "A roadmap that knows your deadlines", text: "Save a programme and its deadline lands in your plan, next to portfolio, tests, visa and housing." },
-  { key: "connect", eyebrow: "Connect", title: "Students who are going through it too", text: "Groups by country, field and topic: portfolio reviews, IELTS tips, finding roommates." },
+  { key: "discover", eyebrow: "Discover", screen: "/preview/home", label: "unexa.app/home",
+    title: "Every creative programme in one search", text: "Painting, design, film, architecture. Filter by country, language and budget, and see what fits you first.",
+    facts: ["Official sites only", "“For you” picks", "Updated monthly"] },
+  { key: "detail", eyebrow: "Know before you apply", screen: "/preview/detail", label: "unexa.app/programme",
+    title: "The facts you actually need", text: "Tuition, deadlines, language level, documents and scholarships, each linked to the school's own page.",
+    facts: ["Fees & deadlines", "Documents & visa", "Teachers & housing"] },
+  { key: "compare", eyebrow: "Compare", screen: "/preview/dashboard", label: "unexa.app/dashboard",
+    title: "See which one fits you best", text: "Put up to four programmes side by side. Tell Unexa what matters to you and it shows your best match.",
+    facts: ["Side by side", "Your priorities", "Best for you"] },
+  { key: "plan", eyebrow: "Plan", screen: "/preview/roadmap", label: "unexa.app/roadmap",
+    title: "Never miss a deadline", text: "Saved programmes turn into a plan: portfolio, tests, application, visa and housing, with the next date always on top.",
+    facts: ["Deadline countdown", "Your own tasks", "Notes in folders"] },
 ];
 
 const LINKEDIN_COMPANY_URL = "https://www.linkedin.com/company/unexauni/?viewAsMember=true";
@@ -242,15 +268,22 @@ function useLiveStats() {
       try {
         const [u, p, g] = await Promise.all([
           supabase.from("universities").select("country, name"),
-          supabase.from("specialties").select("id", { count: "exact", head: true }),
-          supabase.from("community_groups").select("id", { count: "exact", head: true }),
+          supabase.from("specialties").select("degree"),
+          supabase.from("community_groups").select("name"),
         ]);
         if (cancelled || u.error || !u.data?.length) return;
+        const byCountry = {};
+        u.data.forEach((x) => { byCountry[x.country] = (byCountry[x.country] ?? 0) + 1; });
+        const byDegree = { Bachelor: 0, Master: 0, "Bachelor & Master": 0, "Short & foundation": 0, Other: 0 };
+        (p.data ?? []).forEach((x) => { byDegree[degreeGroup(x.degree)] += 1; });
         setStats({
           schools: u.data.length,
-          countries: new Set(u.data.map((x) => x.country)).size,
-          programmes: p.count || FALLBACK_STATS.programmes,
-          groups: g.count || FALLBACK_STATS.groups,
+          countries: Object.keys(byCountry).length,
+          programmes: p.data?.length || FALLBACK_STATS.programmes,
+          groups: g.data?.length || FALLBACK_STATS.groups,
+          byCountry,
+          byDegree: p.data?.length ? byDegree : FALLBACK_STATS.byDegree,
+          groupNames: g.data?.length ? g.data.map((x) => x.name) : FALLBACK_STATS.groupNames,
           names: u.data.map((x) => x.name.replace(/\s*\(.*?\)\s*/g, " ").replace(/,.*$/, "").trim()).filter((n) => n.length <= 40),
         });
       } catch { /* keep the fallback */ }
@@ -260,174 +293,50 @@ function useLiveStats() {
   return stats;
 }
 
-function StatTile({ Illo, tone, value, label, note, start, delay }) {
+function StatTile({ value, label, note, start, delay, dark, children }) {
   const n = useCountUp(value, start, delay, 1400);
   return (
-    <motion.div className={`ux-stat ${tone}`} initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: 0.3 }}
+    <motion.div className={`ux-stat${dark ? " is-dark" : ""}`} initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: 0.2 }}
       transition={{ duration: 0.8, ease: EASE, delay: delay / 1000 }}>
-      <div className="ux-stat-illo" aria-hidden="true"><Illo /></div>
-      <strong>{n}</strong>
-      <span className="ux-stat-label">{label}</span>
-      <span className="ux-stat-note">{note}</span>
-    </motion.div>
-  );
-}
-
-// Small live replicas of the app, one per feature; each one moves a little once it is on screen
-function MockDiscover() {
-  return (
-    <div className="fm fm-discover">
-      <TypingSearch />
-      <div className="fm-discover-illo"><School /></div>
-      <motion.span className="fm-float-tag t1" animate={{ y: [0, -10, 0] }} transition={{ duration: 3.2, repeat: Infinity, ease: "easeInOut" }}>Deadline · 15 Jan</motion.span>
-      <motion.span className="fm-float-tag t2" animate={{ y: [0, 10, 0] }} transition={{ duration: 3.6, repeat: Infinity, ease: "easeInOut", delay: 0.4 }}>€2,000 / year</motion.span>
-      <motion.span className="fm-float-tag t3" animate={{ y: [0, -8, 0] }} transition={{ duration: 3, repeat: Infinity, ease: "easeInOut", delay: 0.8 }}>IELTS 6.5</motion.span>
-    </div>
-  );
-}
-
-// Types a few real searches one after another, like someone using Unexa
-const QUERIES = ["graphic design in Italy", "film school, English-taught", "painting under €2,000 / year", "illustration MA in London"];
-function TypingSearch() {
-  const [text, setText] = useState("");
-  const [live, setLive] = useState(false);
-  useEffect(() => {
-    if (!live) return undefined;
-    let q = 0, n = 0, dir = 1, t;
-    const tick = () => {
-      const full = QUERIES[q];
-      n += dir;
-      setText(full.slice(0, n));
-      let wait = dir > 0 ? 55 + Math.random() * 60 : 22;
-      if (dir > 0 && n === full.length) { dir = -1; wait = 1600; }
-      else if (dir < 0 && n === 0) { dir = 1; q = (q + 1) % QUERIES.length; wait = 350; }
-      t = setTimeout(tick, wait);
-    };
-    t = setTimeout(tick, 400);
-    return () => clearTimeout(t);
-  }, [live]);
-  return (
-    <motion.div className="fm-search" onViewportEnter={() => setLive(true)} onViewportLeave={() => setLive(false)}>
-      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round"><circle cx="11" cy="11" r="7" /><path d="m20 20-3.5-3.5" /></svg>
-      <span>{text}<i className="fm-caret" aria-hidden="true" /></span>
-    </motion.div>
-  );
-}
-
-function MockCompare() {
-  const rows = [["Tuition", 0], ["Language", 1], ["Duration", 2]];
-  const cells = { Tuition: ["€430", "£9,535", "$62k"], Language: ["French B2", "IELTS 6.5", "TOEFL 93"], Duration: ["5 yrs", "3 yrs", "4 yrs"] };
-  const best = { Tuition: 0, Language: 2, Duration: 1 };
-  const [lit, setLit] = useState(-1);
-  const [live, setLive] = useState(false);
-  useEffect(() => {
-    if (!live) return undefined;
-    let i = 0;
-    const t = setInterval(() => { setLit(i < rows.length ? i : i < rows.length + 3 ? rows.length - 1 : -1); i = (i + 1) % (rows.length + 4); }, 650);
-    return () => clearInterval(t);
-  }, [live, rows.length]);
-  return (
-    <motion.div className="fm fm-compare" onViewportEnter={() => setLive(true)} onViewportLeave={() => setLive(false)} viewport={{ amount: 0.5 }}>
-      <span className="fm-example">Example</span>
-      <div className="fm-row fm-head"><span /><span>Paris</span><span>London</span><span>Providence</span></div>
-      {rows.map(([label], r) => (
-        <div key={label} className="fm-row">
-          <span>{label}</span>
-          {cells[label].map((c, i) => <span key={i} className={r <= lit && best[label] === i ? "is-best" : ""}>{c}</span>)}
-        </div>
-      ))}
-    </motion.div>
-  );
-}
-
-function MockPlan() {
-  const C = 2 * Math.PI * 34;
-  return (
-    <div className="fm fm-plan">
-      <div className="fm-ring">
-        <svg viewBox="0 0 84 84">
-          <circle cx="42" cy="42" r="34" />
-          <motion.circle cx="42" cy="42" r="34" className="fill" strokeDasharray={C}
-            initial={{ strokeDashoffset: C }} whileInView={{ strokeDashoffset: C * 0.6 }} viewport={{ once: true, amount: 0.6 }}
-            transition={{ duration: 1.4, ease: EASE, delay: 0.2 }} />
-        </svg>
-        <span>40%</span>
+      <div className="ux-stat-top">
+        <strong>{n}</strong>
+        <div><span className="ux-stat-label">{label}</span><span className="ux-stat-note">{note}</span></div>
       </div>
-      <motion.div className="fm-sticky" initial={{ opacity: 0, y: -30, rotate: 8 }} whileInView={{ opacity: 1, y: 0, rotate: -3 }}
-        viewport={{ once: true, amount: 0.6 }} transition={{ type: "spring", stiffness: 140, damping: 12, delay: 0.5 }}>
-        <span>📌 Next deadline</span><b>69 <small>days left</small></b><em>MA Art Education</em>
-      </motion.div>
-    </div>
-  );
-}
-
-function MockConnect() {
-  // a question appears, someone is typing, then their reply replaces the dots
-  const [phase, setPhase] = useState(0);
-  const [live, setLive] = useState(false);
-  useEffect(() => {
-    if (!live) return undefined;
-    const steps = [[1, 300], [2, 1000], [3, 2300], [0, 6200]];
-    let timers = [];
-    const run = () => { timers = steps.map(([ph, at]) => setTimeout(() => setPhase(ph), at)); timers.push(setTimeout(run, 6600)); };
-    run();
-    return () => timers.forEach(clearTimeout);
-  }, [live]);
-  const pop = { initial: { opacity: 0, y: 16, scale: 0.97 }, animate: { opacity: 1, y: 0, scale: 1 }, exit: { opacity: 0, scale: 0.9 }, transition: { duration: 0.5, ease: EASE } };
-  return (
-    <motion.div className="fm fm-connect" onViewportEnter={() => setLive(true)} onViewportLeave={() => setLive(false)} viewport={{ amount: 0.5 }}>
-      <AnimatePresence>
-        {phase >= 1 && <motion.div key="q" className="fm-post" {...pop}><span className="fm-av">LM</span><div><b>Lina · Portfolio Reviews</b><p>How many sketchbook pages did you send?</p></div></motion.div>}
-        {phase === 2 && <motion.div key="t" className="fm-typing" {...pop}><span /><span /><span /></motion.div>}
-        {phase === 3 && <motion.div key="r" className="fm-post is-reply" {...pop}><span className="fm-av two">KD</span><div><b>Kateryna</b><p>Three, plus 15 finished works 👍</p></div></motion.div>}
-      </AnimatePresence>
+      <div className="ux-stat-chart">{children}</div>
     </motion.div>
   );
 }
 
-const MOCKS = { discover: MockDiscover, compare: MockCompare, plan: MockPlan, connect: MockConnect };
-
-const FEATURE_EXTRA = {
-  discover: { facts: ["Fees", "Deadlines", "Language", "Teachers", "Housing"], Illo: null },
-  compare: { facts: ["Up to 4 programmes", "Best for you", "Your priorities"], Illo: null },
-  plan: { facts: ["Portfolio", "Tests", "Visa", "Housing"], Illo: Deadline },
-  connect: { facts: ["Portfolio reviews", "IELTS tips", "Roommates"], Illo: PaperPlane },
-};
-
-function StackCard({ f, i, total, progress }) {
-  const Mock = MOCKS[f.key];
-  const extra = FEATURE_EXTRA[f.key];
+function StackCard({ f, i, total, progress, onSignup }) {
   // cards underneath shrink a little as the next ones slide over them
-  const scale = useTransform(progress, [i / total, 1], [1, 1 - (total - 1 - i) * 0.035]);
+  const scale = useTransform(progress, [i / total, 1], [1, 1 - (total - 1 - i) * 0.03]);
   return (
     <li className="ux-stack-item" style={{ top: `calc(var(--stack-top) + ${i} * var(--stack-step))` }}>
-      <motion.article className={`ux-stack-card c-${f.key}`} style={{ scale }}>
-        <div className="ux-stack-media">
-          {extra.Illo && <div className="ux-stack-illo"><extra.Illo /></div>}
-          <Mock />
-        </div>
+      <motion.article className="ux-stack-card" style={{ scale }}>
         <div className="ux-stack-text">
           <span className="ux-stack-n">{String(i + 1).padStart(2, "0")} · {f.eyebrow}</span>
           <h3>{f.title}</h3>
           <p>{f.text}</p>
-          <ul className="ux-stack-facts">{extra.facts.map((x) => <li key={x}>{x}</li>)}</ul>
+          <ul className="ux-stack-facts">{f.facts.map((x) => <li key={x}>{x}</li>)}</ul>
+          <button type="button" className="ux-stack-cta" onClick={onSignup}>Start for free <span aria-hidden="true">→</span></button>
         </div>
+        <div className="ux-stack-media"><Screen src={f.screen} label={f.label} /></div>
       </motion.article>
     </li>
   );
 }
 
-function FeatureStack() {
+function FeatureStack({ onSignup }) {
   const listRef = useRef(null);
   const { scrollYProgress } = useScroll({ target: listRef, offset: ["start start", "end end"] });
   return (
     <section className="ux-stack" id="features">
       <motion.div className="landing-section-head" initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.5 }} variants={mobileRevealVariants}>
         <SectionTag n="02">What's inside</SectionTag>
-        <BlurWords lines={["Everything in one place,", "from first search to first day"]} />
+        <BlurWords lines={["Everything you need,", "from first search to first day"]} />
       </motion.div>
       <ul className="ux-stack-list" ref={listRef}>
-        {FEATURES.map((f, i) => <StackCard key={f.key} f={f} i={i} total={FEATURES.length} progress={scrollYProgress} />)}
+        {FEATURES.map((f, i) => <StackCard key={f.key} f={f} i={i} total={FEATURES.length} progress={scrollYProgress} onSignup={onSignup} />)}
       </ul>
     </section>
   );
@@ -736,20 +645,28 @@ export default function Landing() {
       <PosterStrip />
 
       {/* live numbers, as illustrated tiles */}
-      <section className="ux-stats">
-        <motion.div className="landing-section-head" initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.5 }} variants={mobileRevealVariants}
-          onViewportEnter={() => setStatsInView(true)}>
+      {/* the count-up starts as soon as any part of the section shows, so a fast scroll never leaves it at 0 */}
+      <motion.section className="ux-stats" onViewportEnter={() => setStatsInView(true)} viewport={{ once: true, amount: 0.05 }}>
+        <motion.div className="landing-section-head" initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.5 }} variants={mobileRevealVariants}>
           <SectionTag n="01">Unexa today</SectionTag>
           <BlurWords lines={["Real schools, real data"]} />
           <p className="ux-stats-sub">Every number comes straight from our database and grows as our agent reads more school websites.</p>
         </motion.div>
         <div className="ux-stats-grid">
-          <StatTile Illo={School} tone="t-sand" value={liveStats.schools} label="schools" note="art & design schools, data from their official sites" start={statsInView} delay={0} />
-          <StatTile Illo={PaletteIllo} tone="t-rose" value={liveStats.programmes} label="programmes" note="with deadlines, fees, languages and teachers" start={statsInView} delay={120} />
-          <StatTile Illo={Globe} tone="t-sky" value={liveStats.countries} label="countries" note="across Europe, North America and East Asia" start={statsInView} delay={240} />
-          <StatTile Illo={PaperPlane} tone="t-lav" value={liveStats.groups} label="student groups" note="by country, field and topic" start={statsInView} delay={360} />
+          <StatTile dark value={liveStats.schools} label="schools" note="data from their official sites" start={statsInView} delay={0}>
+            <CountryBars byCountry={liveStats.byCountry ?? FALLBACK_STATS.byCountry} />
+          </StatTile>
+          <StatTile value={liveStats.programmes} label="programmes" note="with fees, deadlines and requirements" start={statsInView} delay={120}>
+            <DegreeSplit byDegree={liveStats.byDegree ?? FALLBACK_STATS.byDegree} />
+          </StatTile>
+          <StatTile value={liveStats.countries} label="countries" note="across Europe, North America and East Asia" start={statsInView} delay={240}>
+            <CountryChips countries={Object.keys(liveStats.byCountry ?? FALLBACK_STATS.byCountry)} />
+          </StatTile>
+          <StatTile value={liveStats.groups} label="student groups" note="by country, field and topic" start={statsInView} delay={360}>
+            <GroupTicker groups={liveStats.groupNames ?? FALLBACK_STATS.groupNames} />
+          </StatTile>
         </div>
-      </section>
+      </motion.section>
 
       {/* the schools, running */}
       <section className="landing-marquee" aria-label="Some of the schools on Unexa">
@@ -764,7 +681,7 @@ export default function Landing() {
       </section>
 
       {/* what's inside: big cards that stack on top of each other as you scroll */}
-      <FeatureStack />
+      <FeatureStack onSignup={goToSignup} />
 
       <HowItWorks />
 

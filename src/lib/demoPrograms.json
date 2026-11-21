@@ -1,0 +1,796 @@
+[
+ {
+  "id": "28416fdc-fee4-4123-8f19-8d076b0f294c",
+  "universityId": "7b34ecfc-bd56-4e1d-a7df-b93113f25f2e",
+  "createdAt": "2026-07-29T14:06:20.470046+00:00",
+  "universityCreatedAt": "2026-07-29T13:51:58.122948+00:00",
+  "name": "Beaux-arts de Paris",
+  "desc": "Paris, France",
+  "country": "France",
+  "program": "Fine Arts (DNSAP)",
+  "degree": "Master",
+  "tuitionType": "Public",
+  "tuitionAmount": 56,
+  "language": "French",
+  "certification": false,
+  "format": "On Campus",
+  "internship": false,
+  "image": "https://beauxartsparis.fr/sites/default/files/2026-09/OK-grimm.jpg",
+  "universityImage": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/37/Paris_6_-_ENSBA_01.jpg/1280px-Paris_6_-_ENSBA_01.jpg",
+  "photoCredit": null,
+  "website": "https://beauxartsparis.fr/en",
+  "verifiedAt": null,
+  "studentLife": null,
+  "faculty": {
+   "url": "https://beauxartsparis.fr/en/teachers",
+   "people": [
+    {
+     "bio": null,
+     "url": "https://beauxartsparis.fr/en/teachers",
+     "name": "Mireille Blanc",
+     "role": "Chef d'atelier",
+     "field": null,
+     "programmes": []
+    },
+    {
+     "bio": null,
+     "url": "https://beauxartsparis.fr/en/teachers",
+     "name": "Eva Nielsen",
+     "role": "Chef d'atelier",
+     "field": null,
+     "programmes": []
+    },
+    {
+     "bio": null,
+     "url": "https://beauxartsparis.fr/en/teachers",
+     "name": "Dove Allouche",
+     "role": "Chef d'atelier",
+     "field": null,
+     "programmes": []
+    },
+    {
+     "bio": null,
+     "url": "https://beauxartsparis.fr/en/teachers",
+     "name": "Götz Arndt",
+     "role": "Studio professor",
+     "field": "Stonecutting-woodcutting",
+     "programmes": []
+    },
+    {
+     "bio": null,
+     "url": "https://beauxartsparis.fr/en/teachers",
+     "name": "Romain Bernini",
+     "role": "Studio professor",
+     "field": null,
+     "programmes": []
+    },
+    {
+     "bio": null,
+     "url": "https://beauxartsparis.fr/en/teachers",
+     "name": "Hicham Berrada",
+     "role": "Studio professor",
+     "field": null,
+     "programmes": []
+    },
+    {
+     "bio": null,
+     "url": "https://beauxartsparis.fr/en/teachers",
+     "name": "Katinka Bock",
+     "role": "Studio professor",
+     "field": null,
+     "programmes": []
+    },
+    {
+     "bio": null,
+     "url": "https://beauxartsparis.fr/en/teachers",
+     "name": "Myriam Mihindou",
+     "role": "Studio professor",
+     "field": null,
+     "programmes": []
+    },
+    {
+     "bio": "Born in Montevideo, Uruguay, Jill Mulleady is a Swiss-Uruguayan artist based in Los Angeles, Paris, and Buenos Aires, whose work is primarily rooted in painting and extends to films, readymades, sculptures, and architectural installations.",
+     "url": "https://beauxartsparis.fr/en/actualite/jill-mulleady-visiting-professor-2026-2027-season",
+     "name": "Jill Mulleady",
+     "role": "Visiting Professor",
+     "field": null,
+     "programmes": []
+    },
+    {
+     "bio": null,
+     "url": "https://beauxartsparis.fr/en/teachers",
+     "name": "Barbara Glowczewski",
+     "role": "Guest Seminar",
+     "field": null,
+     "programmes": []
+    },
+    {
+     "bio": null,
+     "url": "https://beauxartsparis.fr/en/teachers",
+     "name": "Mohamed Amer Meziane",
+     "role": "Guest Seminar",
+     "field": null,
+     "programmes": []
+    },
+    {
+     "bio": null,
+     "url": "https://beauxartsparis.fr/en/teachers",
+     "name": "Ségolène Liautaud",
+     "role": null,
+     "field": "Art History",
+     "programmes": []
+    }
+   ],
+   "studios": [],
+   "summary": "Led by renowned artists, the studio is a space for artistic practice, creation, and experimentation where students of all levels come together, combining personalized attention with a collective spirit of exchange. Research seminars also provide spaces for critical thinking and theoretical experimentation.",
+   "version": 2,
+   "visiting": "As part of its visiting professor program, the Beaux-Arts de Paris hosts an international artist each year.",
+   "class_size": null,
+   "source_urls": [
+    "https://beauxartsparis.fr/en/pagesimple/apprenticeship-master-dnsap",
+    "https://beauxartsparis.fr/en/teachers",
+    "https://beauxartsparis.fr/en",
+    "https://beauxartsparis.fr/en/actualite/new-faculty-members-beaux-arts-de-paris",
+    "https://beauxartsparis.fr/en/actualite/news-our-teachers",
+    "https://beauxartsparis.fr/en/actualite/jill-mulleady-visiting-professor-2026-2027-season",
+    "https://beauxartsparis.fr/fr/actualite/nouveaux-professeurs-et-nouvelles-professeures",
+    "https://beauxartsparis.fr/fr/professeurs",
+    "https://beauxartsparis.fr/fr/pagesimple/apprentissage-master-dnsap"
+   ],
+   "collected_at": "2026-11-07T17:25:45.688Z"
+  },
+  "housing": {
+   "url": null,
+   "options": [],
+   "summary": null,
+   "version": 2,
+   "apply_url": null,
+   "available": "unknown",
+   "guarantee": null,
+   "source_urls": [
+    "https://beauxartsparis.fr/en/pagesimple/apprenticeship-master-dnsap",
+    "https://beauxartsparis.fr/en/teachers",
+    "https://beauxartsparis.fr/en",
+    "https://beauxartsparis.fr/en/actualite/new-faculty-members-beaux-arts-de-paris",
+    "https://beauxartsparis.fr/en/actualite/news-our-teachers",
+    "https://beauxartsparis.fr/en/actualite/jill-mulleady-visiting-professor-2026-2027-season",
+    "https://beauxartsparis.fr/fr/actualite/nouveaux-professeurs-et-nouvelles-professeures",
+    "https://beauxartsparis.fr/fr/professeurs",
+    "https://beauxartsparis.fr/fr/pagesimple/apprentissage-master-dnsap"
+   ],
+   "collected_at": "2026-11-07T17:25:45.688Z",
+   "how_to_apply": null,
+   "private_tips": null
+  },
+  "studentLifeImage": "https://beauxartsparis.fr/sites/default/files/2026-10/MURAT_Laure_philippe_Matsas.jpg",
+  "description": "The Beaux-Arts de Paris is a prestigious French grande école dedicated to high-level artistic training and research. Its unique pedagogy is centered around the 'atelier' (studio) system, where students develop their personal practice under the guidance of renowned contemporary artists.",
+  "duration": "Up to 5 years (Master level)",
+  "tuition": "€56 (Competition Fee)",
+  "studyMode": "On-campus",
+  "intake": "October 2026",
+  "applicationDeadline": "19 February 2026",
+  "applicationFee": "56 €",
+  "classSize": null,
+  "campusFacilities": "Artist studios (ateliers), technical workshops, library",
+  "documents": {
+   "language": "French B2",
+   "diploma": "Baccalaureate + 2 years of higher education (120 ECTS) with certified translation",
+   "visa": "Student Visa",
+   "bankStatement": null
+  },
+  "curriculumSummary": "Year 1-2: Foundation credits; Year 3-5: Intensive studio work, portfolio development, and research.",
+  "scholarshipsText": "Fee waivers for scholarship holders or students with refugee status.",
+  "submissionPeriod": "Jan 19 – Feb 19",
+  "minLanguageLevel": "B2 French",
+  "minCGPA": "Not in source (requires 120 ECTS)"
+ },
+ {
+  "id": "5ee00b7a-49fd-4b88-a17d-71cc42a9d6c3",
+  "universityId": "f77a208d-7f21-4641-95f7-e74fde3bdc6c",
+  "createdAt": "2026-11-06T13:33:43.200778+00:00",
+  "universityCreatedAt": "2026-11-06T13:33:42.712244+00:00",
+  "name": "Goldsmiths, University of London",
+  "desc": "London, United Kingdom",
+  "country": "United Kingdom",
+  "program": "MA Design: Expanded Practice",
+  "degree": "Master",
+  "tuitionType": "Public",
+  "tuitionAmount": 35919,
+  "language": "English",
+  "certification": true,
+  "format": "On Campus",
+  "internship": true,
+  "image": "https://www.gold.ac.uk/media/images-by-section/homepage/2026/02_01_037_top-10_homepage-hero_1216x640.jpg",
+  "universityImage": "https://www.gold.ac.uk/media/images-by-section/homepage/2026/home-hero-video-oct-26-poster.jpg",
+  "photoCredit": null,
+  "website": "https://www.gold.ac.uk/",
+  "verifiedAt": null,
+  "studentLife": null,
+  "faculty": {
+   "url": null,
+   "people": [],
+   "studios": [],
+   "summary": "Goldsmiths offers practice-based creative programmes involving studio work and project development.",
+   "version": 2,
+   "visiting": null,
+   "class_size": null,
+   "source_urls": [
+    "https://www.gold.ac.uk/pg/a-z/",
+    "https://www.gold.ac.uk/staff-directory/",
+    "https://www.gold.ac.uk/",
+    "https://www.gold.ac.uk/our-people/?exclude[image]=",
+    "https://www.gold.ac.uk/accommodation/",
+    "https://www.gold.ac.uk/accommodation/halls/",
+    "https://www.gold.ac.uk/accommodation/halls/life-in-halls/",
+    "https://www.gold.ac.uk/accommodation/erasmus-and-study-abroad/",
+    "https://www.gold.ac.uk/students/accommodation/",
+    "https://www.gold.ac.uk/students/accommodation/residence-life/"
+   ],
+   "collected_at": "2026-11-07T17:29:19.546Z"
+  },
+  "housing": {
+   "url": "https://www.gold.ac.uk/accommodation/",
+   "options": [
+    {
+     "url": "https://www.gold.ac.uk/accommodation/halls/",
+     "name": "Chesterman House",
+     "type": null,
+     "price": null,
+     "distance": "2-minute walk from campus"
+    },
+    {
+     "url": "https://www.gold.ac.uk/accommodation/halls/",
+     "name": "Ewen Henderson Court",
+     "type": null,
+     "price": null,
+     "distance": "2-minute walk from campus"
+    },
+    {
+     "url": "https://www.gold.ac.uk/accommodation/halls/",
+     "name": "Loring Hall",
+     "type": null,
+     "price": null,
+     "distance": "On campus"
+    },
+    {
+     "url": "https://www.gold.ac.uk/accommodation/halls/",
+     "name": "Raymont Hall",
+     "type": null,
+     "price": null,
+     "distance": "20-minute walk from campus"
+    },
+    {
+     "url": "https://www.gold.ac.uk/accommodation/halls/",
+     "name": "Surrey House",
+     "type": null,
+     "price": null,
+     "distance": "5-minute walk from campus"
+    }
+   ],
+   "summary": "Goldsmiths provides halls of residence within walking distance of the New Cross campus.",
+   "version": 2,
+   "apply_url": "https://www.gold.ac.uk/accommodation/",
+   "available": "own",
+   "guarantee": null,
+   "source_urls": [
+    "https://www.gold.ac.uk/pg/a-z/",
+    "https://www.gold.ac.uk/staff-directory/",
+    "https://www.gold.ac.uk/",
+    "https://www.gold.ac.uk/our-people/?exclude[image]=",
+    "https://www.gold.ac.uk/accommodation/",
+    "https://www.gold.ac.uk/accommodation/halls/",
+    "https://www.gold.ac.uk/accommodation/halls/life-in-halls/",
+    "https://www.gold.ac.uk/accommodation/erasmus-and-study-abroad/",
+    "https://www.gold.ac.uk/students/accommodation/",
+    "https://www.gold.ac.uk/students/accommodation/residence-life/"
+   ],
+   "collected_at": "2026-11-07T17:29:19.546Z",
+   "how_to_apply": "Applications for accommodation can be made online through the accommodation portal during the specified application windows.",
+   "private_tips": null
+  },
+  "studentLifeImage": "https://www.gold.ac.uk/media/images-by-section/staff-and-students/students/wellbeing/Students-outside-Whitehead-building_19624.jpg",
+  "description": "Goldsmiths, University of London is a public research university located in South East London, renowned for its progressive teaching and world-leading research in the arts, design, and creative industries.",
+  "duration": "15 months full-time",
+  "tuition": "£30,700 / year (non-EU), £14,900 / year (Home)",
+  "studyMode": "Full-time",
+  "intake": "September",
+  "applicationDeadline": "17 May 2027 (Round 2)",
+  "applicationFee": null,
+  "classSize": null,
+  "campusFacilities": "Design workshops and studios",
+  "documents": {
+   "language": "IELTS or equivalent",
+   "diploma": "Undergraduate degree certificate and transcript",
+   "visa": "Valid Student visa required for non-UK students",
+   "bankStatement": "Bank statements showing tuition and living costs (£1,570/month from Nov 2026, plus outstanding fees)"
+  },
+  "curriculumSummary": "A radical post-disciplinary programme for practitioners who want to push the boundaries of what design can be and do.",
+  "scholarshipsText": "Goldsmiths Masters Scholarships (£2,500 fee waiver for Home students, up to 30 available)",
+  "submissionPeriod": "4 October 2026 – 17 May 2027",
+  "minLanguageLevel": "IELTS 6.5 with 6.5 in writing and no element lower than 6.0",
+  "minCGPA": "Second class standard undergraduate degree"
+ },
+ {
+  "id": "baa3004b-1052-4592-8d4e-16fb878e397a",
+  "universityId": "b4b32e1d-b727-4c95-876f-8ce50810e19d",
+  "createdAt": "2026-11-06T13:32:19.370429+00:00",
+  "universityCreatedAt": "2026-11-06T13:32:18.736498+00:00",
+  "name": "Rhode Island School of Design",
+  "desc": "Providence, United States",
+  "country": "United States",
+  "program": "Graphic Design Bachelor's Program",
+  "degree": "Bachelor",
+  "tuitionType": "Public",
+  "tuitionAmount": 61143,
+  "language": "English",
+  "certification": false,
+  "format": "On Campus",
+  "internship": true,
+  "image": "https://pvsxaqoxhbghlmkaaltg.supabase.co/storage/v1/object/public/program-images/commons-baa3004b-1052-4592-8d4e-16fb878e397a.jpg",
+  "universityImage": "https://www.risd.edu/themes/custom/risd_base_theme/src/patterns/pages/home/assets/HP_Asset_01-opt.jpg",
+  "photoCredit": {
+   "text": "Kenneth C. Zirkel, CC BY-SA 4.0, via Wikimedia Commons",
+   "url": "https://commons.wikimedia.org/wiki/File:Fletcher_Building,_Providence_Rhode_Island.jpg"
+  },
+  "website": "https://www.risd.edu/",
+  "verifiedAt": null,
+  "studentLife": null,
+  "faculty": {
+   "url": "https://www.risd.edu/academics/faculty",
+   "people": [
+    {
+     "bio": "Amy Kravitz explores animation as a distinct visual language using timing, abstraction, and movement. Her award-winning films include River Lethe, The Trap, Roost, and The Hour Coat.",
+     "url": "https://www.risd.edu/academics/film-animation-video/faculty/amy-kravitz",
+     "name": "Amy Kravitz",
+     "role": "Professor",
+     "field": "Film, Animation, Video",
+     "programmes": [
+      "Film / Animation / Video Bachelor's Program"
+     ]
+    },
+    {
+     "bio": "Alexandra Anthony is an independent documentary filmmaker who directs, produces, shoots, and edits her own work, including Yaya and Lost in the Bewilderness. She has also served as an editor for PBS series such as Nova and Frontline.",
+     "url": "https://www.risd.edu/academics/film-animation-video/faculty/alexandra-anthony",
+     "name": "Alexandra Anthony",
+     "role": "Senior Critic",
+     "field": "Film, Animation, Video",
+     "programmes": [
+      "Film / Animation / Video Bachelor's Program"
+     ]
+    },
+    {
+     "bio": "Ramon Tejada works in a hybrid design and teaching practice focused on collaboration, inclusion, and expanding design frameworks. He is a 2024 recipient of the Vilcek Prize in Design.",
+     "url": "https://www.risd.edu/academics/graphic-design/faculty/ramon-tejada",
+     "name": "Ramon Tejada",
+     "role": "Associate Professor",
+     "field": "Graphic Design",
+     "programmes": [
+      "Graphic Design Master's Programs"
+     ]
+    },
+    {
+     "bio": "Paul Soulellis is a graphic designer and artist whose practice encompasses experimental publishing, queer methodologies, and network culture. He is the founder of Queer.Archive.Work and Library of the Printed Web.",
+     "url": "https://www.risd.edu/academics/graphic-design/faculty/paul-soulellis",
+     "name": "Paul Soulellis",
+     "role": "Professor",
+     "field": "Graphic Design",
+     "programmes": [
+      "Graphic Design Master's Programs"
+     ]
+    },
+    {
+     "bio": "Pouya Ahmadi is a typographer and educator whose work interrogates language, displacement, and contested belonging. His practice includes publishing, installations, and lecture-performances.",
+     "url": "https://www.risd.edu/academics/graphic-design/faculty/pouya-ahmadi",
+     "name": "Pouya Ahmadi",
+     "role": "Associate Professor",
+     "field": "Graphic Design",
+     "programmes": [
+      "Graphic Design Master's Programs"
+     ]
+    },
+    {
+     "bio": "Ernesto Aparicio has worked in publishing and corporate identity design for over two decades. He served as art director for Editions du Seuil in Paris and oversees Aparicio Design, Inc.",
+     "url": "https://www.risd.edu/academics/graphic-design/faculty/ernesto-aparicio",
+     "name": "Ernesto Aparicio",
+     "role": "Senior Critic",
+     "field": "Graphic Design",
+     "programmes": [
+      "Graphic Design Master's Programs"
+     ]
+    },
+    {
+     "bio": "Robert Brinkerhoff is an illustrator and designer who has created work for higher education institutions and national magazines. He has previously served as head of Illustration and chief critic for RISD's European Honors Program in Rome.",
+     "url": "https://www.risd.edu/academics/illustration/faculty/robert-brinkerhoff",
+     "name": "Robert Brinkerhoff",
+     "role": "Professor",
+     "field": "Illustration",
+     "programmes": [
+      "Illustration Master's Program"
+     ]
+    },
+    {
+     "bio": "Jaleen Grove is an artist and art historian specializing in the history of illustration in the US and Canada. She is an associate editor of History of Illustration and the Journal of Illustration.",
+     "url": "https://www.risd.edu/academics/illustration/faculty/jaleen-grove",
+     "name": "Jaleen Grove",
+     "role": "Associate Professor",
+     "field": "Illustration",
+     "programmes": [
+      "Illustration Master's Program"
+     ]
+    },
+    {
+     "bio": "Rafael Attias is a multidisciplinary artist, curator, and design director working at the intersection of fine art and communication design. He has taught at RISD since 1998 and led several interdisciplinary partnered studios.",
+     "url": "https://www.risd.edu/academics/illustration/faculty/rafael-attias",
+     "name": "Rafael Attias",
+     "role": "Senior Critic",
+     "field": "Illustration",
+     "programmes": [
+      "Illustration Master's Program"
+     ]
+    },
+    {
+     "bio": "Leslie Fontana works in industrial design through her consulting practice les&more, creating soft goods and device designs. She has received awards from IDSA and the MIT Hacking Medicine Prize.",
+     "url": "https://www.risd.edu/academics/industrial-design/faculty/leslie-fontana",
+     "name": "Leslie Fontana",
+     "role": "Professor",
+     "field": "Industrial Design",
+     "programmes": [
+      "Industrial Design Master's Programs"
+     ]
+    },
+    {
+     "bio": "Tom Weis is the founder of Altimeter Design Group, exploring the intersection of design practice and global security issues. He co-designed the Doomsday Clock for the Bulletin of the Atomic Scientists.",
+     "url": "https://www.risd.edu/academics/industrial-design/faculty/tom-weis",
+     "name": "Tom Weis",
+     "role": "Associate Professor",
+     "field": "Industrial Design",
+     "programmes": [
+      "Industrial Design Master's Programs"
+     ]
+    },
+    {
+     "bio": "Paolo Cardini is a designer and consultant whose practice ranges from product and interaction design to strategic planning. He previously chaired industrial design departments at IED Turin.",
+     "url": "https://www.risd.edu/academics/industrial-design/faculty/paolo-cardini",
+     "name": "Paolo Cardini",
+     "role": "Professor",
+     "field": "Industrial Design",
+     "programmes": [
+      "Industrial Design Master's Programs"
+     ]
+    },
+    {
+     "bio": "Steven Smith is a photographer whose work chronicles the transformation of the Western landscape into suburban environments. He is a recipient of Guggenheim and Aaron Siskind Fellowships.",
+     "url": "https://www.risd.edu/academics/photography/faculty/steven-smith",
+     "name": "Steven Smith",
+     "role": "Professor",
+     "field": "Photography",
+     "programmes": [
+      "Photography Master's Program"
+     ]
+    },
+    {
+     "bio": "Nelson Chan is a photo-based artist and co-founder of TIS books. His work exploring immigrant identity is included in the collections of MoMA, the MET, and SFMOMA.",
+     "url": "https://www.risd.edu/academics/photography/faculty/nelson-chan",
+     "name": "Nelson Chan",
+     "role": "Associate Professor",
+     "field": "Photography",
+     "programmes": [
+      "Photography Master's Program"
+     ]
+    },
+    {
+     "bio": "Shana Cinquemani is an early childhood and elementary art educator and researcher. She is the founder and director of the Mini Makerz Art Studio in Providence.",
+     "url": "https://www.risd.edu/academics/teaching-learning-art-design/faculty/shana-cinquemani",
+     "name": "Shana Cinquemani",
+     "role": "Associate Professor",
+     "field": "Art Education",
+     "programmes": [
+      "Master of Arts in Teaching (MAT)"
+     ]
+    },
+    {
+     "bio": "Caitlin Black is a visual arts and design educator whose research focuses on community engagement, accessibility, and social justice in art education. She previously taught in public schools and at VCU.",
+     "url": "https://www.risd.edu/academics/teaching-learning-art-design/faculty/caitlin-black",
+     "name": "Caitlin Black",
+     "role": "Assistant Professor",
+     "field": "Art Education",
+     "programmes": [
+      "Master of Arts in Teaching (MAT)"
+     ]
+    }
+   ],
+   "studios": [
+    "Weybosset Street Studio",
+    "ISB Wood Shop",
+    "Center for Integrative Technologies",
+    "Fletcher Building Studios"
+   ],
+   "summary": "At RISD, teaching is practice-based and studio-focused, where faculty members guide students through hands-on making, critical dialogue, and conceptual experimentation. Faculty are active artists and designers who mentor students in disciplined research, interdisciplinary collaboration, and real-world problem solving.",
+   "version": 2,
+   "visiting": "Visiting artists, designers, curators, and guest critics regularly present lectures and participate in studio critiques across departments.",
+   "class_size": null,
+   "source_urls": [
+    "https://www.risd.edu/academics/film-animation-video/bachelors-program",
+    "https://www.risd.edu/academics/film-animation-video/faculty",
+    "https://www.risd.edu/academics/film-animation-video/faculty/amy-kravitz",
+    "https://www.risd.edu/academics/film-animation-video/faculty/carissa-abitabilo",
+    "https://www.risd.edu/academics/film-animation-video/faculty/walid-abouljoud",
+    "https://www.risd.edu/academics/film-animation-video/faculty/yvonne-andersen",
+    "https://www.risd.edu/academics/film-animation-video/faculty/alexandra-anthony",
+    "https://www.risd.edu/academics/graphic-design/masters-programs",
+    "https://www.risd.edu/academics/graphic-design/faculty",
+    "https://www.risd.edu/academics/graphic-design/faculty/ramon-tejada",
+    "https://www.risd.edu/academics/graphic-design/faculty/paul-soulellis",
+    "https://www.risd.edu/academics/graphic-design/faculty/pouya-ahmadi",
+    "https://www.risd.edu/academics/graphic-design/faculty/ernesto-aparicio",
+    "https://www.risd.edu/academics/graphic-design/faculty/ed-brown",
+    "https://www.risd.edu/academics/graphic-design/bachelors-program",
+    "https://www.risd.edu/academics/illustration/masters-program",
+    "https://www.risd.edu/academics/illustration/faculty",
+    "https://www.risd.edu/academics/illustration/faculty/robert-brinkerhoff",
+    "https://www.risd.edu/academics/illustration/faculty/jaleen-grove",
+    "https://www.risd.edu/academics/illustration/faculty/lizzi-akana",
+    "https://www.risd.edu/academics/illustration/faculty/rafael-attias",
+    "https://www.risd.edu/academics/illustration/faculty/polly-becker",
+    "https://www.risd.edu/academics/industrial-design/masters-programs",
+    "https://www.risd.edu/academics/industrial-design/faculty",
+    "https://www.risd.edu/academics/industrial-design/faculty/leslie-fontana",
+    "https://www.risd.edu/academics/industrial-design/faculty/tom-weis",
+    "https://www.risd.edu/academics/industrial-design/faculty/paolo-cardini",
+    "https://www.risd.edu/academics/industrial-design/faculty/valeria-albani",
+    "https://www.risd.edu/academics/industrial-design/faculty/alara-alkan-0",
+    "https://www.risd.edu/academics/photography/masters-program",
+    "https://www.risd.edu/academics/photography/faculty",
+    "https://www.risd.edu/academics/photography/faculty/steven-smith",
+    "https://www.risd.edu/academics/photography/faculty/nelson-chan",
+    "https://www.risd.edu/academics/photography/faculty/lindsey-beal",
+    "https://www.risd.edu/academics/photography/faculty/jenny-edwards",
+    "https://www.risd.edu/academics/photography/faculty/odette-england",
+    "https://www.risd.edu/academics/teaching-learning-art-design/masters-programs",
+    "https://www.risd.edu/academics/teaching-learning-art-design/faculty",
+    "https://www.risd.edu/academics/teaching-learning-art-design/faculty/shana-cinquemani",
+    "https://www.risd.edu/academics/teaching-learning-art-design/faculty/caitlin-black",
+    "https://www.risd.edu/academics/teaching-learning-art-design/faculty/janice-defrances",
+    "https://www.risd.edu/academics/teaching-learning-art-design/faculty/nancy-friese",
+    "https://www.risd.edu/academics/teaching-learning-art-design/faculty/lilly-manycolors",
+    "https://www.risd.edu/",
+    "https://www.risd.edu/academics/faculty",
+    "https://www.risd.edu/news/faculty-stories",
+    "https://www.risd.edu/academics/apparel-design/faculty",
+    "https://www.risd.edu/academics/architecture/faculty",
+    "https://www.risd.edu/academics/art-computation/faculty",
+    "https://www.risd.edu/academics/ceramics/faculty"
+   ],
+   "collected_at": "2026-11-08T09:14:08.026Z"
+  },
+  "housing": {
+   "url": null,
+   "options": [],
+   "summary": null,
+   "version": 2,
+   "apply_url": null,
+   "available": "unknown",
+   "guarantee": null,
+   "source_urls": [
+    "https://www.risd.edu/academics/film-animation-video/bachelors-program",
+    "https://www.risd.edu/academics/film-animation-video/faculty",
+    "https://www.risd.edu/academics/film-animation-video/faculty/amy-kravitz",
+    "https://www.risd.edu/academics/film-animation-video/faculty/carissa-abitabilo",
+    "https://www.risd.edu/academics/film-animation-video/faculty/walid-abouljoud",
+    "https://www.risd.edu/academics/film-animation-video/faculty/yvonne-andersen",
+    "https://www.risd.edu/academics/film-animation-video/faculty/alexandra-anthony",
+    "https://www.risd.edu/academics/graphic-design/masters-programs",
+    "https://www.risd.edu/academics/graphic-design/faculty",
+    "https://www.risd.edu/academics/graphic-design/faculty/ramon-tejada",
+    "https://www.risd.edu/academics/graphic-design/faculty/paul-soulellis",
+    "https://www.risd.edu/academics/graphic-design/faculty/pouya-ahmadi",
+    "https://www.risd.edu/academics/graphic-design/faculty/ernesto-aparicio",
+    "https://www.risd.edu/academics/graphic-design/faculty/ed-brown",
+    "https://www.risd.edu/academics/graphic-design/bachelors-program",
+    "https://www.risd.edu/academics/illustration/masters-program",
+    "https://www.risd.edu/academics/illustration/faculty",
+    "https://www.risd.edu/academics/illustration/faculty/robert-brinkerhoff",
+    "https://www.risd.edu/academics/illustration/faculty/jaleen-grove",
+    "https://www.risd.edu/academics/illustration/faculty/lizzi-akana",
+    "https://www.risd.edu/academics/illustration/faculty/rafael-attias",
+    "https://www.risd.edu/academics/illustration/faculty/polly-becker",
+    "https://www.risd.edu/academics/industrial-design/masters-programs",
+    "https://www.risd.edu/academics/industrial-design/faculty",
+    "https://www.risd.edu/academics/industrial-design/faculty/leslie-fontana",
+    "https://www.risd.edu/academics/industrial-design/faculty/tom-weis",
+    "https://www.risd.edu/academics/industrial-design/faculty/paolo-cardini",
+    "https://www.risd.edu/academics/industrial-design/faculty/valeria-albani",
+    "https://www.risd.edu/academics/industrial-design/faculty/alara-alkan-0",
+    "https://www.risd.edu/academics/photography/masters-program",
+    "https://www.risd.edu/academics/photography/faculty",
+    "https://www.risd.edu/academics/photography/faculty/steven-smith",
+    "https://www.risd.edu/academics/photography/faculty/nelson-chan",
+    "https://www.risd.edu/academics/photography/faculty/lindsey-beal",
+    "https://www.risd.edu/academics/photography/faculty/jenny-edwards",
+    "https://www.risd.edu/academics/photography/faculty/odette-england",
+    "https://www.risd.edu/academics/teaching-learning-art-design/masters-programs",
+    "https://www.risd.edu/academics/teaching-learning-art-design/faculty",
+    "https://www.risd.edu/academics/teaching-learning-art-design/faculty/shana-cinquemani",
+    "https://www.risd.edu/academics/teaching-learning-art-design/faculty/caitlin-black",
+    "https://www.risd.edu/academics/teaching-learning-art-design/faculty/janice-defrances",
+    "https://www.risd.edu/academics/teaching-learning-art-design/faculty/nancy-friese",
+    "https://www.risd.edu/academics/teaching-learning-art-design/faculty/lilly-manycolors",
+    "https://www.risd.edu/",
+    "https://www.risd.edu/academics/faculty",
+    "https://www.risd.edu/news/faculty-stories",
+    "https://www.risd.edu/academics/apparel-design/faculty",
+    "https://www.risd.edu/academics/architecture/faculty",
+    "https://www.risd.edu/academics/art-computation/faculty",
+    "https://www.risd.edu/academics/ceramics/faculty"
+   ],
+   "collected_at": "2026-11-08T09:14:08.026Z",
+   "how_to_apply": null,
+   "private_tips": null
+  },
+  "studentLifeImage": "https://www.risd.edu/themes/custom/risd_base_theme/src/patterns/pages/home/assets/HP_Asset_01-opt.jpg",
+  "description": "Rhode Island School of Design (RISD) is a renowned college and museum located in Providence, Rhode Island, offering immersive, cross-disciplinary creative education since 1877.",
+  "duration": "4 years",
+  "tuition": "$66,460 / year",
+  "studyMode": "Full-time",
+  "intake": "September",
+  "applicationDeadline": "1 November (Early Decision), 20 January 2027 (Regular Decision)",
+  "applicationFee": "$60 ($10 SlideRoom fee)",
+  "classSize": "150 undergraduate majors",
+  "campusFacilities": "Design Center studios, printing, bookbinding, papermaking and screenprinting facilities",
+  "documents": {
+   "language": "TOEFL, IELTS, or Duolingo score report",
+   "diploma": "High school diploma or equivalent",
+   "visa": "F-1 visa; Form I-20 application submitted via applicant status portal after admission",
+   "bankStatement": null
+  },
+  "curriculumSummary": "Encompasses visual principles, form, image, color, typography, communication theory, and senior capstone design project.",
+  "scholarshipsText": "RISD Scholarships, Federal and State Grants, Work-Study, International Student Aid",
+  "submissionPeriod": null,
+  "minLanguageLevel": "TOEFL 5 / IELTS 7 / Duolingo 120",
+  "minCGPA": null
+ },
+ {
+  "id": "836c32b2-8055-4309-af99-e650ddcf6bde",
+  "universityId": "bcbacf86-0b8b-42be-85bf-1e076633a385",
+  "createdAt": "2026-11-06T09:10:31.952663+00:00",
+  "universityCreatedAt": "2026-11-06T09:10:30.811358+00:00",
+  "name": "Accademia di Belle Arti di Venezia",
+  "desc": "Venice, Italy",
+  "country": "Italy",
+  "program": "Painting - Visual Arts Design",
+  "degree": "Bachelor",
+  "tuitionType": "Public",
+  "tuitionAmount": 119,
+  "language": "Italian",
+  "certification": false,
+  "format": "On Campus",
+  "internship": true,
+  "image": "https://www.accademiavenezia.it/upload/offerta_formativa/crop/Progettazione_delle_Arti_Visive-43_1.jpg",
+  "universityImage": "https://www.accademiavenezia.it/upload/eventi/crop/Mostra_Extra_Ordinario_Workshop_VII_Edizione.jpg",
+  "photoCredit": null,
+  "website": "http://www.accademiavenezia.it/",
+  "verifiedAt": null,
+  "studentLife": null,
+  "faculty": {
+   "url": "https://www.accademiavenezia.it/docenti/",
+   "people": [
+    {
+     "bio": null,
+     "url": "https://www.accademiavenezia.it/docenti/326",
+     "name": "Mario Airo'",
+     "role": "Docente",
+     "field": "Scultura",
+     "programmes": []
+    },
+    {
+     "bio": "Set designer and art history scholar graduated with honors from the Accademia di Belle Arti di Venezia and Ca' Foscari University, who has collaborated with international theaters and directors.",
+     "url": "https://www.accademiavenezia.it/docenti/428",
+     "name": "Cristina Alaimo",
+     "role": "Docente",
+     "field": "Tecnologia e materiali applicati",
+     "programmes": []
+    },
+    {
+     "bio": "Comic author and illustrator who has collaborated with publishers such as Futuropolis, Dargaud, Glénat, and Einaudi Ragazzi, winning the Carlo Boscarato and Attilio Micheluzzi awards.",
+     "url": "https://www.accademiavenezia.it/docenti/228",
+     "name": "Matteo Alemanno",
+     "role": "Docente",
+     "field": "Arte del Fumetto",
+     "programmes": []
+    }
+   ],
+   "studios": [
+    "Atelier F",
+    "aula 8",
+    "aula 05",
+    "aula 22",
+    "aula 26",
+    "aula 28"
+   ],
+   "summary": "Teaching at the Accademia di Belle Arti di Venezia combines historical and methodological foundations with active studio practice, experimentation, and engagement with contemporary languages across various artistic disciplines.",
+   "version": 2,
+   "visiting": "Guest artists and professionals, such as comic author Bruno Cannucciari, occasionally connect with classes for special lectures and online sessions.",
+   "class_size": null,
+   "source_urls": [
+    "https://www.accademiavenezia.it/offerta-formativa/grafica-arte-8.html",
+    "https://www.accademiavenezia.it/avvisi/",
+    "https://www.accademiavenezia.it/offerta-formativa/pittura-progettazione-arti-visive-43.html",
+    "https://www.accademiavenezia.it/offerta-formativa/grafica-arte-illustrazione-41.html",
+    "https://www.accademiavenezia.it/offerta-formativa/arti-visive-12.html",
+    "https://www.accademiavenezia.it/offerta-formativa/master-29.html",
+    "https://www.accademiavenezia.it/offerta-formativa/educazione-mediazione-comunicazione-arte-40.html",
+    "https://www.accademiavenezia.it/offerta-formativa/nuovi-media-pratiche-artistiche-integrate-47.html",
+    "https://www.accademiavenezia.it/offerta-formativa/grafica-arte-19.html",
+    "https://www.accademiavenezia.it/",
+    "https://www.accademiavenezia.it/docenti/",
+    "https://www.accademiavenezia.it/relazioni-internazionali/erasmus-docenti-20.html",
+    "https://www.accademiavenezia.it/docenti/326",
+    "https://www.accademiavenezia.it/docenti/428",
+    "https://www.accademiavenezia.it/docenti/228",
+    "https://www.accademiavenezia.it/amministrazione-trasparente-elenco.php",
+    "https://www.accademiavenezia.it/amministrazione-trasparente/privacy-250.html",
+    "https://www.accademiavenezia.it/amministrazione-trasparente/whistleblowing-294.html",
+    "https://www.accademiavenezia.it/amministrazione-trasparente/urp-261.html",
+    "https://www.accademiavenezia.it/amministrazione-trasparente/note-legali-260.html",
+    "https://www.accademiavenezia.it/amministrazione-trasparente/disposizioni-generali-25.html"
+   ],
+   "collected_at": "2026-11-07T17:23:43.300Z"
+  },
+  "housing": {
+   "url": null,
+   "options": [],
+   "summary": null,
+   "version": 2,
+   "apply_url": null,
+   "available": "unknown",
+   "guarantee": null,
+   "source_urls": [
+    "https://www.accademiavenezia.it/offerta-formativa/grafica-arte-8.html",
+    "https://www.accademiavenezia.it/avvisi/",
+    "https://www.accademiavenezia.it/offerta-formativa/pittura-progettazione-arti-visive-43.html",
+    "https://www.accademiavenezia.it/offerta-formativa/grafica-arte-illustrazione-41.html",
+    "https://www.accademiavenezia.it/offerta-formativa/arti-visive-12.html",
+    "https://www.accademiavenezia.it/offerta-formativa/master-29.html",
+    "https://www.accademiavenezia.it/offerta-formativa/educazione-mediazione-comunicazione-arte-40.html",
+    "https://www.accademiavenezia.it/offerta-formativa/nuovi-media-pratiche-artistiche-integrate-47.html",
+    "https://www.accademiavenezia.it/offerta-formativa/grafica-arte-19.html",
+    "https://www.accademiavenezia.it/",
+    "https://www.accademiavenezia.it/docenti/",
+    "https://www.accademiavenezia.it/relazioni-internazionali/erasmus-docenti-20.html",
+    "https://www.accademiavenezia.it/docenti/326",
+    "https://www.accademiavenezia.it/docenti/428",
+    "https://www.accademiavenezia.it/docenti/228",
+    "https://www.accademiavenezia.it/amministrazione-trasparente-elenco.php",
+    "https://www.accademiavenezia.it/amministrazione-trasparente/privacy-250.html",
+    "https://www.accademiavenezia.it/amministrazione-trasparente/whistleblowing-294.html",
+    "https://www.accademiavenezia.it/amministrazione-trasparente/urp-261.html",
+    "https://www.accademiavenezia.it/amministrazione-trasparente/note-legali-260.html",
+    "https://www.accademiavenezia.it/amministrazione-trasparente/disposizioni-generali-25.html"
+   ],
+   "collected_at": "2026-11-07T17:23:43.300Z",
+   "how_to_apply": null,
+   "private_tips": null
+  },
+  "studentLifeImage": "https://www.accademiavenezia.it/upload/eventi/crop/Incontro__AsYtYtYa__Tessere_la_memoria_abitare_la_Relazione.jpg",
+  "description": "The Accademia di Belle Arti di Venezia is a public fine arts academy in Venice, Italy. It offers undergraduate and postgraduate degrees in fine art, visual communication, multimedia arts, decoration, and art education.",
+  "duration": "3 years",
+  "tuition": "Variable based on ISEE (plus €118.93 initial fixed fees + ESU regional tax)",
+  "studyMode": "Full-time",
+  "intake": "October 2026",
+  "applicationDeadline": "15 July 2026 (non-EU), 15 August 2026 (EU/Italian)",
+  "applicationFee": "€40.13",
+  "classSize": null,
+  "campusFacilities": "Painting ateliers and visual arts laboratories.",
+  "documents": {
+   "language": "Italian B2 certificate (or online language exam)",
+   "diploma": "Upper secondary school diploma (5 years) or international equivalent",
+   "visa": "Pre-enrolment via Universitaly portal required for non-EU students needing a study visa.",
+   "bankStatement": null
+  },
+  "curriculumSummary": "Develops individual research in painting and image design by integrating traditional artistic techniques with new expressive languages and digital technologies.",
+  "scholarshipsText": "ESU Regional Student Grant (based on ISEE income criteria), Fee waivers for ISEE under threshold",
+  "submissionPeriod": "18 May 2026 - 15 July 2026 (non-EU) / 15 August 2026 (EU)",
+  "minLanguageLevel": "B2 Italian",
+  "minCGPA": null
+ }
+]

@@ -1,7 +1,7 @@
 // Unexa's own illustration set for the landing page: the objects of studying art abroad, no characters.
 // One style for all: flat shapes in the Unexa palette, a 2px ink outline, the ✳ as a recurring mark.
 // Every piece loops gently, and only while it is on screen.
-import { useRef } from "react";
+import { useId, useRef } from "react";
 import { motion, useInView } from "framer-motion";
 
 export const INK = "#2b1f18";
@@ -192,12 +192,13 @@ export function Palette() {
 /** Film strip that rolls by. */
 export function FilmStrip() {
   const [ref, live] = useLive();
+  const clip = `film-${useId().replace(/:/g, "")}`; // each copy needs its own clip id, or a hidden copy breaks the others
   const frames = [P.sky, P.rose, P.sage, P.ochre, P.lavender, P.sky, P.rose, P.sage];
   return (
     <Frame frameRef={ref} label="Film strip">
-        <defs><clipPath id="ux-film-clip"><rect x="30" y="80" width="180" height="84" rx="6" /></clipPath></defs>
+        <defs><clipPath id={clip}><rect x="30" y="80" width="180" height="84" rx="6" /></clipPath></defs>
         <rect x="30" y="80" width="180" height="84" rx="6" fill={INK} />
-        <g clipPath="url(#ux-film-clip)">
+        <g clipPath={`url(#${clip})`}>
           <motion.g animate={live ? { x: [0, -88] } : {}} transition={loop(live, 2.4, { ease: "linear" })}>
             {frames.map((c, i) => (
               <g key={i}>
@@ -220,11 +221,12 @@ export function FilmStrip() {
 /** Globe: the meridians turn and a pin bounces on it. */
 export function Globe() {
   const [ref, live] = useLive();
+  const clip = `globe-${useId().replace(/:/g, "")}`;
   return (
     <Frame frameRef={ref} label="Globe with a pin">
-        <defs><clipPath id="ux-globe-clip"><circle cx="120" cy="128" r="70" /></clipPath></defs>
+        <defs><clipPath id={clip}><circle cx="120" cy="128" r="70" /></clipPath></defs>
         <circle cx="120" cy="128" r="70" fill={P.sky} />
-        <g clipPath="url(#ux-globe-clip)">
+        <g clipPath={`url(#${clip})`}>
           <motion.g animate={live ? { x: [0, -70] } : {}} transition={loop(live, 6, { ease: "linear" })}>
             {[0, 1, 2, 3, 4].map((i) => <ellipse key={i} cx={64 + i * 70} cy="128" rx="34" ry="70" stroke={INK} strokeWidth="1.6" opacity="0.35" />)}
             <path d="M60 104 c20 -14 40 4 56 -6 s30 10 24 26 s-34 10 -50 4 s-34 -8 -30 -24z M150 150 c18 -8 36 4 30 18 s-30 12 -36 0z M210 104 c20 -14 40 4 56 -6 s30 10 24 26 s-34 10 -50 4 s-34 -8 -30 -24z" fill={P.sage} {...line} />

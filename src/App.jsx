@@ -28,6 +28,9 @@ const Onboarding = lazy(() => import("./pages/Onboarding"));
 const ForgotPassword = lazy(() => import("./pages/ForgotPassword"));
 const ResetPassword = lazy(() => import("./pages/ResetPassword"));
 const PreviewHome = lazy(() => import("./pages/PreviewHome"));
+const PreviewDashboard = lazy(() => import("./pages/PreviewScreens").then((m) => ({ default: m.PreviewDashboard })));
+const PreviewRoadmap = lazy(() => import("./pages/PreviewScreens").then((m) => ({ default: m.PreviewRoadmap })));
+const PreviewDetail = lazy(() => import("./pages/PreviewScreens").then((m) => ({ default: m.PreviewDetail })));
 
 // Saved universities used to live only in this browser; this key is now read once
 // to import them into the account, then removed.
@@ -378,6 +381,9 @@ export default function App() {
     <Routes>
       {/* a still picture of the home page, shown inside the landing's browser window */}
       <Route path="/preview/home" element={<PreviewHome />} />
+      <Route path="/preview/dashboard" element={<PreviewDashboard />} />
+      <Route path="/preview/roadmap" element={<PreviewRoadmap />} />
+      <Route path="/preview/detail" element={<PreviewDetail />} />
       {/* ── Public: always reachable, regardless of login state ── */}
       <Route path="/" element={<Landing />} />
            <Route path="/login" element={<Login onLogin={handleLogin} />} />

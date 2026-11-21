@@ -50,10 +50,10 @@ export default function Hero({ delay = 0, onSignup }) {
       <motion.div className="hf-dim" style={{ backgroundColor: dim }} aria-hidden="true" />
 
       <motion.div className="hf-content" style={{ y: textY, opacity: textOpacity }}>
-        <motion.div className="hf-eyebrow" {...rise(0.1)}>Unexa · Art & design schools abroad</motion.div>
+        <motion.div className="hf-eyebrow" {...rise(0.1)}>For art & design students</motion.div>
         <motion.h1 className="hf-title" {...rise(0.22)}>Find your<br />art school.</motion.h1>
         <motion.p className="hf-sub" {...rise(0.36)}>
-          Fine art, design, film and architecture programmes around the world, straight from the schools' own websites.
+          Compare art & design programmes abroad, plan every deadline, and apply with confidence. Free.
         </motion.p>
         <motion.div className="hf-ctas" {...rise(0.5)}>
           <button type="button" className="hf-btn hf-btn-light" onClick={onSignup}>Create free account <span aria-hidden="true">↗</span></button>
