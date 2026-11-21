@@ -31,6 +31,7 @@ const PreviewHome = lazy(() => import("./pages/PreviewHome"));
 const PreviewDashboard = lazy(() => import("./pages/PreviewScreens").then((m) => ({ default: m.PreviewDashboard })));
 const PreviewRoadmap = lazy(() => import("./pages/PreviewScreens").then((m) => ({ default: m.PreviewRoadmap })));
 const PreviewDetail = lazy(() => import("./pages/PreviewScreens").then((m) => ({ default: m.PreviewDetail })));
+const PreviewDorm = lazy(() => import("./pages/PreviewScreens").then((m) => ({ default: m.PreviewDorm })));
 
 // Saved universities used to live only in this browser; this key is now read once
 // to import them into the account, then removed.
@@ -384,6 +385,7 @@ export default function App() {
       <Route path="/preview/dashboard" element={<PreviewDashboard />} />
       <Route path="/preview/roadmap" element={<PreviewRoadmap />} />
       <Route path="/preview/detail" element={<PreviewDetail />} />
+      <Route path="/preview/dorm" element={<PreviewDorm />} />
       <Route path="/preview/onboarding" element={<Onboarding demo onLogin={() => {}} />} />
       {/* ── Public: always reachable, regardless of login state ── */}
       <Route path="/" element={<Landing />} />

@@ -4,6 +4,7 @@
 import Dashboard from "./Dashboard";
 import CareerRoadmap from "./CareerRoadmap";
 import UniversityDetail from "./UniversityDetail";
+import Dorm from "./Dorm";
 import demo from "../lib/demoPrograms.json";
 
 const NAV = [
@@ -56,10 +57,20 @@ export function PreviewRoadmap() {
 }
 
 export function PreviewDetail() {
-  const uni = demo.find((p) => /Rhode Island/.test(p.name)) ?? demo[0];
+  const want = new URLSearchParams(window.location.search).get("school") || "Rhode Island";
+  const uni = demo.find((p) => p.name.toLowerCase().includes(want.toLowerCase())) ?? demo[0];
   return (
     <Shell active="home">
       <UniversityDetail uni={uni} onBack={noop} savedUniversities={[uni]} onToggleSave={noop} comparedUniversities={[]} onAddToCompare={noop} />
+    </Shell>
+  );
+}
+
+export function PreviewDorm() {
+  const uni = demo.find((p) => p.housing?.options?.length) ?? demo[0];
+  return (
+    <Shell active="home">
+      <div className="home-page"><Dorm uni={uni} onBack={noop} /></div>
     </Shell>
   );
 }

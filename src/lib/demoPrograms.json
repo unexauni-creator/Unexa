@@ -230,11 +230,13 @@
   },
   "housing": {
    "url": "https://www.gold.ac.uk/accommodation/",
+   "image": "https://www.gold.ac.uk/media/images-by-section/life-on-campus/accommodation/Accommodation_Town-Hall-Camberwell_Selections_05-(2).jpg",
    "options": [
     {
      "url": "https://www.gold.ac.uk/accommodation/halls/",
      "name": "Chesterman House",
      "type": null,
+     "image": "https://www.gold.ac.uk/media/images-by-section/life-on-campus/accommodation/Accommodation_-Chesterman-House_Courtyard_10.jpeg",
      "price": null,
      "distance": "2-minute walk from campus"
     },
@@ -242,6 +244,7 @@
      "url": "https://www.gold.ac.uk/accommodation/halls/",
      "name": "Ewen Henderson Court",
      "type": null,
+     "image": "https://www.gold.ac.uk/media/images-by-section/life-on-campus/accommodation/Ewen-Henderson-Court-Gallery-1.jpg",
      "price": null,
      "distance": "2-minute walk from campus"
     },
@@ -249,6 +252,7 @@
      "url": "https://www.gold.ac.uk/accommodation/halls/",
      "name": "Loring Hall",
      "type": null,
+     "image": "https://www.gold.ac.uk/media/images-by-section/life-on-campus/accommodation/loring-hall-gallery-1.jpg",
      "price": null,
      "distance": "On campus"
     },
@@ -256,6 +260,7 @@
      "url": "https://www.gold.ac.uk/accommodation/halls/",
      "name": "Raymont Hall",
      "type": null,
+     "image": "https://www.gold.ac.uk/media/images-by-section/life-on-campus/accommodation/Accommodation_Raymont-Hall_Exterior_7.jpeg",
      "price": null,
      "distance": "20-minute walk from campus"
     },
@@ -263,6 +268,7 @@
      "url": "https://www.gold.ac.uk/accommodation/halls/",
      "name": "Surrey House",
      "type": null,
+     "image": "https://www.gold.ac.uk/media/images-by-section/life-on-campus/accommodation/Accommodation_Surrey-House_Selections_05-(3).jpg",
      "price": null,
      "distance": "5-minute walk from campus"
     }

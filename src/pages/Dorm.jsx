@@ -1,4 +1,5 @@
 import "../styles/campus.css";
+import "../styles/student-life.css";
 
 // Housing for one school, collected by the Unexa agent from its official website (universities.housing):
 // whether the school has residences, the options with prices, how to apply, tips for private housing.
@@ -37,23 +38,36 @@ export default function Dorm({ onBack, uni }) {
   const h = uni?.housing;
   const options = h?.options ?? [];
   const hasAny = h && (h.summary || options.length || h.how_to_apply || h.available !== "unknown");
-  const photo = uni?.universityImage || uni?.image;
+  // the dorm itself first; the school's photo only when no housing photo was found
+  const photo = options.find((o) => o.image)?.image || h?.image || uni?.universityImage || uni?.image;
   const badge = AVAILABLE[h?.available] ?? AVAILABLE.unknown;
   const cur = currencyOf(uni?.country);
   const prices = options.map((o) => parsePrice(o.price, cur)).filter(Boolean).sort((a, b) => a.value - b.value);
   const opens = firstDate(h?.how_to_apply);
+  // the at-a-glance row: only facts we actually have
+  const glance = [
+    { k: "Provided by", v: h?.provider || badge.label },
+    prices.length ? { k: "Rooms from", v: prices[0].text } : options.length ? { k: "Options", v: `${options.length} residences` } : null,
+    opens ? { k: "Applications", v: opens } : null,
+    h?.city_rent ? { k: "Private rent", v: h.city_rent.replace(/^[^:]*:\s*/, "") } : null,
+  ].filter(Boolean);
 
   return (
-    <div className="campus-page">
-      <div className="dorm-top-row">
-        <button className="dorm-back-icon-btn" onClick={onBack} aria-label="Go back">
-          <img src="/arrow-left.svg" alt="" className="dorm-back-icon-img" />
-        </button>
-        <div className="dorm-heading">
-          <div className="dorm-heading-title">Dorm</div>
-          <div className="dorm-heading-desc">{uni?.name ? `Where students of ${uni.name} live` : "Housing options."}</div>
+    <div className="student-life-page dm2">
+      {/* the same container as Student Life: the header stays put, the content scrolls under it */}
+      <header className="sl-page-header">
+        <div className="sl-top-row">
+          <button className="sl-back-icon-btn" onClick={onBack} aria-label="Go back">
+            <img src="/arrow-left.svg" alt="" className="sl-back-icon" />
+          </button>
+          <div className="sl-heading">
+            <div className="sl-heading-title">Dorm</div>
+            <div className="sl-heading-desc">{uni?.name ? `Where students of ${uni.name} live` : "Housing options."}</div>
+          </div>
         </div>
-      </div>
+      </header>
+
+      <div className="sl-scroll dm2-scroll">
 
       {!hasAny ? (
         <div className="campus-empty">
@@ -64,46 +78,65 @@ export default function Dorm({ onBack, uni }) {
         </div>
       ) : (
         <>
-          {/* the school's own photo, a big title and the key facts in one strip */}
-          <section className="dm-hero" style={photo ? { "--hero": `url("${photo}")` } : undefined}>
-            <div className="dm-hero-top">
-              <span className={`campus-badge ${badge.tone}`}>{badge.label}</span>
-            </div>
-            <div className="dm-hero-bottom">
-              <h3 className="dm-hero-title">Living at<br />{uni?.name}</h3>
-              <div className="dm-facts">
-                {options.length > 0 && <div><span>Options</span><strong>{options.length}</strong></div>}
-                {prices.length > 0 && <div><span>From</span><strong>{prices[0].text}</strong></div>}
-                {opens && <div><span>Applications open</span><strong>{opens}</strong></div>}
-                {!options.length && !prices.length && !opens && <div><span>Status</span><strong>{badge.label}</strong></div>}
+          <section className="dm2-hero" style={photo ? { "--hero": `url("${photo}")` } : undefined}>
+            <span className={`campus-badge ${badge.tone}`}>{badge.label}</span>
+            <div className="dm2-hero-bottom">
+              <h3 className="dm2-title">Living at<br />{uni?.name}</h3>
+              {/* the key facts as small glass chips on the photo */}
+              <div className="dm2-chips">
+                {glance.filter((g) => g.k !== "Provided by" || h.provider).map((g) => <span key={g.k}><small>{g.k}</small>{g.v}</span>)}
               </div>
             </div>
           </section>
 
-          {(h.summary || h.guarantee) && (
-            <div className="dm-intro">
-              {h.summary && <p className="dm-lead">{h.summary}</p>}
-              {h.guarantee && <div className="dm-guarantee"><span>Who gets a place</span>{h.guarantee}</div>}
+          {/* how it works, in three short steps, built from what the official pages say */}
+          <section className="dm2-how">
+            <div className="dm2-step">
+              <span className="dm2-n">1</span>
+              <b>Pick what suits you</b>
+              <p>{options.length > 1
+                ? `${h.provider || uni?.name} has ${options.length} residences. They differ in price, room type and how far they are from campus, so compare them below.`
+                : options.length === 1 ? `Students live at ${options[0].name}. Check the room types and price on its page.`
+                : `${h.provider || uni?.name} helps students find a room. See the official housing page for what is available.`}</p>
             </div>
-          )}
+            <div className="dm2-step">
+              <span className="dm2-n">2</span>
+              <b>Apply for a room</b>
+              <p>{h.how_to_apply || "Housing is a separate application from your study place. The dates are on the official housing page."}</p>
+              {(h.apply_url || h.url) && <a className="dm2-step-link" href={h.apply_url || h.url} target="_blank" rel="noopener noreferrer">{h.apply_url ? "Apply for housing" : "Housing page"} ↗</a>}
+            </div>
+            <div className="dm2-step">
+              <span className="dm2-n">3</span>
+              <b>How places are given</b>
+              <p>{h.allocation || h.guarantee || "Places are limited. The official housing page explains who gets one first, so apply as soon as you accept your study offer."}</p>
+            </div>
+          </section>
 
           {options.length > 0 && (
             <section>
-              <div className="campus-section-head"><h3>Where you could live</h3><span className="campus-muted">From the school's website</span></div>
+              <div className="campus-section-head"><h3>Where you could live</h3><span className="campus-muted">{h.provider ? `From ${h.provider}` : "From official pages"}</span></div>
               <div className="dm-listings">
                 {options.map((o, i) => {
                   const Card = o.url ? "a" : "div";
                   const price = parsePrice(o.price, cur);
                   return (
-                    <Card key={o.name} className="dm-listing" {...(o.url ? { href: o.url, target: "_blank", rel: "noopener noreferrer" } : {})}>
-                      <div className="dm-listing-top">
-                        <span className="dm-index">{String(i + 1).padStart(2, "0")}</span>
-                        {price ? <span className="dm-price">{price.text}</span> : <span className="dm-price muted">Price on request</span>}
-                      </div>
+                    <Card key={o.name} className={`dm-listing${o.image ? " has-photo" : ""}`} {...(o.url ? { href: o.url, target: "_blank", rel: "noopener noreferrer" } : {})}>
+                      {o.image && (
+                        <div className="dm-listing-photo">
+                          <img src={o.image} alt="" loading="lazy" />
+                          {price && <span className="dm-listing-pill">{price.text}</span>}
+                        </div>
+                      )}
+                      {!o.image && (
+                        <div className="dm-listing-top">
+                          <span className="dm-index">{String(i + 1).padStart(2, "0")}</span>
+                          {price ? <span className="dm-price">{price.text}</span> : <span className="dm-price muted">Price on their site</span>}
+                        </div>
+                      )}
                       <div className="dm-listing-name">{o.name}</div>
                       {o.type && <div className="dm-listing-type">{o.type}</div>}
                       {o.distance && <div className="dm-walk"><WalkIcon />{o.distance}</div>}
-                      {o.url && <span className="dm-listing-go">View on the school's site <span aria-hidden="true">→</span></span>}
+                      {o.url && <span className="dm-listing-go">See this residence <span aria-hidden="true">→</span></span>}
                     </Card>
                   );
                 })}
@@ -111,28 +144,21 @@ export default function Dorm({ onBack, uni }) {
             </section>
           )}
 
-          {(h.how_to_apply || h.apply_url || h.private_tips) && (
-            <section className="dm-apply">
-              <div className="dm-apply-main">
-                <div className="tc-kicker">How to apply</div>
-                {h.how_to_apply && <p>{h.how_to_apply}</p>}
-                {h.apply_url && <a className="campus-btn" href={h.apply_url} target="_blank" rel="noopener noreferrer">Apply for housing ↗</a>}
-              </div>
-              {h.private_tips && (
-                <div className="dm-apply-side">
-                  <div className="tc-kicker">Renting privately</div>
-                  <p>{h.private_tips}</p>
-                </div>
-              )}
-            </section>
-          )}
+          <section className="dm2-apply dm2-apply-one">
+            <div className="dm2-apply-side">
+              <div className="tc-kicker">If you rent privately</div>
+              <p>{h.private_tips || "Start looking 2–3 months before you arrive, never pay a deposit before seeing a contract, and ask in Community → Housing & Roommates who is looking for a flatmate."}</p>
+              {h.city_rent && <p className="dm2-rent">{h.city_rent}</p>}
+            </div>
+          </section>
 
           <div className="dm-foot">
-            {h.url && <a className="tc-link" href={h.url} target="_blank" rel="noopener noreferrer">Housing on the school's website <span aria-hidden="true">→</span></a>}
-            <p className="campus-source">Collected from {uni?.name}'s official website. Prices and rules change, so check before you apply.</p>
+            {h.url && <a className="tc-link" href={h.url} target="_blank" rel="noopener noreferrer">Official housing page <span aria-hidden="true">→</span></a>}
+            <p className="campus-source">Collected from {h.provider ? `${h.provider} and ` : ""}{uni?.name}'s official pages. Prices and rules change, so check before you apply.</p>
           </div>
         </>
       )}
+      </div>
     </div>
   );
 }
