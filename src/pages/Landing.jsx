@@ -1,25 +1,16 @@
 import { useEffect, useRef, useState } from "react";
-import { AnimatePresence, motion, useScroll, useSpring, useTransform } from "framer-motion";
+import { AnimatePresence, MotionConfig, motion, useMotionValueEvent, useScroll, useTransform } from "framer-motion";
+import { CitySwap, Manifesto, PosterStrip } from "../components/landing/Showcase";
+import Journey from "../components/landing/Journey";
+import { Deadline, Globe, PaperPlane, School, Palette as PaletteIllo } from "../components/landing/Illustrations";
 import { supabase } from "../lib/supabaseClient";
 import { useNavigate } from "react-router-dom"; 
-
-// Photos of schools that are on Unexa (from their official sites / Wikimedia Commons)
-const CARDS = [
-  { img: "https://upload.wikimedia.org/wikipedia/commons/thumb/3/37/Paris_6_-_ENSBA_01.jpg/1280px-Paris_6_-_ENSBA_01.jpg", rotate: -11, label: "Paris" },
-  { img: "https://www.manchester.ac.uk/study/international/oxford-road-campus-shot-v2.webp", rotate: -5, label: "Manchester" },
-  { img: "https://www.geidai.ac.jp/english/wp-content/uploads/2024/10/H8A2884-Pano-scaled.jpg", rotate: 0, label: "Tokyo" },
-  { img: "https://www.khm.de/0305947792a0a44929398403f2461c9e.slideshow/AC26_Kamoona_slideshow.jpeg?v=2", rotate: 5, label: "Cologne" },
-  { img: "https://www.accademiavenezia.it/upload/eventi/crop/Mostra_Extra_Ordinario_Workshop_VII_Edizione.jpg", rotate: 11, label: "Venice" },
-];
 
 // A few of the schools on Unexa, for the running strip (replaced by the live list when the page can reach the database)
 const FALLBACK_SCHOOLS = ["Beaux-arts de Paris", "Rhode Island School of Design", "Goldsmiths", "Tokyo University of the Arts", "Academy of Media Arts Cologne", "Accademia di Belle Arti di Venezia", "Berlin University of the Arts", "ArtCenter College of Design", "NABA", "Elisava", "Hongik University", "Seoul National University", "Lviv National Academy of Arts", "Brera Academy of Fine Arts", "School of Visual Arts", "Maryland Institute College of Art", "Academy of Fine Arts in Gdańsk", "Kharkiv State Academy of Design and Arts", "Sheridan College", "Łódź Film School", "Arts University Bournemouth", "University of Art and Design Offenbach"];
 
-const STEPS = [
-  { n: "01", title: "Tell us what you love", text: "Eight quick questions: fields, countries, language, budget and when you want to start." },
-  { n: "02", title: "Get programmes picked for you", text: "“For you” ranks every programme by how well it fits, and tells you why." },
-  { n: "03", title: "Compare, plan, apply", text: "Put favourites side by side, then follow a plan with every deadline, from portfolio to visa." },
-];
+const CITIES = ["Paris", "Seoul", "Berlin", "Tokyo", "Venice", "London", "Kraków", "Providence"];
+const MANIFESTO = "Choosing an art school abroad means forty open tabs, three languages and deadlines nobody warns you about. *Unexa puts every programme, fee and date from the schools' own websites in one calm place, so your energy goes where it matters: *your *portfolio.";
 
 const FAQ = [
   { q: "Is Unexa free?", a: "Yes. Making an account, saving programmes, comparing them, the roadmap and the community are free for students." },
@@ -44,13 +35,13 @@ const LINKEDIN_COMPANY_URL = "https://www.linkedin.com/company/unexauni/?viewAsM
 const TEAM = [
   {
     key: "katia",
-    photo: "/katia.jpg",
+    photo: "/katia-640.jpg",
     name: "Kateryna Dmytrenko",
     linkedin: "https://www.linkedin.com/in/kateryna-dmytrenko-059a22266/",
   },
   {
     key: "anastasiia",
-    photo: "/nastya.jpg",
+    photo: "/nastya-640.jpg",
     name: "Anastasiia Andriievska",
     linkedin: "https://www.linkedin.com/in/anastasiia-andriievska-136244223/",
   },
@@ -100,15 +91,6 @@ const footerCtaVariants = {
     opacity: 1,
     y: 0,
     transition: { duration: 0.7, ease: [0.22, 1, 0.36, 1], delay: 0.15 },
-  },
-};
-
-const footerBottomRowVariants = {
-  hidden: { opacity: 0, y: 16 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: { duration: 0.7, ease: [0.22, 1, 0.36, 1], delay: 0.25 },
   },
 };
 
@@ -280,52 +262,57 @@ function useLiveStats() {
   return stats;
 }
 
-function StatTile({ value, label, note, start, delay }) {
+function StatTile({ Illo, tone, value, label, note, start, delay }) {
   const n = useCountUp(value, start, delay, 1400);
   return (
-    <div className="landing-number">
+    <motion.div className={`ux-stat ${tone}`} initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: 0.3 }}
+      transition={{ duration: 0.8, ease: EASE, delay: delay / 1000 }}>
+      <div className="ux-stat-illo" aria-hidden="true"><Illo /></div>
       <strong>{n}</strong>
-      <span className="landing-number-label">{label}</span>
-      {note && <span className="landing-number-note">{note}</span>}
-    </div>
+      <span className="ux-stat-label">{label}</span>
+      <span className="ux-stat-note">{note}</span>
+    </motion.div>
   );
 }
 
 // Small live replicas of the app, one per feature; each one moves a little once it is on screen
 function MockDiscover() {
-  const cards = [
-    { img: CARDS[2].img, title: "Global Arts", school: "Tokyo University of the Arts" },
-    { img: CARDS[4].img, title: "Painting - Visual Arts Design", school: "Accademia di Belle Arti di Venezia" },
-    { img: CARDS[0].img, title: "Fine Arts (DNSAP)", school: "Beaux-arts de Paris" },
-  ];
   return (
     <div className="fm fm-discover">
-      {cards.map((c, i) => (
-        <motion.div
-          key={c.title}
-          className="fm-uni"
-          style={{ zIndex: i }}
-          initial={{ opacity: 0, y: 50, rotate: 0, x: 0 }}
-          whileInView={{ opacity: 1, y: [-12, -12, 6][i], rotate: [-7, 7, 0][i], x: [-90, 90, 0][i], scale: [0.88, 0.88, 1][i] }}
-          viewport={{ once: true, amount: 0.5 }}
-          transition={{ duration: 0.9, ease: EASE, delay: 0.1 + i * 0.12 }}
-        >
-          {/* the same card as on Home */}
-          <div className="uni-card-new">
-            <img src={c.img} alt="" className="uni-card-img" />
-            <div className="uni-card-glass">
-              <img src={c.img} alt="" aria-hidden="true" className="card-glass-photo" />
-              <div className="uni-card-glass-blur" />
-              <div className="uni-card-text">
-                <div className="uni-card-title">{c.title}</div>
-                <div className="uni-card-subtitle">{c.school}</div>
-              </div>
-              <span className="uni-card-save"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" /></svg></span>
-            </div>
-          </div>
-        </motion.div>
-      ))}
+      <TypingSearch />
+      <div className="fm-discover-illo"><School /></div>
+      <motion.span className="fm-float-tag t1" animate={{ y: [0, -10, 0] }} transition={{ duration: 3.2, repeat: Infinity, ease: "easeInOut" }}>Deadline · 15 Jan</motion.span>
+      <motion.span className="fm-float-tag t2" animate={{ y: [0, 10, 0] }} transition={{ duration: 3.6, repeat: Infinity, ease: "easeInOut", delay: 0.4 }}>€2,000 / year</motion.span>
+      <motion.span className="fm-float-tag t3" animate={{ y: [0, -8, 0] }} transition={{ duration: 3, repeat: Infinity, ease: "easeInOut", delay: 0.8 }}>IELTS 6.5</motion.span>
     </div>
+  );
+}
+
+// Types a few real searches one after another, like someone using Unexa
+const QUERIES = ["graphic design in Italy", "film school, English-taught", "painting under €2,000 / year", "illustration MA in London"];
+function TypingSearch() {
+  const [text, setText] = useState("");
+  const [live, setLive] = useState(false);
+  useEffect(() => {
+    if (!live) return undefined;
+    let q = 0, n = 0, dir = 1, t;
+    const tick = () => {
+      const full = QUERIES[q];
+      n += dir;
+      setText(full.slice(0, n));
+      let wait = dir > 0 ? 55 + Math.random() * 60 : 22;
+      if (dir > 0 && n === full.length) { dir = -1; wait = 1600; }
+      else if (dir < 0 && n === 0) { dir = 1; q = (q + 1) % QUERIES.length; wait = 350; }
+      t = setTimeout(tick, wait);
+    };
+    t = setTimeout(tick, 400);
+    return () => clearTimeout(t);
+  }, [live]);
+  return (
+    <motion.div className="fm-search" onViewportEnter={() => setLive(true)} onViewportLeave={() => setLive(false)}>
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round"><circle cx="11" cy="11" r="7" /><path d="m20 20-3.5-3.5" /></svg>
+      <span>{text}<i className="fm-caret" aria-hidden="true" /></span>
+    </motion.div>
   );
 }
 
@@ -334,11 +321,15 @@ function MockCompare() {
   const cells = { Tuition: ["€430", "£9,535", "$62k"], Language: ["French B2", "IELTS 6.5", "TOEFL 93"], Duration: ["5 yrs", "3 yrs", "4 yrs"] };
   const best = { Tuition: 0, Language: 2, Duration: 1 };
   const [lit, setLit] = useState(-1);
+  const [live, setLive] = useState(false);
+  useEffect(() => {
+    if (!live) return undefined;
+    let i = 0;
+    const t = setInterval(() => { setLit(i < rows.length ? i : i < rows.length + 3 ? rows.length - 1 : -1); i = (i + 1) % (rows.length + 4); }, 650);
+    return () => clearInterval(t);
+  }, [live, rows.length]);
   return (
-    <motion.div className="fm fm-compare" onViewportEnter={() => {
-      let i = 0;
-      const t = setInterval(() => { setLit(i); i += 1; if (i > rows.length) clearInterval(t); }, 550);
-    }} viewport={{ once: true, amount: 0.6 }}>
+    <motion.div className="fm fm-compare" onViewportEnter={() => setLive(true)} onViewportLeave={() => setLive(false)} viewport={{ amount: 0.5 }}>
       <span className="fm-example">Example</span>
       <div className="fm-row fm-head"><span /><span>Paris</span><span>London</span><span>Providence</span></div>
       {rows.map(([label], r) => (
@@ -375,14 +366,18 @@ function MockPlan() {
 function MockConnect() {
   // a question appears, someone is typing, then their reply replaces the dots
   const [phase, setPhase] = useState(0);
-  function play() {
-    setPhase(1);
-    setTimeout(() => setPhase(2), 700);
-    setTimeout(() => setPhase(3), 2000);
-  }
+  const [live, setLive] = useState(false);
+  useEffect(() => {
+    if (!live) return undefined;
+    const steps = [[1, 300], [2, 1000], [3, 2300], [0, 6200]];
+    let timers = [];
+    const run = () => { timers = steps.map(([ph, at]) => setTimeout(() => setPhase(ph), at)); timers.push(setTimeout(run, 6600)); };
+    run();
+    return () => timers.forEach(clearTimeout);
+  }, [live]);
   const pop = { initial: { opacity: 0, y: 16, scale: 0.97 }, animate: { opacity: 1, y: 0, scale: 1 }, exit: { opacity: 0, scale: 0.9 }, transition: { duration: 0.5, ease: EASE } };
   return (
-    <motion.div className="fm fm-connect" onViewportEnter={() => phase === 0 && play()} viewport={{ once: true, amount: 0.6 }}>
+    <motion.div className="fm fm-connect" onViewportEnter={() => setLive(true)} onViewportLeave={() => setLive(false)} viewport={{ amount: 0.5 }}>
       <AnimatePresence>
         {phase >= 1 && <motion.div key="q" className="fm-post" {...pop}><span className="fm-av">LM</span><div><b>Lina · Portfolio Reviews</b><p>How many sketchbook pages did you send?</p></div></motion.div>}
         {phase === 2 && <motion.div key="t" className="fm-typing" {...pop}><span /><span /><span /></motion.div>}
@@ -394,32 +389,61 @@ function MockConnect() {
 
 const MOCKS = { discover: MockDiscover, compare: MockCompare, plan: MockPlan, connect: MockConnect };
 
+const FEATURE_EXTRA = {
+  discover: { facts: ["Fees", "Deadlines", "Language", "Teachers", "Housing"], Illo: null },
+  compare: { facts: ["Up to 4 programmes", "Best for you", "Your priorities"], Illo: null },
+  plan: { facts: ["Portfolio", "Tests", "Visa", "Housing"], Illo: Deadline },
+  connect: { facts: ["Portfolio reviews", "IELTS tips", "Roommates"], Illo: PaperPlane },
+};
+
+function StackCard({ f, i, total, progress }) {
+  const Mock = MOCKS[f.key];
+  const extra = FEATURE_EXTRA[f.key];
+  // cards underneath shrink a little as the next ones slide over them
+  const scale = useTransform(progress, [i / total, 1], [1, 1 - (total - 1 - i) * 0.035]);
+  return (
+    <li className="ux-stack-item" style={{ top: `calc(var(--stack-top) + ${i} * var(--stack-step))` }}>
+      <motion.article className={`ux-stack-card c-${f.key}`} style={{ scale }}>
+        <div className="ux-stack-media">
+          {extra.Illo && <div className="ux-stack-illo"><extra.Illo /></div>}
+          <Mock />
+        </div>
+        <div className="ux-stack-text">
+          <span className="ux-stack-n">{String(i + 1).padStart(2, "0")} · {f.eyebrow}</span>
+          <h3>{f.title}</h3>
+          <p>{f.text}</p>
+          <ul className="ux-stack-facts">{extra.facts.map((x) => <li key={x}>{x}</li>)}</ul>
+        </div>
+      </motion.article>
+    </li>
+  );
+}
+
+function FeatureStack() {
+  const listRef = useRef(null);
+  const { scrollYProgress } = useScroll({ target: listRef, offset: ["start start", "end end"] });
+  return (
+    <section className="ux-stack" id="features">
+      <motion.div className="landing-section-head" initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.5 }} variants={mobileRevealVariants}>
+        <SectionTag n="02">What's inside</SectionTag>
+        <BlurWords lines={["Everything in one place,", "from first search to first day"]} />
+      </motion.div>
+      <ul className="ux-stack-list" ref={listRef}>
+        {FEATURES.map((f, i) => <StackCard key={f.key} f={f} i={i} total={FEATURES.length} progress={scrollYProgress} />)}
+      </ul>
+    </section>
+  );
+}
+
 // "How it works": the line between the three steps draws itself as you scroll
 function HowItWorks() {
-  const ref = useRef(null);
-  const { scrollYProgress } = useScroll({ target: ref, offset: ["start 80%", "end 60%"] });
-  const draw = useSpring(scrollYProgress, { stiffness: 80, damping: 20 });
   return (
-    <section className="landing-how" ref={ref} id="how">
+    <section className="landing-how" id="how">
       <motion.div className="landing-section-head" initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.5 }} variants={mobileRevealVariants}>
         <SectionTag n="03">How it works</SectionTag>
-        <BlurWords lines={["From “where do I even start”", "to a plan, in three steps"]} />
+        <BlurWords lines={["From “where do I even start”", "to a plan, in four steps"]} />
       </motion.div>
-      <div className="landing-how-steps">
-        <svg className="landing-how-line" viewBox="0 0 1000 40" preserveAspectRatio="none" aria-hidden="true">
-          <path d="M20 20 C 250 -10, 400 50, 500 20 S 760 -10, 980 20" className="track" />
-          <motion.path d="M20 20 C 250 -10, 400 50, 500 20 S 760 -10, 980 20" className="ink" style={{ pathLength: draw }} />
-        </svg>
-        {STEPS.map((st, i) => (
-          <motion.div key={st.n} className="landing-how-step"
-            initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: 0.4 }}
-            transition={{ duration: 0.8, ease: EASE, delay: i * 0.15 }}>
-            <span className="landing-how-n">{st.n}</span>
-            <h3>{st.title}</h3>
-            <p>{st.text}</p>
-          </motion.div>
-        ))}
-      </div>
+      <Journey />
     </section>
   );
 }
@@ -456,54 +480,53 @@ function Faq() {
   );
 }
 
-// The hero shows the real Unexa home in a browser window; it tilts back into place as you scroll,
-// and three pieces of the app float around it at different speeds.
-
-// Shows a page of the app at its real size (1440×900) and scales it down to the box,
-// so the preview looks exactly like Unexa on every screen.
-function ScaledScreen({ src }) {
-  const box = useRef(null);
-  const [scale, setScale] = useState(0.7);
-  useEffect(() => {
-    const el = box.current;
-    if (!el) return;
-    const ro = new ResizeObserver(() => setScale(el.clientWidth / 1440));
-    ro.observe(el);
-    return () => ro.disconnect();
-  }, []);
+// Footer like a page lifting off: the light panel with "Find your art school" has rounded bottom
+// corners and scrolls away, uncovering a layer in Unexa brown that rises to meet it.
+function FooterReveal({ children, onTop }) {
+  const underRef = useRef(null);
+  const { scrollYProgress } = useScroll({ target: underRef, offset: ["start end", "end end"] });
+  const y = useTransform(scrollYProgress, [0, 1], ["-45%", "0%"]);
+  const opacity = useTransform(scrollYProgress, [0, 0.6, 1], [0.2, 0.85, 1]);
+  const wordScale = useTransform(scrollYProgress, [0, 1], [0.86, 1]);
+  // a colour, not opacity: opacity tied to scroll is handed to the browser, which measured it wrong here
+  const shade = useTransform(scrollYProgress, (p) => `rgba(43,31,24,${(Math.min(1, Math.max(0, p)) * 0.72).toFixed(3)})`);
+  const sink = useTransform(scrollYProgress, [0, 1], [1, 0.93]);
+  // over the brown footer the light fade under the menu would show as a grey band, so switch it off
+  useMotionValueEvent(scrollYProgress, "change", (p) => { document.documentElement.toggleAttribute("data-footer-open", p > 0.35); });
+  useEffect(() => () => document.documentElement.removeAttribute("data-footer-open"), []);
   return (
-    <div className="hero-screen" ref={box}>
-      <iframe src={src} title="Unexa home" tabIndex={-1} aria-hidden="true" style={{ transform: `scale(${scale})` }} />
-    </div>
-  );
-}
-
-function HeroApp({ progress, delay = 0 }) {
-  const rotateX = useTransform(progress, [0, 1], [14, 0]);
-  const scale = useTransform(progress, [0, 1], [0.92, 1]);
-  const y = useTransform(progress, [0, 1], [0, -30]);
-  const floatA = useTransform(progress, [0, 1], [0, -90]);
-  const floatB = useTransform(progress, [0, 1], [0, -40]);
-  const floatC = useTransform(progress, [0, 1], [0, -130]);
-  return (
-    <div className="hero-stage">
-      <motion.div className="hero-window" style={{ rotateX, scale, y }}
-        initial={{ opacity: 0, y: 60 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 1.1, ease: EASE, delay: delay + 0.35 }}>
-        <div className="hero-chrome"><i /><i /><i /><span>unexa.app</span></div>
-        <ScaledScreen src="/preview/home" />
+    <footer className="ux-reveal">
+      <motion.div className="ux-reveal-panel" style={{ scale: sink }}>
+        {children}
+        <motion.div className="ux-reveal-shade" style={{ backgroundColor: shade }} aria-hidden="true" />
       </motion.div>
-
-      <motion.div className="hero-float hero-float-sticky" style={{ y: floatA }} initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.8, ease: EASE, delay: delay + 0.9 }}>
-        <span>📌 Next deadline</span><b>69 <small>days left</small></b><em>MA Art Education</em>
-      </motion.div>
-      <motion.div className="hero-float hero-float-ring" style={{ y: floatB }} initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.8, ease: EASE, delay: delay + 1.05 }}>
-        <svg viewBox="0 0 84 84"><circle cx="42" cy="42" r="34" /><circle cx="42" cy="42" r="34" className="fill" /></svg>
-        <div><b>40%</b><span>of your plan done</span></div>
-      </motion.div>
-      <motion.div className="hero-float hero-float-compare" style={{ y: floatC }} initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.8, ease: EASE, delay: delay + 1.2 }}>
-        <span className="dot" /> Comparing <b>3 programmes</b>
-      </motion.div>
-    </div>
+      <div className="ux-reveal-ears" aria-hidden="true" />
+      <div className="ux-reveal-under" ref={underRef}>
+        <motion.div className="ux-reveal-inner" style={{ y, opacity }}>
+          <div className="ux-reveal-top">
+            <span className="ux-reveal-tag">Find your art school <i aria-hidden="true">✳</i></span>
+            <nav className="ux-reveal-links" aria-label="Footer">
+              <a href="#features">Features</a>
+              <a href="#how">How it works</a>
+              <a href="#team">Team</a>
+              <a href="#faq">Questions</a>
+              <a href="/login">Log in</a>
+              <a href="/signup">Create account</a>
+            </nav>
+            <button type="button" className="ux-reveal-totop" onClick={onTop}>Back to top <span aria-hidden="true">↑</span></button>
+          </div>
+          <motion.div className="ux-reveal-word" style={{ scale: wordScale }} aria-hidden="true">Unexa</motion.div>
+          <div className="ux-reveal-bottom">
+            <span>© 2026 Unexa · Built by Kateryna & Anastasiia</span>
+            <div className="ux-reveal-pills">
+              <a href={LINKEDIN_COMPANY_URL} target="_blank" rel="noopener noreferrer">LinkedIn ↗</a>
+              <a href={TEAM[0].linkedin} target="_blank" rel="noopener noreferrer">Kateryna ↗</a>
+              <a href={TEAM[1].linkedin} target="_blank" rel="noopener noreferrer">Anastasiia ↗</a>
+            </div>
+          </div>
+        </motion.div>
+      </div>
+    </footer>
   );
 }
 
@@ -561,8 +584,6 @@ export default function Landing() {
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const docProgress = useDocScrollProgress();
   const heroRef = useRef(null);
-  const { scrollYProgress: heroScroll } = useScroll({ target: heroRef, offset: ["start start", "end start"] });
-  const fanSpread = useSpring(useTransform(heroScroll, [0, 0.45], [0, 1]), { stiffness: 90, damping: 22, mass: 0.4 });
   const liveStats = useLiveStats();
   const [statsInView, setStatsInView] = useState(false);
   const [withIntro] = useState(() => { try { return !sessionStorage.getItem(INTRO_KEY); } catch { return false; } });
@@ -610,6 +631,7 @@ export default function Landing() {
 
   return (
     <>
+    <MotionConfig reducedMotion="user">
     <AnimatePresence>{introOn && <Intro key="intro" />}</AnimatePresence>
     <motion.div
       className="landing-curtain"
@@ -712,44 +734,47 @@ export default function Landing() {
           <motion.div className="landing-hero-kicker" variants={heroItem}>
             <span className="landing-live-dot" aria-hidden="true" /> {liveStats.schools} art & design schools · {liveStats.countries} countries
           </motion.div>
-          <h1 className="landing-hero-title">
+          <h1 className="landing-hero-title ux-hero-title">
             <motion.span className="landing-hero-line" variants={heroItem}>
-              Built for students still <span className="landing-hero-accent">✳</span>
+              Study art & design <span className="landing-hero-accent">✳</span>
             </motion.span>
-            <motion.span className="landing-hero-line" variants={heroItem}>figuring out where to study next</motion.span>
+            <motion.span className="landing-hero-line" variants={heroItem}>
+              in <CitySwap cities={CITIES} delay={withIntro ? INTRO_HOLD + 1.2 : 1.2} />
+            </motion.span>
           </h1>
           <motion.p className="landing-hero-desc" variants={heroItem}>
-            Discover design & art programmes across the world, compare them side by side,
-            and plan every step: deadlines, portfolio, tests and housing.
+            Built for students still figuring out where to study next. Discover programmes across the world,
+            compare them side by side, and plan every step: deadlines, portfolio, tests and housing.
           </motion.p>
           <motion.div className="landing-hero-ctas" variants={heroItem}>
             <a className="landing-btn landing-btn-primary" href="#features">Learn more <span aria-hidden="true">↓</span></a>
           </motion.div>
+          <motion.div className="ux-proof" variants={heroItem}>
+            <span>Data from <b>{liveStats.schools} schools'</b> official websites, checked every month</span>
+          </motion.div>
         </motion.section>
 
-        <HeroApp progress={fanSpread} delay={withIntro ? INTRO_HOLD + 0.5 : 0} />
       </div>
 
-      {/* live numbers */}
-      <motion.section
-        className="landing-numbers"
-        initial="hidden"
-        whileInView="visible"
-        viewport={{ once: true, amount: 0.4 }}
-        variants={mobileRevealVariants}
-        onViewportEnter={() => setStatsInView(true)}
-      >
-        <div className="landing-numbers-head">
+      <PosterStrip />
+
+      <Manifesto text={MANIFESTO} />
+
+      {/* live numbers, as illustrated tiles */}
+      <section className="ux-stats">
+        <motion.div className="landing-section-head" initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.5 }} variants={mobileRevealVariants}
+          onViewportEnter={() => setStatsInView(true)}>
           <SectionTag n="01">Unexa today</SectionTag>
-          <p>Every number below comes straight from our database, updated as our agent reads more school websites.</p>
+          <BlurWords lines={["Real schools, real data"]} />
+          <p className="ux-stats-sub">Every number comes straight from our database and grows as our agent reads more school websites.</p>
+        </motion.div>
+        <div className="ux-stats-grid">
+          <StatTile Illo={School} tone="t-sand" value={liveStats.schools} label="schools" note="art & design schools, data from their official sites" start={statsInView} delay={0} />
+          <StatTile Illo={PaletteIllo} tone="t-rose" value={liveStats.programmes} label="programmes" note="with deadlines, fees, languages and teachers" start={statsInView} delay={120} />
+          <StatTile Illo={Globe} tone="t-sky" value={liveStats.countries} label="countries" note="across Europe, North America and East Asia" start={statsInView} delay={240} />
+          <StatTile Illo={PaperPlane} tone="t-lav" value={liveStats.groups} label="student groups" note="by country, field and topic" start={statsInView} delay={360} />
         </div>
-        <div className="landing-numbers-grid">
-          <StatTile value={liveStats.schools} label="schools" note="art & design schools with data from their official sites" start={statsInView} delay={0} />
-          <StatTile value={liveStats.programmes} label="programmes" note="with deadlines, fees, languages and teachers" start={statsInView} delay={120} />
-          <StatTile value={liveStats.countries} label="countries" note="across Europe, North America and East Asia" start={statsInView} delay={240} />
-          <StatTile value={liveStats.groups} label="student groups" note="by country, field and topic" start={statsInView} delay={360} />
-        </div>
-      </motion.section>
+      </section>
 
       {/* the schools, running */}
       <section className="landing-marquee" aria-label="Some of the schools on Unexa">
@@ -763,35 +788,8 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* what's inside: a bento of the four things you can do */}
-      <section className="landing-features" id="features">
-        <motion.div className="landing-section-head" initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.5 }} variants={mobileRevealVariants}>
-          <SectionTag n="02">What's inside</SectionTag>
-          <BlurWords lines={["Everything in one place,", "from first search to first day"]} />
-        </motion.div>
-        <div className="landing-bento">
-          {FEATURES.map((f, i) => {
-            const Mock = MOCKS[f.key];
-            return (
-              <motion.article
-                key={f.key}
-                className={`landing-feature f-${f.key}`}
-                initial={{ opacity: 0, y: 40 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, amount: 0.2 }}
-                transition={{ duration: 0.8, ease: EASE, delay: (i % 2) * 0.1 }}
-              >
-                <div className="landing-feature-mock"><Mock /></div>
-                <div className="landing-feature-text">
-                  <div className="landing-feature-eyebrow">{String(i + 1).padStart(2, "0")} · {f.eyebrow}</div>
-                  <h3>{f.title}</h3>
-                  <p>{f.text}</p>
-                </div>
-              </motion.article>
-            );
-          })}
-        </div>
-      </section>
+      {/* what's inside: big cards that stack on top of each other as you scroll */}
+      <FeatureStack />
 
       <HowItWorks />
 
@@ -826,7 +824,7 @@ export default function Landing() {
             {TEAM.map((member) => (
               <div className="hey-photo-card" key={member.key}>
                 <div className="hey-photo">
-                  <img src={member.photo} alt={member.name} />
+                  <img src={member.photo} alt={member.name} loading="lazy" decoding="async" />
                 </div>
                 <div className="hey-photo-name">{member.name.split(" ")[0]}</div>
                 <a className="hey-photo-link" href={member.linkedin} target="_blank" rel="noopener noreferrer">
@@ -840,46 +838,35 @@ export default function Landing() {
 
       <Faq />
 
-      <motion.footer
-        className="landing-footer"
-        id="launch"
-        initial="hidden"
-        whileInView="visible"
-        viewport={{ once: true, amount: 0.15 }}
-        variants={footerVariants}
-      >
-        <div className="footer-top-row">
-          <div className="footer-copyright">
-            <span aria-hidden="true">©</span> 2026
-          </div>
-          <button type="button" className="footer-backtotop" onClick={scrollToTop}>
-            BACK TO TOP <span className="footer-backtotop-btn" aria-hidden="true">↑</span>
-          </button>
-        </div>
-
-        <motion.div className="footer-cta" variants={footerCtaVariants}>
-          <div className="footer-cta-eyebrow">Free for students</div>
-          <h2 className="footer-cta-title">Find your art school</h2>
-          <p className="footer-cta-desc">
-            Make an account, tell us what you'd love to study, and get programmes picked for you, with every deadline in your plan.
-          </p>
-          <div className="footer-cta-buttons">
-            <button type="button" className="landing-btn landing-btn-primary" onClick={goToSignup}>Create free account <span aria-hidden="true">↗</span></button>
-            <button type="button" className="landing-btn landing-btn-outline" onClick={goToLogin}>Log in</button>
-          </div>
+      <FooterReveal onTop={scrollToTop}>
+        <motion.div
+          className="landing-footer"
+          id="launch"
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, amount: 0.15 }}
+          variants={footerVariants}
+        >
+          <motion.div className="footer-cta" variants={footerCtaVariants}>
+            <div className="footer-cta-eyebrow">Free for students</div>
+            <div className="ux-footer-illo" aria-hidden="true">
+              <div className="ux-footer-globe"><Globe /></div>
+              <div className="ux-footer-plane"><PaperPlane /></div>
+            </div>
+            <h2 className="footer-cta-title">Find your art school</h2>
+            <p className="footer-cta-desc">
+              Make an account, tell us what you'd love to study, and get programmes picked for you, with every deadline in your plan.
+            </p>
+            <div className="footer-cta-buttons">
+              <button type="button" className="landing-btn landing-btn-primary" onClick={goToSignup}>Create free account <span aria-hidden="true">↗</span></button>
+              <button type="button" className="landing-btn landing-btn-outline" onClick={goToLogin}>Log in</button>
+            </div>
+          </motion.div>
         </motion.div>
-
-        <motion.div className="footer-bottom-row" variants={footerBottomRowVariants}>
-          <div className="footer-pills">
-            <a className="footer-pill" href={LINKEDIN_COMPANY_URL} target="_blank" rel="noopener noreferrer">Unexa</a>
-            <a className="footer-pill" href={TEAM[0].linkedin} target="_blank" rel="noopener noreferrer">Kateryna</a>
-            <a className="footer-pill" href={TEAM[1].linkedin} target="_blank" rel="noopener noreferrer">Anastasiia</a>
-          </div>
-          <div className="footer-credit">Built by Kateryna & Anastasiia</div>
-        </motion.div>
-      </motion.footer>
+      </FooterReveal>
     </div>
     </motion.div>
+    </MotionConfig>
     </>
   );
 }
