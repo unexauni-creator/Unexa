@@ -2111,3 +2111,28 @@ html[data-footer-open] .scroll-blur-stack { opacity: 0 !important; transition: o
   .ux-reveal-inner { padding-top: 150px; }
   .ux-reveal-mascot { margin: 12px 0; }
 }
+
+/* the word as a soft outline, smaller; the mascot is the star */
+.ux-reveal-word { font-size: clamp(72px, 11vw, 160px); color: transparent; -webkit-text-stroke: 1.5px rgba(251,246,239,0.42); }
+@media (max-width: 768px) {
+  .ux-reveal-word { font-size: 17vw; -webkit-text-stroke-width: 1.2px; }
+  .ux-reveal-mascot > * { transform: scale(0.78); transform-origin: 50% 50%; }
+}
+
+/* divider, then the links, then credits and pills */
+.ux-reveal-foot { width: 100%; border-top: 1px solid rgba(251,246,239,0.16); padding-top: 22px; display: flex; flex-direction: column; gap: 18px; }
+.ux-reveal-foot .ux-reveal-links { margin: 0; }
+.ux-reveal-foot .ux-reveal-bottom { border-top: none; padding-top: 0; }
+
+/* bottom block: everything starts at the left edge, with room to breathe */
+.ux-reveal-foot { display: grid; grid-template-columns: 1fr auto; grid-template-areas: "links pills" "credit pills"; align-items: end; column-gap: 32px; row-gap: 14px; padding-top: 30px; padding-bottom: 8px; }
+.ux-reveal-foot .ux-reveal-links { grid-area: links; justify-content: flex-start; gap: 8px 30px; }
+.ux-reveal-foot .ux-reveal-bottom { display: contents; }
+.ux-reveal-foot .ux-reveal-bottom > span { grid-area: credit; }
+.ux-reveal-foot .ux-reveal-pills { grid-area: pills; align-self: end; }
+@media (max-width: 768px) {
+  .ux-reveal-foot { grid-template-columns: 1fr; grid-template-areas: "links" "credit" "pills"; row-gap: 16px; padding-top: 24px; }
+  .ux-reveal-foot .ux-reveal-links { gap: 8px 20px; }
+  .ux-reveal-foot .ux-reveal-pills { justify-content: flex-start; }
+  .ux-reveal-bottom { align-items: flex-start; text-align: left; }
+}

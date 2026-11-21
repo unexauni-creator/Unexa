@@ -505,16 +505,17 @@ function FooterReveal({ children, onTop }) {
             <button type="button" className="ux-reveal-totop" onClick={onTop}>Back to top <span aria-hidden="true">↑</span></button>
           </div>
           <div className="ux-reveal-mascot" onMouseEnter={() => setPulse((n) => n + 1)}>
-            <Mascot size={240} pulse={pulse} />
+            <Mascot size={340} pulse={pulse} />
           </div>
-          <nav className="ux-reveal-links" aria-label="Footer">
-            <a href="#features">Features</a>
-            <a href="#how">How it works</a>
-            <a href="#team">Team</a>
-            <a href="#faq">Questions</a>
-            <a href="/login">Log in</a>
-            <a href="/signup">Create account</a>
-          </nav>
+          <div className="ux-reveal-foot">
+            <nav className="ux-reveal-links" aria-label="Footer">
+              <a href="#features">Features</a>
+              <a href="#how">How it works</a>
+              <a href="#team">Team</a>
+              <a href="#faq">Questions</a>
+              <a href="/login">Log in</a>
+              <a href="/signup">Create account</a>
+            </nav>
           <div className="ux-reveal-bottom">
             <span>© 2026 Unexa · Built by Kateryna & Anastasiia</span>
             <div className="ux-reveal-pills">
@@ -522,6 +523,7 @@ function FooterReveal({ children, onTop }) {
               <a href={TEAM[0].linkedin} target="_blank" rel="noopener noreferrer">Kateryna ↗</a>
               <a href={TEAM[1].linkedin} target="_blank" rel="noopener noreferrer">Anastasiia ↗</a>
             </div>
+          </div>
           </div>
         </motion.div>
       </div>
