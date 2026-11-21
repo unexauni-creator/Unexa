@@ -229,69 +229,96 @@
    "collected_at": "2026-11-07T17:29:19.546Z"
   },
   "housing": {
+   "map": {
+    "school": {
+     "lat": 51.4736302,
+     "lng": -0.0372464
+    }
+   },
    "url": "https://www.gold.ac.uk/accommodation/",
-   "image": "https://www.gold.ac.uk/media/images-by-section/life-on-campus/accommodation/Accommodation_Town-Hall-Camberwell_Selections_05-(2).jpg",
    "options": [
     {
+     "km": 0.4,
      "url": "https://www.gold.ac.uk/accommodation/halls/",
      "name": "Chesterman House",
      "type": null,
-     "image": "https://www.gold.ac.uk/media/images-by-section/life-on-campus/accommodation/Accommodation_-Chesterman-House_Courtyard_10.jpeg",
      "price": null,
-     "distance": "2-minute walk from campus"
+     "distance": "2-minute walk from campus",
+     "location": {
+      "lat": 51.4755306,
+      "lng": -0.0350829
+     },
+     "walk_min": 6
     },
     {
+     "km": 0.6,
      "url": "https://www.gold.ac.uk/accommodation/halls/",
      "name": "Ewen Henderson Court",
      "type": null,
-     "image": "https://www.gold.ac.uk/media/images-by-section/life-on-campus/accommodation/Ewen-Henderson-Court-Gallery-1.jpg",
      "price": null,
-     "distance": "2-minute walk from campus"
+     "distance": "2-minute walk from campus",
+     "location": {
+      "lat": 51.4767108,
+      "lng": -0.039695
+     },
+     "walk_min": 8
     },
     {
+     "km": 0,
      "url": "https://www.gold.ac.uk/accommodation/halls/",
      "name": "Loring Hall",
      "type": null,
-     "image": "https://www.gold.ac.uk/media/images-by-section/life-on-campus/accommodation/loring-hall-gallery-1.jpg",
      "price": null,
-     "distance": "On campus"
+     "distance": "On campus",
+     "location": {
+      "lat": 51.4736302,
+      "lng": -0.0372464
+     },
+     "walk_min": 0
     },
     {
+     "km": 1.9,
      "url": "https://www.gold.ac.uk/accommodation/halls/",
      "name": "Raymont Hall",
      "type": null,
-     "image": "https://www.gold.ac.uk/media/images-by-section/life-on-campus/accommodation/Accommodation_Raymont-Hall_Exterior_7.jpeg",
      "price": null,
-     "distance": "20-minute walk from campus"
+     "distance": "20-minute walk from campus",
+     "location": {
+      "lat": 51.4631224,
+      "lng": -0.032211
+     },
+     "walk_min": 25
     },
     {
+     "km": null,
      "url": "https://www.gold.ac.uk/accommodation/halls/",
      "name": "Surrey House",
      "type": null,
-     "image": "https://www.gold.ac.uk/media/images-by-section/life-on-campus/accommodation/Accommodation_Surrey-House_Selections_05-(3).jpg",
      "price": null,
-     "distance": "5-minute walk from campus"
+     "distance": "5-minute walk from campus",
+     "location": null,
+     "walk_min": null
     }
    ],
-   "summary": "Goldsmiths provides halls of residence within walking distance of the New Cross campus.",
-   "version": 2,
+   "summary": "Goldsmiths offers just under 1,100 rooms in halls of residence located within walking distance of the New Cross campus, including options managed by the university and private partners.",
+   "version": 3,
+   "provider": "the school",
    "apply_url": "https://www.gold.ac.uk/accommodation/",
    "available": "own",
+   "city_rent": null,
    "guarantee": null,
    "source_urls": [
-    "https://www.gold.ac.uk/pg/a-z/",
-    "https://www.gold.ac.uk/staff-directory/",
     "https://www.gold.ac.uk/",
-    "https://www.gold.ac.uk/our-people/?exclude[image]=",
     "https://www.gold.ac.uk/accommodation/",
     "https://www.gold.ac.uk/accommodation/halls/",
     "https://www.gold.ac.uk/accommodation/halls/life-in-halls/",
     "https://www.gold.ac.uk/accommodation/erasmus-and-study-abroad/",
     "https://www.gold.ac.uk/students/accommodation/",
-    "https://www.gold.ac.uk/students/accommodation/residence-life/"
+    "https://www.gold.ac.uk/students/accommodation/residence-life/",
+    "https://www.gold.ac.uk/students/accommodation/codes-of-practice/"
    ],
-   "collected_at": "2026-11-07T17:29:19.546Z",
-   "how_to_apply": "Applications for accommodation can be made online through the accommodation portal during the specified application windows.",
+   "collected_at": "2026-11-21T18:01:38.316Z",
+   "how_to_apply": "Accommodation applications for students joining in September 2026 open on Monday 8 June at 12pm GMT and close on Monday 29 June 2026 at 11:59pm GMT.",
    "private_tips": null
   },
   "studentLifeImage": "https://www.gold.ac.uk/media/images-by-section/staff-and-students/students/wellbeing/Students-outside-Whitehead-building_19624.jpg",

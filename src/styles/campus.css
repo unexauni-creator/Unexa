@@ -201,3 +201,16 @@ a.dm-listing:hover .dm-listing-go span { transform: translateX(3px); }
 .dm2-apply-one { grid-template-columns: 1fr; }
 .dm2-apply-one .dm2-apply-side { border-left: none; }
 @media (max-width: 900px) { .dm2-how { grid-template-columns: 1fr; } }
+
+/* dorm photo + map side by side */
+.dm2-top { display: grid; grid-template-columns: 1fr; gap: 14px; }
+.dm2-top.has-map { grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); }
+.dm2-top .dm2-hero { min-height: 300px; }
+.dmap { height: 100%; min-height: 300px; border-radius: 26px; overflow: hidden; background: #ece6df; border: 1px solid rgba(43,31,24,0.08); z-index: 0; }
+.dmap-pin { display: inline-flex; align-items: center; justify-content: center; width: 30px; height: 30px; border-radius: 50%; font-family: 'Nunito', sans-serif; font-size: 13px; font-weight: 800; color: #fff; background: #AC8876; border: 2px solid #fff; box-shadow: 0 6px 14px rgba(43,31,24,0.3); }
+.dmap-pin.is-school { background: #2b1f18; font-size: 15px; }
+.dmap .leaflet-tooltip { font-family: 'Nunito', sans-serif; font-size: 13px; color: #2b1f18; border-radius: 10px; border: none; box-shadow: 0 8px 20px rgba(43,31,24,0.18); padding: 6px 10px; }
+.dmap .leaflet-control-attribution { font-size: 10px; }
+.dm2-top.has-map .dm2-title { font-size: clamp(24px, 2.6vw, 32px); }
+@media (max-width: 900px) { .dm2-top.has-map { grid-template-columns: 1fr; } .dmap { min-height: 240px; } }
+.dmap .leaflet-tile-pane { filter: grayscale(0.85) sepia(0.12) brightness(1.04) contrast(0.92); }

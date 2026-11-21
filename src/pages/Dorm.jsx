@@ -1,3 +1,4 @@
+import { lazy, Suspense } from "react";
 import "../styles/campus.css";
 import "../styles/student-life.css";
 
@@ -29,6 +30,9 @@ function parsePrice(s, fallbackCur = "") {
 
 // the first date in a sentence, e.g. "open on 8 June" → "8 June"
 const firstDate = (s) => (String(s ?? "").match(/\b(\d{1,2}\s+(?:jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)[a-z]*|(?:jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)[a-z]*\s+\d{1,2})\b/i) || [])[1] ?? null;
+
+const DormMap = lazy(() => import("../components/DormMap"));
+const walkText = (o) => (o.walk_min === 0 ? "On campus" : o.walk_min != null ? `${o.walk_min} min walk to the school` : o.distance);
 
 function WalkIcon() {
   return <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="13" cy="4.5" r="1.8" /><path d="M10 21l2-6 3 3v3M9 12l2-4 4 2 2 3M11 8l-2 5" /></svg>;
@@ -78,6 +82,7 @@ export default function Dorm({ onBack, uni }) {
         </div>
       ) : (
         <>
+          <div className={`dm2-top${h.map?.school ? " has-map" : ""}`}>
           <section className="dm2-hero" style={photo ? { "--hero": `url("${photo}")` } : undefined}>
             <span className={`campus-badge ${badge.tone}`}>{badge.label}</span>
             <div className="dm2-hero-bottom">
@@ -88,6 +93,12 @@ export default function Dorm({ onBack, uni }) {
               </div>
             </div>
           </section>
+          {h.map?.school && (
+            <Suspense fallback={<div className="dmap" />}>
+              <DormMap school={h.map.school} schoolName={uni?.name} options={options} />
+            </Suspense>
+          )}
+          </div>
 
           {/* how it works, in three short steps, built from what the official pages say */}
           <section className="dm2-how">
@@ -135,7 +146,7 @@ export default function Dorm({ onBack, uni }) {
                       )}
                       <div className="dm-listing-name">{o.name}</div>
                       {o.type && <div className="dm-listing-type">{o.type}</div>}
-                      {o.distance && <div className="dm-walk"><WalkIcon />{o.distance}</div>}
+                      {walkText(o) && <div className="dm-walk"><WalkIcon />{walkText(o)}</div>}
                       {o.url && <span className="dm-listing-go">See this residence <span aria-hidden="true">→</span></span>}
                     </Card>
                   );
