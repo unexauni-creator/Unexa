@@ -95,3 +95,14 @@ export function recommendPrograms(programs, profile, limit = 6) {
   }
   return out;
 }
+
+// Every programme that fits the answers, with its score: Home marks these "For you" and lists them first.
+export function matchScores(programs, profile) {
+  const out = new Map();
+  if (!hasPreferences(profile)) return out;
+  for (const p of programs) {
+    const r = scoreProgram(p, profile);
+    if (r.score > 0) out.set(p.id, r);
+  }
+  return out;
+}

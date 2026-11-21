@@ -4,8 +4,9 @@ import { supabase } from "../lib/supabaseClient";
 import { mapSpecialty } from "../lib/mapSpecialty.js";
 import UniImage from "../components/UniImage.jsx";
 import { searchPrograms, buildSuggestions, highlight } from "../lib/search.js";
-import { buildNotifications, loadPrefs, loadRead, saveRead, timeAgo } from "../lib/notifications.js";
-import { hasPreferences, recommendPrograms } from "../lib/recommendations.js";
+import { buildNotifications, loadGone, loadPrefs, loadRead, saveGone, saveRead, timeAgo } from "../lib/notifications.js";
+import { hasPreferences, matchScores } from "../lib/recommendations.js";
+import { STEPS } from "../lib/onboardingSteps.js";
 
 const DEGREES = ["Bachelor", "Master", "Foundation Year", "Short Course", "Summer School", "Online Course"];
 const LANGUAGES = ["French", "English", "French/English", "German", "Spanish", "Italian", "Polish", "Ukrainian", "Korean", "Japanese", "Chinese"];
@@ -21,11 +22,33 @@ const DEFAULT_FILTERS = {
 };
 
 const RECENT_KEY = "unexa_recent_searches";
+const BUDGET_PRESETS = [
+  { label: "Under $1,000", hint: "many public schools in Europe", max: 1000 },
+  { label: "Under $5,000", max: 5000 },
+  { label: "Under $15,000", max: 15000 },
+  { label: "Any budget", max: MAX_PRICE },
+];
 
-function CheckItem({ label, checked, onChange }) {
+// Does a programme pass the filters? `skip` leaves one group out, to count what each option would add.
+// Fees that a school doesn't list (0) never hide a programme: the student can't know them either.
+function passes(u, f, skip) {
+  if (skip !== "countries" && f.countries.length && !f.countries.includes(u.country)) return false;
+  if (skip !== "degrees" && f.degrees.length && !f.degrees.includes(u.degree)) return false;
+  // the top of the slider means "no upper limit", so the most expensive schools are never hidden by default
+  if (skip !== "tuition" && u.tuitionAmount > 0 && (u.tuitionAmount < f.tuitionMin || (f.tuitionMax < MAX_PRICE && u.tuitionAmount > f.tuitionMax))) return false;
+  if (skip !== "languages" && f.languages.length && !f.languages.includes(u.language)) return false;
+  if (skip !== "certification" && f.certification !== null && u.certification !== f.certification) return false;
+  if (skip !== "formats" && f.formats.length && !f.formats.includes(u.format)) return false;
+  if (skip !== "internship" && f.internship !== null && u.internship !== f.internship) return false;
+  return true;
+}
+
+const money = (n) => `$${n.toLocaleString("en-US")}`;
+
+function CheckItem({ label, checked, onChange, count }) {
   return (
-    <div className="filter-check-item" onClick={onChange}>
-      <span className="filter-check-label">{label}</span>
+    <div className={`filter-check-item ${count === 0 && !checked ? "is-empty" : ""}`} onClick={onChange}>
+      <span className="filter-check-label">{label}{count != null && <span className="filter-check-count">{count}</span>}</span>
       <div className={`filter-checkbox ${checked ? "checked" : ""}`}>
         {checked && <img src="/tick-square.svg" alt="" className="filter-tick-icon" />}
       </div>
@@ -62,7 +85,7 @@ function FilterOptionList({ options, selected, onToggle, counts = {} }) {
   return (
     <>
       {visible.map(value => (
-        <CheckItem key={value} label={value} checked={selected.includes(value)} onChange={() => onToggle(value)} />
+        <CheckItem key={value} label={value} count={counts[value] || 0} checked={selected.includes(value)} onChange={() => onToggle(value)} />
       ))}
       {canCollapse && (expanded || hiddenCount > 0) && (
         <button
@@ -117,11 +140,20 @@ function FilterPanel({ filters, setFilters, universities = [], onClose, onApply,
   function toggle(key, value) {
     setFilters(f => ({ ...f, [key]: f[key].includes(value) ? f[key].filter(x => x !== value) : [...f[key], value] }));
   }
-  const countryCounts = countBy(universities, "country");
-  const degreeCounts = countBy(universities, "degree");
-  const languageCounts = countBy(universities, "language");
+  // each number says how many programmes you'd see with that option, given the other choices
+  const facet = (key, field) => countBy(universities.filter(u => passes(u, filters, key)), field);
+  const yesNo = (key) => { const l = universities.filter(u => passes(u, filters, key)); return { Yes: l.filter(u => u[key] === true).length, No: l.filter(u => u[key] === false).length }; };
+  const total = universities.filter(u => passes(u, filters)).length;
+
+  // budget: a small chart of how many programmes cost what, like price filters on housing sites
+  const priced = universities.filter(u => passes(u, filters, "tuition") && u.tuitionAmount > 0);
+  const unlisted = universities.filter(u => passes(u, filters, "tuition") && !(u.tuitionAmount > 0)).length;
+  const BUCKETS = 20, step = (MAX_PRICE - MIN_PRICE) / BUCKETS;
+  const bars = Array.from({ length: BUCKETS }, (_, i) => priced.filter(u => Math.min(BUCKETS - 1, Math.floor((u.tuitionAmount - MIN_PRICE) / step)) === i).length);
+  const tallest = Math.max(1, ...bars);
   const minPct = ((filters.tuitionMin - MIN_PRICE) / (MAX_PRICE - MIN_PRICE)) * 100;
   const maxPct = ((filters.tuitionMax - MIN_PRICE) / (MAX_PRICE - MIN_PRICE)) * 100;
+  const setBudget = (max) => setFilters(f => ({ ...f, tuitionMin: MIN_PRICE, tuitionMax: max }));
 
   return (
     <div className="filter-backdrop" onClick={onClose}>
@@ -129,75 +161,142 @@ function FilterPanel({ filters, setFilters, universities = [], onClose, onApply,
         <div className="filter-handle-bar" />
         <div className="filter-header">
           <span className="filter-title">Filters</span>
-          <button className="filter-close-btn" onClick={onClose}>✕</button>
+          <button className="filter-close-btn" onClick={onClose} aria-label="Close">✕</button>
         </div>
         <div className="filter-body">
           <CollapsibleSection title="Country" selectedCount={filters.countries.length}>
-            <FilterOptionList options={COUNTRIES} selected={filters.countries} counts={countryCounts} onToggle={c => toggle("countries", c)} />
+            <FilterOptionList options={COUNTRIES} selected={filters.countries} counts={facet("countries", "country")} onToggle={c => toggle("countries", c)} />
           </CollapsibleSection>
-          <CollapsibleSection title="Degree Level" selectedCount={filters.degrees.length}>
-            <FilterOptionList options={DEGREES} selected={filters.degrees} counts={degreeCounts} onToggle={d => toggle("degrees", d)} />
+          <CollapsibleSection title="Degree level" selectedCount={filters.degrees.length}>
+            <FilterOptionList options={DEGREES} selected={filters.degrees} counts={facet("degrees", "degree")} onToggle={d => toggle("degrees", d)} />
           </CollapsibleSection>
 
-          {/* Tuition — always open, no arrow */}
+          {/* Tuition: always open */}
           <div className="filter-section">
             <div className="filter-section-header" style={{ cursor: "default" }}>
               <span className="filter-group-title">
-                Tuition Cost
+                Yearly tuition
                 {(filters.tuitionMin > MIN_PRICE || filters.tuitionMax < MAX_PRICE) && <span className="filter-section-badge">1</span>}
               </span>
             </div>
             <div className="filter-section-body">
-              <div className="filter-price-inputs">
-                <div className="filter-price-box">
-                  <span className="filter-price-currency">$</span>
-                  <input className="filter-price-input" type="number" value={filters.tuitionMin} min={MIN_PRICE} max={filters.tuitionMax}
-                    onChange={e => setFilters(f => ({ ...f, tuitionMin: Math.min(Number(e.target.value), f.tuitionMax - 500) }))} />
-                </div>
-                <div className="filter-price-sep">—</div>
-                <div className="filter-price-box">
-                  <span className="filter-price-currency">$</span>
-                  <input className="filter-price-input" type="number" value={filters.tuitionMax} min={filters.tuitionMin} max={MAX_PRICE}
-                    onChange={e => setFilters(f => ({ ...f, tuitionMax: Math.max(Number(e.target.value), f.tuitionMin + 500) }))} />
-                </div>
+              <p className="filter-note">Not sure about your budget? Start with a quick choice. Many art schools in Europe are public and cost very little.</p>
+              <div className="filter-presets">
+                {BUDGET_PRESETS.map(b => (
+                  <button key={b.label} type="button" className={`filter-preset ${filters.tuitionMin === MIN_PRICE && filters.tuitionMax === b.max ? "is-on" : ""}`} onClick={() => setBudget(b.max)}>
+                    {b.label}
+                  </button>
+                ))}
+              </div>
+              <div className="filter-hist" aria-hidden="true">
+                {bars.map((n, i) => {
+                  const from = MIN_PRICE + i * step;
+                  const inside = from + step > filters.tuitionMin && from < filters.tuitionMax;
+                  return <i key={i} className={inside ? "in" : ""} style={{ height: `${n ? 8 + (n / tallest) * 92 : 0}%` }} />;
+                })}
               </div>
               <div className="filter-slider-wrap">
                 <div className="filter-slider-track">
                   <div className="filter-slider-range" style={{ left: `${minPct}%`, width: `${maxPct - minPct}%` }} />
                 </div>
-                <input type="range" className="filter-slider" min={MIN_PRICE} max={MAX_PRICE} step={500} value={filters.tuitionMin}
+                <input type="range" className="filter-slider" min={MIN_PRICE} max={MAX_PRICE} step={500} value={filters.tuitionMin} aria-label="Lowest tuition"
                   onChange={e => setFilters(f => ({ ...f, tuitionMin: Math.min(Number(e.target.value), f.tuitionMax - 500) }))} />
-                <input type="range" className="filter-slider" min={MIN_PRICE} max={MAX_PRICE} step={500} value={filters.tuitionMax}
+                <input type="range" className="filter-slider" min={MIN_PRICE} max={MAX_PRICE} step={500} value={filters.tuitionMax} aria-label="Highest tuition"
                   onChange={e => setFilters(f => ({ ...f, tuitionMax: Math.max(Number(e.target.value), f.tuitionMin + 500) }))} />
               </div>
+              <div className="filter-price-inputs">
+                <div className="filter-price-box">
+                  <span className="filter-price-currency">from $</span>
+                  <input className="filter-price-input" type="number" value={filters.tuitionMin} min={MIN_PRICE} max={filters.tuitionMax}
+                    onChange={e => setFilters(f => ({ ...f, tuitionMin: Math.min(Number(e.target.value), f.tuitionMax - 500) }))} />
+                </div>
+                <div className="filter-price-sep">—</div>
+                <div className="filter-price-box">
+                  <span className="filter-price-currency">to $</span>
+                  <input className="filter-price-input" type="number" value={filters.tuitionMax} min={filters.tuitionMin} max={MAX_PRICE} title={filters.tuitionMax >= MAX_PRICE ? "and more" : undefined}
+                    onChange={e => setFilters(f => ({ ...f, tuitionMax: Math.max(Number(e.target.value), f.tuitionMin + 500) }))} />
+                </div>
+              </div>
+              {filters.tuitionMax >= MAX_PRICE && <p className="filter-note">The top of the scale includes schools above {money(MAX_PRICE)}.</p>}
+              {unlisted > 0 && <p className="filter-note">+ {unlisted} programme{unlisted === 1 ? "" : "s"} whose school doesn't list the fee are always shown.</p>}
             </div>
           </div>
 
-          <CollapsibleSection title="Language of Teaching" selectedCount={filters.languages.length}>
-            <FilterOptionList options={LANGUAGES} selected={filters.languages} counts={languageCounts} onToggle={l => toggle("languages", l)} />
+          <CollapsibleSection title="Language of teaching" selectedCount={filters.languages.length}>
+            <FilterOptionList options={LANGUAGES} selected={filters.languages} counts={facet("languages", "language")} onToggle={l => toggle("languages", l)} />
           </CollapsibleSection>
-          <CollapsibleSection title="Language Certification" selectedCount={filters.certification !== null ? 1 : 0}>
-            <CheckItem label="Yes" checked={filters.certification === true} onChange={() => setFilters(f => ({ ...f, certification: f.certification === true ? null : true }))} />
-            <CheckItem label="No" checked={filters.certification === false} onChange={() => setFilters(f => ({ ...f, certification: f.certification === false ? null : false }))} />
+          <CollapsibleSection title="Language certificate needed" selectedCount={filters.certification !== null ? 1 : 0}>
+            {(() => { const c = yesNo("certification"); return <>
+              <CheckItem label="Yes" count={c.Yes} checked={filters.certification === true} onChange={() => setFilters(f => ({ ...f, certification: f.certification === true ? null : true }))} />
+              <CheckItem label="No" count={c.No} checked={filters.certification === false} onChange={() => setFilters(f => ({ ...f, certification: f.certification === false ? null : false }))} />
+            </>; })()}
           </CollapsibleSection>
           <CollapsibleSection title="Format" selectedCount={filters.formats.length}>
-            {FORMATS.map(f => <CheckItem key={f} label={f} checked={filters.formats.includes(f)} onChange={() => toggle("formats", f)} />)}
+            {(() => { const c = facet("formats", "format"); return FORMATS.map(f => <CheckItem key={f} label={f} count={c[f] || 0} checked={filters.formats.includes(f)} onChange={() => toggle("formats", f)} />); })()}
           </CollapsibleSection>
           <CollapsibleSection title="Internship" selectedCount={filters.internship !== null ? 1 : 0}>
-            <CheckItem label="Yes" checked={filters.internship === true} onChange={() => setFilters(f => ({ ...f, internship: f.internship === true ? null : true }))} />
-            <CheckItem label="No" checked={filters.internship === false} onChange={() => setFilters(f => ({ ...f, internship: f.internship === false ? null : false }))} />
+            {(() => { const c = yesNo("internship"); return <>
+              <CheckItem label="Yes" count={c.Yes} checked={filters.internship === true} onChange={() => setFilters(f => ({ ...f, internship: f.internship === true ? null : true }))} />
+              <CheckItem label="No" count={c.No} checked={filters.internship === false} onChange={() => setFilters(f => ({ ...f, internship: f.internship === false ? null : false }))} />
+            </>; })()}
           </CollapsibleSection>
         </div>
         <div className="filter-footer">
+          {total === 0 && <span className="filter-zero">Nothing fits all of these. Untick one.</span>}
           <button className="filter-clear-btn" onClick={onClear}>Clear all</button>
-          <button className="filter-save-btn" onClick={onApply}>Show results</button>
+          <button className="filter-save-btn" onClick={onApply} disabled={total === 0}>Save</button>
         </div>
       </div>
     </div>
   );
 }
 
-function NotificationPanel({ notifications, readIds, onRead, onReadAll, onOpen, onClose }) {
+// The onboarding answers, to look at again and change. Saved to the profile; "For you" follows them.
+function AnswersPanel({ profile, onClose, onSave }) {
+  const [draft, setDraft] = useState(() => Object.fromEntries(STEPS.map(st => [st.column, profile?.[st.column] ?? (st.type === "multi" ? [] : "")])));
+  const [saving, setSaving] = useState(false);
+  function pick(st, option) {
+    setDraft(d => {
+      if (st.type === "single") return { ...d, [st.column]: d[st.column] === option ? "" : option };
+      const cur = d[st.column] ?? [];
+      if (cur.includes(option)) return { ...d, [st.column]: cur.filter(x => x !== option) };
+      if (st.max && cur.length >= st.max) return d;
+      return { ...d, [st.column]: [...cur, option] };
+    });
+  }
+  return (
+    <div className="filter-backdrop" onClick={onClose}>
+      <div className="filter-panel answers-panel" onClick={e => e.stopPropagation()}>
+        <div className="filter-handle-bar" />
+        <div className="filter-header">
+          <span className="filter-title">Your answers</span>
+          <button className="filter-close-btn" onClick={onClose} aria-label="Close">✕</button>
+        </div>
+        <div className="filter-body">
+          <p className="filter-note">These are the answers from your first visit. Programmes that fit them are marked “For you” and come first on Home.</p>
+          {STEPS.map(st => (
+            <div key={st.key} className="answers-group">
+              <div className="filter-group-title">{st.title}</div>
+              <div className="answers-sub">{st.sub}</div>
+              <div className="answers-chips">
+                {st.options.map(o => {
+                  const on = st.type === "multi" ? (draft[st.column] ?? []).includes(o) : draft[st.column] === o;
+                  return <button key={o} type="button" className={`answers-chip ${on ? "is-on" : ""}`} aria-pressed={on} onClick={() => pick(st, o)}>{o}</button>;
+                })}
+              </div>
+            </div>
+          ))}
+        </div>
+        <div className="filter-footer">
+          <button className="filter-clear-btn" onClick={onClose}>Cancel</button>
+          <button className="filter-save-btn" disabled={saving} onClick={async () => { setSaving(true); await onSave(draft); setSaving(false); }}>{saving ? "Saving…" : "Save answers"}</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function NotificationPanel({ notifications, readIds, onRead, onReadAll, onDelete, onDeleteAll, onOpen, onClose }) {
   const unreadCount = notifications.filter(n => !readIds.has(n.id)).length;
 
   return (
@@ -211,6 +310,7 @@ function NotificationPanel({ notifications, readIds, onRead, onReadAll, onOpen, 
           </div>
           <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
             {unreadCount > 0 && <button className="notif-mark-read" onClick={onReadAll}>Mark all as read</button>}
+            {notifications.length > 0 && <button className="notif-mark-read notif-clear" onClick={onDeleteAll}>Clear all</button>}
             <button className="filter-close-btn" onClick={onClose}>✕</button>
           </div>
         </div>
@@ -236,6 +336,9 @@ function NotificationPanel({ notifications, readIds, onRead, onReadAll, onOpen, 
                   <div className="notif-time">{timeAgo(n.date)}</div>
                 </div>
                 {unread && <div className="notif-dot" />}
+                <button className="notif-delete" onClick={e => { e.stopPropagation(); onDelete(n.id); }} aria-label="Delete notification" title="Delete">
+                  <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8" /></svg>
+                </button>
               </div>
             );
           })}
@@ -316,7 +419,26 @@ function SearchEmptyState({ query }) {
   );
 }
 
-export default function Home({ onSelectUni, savedUniversities, onToggleSave, currentUser }) {
+function activeTagsOf(f) {
+  return [
+    ...f.countries.map(v => ({ label: v, key: "countries", value: v })),
+    ...f.degrees.map(v => ({ label: v, key: "degrees", value: v })),
+    ...f.languages.map(v => ({ label: v, key: "languages", value: v })),
+    ...f.formats.map(v => ({ label: v, key: "formats", value: v })),
+    ...(f.internship !== null ? [{ label: `Internship: ${f.internship ? "Yes" : "No"}`, key: "internship", value: null }] : []),
+    ...(f.certification !== null ? [{ label: `Certificate: ${f.certification ? "Yes" : "No"}`, key: "certification", value: null }] : []),
+    ...(f.tuitionMin > MIN_PRICE || f.tuitionMax < MAX_PRICE ? [{ label: f.tuitionMin > MIN_PRICE ? `${money(f.tuitionMin)} – ${money(f.tuitionMax)}` : `Under ${money(f.tuitionMax)}`, key: "tuition", value: null }] : []),
+  ];
+}
+
+function withoutTag(f, tag) {
+  if (tag.key === "tuition") return { ...f, tuitionMin: MIN_PRICE, tuitionMax: MAX_PRICE };
+  if (tag.key === "certification" || tag.key === "internship") return { ...f, [tag.key]: null };
+  return { ...f, [tag.key]: f[tag.key].filter(x => x !== tag.value) };
+}
+
+// demoProfile: local test page only (/dev/home), stands in for the onboarding answers of a signed-in student
+export default function Home({ onSelectUni, savedUniversities, onToggleSave, currentUser, demoProfile }) {
   const [universities, setUniversities] = useState([]);
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState(null);
@@ -329,9 +451,11 @@ export default function Home({ onSelectUni, savedUniversities, onToggleSave, cur
   const [activeIndex, setActiveIndex] = useState(-1);
   const [notifPrefs, setNotifPrefs] = useState(loadPrefs);
   const [readIds, setReadIds] = useState(() => loadRead(currentUser?.id));
-  const [profile, setProfile] = useState(null);
-  const [profileLoaded, setProfileLoaded] = useState(false);
-  const [homeTab, setHomeTab] = useState("foryou"); // foryou | all
+  const [profile, setProfile] = useState(demoProfile ?? null);
+  const [profileLoaded, setProfileLoaded] = useState(Boolean(demoProfile));
+  const [onlyForYou, setOnlyForYou] = useState(Boolean(demoProfile));
+  const [showAnswers, setShowAnswers] = useState(false);
+  const [goneIds, setGoneIds] = useState(() => loadGone(currentUser?.id));
   const [showFilter, setShowFilter] = useState(false);
   const [showNotif, setShowNotif] = useState(false);
   const [filters, setFilters] = useState(DEFAULT_FILTERS);
@@ -374,6 +498,7 @@ export default function Home({ onSelectUni, savedUniversities, onToggleSave, cur
       if (error) console.error("Couldn't load profile:", error.message);
       setProfile(data ?? null);
       setProfileLoaded(true);
+      if (hasPreferences(data)) setOnlyForYou(true);
     });
     return () => { cancelled = true; };
   }, [currentUser?.id]);
@@ -406,12 +531,29 @@ export default function Home({ onSelectUni, savedUniversities, onToggleSave, cur
     return () => { window.removeEventListener("unexa-notif-prefs", update); window.removeEventListener("storage", update); };
   }, []);
 
-  useEffect(() => { setReadIds(loadRead(currentUser?.id)); }, [currentUser?.id]);
+  useEffect(() => { setReadIds(loadRead(currentUser?.id)); setGoneIds(loadGone(currentUser?.id)); }, [currentUser?.id]);
 
   const notifications = useMemo(
-    () => buildNotifications(universities, savedUniversities ?? [], notifPrefs),
-    [universities, savedUniversities, notifPrefs]
+    () => buildNotifications(universities, savedUniversities ?? [], notifPrefs).filter(n => !goneIds.has(n.id)),
+    [universities, savedUniversities, notifPrefs, goneIds]
   );
+  function deleteNotifications(ids) {
+    setGoneIds(prev => {
+      const next = new Set(prev);
+      ids.forEach(id => next.add(id));
+      saveGone(currentUser?.id, next);
+      return next;
+    });
+  }
+
+  async function saveAnswers(draft) {
+    if (!currentUser?.id) { setProfile(p => ({ ...(p ?? {}), ...draft })); setShowAnswers(false); return; }
+    const { error } = await supabase.from("profiles").upsert({ id: currentUser.id, ...draft });
+    if (error) { setToast("Couldn't save your answers. Try again."); return; }
+    setProfile(p => ({ ...(p ?? {}), ...draft }));
+    setShowAnswers(false);
+    setToast("Answers saved. “For you” is updated.");
+  }
 
   function markRead(ids) {
     setReadIds(prev => {
@@ -490,16 +632,8 @@ export default function Home({ onSelectUni, savedUniversities, onToggleSave, cur
   }
 
   function removeTag(key, value) {
-    if (key === "tuition") {
-      setAppliedFilters(f => ({ ...f, tuitionMin: MIN_PRICE, tuitionMax: MAX_PRICE }));
-      setFilters(f => ({ ...f, tuitionMin: MIN_PRICE, tuitionMax: MAX_PRICE }));
-    } else if (key === "certification" || key === "internship") {
-      setAppliedFilters(f => ({ ...f, [key]: null }));
-      setFilters(f => ({ ...f, [key]: null }));
-    } else {
-      setAppliedFilters(f => ({ ...f, [key]: f[key].filter(x => x !== value) }));
-      setFilters(f => ({ ...f, [key]: f[key].filter(x => x !== value) }));
-    }
+    setAppliedFilters(f => withoutTag(f, { key, value }));
+    setFilters(f => withoutTag(f, { key, value }));
   }
 
   const activeCount = [appliedFilters.countries, appliedFilters.degrees, appliedFilters.languages, appliedFilters.formats].flat().length +
@@ -508,40 +642,34 @@ export default function Home({ onSelectUni, savedUniversities, onToggleSave, cur
 
   const unreadNotifCount = notifications.filter(n => !readIds.has(n.id)).length;
 
-  const filtered = searchPrograms(universities, search).filter(u => {
-    if (appliedFilters.countries.length && !appliedFilters.countries.includes(u.country)) return false;
-    if (appliedFilters.degrees.length && !appliedFilters.degrees.includes(u.degree)) return false;
-    if (u.tuitionAmount < appliedFilters.tuitionMin || u.tuitionAmount > appliedFilters.tuitionMax) return false;
-    if (appliedFilters.languages.length && !appliedFilters.languages.includes(u.language)) return false;
-    if (appliedFilters.certification !== null && u.certification !== appliedFilters.certification) return false;
-    if (appliedFilters.formats.length && !appliedFilters.formats.includes(u.format)) return false;
-    if (appliedFilters.internship !== null && u.internship !== appliedFilters.internship) return false;
-    return true;
-  });
+  // One list. Programmes that fit the onboarding answers are marked "For you" and come first
+  // (unless the student searched: then the best text match comes first).
+  const scores = useMemo(() => matchScores(universities, profile), [universities, profile]);
+  const searched = searchPrograms(universities, search);
+  const matching = searched.filter(u => passes(u, appliedFilters));
+  const forYouCount = matching.filter(u => scores.has(u.id)).length;
+  const listed = (onlyForYou ? matching.filter(u => scores.has(u.id)) : matching)
+    .map((u, i) => ({ u, i }))
+    .sort((a, b) => (search.trim() ? 0 : (scores.get(b.u.id)?.score ?? 0) - (scores.get(a.u.id)?.score ?? 0)) || a.i - b.i)
+    .map(x => x.u);
 
-  // Recommendations only on the untouched list: a search or filter shows exactly what was asked for
-  const browsing = !search.trim() && activeCount === 0;
-  const recommended = useMemo(
-    () => (profile ? recommendPrograms(universities, profile, 12) : []),
-    [profile, universities]
-  );
-  // a search or a filter always shows the full list, so results are never hidden behind "For you"
-  const tab = browsing ? homeTab : "all";
-  const listed = filtered;
+  // nothing fits: say which single filter to remove, and show the closest programmes
+  const relax = listed.length === 0 && activeCount > 0 ? activeTagsOf(appliedFilters).map(tag => {
+    const f = withoutTag(appliedFilters, tag);
+    return { tag, count: searched.filter(u => passes(u, f) && (!onlyForYou || scores.has(u.id))).length };
+  }).filter(r => r.count > 0).sort((a, b) => b.count - a.count).slice(0, 3) : [];
+  const closest = relax.length
+    ? searched.filter(u => passes(u, withoutTag(appliedFilters, relax[0].tag)) && (!onlyForYou || scores.has(u.id)))
+      .sort((a, b) => (scores.get(b.id)?.score ?? 0) - (scores.get(a.id)?.score ?? 0)).slice(0, 6)
+    : [];
 
-  function openTab(next) {
-    if (next === "foryou" && !browsing) {
-      setSearch("");
-      clearFilters();
-    }
-    setHomeTab(next);
-  }
-
-  function renderCard(uni, reasons) {
+  function renderCard(uni) {
     const isSaved = savedUniversities.some(u => u.id === uni.id);
+    const match = scores.get(uni.id);
     return (
       <div key={uni.id} className="uni-card-new" onClick={() => onSelectUni(uni)}>
         <UniImage src={uni.image} name={uni.name} className="uni-card-img" />
+        {match && <span className="uni-card-match" title={match.reasons.length ? `Fits your answers: ${match.reasons.join(", ")}` : "Fits your answers"}>✳ For you</span>}
         <div className="uni-card-glass">
           {/* the card photo again, heavily blurred: frosted glass that works in every browser */}
           {uni.image && <img src={uni.image} alt="" aria-hidden="true" className="card-glass-photo" />}
@@ -563,16 +691,6 @@ export default function Home({ onSelectUni, savedUniversities, onToggleSave, cur
       </div>
     );
   }
-
-  const activeTags = [
-    ...appliedFilters.countries.map(v => ({ label: v, key: "countries", value: v })),
-    ...appliedFilters.degrees.map(v => ({ label: v, key: "degrees", value: v })),
-    ...appliedFilters.languages.map(v => ({ label: v, key: "languages", value: v })),
-    ...appliedFilters.formats.map(v => ({ label: v, key: "formats", value: v })),
-    ...(appliedFilters.internship !== null ? [{ label: `Internship: ${appliedFilters.internship ? "Yes" : "No"}`, key: "internship", value: null }] : []),
-    ...(appliedFilters.certification !== null ? [{ label: `Certification: ${appliedFilters.certification ? "Yes" : "No"}`, key: "certification", value: null }] : []),
-    ...(appliedFilters.tuitionMin > MIN_PRICE || appliedFilters.tuitionMax < MAX_PRICE ? [{ label: `$${appliedFilters.tuitionMin.toLocaleString()} – $${appliedFilters.tuitionMax.toLocaleString()}`, key: "tuition", value: null }] : []),
-  ];
 
   return (
     <div className="home-page">
@@ -620,39 +738,33 @@ export default function Home({ onSelectUni, savedUniversities, onToggleSave, cur
             )}
           </div>
           <div className="home-icon-buttons">
-            <button className="home-icon-btn filter-trigger" onClick={() => setShowFilter(true)}>
-              <img src="/filter.svg" alt="Filter" />
-              {activeCount > 0 && <span className="filter-badge">{activeCount}</span>}
+            <button className="home-filter-btn" onClick={() => { setFilters(appliedFilters); setShowFilter(true); }}>
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h10M18 7h2M4 17h4M12 17h8" /><circle cx="16" cy="7" r="2" /><circle cx="10" cy="17" r="2" /></svg>
+              Filters
+              {activeCount > 0 && <span className="home-filter-count">{activeCount}</span>}
             </button>
-            <button className="home-icon-btn filter-trigger" onClick={() => setShowNotif(true)}>
+            <button className="home-icon-btn filter-trigger" onClick={() => setShowNotif(true)} aria-label="Notifications">
               <img src="/notification.svg" alt="Notifications" />
               {unreadNotifCount > 0 && <span className="filter-badge">{unreadNotifCount}</span>}
             </button>
           </div>
         </div>
 
-        {activeTags.length > 0 && (
-          <div className="filter-tags-row">
-            {activeTags.map(tag => (
-              <span key={tag.label} className="filter-tag">
-                {tag.label}
-                <button className="filter-tag-remove" onClick={() => removeTag(tag.key, tag.value)}>✕</button>
-              </span>
-            ))}
-            <button className="filter-clear-all-btn" onClick={clearFilters}>Clear all</button>
+        {/* same tabs as before; both numbers follow the search and the filters */}
+        <div className="home-tabs-row">
+          <div className="community-tabs home-tabs" role="tablist">
+            {hasPreferences(profile) && (
+              <button role="tab" aria-selected={onlyForYou} className={`community-tab ${onlyForYou ? "active" : ""}`} onClick={() => setOnlyForYou(true)}>
+                For you
+                {!loading && <span className="community-tab-count">{forYouCount}</span>}
+              </button>
+            )}
+            <button role="tab" aria-selected={!onlyForYou} className={`community-tab ${!onlyForYou ? "active" : ""}`} onClick={() => setOnlyForYou(false)}>
+              All programs
+              {!loading && <span className="community-tab-count">{matching.length}</span>}
+            </button>
           </div>
-        )}
-
-        {/* same tabs as Community */}
-        <div className="community-tabs home-tabs" role="tablist">
-          <button role="tab" aria-selected={tab === "foryou"} className={`community-tab ${tab === "foryou" ? "active" : ""}`} onClick={() => openTab("foryou")}>
-            For you
-            {recommended.length > 0 && <span className="community-tab-count">{recommended.length}</span>}
-          </button>
-          <button role="tab" aria-selected={tab === "all"} className={`community-tab ${tab === "all" ? "active" : ""}`} onClick={() => openTab("all")}>
-            All programs
-            {!loading && <span className="community-tab-count">{filtered.length}</span>}
-          </button>
+          {hasPreferences(profile) && <button type="button" className="home-answers-btn" onClick={() => setShowAnswers(true)}>Your answers · edit</button>}
         </div>
       </div>
 
@@ -670,50 +782,48 @@ export default function Home({ onSelectUni, savedUniversities, onToggleSave, cur
           </div>
         )}
 
-        {!loading && !loadError && search.trim() && filtered.length > 0 && (
+        {!loading && !loadError && search.trim() && listed.length > 0 && (
           <div className="search-results-count">
-            {filtered.length} result{filtered.length === 1 ? "" : "s"} for <strong>“{search.trim()}”</strong>
+            {listed.length} result{listed.length === 1 ? "" : "s"} for <strong>“{search.trim()}”</strong>
           </div>
         )}
 
-        {!loading && !loadError && tab === "foryou" && profileLoaded && !hasPreferences(profile) && (
+        {!loading && !loadError && profileLoaded && !hasPreferences(profile) && !search.trim() && (
           <Link to="/onboarding" className="home-reco-prompt">
             <span className="home-reco-prompt-text">
               <strong>Get programs picked for you</strong>
-              <span>Answer a few quick questions and we'll recommend programs that fit your goals.</span>
+              <span>Answer a few quick questions and we'll mark the programmes that fit your goals.</span>
             </span>
             <span className="home-reco-prompt-cta">Start <span aria-hidden="true">→</span></span>
           </Link>
         )}
 
-        {!loading && !loadError && tab === "foryou" && hasPreferences(profile) && (
-          recommended.length > 0 ? (
-            <div className="uni-grid">
-              {recommended.map((r) => renderCard(r.program, r.reasons))}
-            </div>
+        {!loading && !loadError && (
+          listed.length > 0 ? (
+            <div className="uni-grid">{listed.map(uni => renderCard(uni))}</div>
+          ) : search.trim() && activeCount === 0 && !onlyForYou ? (
+            <SearchEmptyState query={search} />
           ) : (
-            <div className="home-reco-empty">
-              <strong>No close matches yet</strong>
-              <span>We're adding new schools every week. Meanwhile, browse all programs.</span>
-              <button className="filter-clear-btn" onClick={() => setHomeTab("all")}>See all programs</button>
+            <div className="home-soft-empty">
+              <strong>No programme fits every choice</strong>
+              <span>{relax.length ? "You are close. Remove one of these to see more:" : onlyForYou ? "None of the programmes that fit your answers match this. Show all programmes instead." : "Try fewer filters."}</span>
+              <div className="home-soft-actions">
+                {relax.map(r => (
+                  <button key={r.tag.label} type="button" className="home-soft-chip" onClick={() => removeTag(r.tag.key, r.tag.value)}>
+                    Without “{r.tag.label}” <b>{r.count}</b>
+                  </button>
+                ))}
+                {onlyForYou && <button type="button" className="home-soft-chip" onClick={() => setOnlyForYou(false)}>Show all programmes</button>}
+                {activeCount > 0 && <button type="button" className="filter-clear-btn" onClick={clearFilters}>Clear all filters</button>}
+              </div>
+              {closest.length > 0 && (
+                <>
+                  <div className="home-soft-label">Closest to what you asked</div>
+                  <div className="uni-grid">{closest.map(uni => renderCard(uni))}</div>
+                </>
+              )}
             </div>
           )
-        )}
-
-        {!loading && !loadError && tab === "all" && (
-          <div className="uni-grid">
-            {listed.length > 0 ? listed.map((uni) => renderCard(uni)) : search.trim().length > 0 ? (
-              <div style={{ gridColumn: "1/-1" }}>
-                <SearchEmptyState query={search} />
-              </div>
-            ) : (
-              <div style={{ gridColumn: "1/-1", textAlign: "center", padding: "48px 0" }}>
-                <div style={{ fontSize: 36, marginBottom: 12 }}>🔍</div>
-                <div style={{ fontFamily: "Nunito", fontWeight: 600, fontSize: 16, color: "#4a3f38" }}>No universities match your filters</div>
-                <button className="filter-clear-btn" style={{ marginTop: 12 }} onClick={clearFilters}>Clear filters</button>
-              </div>
-            )}
-          </div>
         )}
       </div>
       </div>
@@ -724,12 +834,16 @@ export default function Home({ onSelectUni, savedUniversities, onToggleSave, cur
           onApply={applyFilters} onClear={clearFilters} />
       )}
 
+      {showAnswers && <AnswersPanel profile={profile} onClose={() => setShowAnswers(false)} onSave={saveAnswers} />}
+
       {showNotif && (
         <NotificationPanel
           notifications={notifications}
           readIds={readIds}
           onRead={id => markRead([id])}
           onReadAll={() => markRead(notifications.map(n => n.id))}
+          onDelete={id => deleteNotifications([id])}
+          onDeleteAll={() => deleteNotifications(notifications.map(n => n.id))}
           onOpen={openNotification}
           onClose={() => setShowNotif(false)}
         />

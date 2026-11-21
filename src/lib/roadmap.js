@@ -115,13 +115,14 @@ export function buildPlan({ programs, startYear, today = new Date() }) {
 }
 
 // emoji and a Notion-like colour for each stage
+// `about` explains each stage in one line: students asked what "Portfolio" means here
 export const STAGES = [
-  { id: "research", label: "Research", emoji: "🔎", color: "blue" },
-  { id: "portfolio", label: "Portfolio", emoji: "🎨", color: "purple" },
-  { id: "tests", label: "Tests", emoji: "📝", color: "yellow" },
-  { id: "apply", label: "Apply", emoji: "📮", color: "orange" },
-  { id: "visa", label: "Visa & housing", emoji: "🛂", color: "green" },
-  { id: "start", label: "Start", emoji: "🎓", color: "pink" },
+  { id: "research", label: "Research", emoji: "🔎", color: "blue", about: "Choose schools and read what each programme asks for." },
+  { id: "portfolio", label: "Portfolio", emoji: "🎨", color: "purple", about: "A selection of your own artworks (10–20 pieces) that art schools ask to see, plus your motivation letter. Not a recommendation letter." },
+  { id: "tests", label: "Tests", emoji: "📝", color: "yellow", about: "Language exams like IELTS or DELF, and entrance tests if a school has them." },
+  { id: "apply", label: "Apply", emoji: "📮", color: "orange", about: "Send applications on each school's own site before its deadline." },
+  { id: "visa", label: "Visa & housing", emoji: "🛂", color: "green", about: "After an offer: student visa, insurance and a place to live." },
+  { id: "start", label: "Start", emoji: "🎓", color: "pink", about: "Travel, enrol and begin your studies." },
 ];
 
 export function fmt(d, withYear = true) {

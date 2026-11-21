@@ -239,3 +239,34 @@
 .rm-folder-meta, .rm-folder-next { color: #4a3f38; }
 .rm-folder-bar { background: rgba(43,31,24,0.08); }
 .rm-folder-bar span { background: #AC8876; opacity: 1; }
+
+/* what each stage means */
+.rm-folder-about { display: block; font-size: 12.5px; line-height: 1.4; color: #8a7c70; font-weight: 500; margin: 2px 0 6px; text-align: left; }
+.rm-folder-head .rm-folder-about { font-size: 14px; margin: 4px 0 4px; max-width: 560px; }
+
+/* compact dropdowns for status and stage, on rows and board cards */
+.rm-dd-status .rm-dd-btn, .rm-dd-tag .rm-dd-btn { margin-left: 0; font-size: 12px; font-weight: 700; padding: 3px 8px; gap: 5px; border-radius: 6px; }
+.rm-dd-status .rm-dd-btn svg, .rm-dd-tag .rm-dd-btn svg { width: 9px; height: 9px; }
+.rm-dd-status { flex-shrink: 0; }
+.rm-dd-status.is-todo .rm-dd-btn { background: rgba(43,31,24,0.06); color: #6d6058; }
+.rm-dd-status.is-doing .rm-dd-btn { background: rgba(60,110,138,0.13); color: #3c6e8a; }
+.rm-dd-status.is-done .rm-dd-btn { background: rgba(68,131,97,0.15); color: #2f6b4a; }
+.rm-dd-tag.rm-tag.small { padding: 0; background: none; }
+.rm-dd-tag.blue .rm-dd-btn { background: rgba(82,156,202,0.16); color: #28628a; }
+.rm-dd-tag.purple .rm-dd-btn { background: rgba(154,109,215,0.16); color: #6a3fa0; }
+.rm-dd-tag.yellow .rm-dd-btn { background: rgba(223,171,1,0.18); color: #8a6a00; }
+.rm-dd-tag.orange .rm-dd-btn { background: rgba(217,115,13,0.16); color: #9a5410; }
+.rm-dd-tag.green .rm-dd-btn { background: rgba(68,131,97,0.16); color: #2f6b4a; }
+.rm-dd-tag.pink .rm-dd-btn { background: rgba(193,76,138,0.15); color: #9a2f6a; }
+.rm-dd-status .rm-dd-menu, .rm-dd-tag .rm-dd-menu { min-width: 170px; left: 0; }
+.rm-card-meta { flex-wrap: wrap; }
+
+/* board: see one stage at a time */
+.rm-stage-filter { display: flex; flex-wrap: wrap; gap: 6px; margin: 4px 0 14px; }
+.rm-stage-filter button { font: inherit; font-size: 13px; font-weight: 700; color: #6d6058; background: rgba(43,31,24,0.05); border: 1.5px solid transparent; border-radius: 100px; padding: 6px 12px; cursor: pointer; transition: background 0.15s, border-color 0.15s; }
+.rm-stage-filter button span { margin-left: 6px; font-size: 11px; opacity: 0.7; }
+.rm-stage-filter button:hover { background: rgba(43,31,24,0.09); }
+.rm-stage-filter button.is-on { background: #fff; border-color: #AC8876; color: #2b1f18; }
+/* an open menu must sit above the cards and rows below it */
+.rm-card-task:has(.rm-dd-btn.open), .rm-row:has(.rm-dd-btn.open) { position: relative; z-index: 30; }
+.rm-dd-status .rm-dd-menu, .rm-dd-tag .rm-dd-menu { background: rgba(255,255,255,0.97); }

@@ -27,6 +27,16 @@ export function saveRead(userId, set) {
   try { localStorage.setItem(readKey(userId), JSON.stringify([...set].slice(-500))); } catch {}
 }
 
+// notifications the student removed ("Delete" / "Clear all"), kept per account on this device
+const goneKey = (userId) => `unexa_notif_gone_${userId ?? "guest"}`;
+export function loadGone(userId) {
+  try { return new Set(JSON.parse(localStorage.getItem(goneKey(userId)) || "[]")); }
+  catch { return new Set(); }
+}
+export function saveGone(userId, set) {
+  try { localStorage.setItem(goneKey(userId), JSON.stringify([...set].slice(-500))); } catch {}
+}
+
 const MONTHS = ["jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec"];
 const FR = { janv: 0, fevr: 1, mars: 2, avr: 3, mai: 4, juin: 5, juil: 6, aout: 7, sept: 8, oct: 9, nov: 10, dec: 11 };
 

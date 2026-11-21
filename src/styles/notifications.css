@@ -21,3 +21,7 @@
 
 .notif-item.urgent .notif-icon { background: #fbe3dc; }
 .notif-item.urgent .notif-title { color: #b2452a; }
+.notif-delete { flex-shrink: 0; width: 28px; height: 28px; border-radius: 8px; border: none; background: none; cursor: pointer; display: flex; align-items: center; justify-content: center; opacity: 0.45; transition: opacity 0.15s, background 0.15s; margin: -4px -8px 0 0; }
+.notif-delete svg { width: 12px; height: 12px; stroke: #4a3f38; stroke-width: 2; stroke-linecap: round; fill: none; }
+.notif-delete:hover { opacity: 1; background: #f0e9e2; }
+.notif-clear { color: #9e8f86; }

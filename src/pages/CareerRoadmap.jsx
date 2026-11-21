@@ -43,9 +43,11 @@ function EditableText({ value, onChange, placeholder, className, autoFocus }) {
 }
 
 // A small menu instead of the browser's own select: frosted glass, a check next to the chosen option.
-function Dropdown({ value, options, onChange }) {
+// options: strings, or { value, label } when what is shown differs from what is saved
+function Dropdown({ value, options, onChange, className = "", label }) {
   const [open, setOpen] = useState(false);
   const ref = useRef(null);
+  const opts = options.map((o) => (typeof o === "string" ? { value: o, label: o } : o));
   useEffect(() => {
     if (!open) return;
     const close = (e) => { if (!ref.current?.contains(e.target)) setOpen(false); };
@@ -55,17 +57,17 @@ function Dropdown({ value, options, onChange }) {
     return () => { document.removeEventListener("mousedown", close); document.removeEventListener("keydown", esc); };
   }, [open]);
   return (
-    <div className="rm-dd" ref={ref}>
-      <button type="button" className={`rm-dd-btn ${open ? "open" : ""}`} onClick={() => setOpen((o) => !o)} aria-haspopup="listbox" aria-expanded={open}>
-        {value}
+    <div className={`rm-dd ${className}`} ref={ref}>
+      <button type="button" className={`rm-dd-btn ${open ? "open" : ""}`} onClick={() => setOpen((o) => !o)} aria-haspopup="listbox" aria-expanded={open} aria-label={label}>
+        {opts.find((o) => o.value === value)?.label ?? value}
         <svg viewBox="0 0 12 12" aria-hidden="true"><path d="M2.5 4.5l3.5 3.5 3.5-3.5" /></svg>
       </button>
       {open && (
         <div className="rm-dd-menu" role="listbox">
-          {options.map((o) => (
-            <button key={o} type="button" role="option" aria-selected={o === value} className={`rm-dd-opt ${o === value ? "is-on" : ""}`} onClick={() => { onChange(o); setOpen(false); }}>
-              <span>{o}</span>
-              {o === value && <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3.5 8.5l3 3 6-7" /></svg>}
+          {opts.map((o) => (
+            <button key={o.value} type="button" role="option" aria-selected={o.value === value} className={`rm-dd-opt ${o.value === value ? "is-on" : ""}`} onClick={() => { onChange(o.value); setOpen(false); }}>
+              <span>{o.label}</span>
+              {o.value === value && <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3.5 8.5l3 3 6-7" /></svg>}
             </button>
           ))}
         </div>
@@ -89,6 +91,9 @@ function ProgressRing({ done, total }) {
   );
 }
 
+const STATUS_OPTIONS = STATUSES.map((s) => ({ value: s.id, label: s.label }));
+const STAGE_OPTIONS = STAGES.map((s) => ({ value: s.id, label: `${s.emoji} ${s.label}` }));
+
 function DateChip({ value, onChange, tone }) {
   const date = fromIso(value);
   return (
@@ -111,6 +116,7 @@ export default function CareerRoadmap({ savedUniversities = [], currentUser, onS
   const [notes, setNotes] = useState({}); // free notes written inside each folder
   const [justAdded, setJustAdded] = useState(null);
   const [dragId, setDragId] = useState(null);
+  const [stageFilter, setStageFilter] = useState(null); // board: show only one stage's tasks
   const saveTimer = useRef(null);
 
   const plan = useMemo(() => buildPlan({ programs: savedUniversities, startYear, today }), [savedUniversities, startYear, today]);
@@ -197,7 +203,7 @@ export default function CareerRoadmap({ savedUniversities = [], currentUser, onS
           </div>
           <EditableText className="rm-row-note" value={t.note ?? ""} onChange={(v) => update(t.id, { note: v })} placeholder="Add a note" />
         </div>
-        {view === "list" && t.status === "doing" && <span className="rm-status-tag">In progress</span>}
+        <Dropdown className={`rm-dd-status is-${t.status ?? "todo"}`} label="Status" value={t.status ?? "todo"} options={STATUS_OPTIONS} onChange={(v) => update(t.id, { status: v })} />
         <DateChip value={t.date} onChange={(v) => update(t.id, { date: v })} tone={dueTone(fromIso(t.date), today, done)} />
         <button className="rm-row-del" onClick={() => remove(t.id)} aria-label="Delete task" title="Delete">
           <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8" /></svg>
@@ -217,7 +223,7 @@ export default function CareerRoadmap({ savedUniversities = [], currentUser, onS
           <div className="rm-doc">
             <div className="rm-callout">
               <span className="rm-callout-icon" aria-hidden="true">💡</span>
-              <div>Every line here is yours. Click a task to rename it, click a date to change it, and add your own with <b>+ New task</b>. Saved programmes appear as <b>Apply</b> tasks with their deadline.</div>
+              <div>Every line here is yours. Click a task to rename it, click a date or a status to change it, and add your own with <b>+ New task</b>. Each task has a stage tag (🎨 Portfolio, 📝 Tests…): use the tags on <b>Board</b> to see one stage at a time. Saved programmes appear as <b>Apply</b> tasks with their deadline.</div>
             </div>
 
             {/* widgets: progress ring, the next deadline as a sticky note, the intake */}
@@ -233,12 +239,12 @@ export default function CareerRoadmap({ savedUniversities = [], currentUser, onS
 
               <div className={`rm-sticker ${nextDeadline ? dueTone(fromIso(nextDeadline.date), today, false) : "empty"}`}>
                 <span className="rm-sticker-tape" aria-hidden="true" />
-                <div className="rm-sticker-label">📌 Next deadline</div>
+                <div className="rm-sticker-label">📌 Your next application closes in</div>
                 {nextDeadline ? (
                   <>
-                    <div className="rm-sticker-days">{Math.max(0, daysBetween(today, fromIso(nextDeadline.date)))}<span> days left</span></div>
-                    <div className="rm-sticker-title">{nextDeadline.title.replace(/^Apply: /, "")}</div>
-                    <div className="rm-sticker-date">{fmt(fromIso(nextDeadline.date))}</div>
+                    {(() => { const d = Math.max(0, daysBetween(today, fromIso(nextDeadline.date))); return <div className="rm-sticker-days">{d}<span> day{d === 1 ? "" : "s"}</span></div>; })()}
+                    <div className="rm-sticker-title">{nextDeadline.title.replace(/^Apply: /, "")}{program(nextDeadline) ? ` · ${program(nextDeadline).name}` : ""}</div>
+                    <div className="rm-sticker-date">Apply by {fmt(fromIso(nextDeadline.date))}</div>
                   </>
                 ) : (
                   <div className="rm-sticker-title">{savedUniversities.length ? "No deadline listed for your programmes yet" : "Save programmes on Home to see their deadlines"}</div>
@@ -308,6 +314,7 @@ export default function CareerRoadmap({ savedUniversities = [], currentUser, onS
                       <span className="rm-folder-tab" aria-hidden="true" />
                       <span className="rm-folder-emoji" aria-hidden="true">{st.emoji}</span>
                       <span className="rm-folder-name">{st.label}</span>
+                      <span className="rm-folder-about">{st.about}</span>
                       <span className="rm-folder-meta">{done}/{items.length} done{notes[st.id]?.trim() ? " · 📝 notes" : ""}</span>
                       <span className="rm-folder-bar"><span style={{ width: `${items.length ? (done / items.length) * 100 : 0}%` }} /></span>
                       {next && <span className="rm-folder-next">Next: {next.title} · {fmt(fromIso(next.date), false)}</span>}
@@ -331,6 +338,7 @@ export default function CareerRoadmap({ savedUniversities = [], currentUser, onS
                       <span className="rm-folder-head-emoji" aria-hidden="true">{st.emoji}</span>
                       <div>
                         <h2 className="rm-folder-title">{st.label}</h2>
+                        <div className="rm-folder-about">{st.about}</div>
                         <div className="rm-faint">{done} of {items.length} done</div>
                       </div>
                     </div>
@@ -353,9 +361,18 @@ export default function CareerRoadmap({ savedUniversities = [], currentUser, onS
                 );
               })()
             ) : (
+              <>
+              <div className="rm-stage-filter" role="group" aria-label="Show tasks of one stage">
+                <button type="button" className={!stageFilter ? "is-on" : ""} onClick={() => setStageFilter(null)}>All stages</button>
+                {STAGES.map((st) => (
+                  <button key={st.id} type="button" className={`${st.color} ${stageFilter === st.id ? "is-on" : ""}`} onClick={() => setStageFilter(stageFilter === st.id ? null : st.id)}>
+                    {st.emoji} {st.label}<span>{list.filter((t) => t.stage === st.id).length}</span>
+                  </button>
+                ))}
+              </div>
               <div className="rm-board">
                 {STATUSES.map((s) => {
-                  const items = list.filter((t) => (t.status ?? "todo") === s.id).sort(byDate);
+                  const items = list.filter((t) => (t.status ?? "todo") === s.id && (!stageFilter || t.stage === stageFilter)).sort(byDate);
                   return (
                     <section
                       key={s.id}
@@ -373,7 +390,8 @@ export default function CareerRoadmap({ savedUniversities = [], currentUser, onS
                             {p && <UniImage src={p.image} name={p.name} className="rm-card-thumb" />}
                             <EditableText value={t.title} onChange={(v) => update(t.id, { title: v })} placeholder="Write a task…" autoFocus={t.id === justAdded} className="rm-card-title" />
                             <div className="rm-card-meta">
-                              {(() => { const st = STAGES.find((x) => x.id === t.stage); return st && <span className={`rm-tag small ${st.color}`}>{st.emoji} {st.label}</span>; })()}
+                              {(() => { const st = STAGES.find((x) => x.id === t.stage) ?? STAGES[0]; return <Dropdown className={`rm-dd-tag rm-tag small ${st.color}`} label="Stage" value={st.id} options={STAGE_OPTIONS} onChange={(v) => update(t.id, { stage: v })} />; })()}
+                              <Dropdown className={`rm-dd-status is-${t.status ?? "todo"}`} label="Status" value={t.status ?? "todo"} options={STATUS_OPTIONS} onChange={(v) => update(t.id, { status: v })} />
                               <DateChip value={t.date} onChange={(v) => update(t.id, { date: v })} tone={dueTone(fromIso(t.date), today, t.status === "done")} />
                               <button className="rm-row-del" onClick={() => remove(t.id)} aria-label="Delete task" title="Delete">
                                 <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8" /></svg>
@@ -382,11 +400,13 @@ export default function CareerRoadmap({ savedUniversities = [], currentUser, onS
                           </div>
                         );
                       })}
-                      <button className="rm-add" onClick={() => add({ status: s.id })}>+ New</button>
+                      <button className="rm-add" onClick={() => add({ status: s.id, stage: stageFilter ?? "research" })}>+ New</button>
                     </section>
                   );
                 })}
               </div>
+              <p className="rm-hint">Drag a card to another column, or change its status on the card.</p>
+              </>
             )}
 
             {savedUniversities.length === 0 && (

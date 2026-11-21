@@ -31,6 +31,7 @@ const PreviewHome = lazy(() => import("./pages/PreviewHome"));
 const PreviewDashboard = lazy(() => import("./pages/PreviewScreens").then((m) => ({ default: m.PreviewDashboard })));
 const PreviewRoadmap = lazy(() => import("./pages/PreviewScreens").then((m) => ({ default: m.PreviewRoadmap })));
 const PreviewDetail = lazy(() => import("./pages/PreviewScreens").then((m) => ({ default: m.PreviewDetail })));
+const DevHome = lazy(() => import("./pages/Home"));
 const PreviewDorm = lazy(() => import("./pages/PreviewScreens").then((m) => ({ default: m.PreviewDorm })));
 
 // Saved universities used to live only in this browser; this key is now read once
@@ -386,6 +387,9 @@ export default function App() {
       <Route path="/preview/roadmap" element={<PreviewRoadmap />} />
       <Route path="/preview/detail" element={<PreviewDetail />} />
       <Route path="/preview/dorm" element={<PreviewDorm />} />
+      {import.meta.env.DEV && (
+        <Route path="/dev/home" element={<div className="app"><main className="main"><DevHome onSelectUni={() => {}} savedUniversities={[]} onToggleSave={() => {}} currentUser={{ name: "Lina" }} demoProfile={{ study_fields: ["Graphic Design", "Illustration"], countries: ["Italy", "Germany"], study_level: "Bachelor" }} /></main></div>} />
+      )}
       <Route path="/preview/onboarding" element={<Onboarding demo onLogin={() => {}} />} />
       {/* ── Public: always reachable, regardless of login state ── */}
       <Route path="/" element={<Landing />} />
