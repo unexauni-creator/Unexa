@@ -92,7 +92,23 @@ function ProgressRing({ done, total }) {
 }
 
 const STATUS_OPTIONS = STATUSES.map((s) => ({ value: s.id, label: s.label }));
-const STAGE_OPTIONS = STAGES.map((s) => ({ value: s.id, label: `${s.emoji} ${s.label}` }));
+const STAGE_OPTIONS = STAGES.map((s) => ({ value: s.id, label: s.label }));
+
+// thin line icons, the same weight as the sidebar icons, instead of emoji
+const ICON_PATHS = {
+  research: <><circle cx="11" cy="11" r="6.5" /><path d="M20 20l-4.2-4.2" /></>,
+  portfolio: <><path d="M12 3.5a8.5 8.5 0 1 0 0 17c1.1 0 1.6-.7 1.6-1.5 0-1.2-1-1.4-1-2.5 0-.9.7-1.5 1.6-1.5h2.1a3.2 3.2 0 0 0 3.2-3.2C19.5 7 16.2 3.5 12 3.5z" /><circle cx="7.8" cy="11" r="1" /><circle cx="10.5" cy="7.6" r="1" /><circle cx="14.8" cy="8" r="1" /></>,
+  tests: <><path d="M7 3.5h7l4 4v13H7z" /><path d="M14 3.5v4h4" /><path d="M9.8 13.5l1.8 1.8 3.4-3.6" /></>,
+  apply: <><path d="M20.5 3.5L3.5 10.6l6.8 2.6 2.6 6.8z" /><path d="M10.3 13.2l4.4-4.4" /></>,
+  visa: <><rect x="5.5" y="3.5" width="13" height="17" rx="2" /><circle cx="12" cy="10.5" r="3" /><path d="M9 16.5h6" /></>,
+  start: <><path d="M2.5 9.5L12 5l9.5 4.5L12 14z" /><path d="M6.5 11.5v4.2c1.4 1.3 3.4 2 5.5 2s4.1-.7 5.5-2v-4.2" /><path d="M21.5 9.5v5" /></>,
+  calendar: <><rect x="4" y="5.5" width="16" height="15" rx="2.5" /><path d="M4 10h16M8.5 3.5v4M15.5 3.5v4" /></>,
+  flag: <><path d="M5.5 21V4" /><path d="M5.5 4.5h11l-2 4 2 4h-11" /></>,
+  info: <><circle cx="12" cy="12" r="8.5" /><path d="M12 11v5M12 8h.01" /></>,
+};
+function Icon({ name, className = "" }) {
+  return <svg className={`rm-icon ${className}`} viewBox="0 0 24 24" aria-hidden="true">{ICON_PATHS[name]}</svg>;
+}
 
 function DateChip({ value, onChange, tone }) {
   const date = fromIso(value);
@@ -117,6 +133,14 @@ export default function CareerRoadmap({ savedUniversities = [], currentUser, onS
   const [justAdded, setJustAdded] = useState(null);
   const [dragId, setDragId] = useState(null);
   const [stageFilter, setStageFilter] = useState(null); // board: show only one stage's tasks
+  const [undo, setUndo] = useState(null); // the task just deleted, so it can come back
+  const [confirmReset, setConfirmReset] = useState(false);
+  const [tipHidden, setTipHidden] = useState(() => { try { return localStorage.getItem("unexa_rm_tip") === "hidden"; } catch { return false; } });
+  useEffect(() => {
+    if (!undo) return undefined;
+    const t = setTimeout(() => setUndo(null), 6000);
+    return () => clearTimeout(t);
+  }, [undo]);
   const saveTimer = useRef(null);
 
   const plan = useMemo(() => buildPlan({ programs: savedUniversities, startYear, today }), [savedUniversities, startYear, today]);
@@ -168,14 +192,32 @@ export default function CareerRoadmap({ savedUniversities = [], currentUser, onS
 
   const list = Array.isArray(tasks) ? tasks : [];
   const update = (id, patch) => commit(list.map((t) => (t.id === id ? { ...t, ...patch } : t)));
-  const remove = (id) => commit(list.filter((t) => t.id !== id));
+  const remove = (id) => {
+    const index = list.findIndex((t) => t.id === id);
+    if (index < 0) return;
+    setUndo({ task: list[index], index });
+    commit(list.filter((t) => t.id !== id));
+  };
+  function restore() {
+    if (!undo) return;
+    const next = [...list];
+    next.splice(Math.min(undo.index, next.length), 0, undo.task);
+    commit(next);
+    setUndo(null);
+  }
+  function hideTip() {
+    setTipHidden(true);
+    try { localStorage.setItem("unexa_rm_tip", "hidden"); } catch { /* private mode */ }
+  }
   function add(fields) {
     const t = { id: newId(), title: "", note: "", date: "", stage: "research", status: "todo", ...fields };
     setJustAdded(t.id);
     commit([...list, t]);
   }
   function resetPlan() {
-    if (window.confirm("Replace your list with a fresh plan? Your own tasks and changes will be lost.")) commit(withProgramTasks(seedTasks(plan), plan, savedUniversities));
+    commit(withProgramTasks(seedTasks(plan), plan, savedUniversities));
+    setConfirmReset(false);
+    setFolder(null);
   }
   async function changeIntake(value) {
     setStartYear(value);
@@ -188,6 +230,12 @@ export default function CareerRoadmap({ savedUniversities = [], currentUser, onS
     .filter((t) => t.programId && t.status !== "done" && t.date)
     .sort(byDate)[0];
   const program = (t) => savedUniversities.find((p) => String(p.id) === String(t.programId));
+  // the one thing to do now: the earliest open task of the earliest stage that still has work
+  const stageIndex = (t) => Math.max(0, STAGES.findIndex((st) => st.id === t.stage));
+  const nextStep = list.filter((t) => t.status !== "done" && t.title.trim())
+    .sort((a, b) => stageIndex(a) - stageIndex(b) || byDate(a, b))[0];
+  const currentStage = nextStep ? STAGES[stageIndex(nextStep)] : null;
+  const lateCount = list.filter((t) => t.status !== "done" && dueTone(fromIso(t.date), today, false) === "late").length;
 
   // a plain function, not a component: a component defined here would be re-created on every keystroke and lose focus
   function renderRow(t) {
@@ -216,30 +264,43 @@ export default function CareerRoadmap({ savedUniversities = [], currentUser, onS
     <div className="rm-page">
       <header className="rm-header">
         <h1 className="rm-title">Roadmap</h1>
-        <p className="rm-desc">Your plan to get into art school, step by step.<br />Everything you need in one place.</p>
+        <p className="rm-desc">Everything to do before you start art school, in order.<br />Tick tasks off as you go.</p>
       </header>
       <div className="rm-panel">
         <div className="rm-scroll">
           <div className="rm-doc">
-            <div className="rm-callout">
-              <span className="rm-callout-icon" aria-hidden="true">💡</span>
-              <div>Every line here is yours. Click a task to rename it, click a date or a status to change it, and add your own with <b>+ New task</b>. Each task has a stage tag (🎨 Portfolio, 📝 Tests…): use the tags on <b>Board</b> to see one stage at a time. Saved programmes appear as <b>Apply</b> tasks with their deadline.</div>
-            </div>
+            {!tipHidden && (
+              <div className="rm-callout">
+                <Icon name="info" className="rm-callout-icon" />
+                <div>Click any task, date or status to change it. Programmes you save on Home appear here with their deadline.</div>
+                <button type="button" className="rm-callout-close" onClick={hideTip} aria-label="Hide tip">✕</button>
+              </div>
+            )}
 
             {/* widgets: progress ring, the next deadline as a sticky note, the intake */}
             <div className="rm-widgets">
               <div className="rm-widget rm-ring-card">
                 <ProgressRing done={doneCount} total={list.length} />
-                <div>
-                  <div className="rm-widget-label">Progress</div>
-                  <div className="rm-widget-big">{doneCount} of {list.length}</div>
-                  <div className="rm-faint">tasks done</div>
+                <div className="rm-next">
+                  <div className="rm-widget-label">{nextStep ? "Your next step" : "All done"}</div>
+                  {nextStep ? (
+                    <>
+                      <div className="rm-next-title">{nextStep.title}</div>
+                      <div className="rm-faint">
+                        Step {stageIndex(nextStep) + 1} of {STAGES.length}: {currentStage.label}
+                        {nextStep.date ? ` · by ${fmt(fromIso(nextStep.date), false)}` : ""}
+                      </div>
+                      <button type="button" className="rm-next-done" onClick={() => update(nextStep.id, { status: "done" })}>✓ Mark as done</button>
+                    </>
+                  ) : (
+                    <div className="rm-faint">You finished every task. Good luck with your studies!</div>
+                  )}
+                  {lateCount > 0 && <div className="rm-late-note">{lateCount} task{lateCount === 1 ? " is" : "s are"} past its date</div>}
                 </div>
               </div>
 
               <div className={`rm-sticker ${nextDeadline ? dueTone(fromIso(nextDeadline.date), today, false) : "empty"}`}>
-                <span className="rm-sticker-tape" aria-hidden="true" />
-                <div className="rm-sticker-label">📌 Your next application closes in</div>
+                                <div className="rm-sticker-label"><Icon name="flag" />Your next application closes in</div>
                 {nextDeadline ? (
                   <>
                     {(() => { const d = Math.max(0, daysBetween(today, fromIso(nextDeadline.date))); return <div className="rm-sticker-days">{d}<span> day{d === 1 ? "" : "s"}</span></div>; })()}
@@ -247,25 +308,25 @@ export default function CareerRoadmap({ savedUniversities = [], currentUser, onS
                     <div className="rm-sticker-date">Apply by {fmt(fromIso(nextDeadline.date))}</div>
                   </>
                 ) : (
-                  <div className="rm-sticker-title">{savedUniversities.length ? "No deadline listed for your programmes yet" : "Save programmes on Home to see their deadlines"}</div>
+                  <div className="rm-sticker-title">{savedUniversities.length ? "Your schools haven't published deadlines yet. They'll show up here." : "No deadlines yet. Save a programme on Home and its deadline shows up here."}</div>
                 )}
               </div>
 
               <div className="rm-widget rm-start-card">
-                <div className="rm-widget-label">🎓 I want to start</div>
+                <div className="rm-widget-label"><Icon name="calendar" />I want to start</div>
                 <Dropdown value={startYear ?? "Not sure yet"} options={INTAKES} onChange={changeIntake} />
-                <div className="rm-faint">Dates in your plan follow this intake.</div>
+                <div className="rm-faint">{!startYear || startYear === "Not sure yet" ? "Pick a start date and every task gets a due date." : `Task dates are planned for ${startYear}.`}</div>
               </div>
             </div>
 
             {/* views */}
             <div className="rm-views">
-              <div className="rm-view-tabs" role="tablist">
-                <button role="tab" aria-selected={view === "list"} className={view === "list" ? "active" : ""} onClick={() => { setView("list"); setFolder(null); }}>📁 Folders</button>
-                <button role="tab" aria-selected={view === "board"} className={view === "board" ? "active" : ""} onClick={() => setView("board")}>▦ Board</button>
-                <button role="tab" aria-selected={view === "gallery"} className={view === "gallery" ? "active" : ""} onClick={() => setView("gallery")}>🖼 Programmes</button>
+              <div className="community-tabs rm-tabs" role="tablist">
+                <button role="tab" aria-selected={view === "list"} className={`community-tab ${view === "list" ? "active" : ""}`} onClick={() => { setView("list"); setFolder(null); }}>Steps <span className="community-tab-count">{STAGES.length}</span></button>
+                <button role="tab" aria-selected={view === "board"} className={`community-tab ${view === "board" ? "active" : ""}`} onClick={() => setView("board")}>By status <span className="community-tab-count">{list.length}</span></button>
+                <button role="tab" aria-selected={view === "gallery"} className={`community-tab ${view === "gallery" ? "active" : ""}`} onClick={() => setView("gallery")}>Saved programmes <span className="community-tab-count">{savedUniversities.length}</span></button>
               </div>
-              <button className="rm-ghost" onClick={resetPlan}>Reset plan</button>
+              <button className="rm-ghost" onClick={() => setConfirmReset(true)}>Start over</button>
             </div>
 
             {view === "gallery" ? (
@@ -292,7 +353,7 @@ export default function CareerRoadmap({ savedUniversities = [], currentUser, onS
                         </div>
                       </div>
                       <div className="rm-gitem-meta">
-                        <span className={`rm-tag small ${done ? "green" : "orange"}`}>{done ? "✅ Applied" : "📮 To apply"}</span>
+                        <span className={`rm-chip ${done ? "is-done" : ""}`}>{done ? "Applied" : "To apply"}</span>
                         {date ? <span className={`rm-pill ${dueTone(date, today, done)}`}>Deadline {fmt(date)}</span> : <span className="rm-faint">No deadline listed</span>}
                       </div>
                     </div>
@@ -304,20 +365,27 @@ export default function CareerRoadmap({ savedUniversities = [], currentUser, onS
               </div>
             ) : view === "list" && !folder ? (
               /* every stage is a folder; open one to see its tasks and write notes */
-              <div className="rm-folders">
-                {STAGES.map((st) => {
+              <div className="rm-steps">
+                {STAGES.map((st, n) => {
                   const items = list.filter((t) => t.stage === st.id);
                   const done = items.filter((t) => t.status === "done").length;
                   const next = items.filter((t) => t.status !== "done" && t.date).sort(byDate)[0];
+                  const complete = items.length > 0 && done === items.length;
+                  const current = currentStage?.id === st.id;
                   return (
-                    <button key={st.id} className={`rm-folder ${st.color}`} onClick={() => setFolder(st.id)}>
-                      <span className="rm-folder-tab" aria-hidden="true" />
-                      <span className="rm-folder-emoji" aria-hidden="true">{st.emoji}</span>
-                      <span className="rm-folder-name">{st.label}</span>
-                      <span className="rm-folder-about">{st.about}</span>
-                      <span className="rm-folder-meta">{done}/{items.length} done{notes[st.id]?.trim() ? " · 📝 notes" : ""}</span>
-                      <span className="rm-folder-bar"><span style={{ width: `${items.length ? (done / items.length) * 100 : 0}%` }} /></span>
-                      {next && <span className="rm-folder-next">Next: {next.title} · {fmt(fromIso(next.date), false)}</span>}
+                    <button key={st.id} className={`rm-step ${current ? "is-current" : ""} ${complete ? "is-complete" : ""}`} onClick={() => setFolder(st.id)}>
+                      <span className="rm-step-top">
+                        <span className="rm-step-num">{complete ? "✓" : n + 1}</span>
+                        <Icon name={st.id} className="rm-step-icon" />
+                        {current && <span className="rm-step-here">You are here</span>}
+                      </span>
+                      <span className="rm-step-name">{st.label}</span>
+                      <span className="rm-step-about">{st.about}</span>
+                      <span className="rm-step-foot">
+                        <span className="rm-step-bar"><span style={{ width: `${items.length ? (done / items.length) * 100 : 0}%` }} /></span>
+                        <span className="rm-step-meta">{done}/{items.length}{notes[st.id]?.trim() ? " · notes" : ""}</span>
+                      </span>
+                      <span className="rm-step-next">{complete ? "All done" : next ? <>Next: {next.title} <em>· {fmt(fromIso(next.date), false)}</em></> : "No tasks with a date"}</span>
                     </button>
                   );
                 })}
@@ -328,34 +396,41 @@ export default function CareerRoadmap({ savedUniversities = [], currentUser, onS
                 const items = list.filter((t) => t.stage === folder).sort(byDate);
                 const done = items.filter((t) => t.status === "done").length;
                 return (
-                  <div className={`rm-folder-page ${st.color}`}>
-                    <div className="rm-crumbs">
-                      <button className="rm-crumb" onClick={() => setFolder(null)}>📁 Folders</button>
-                      <span aria-hidden="true">/</span>
-                      <span>{st.emoji} {st.label}</span>
-                    </div>
-                    <div className="rm-folder-head">
-                      <span className="rm-folder-head-emoji" aria-hidden="true">{st.emoji}</span>
-                      <div>
-                        <h2 className="rm-folder-title">{st.label}</h2>
-                        <div className="rm-folder-about">{st.about}</div>
-                        <div className="rm-faint">{done} of {items.length} done</div>
+                  <div className="rm-stage-page">
+                    <button className="rm-back" onClick={() => setFolder(null)}>
+                      <svg className="rm-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7" /></svg>All steps
+                    </button>
+                    <div className="rm-stage-head">
+                      <span className="rm-stage-badge"><Icon name={st.id} /></span>
+                      <div className="rm-stage-head-text">
+                        <div className="rm-stage-kicker">Step {STAGES.indexOf(st) + 1} of {STAGES.length}</div>
+                        <h2 className="rm-stage-title">{st.label}</h2>
+                        <p className="rm-stage-about">{st.about}</p>
+                      </div>
+                      <div className="rm-stage-progress">
+                        <ProgressRing done={done} total={items.length} />
+                        <span>{done} of {items.length} done</span>
                       </div>
                     </div>
 
-                    <div className="rm-section-label">Notes</div>
-                    <textarea
-                      className="rm-notes"
-                      value={notes[folder] ?? ""}
-                      onChange={(e) => writeNote(folder, e.target.value)}
-                      placeholder={`Write anything about ${st.label.toLowerCase()}: ideas, links, questions for the school…`}
-                      rows={Math.max(4, (notes[folder] ?? "").split("\n").length + 1)}
-                    />
-
-                    <div className="rm-section-label">Tasks</div>
-                    <div className="rm-folder-tasks">
-                      {items.map((t) => renderRow(t))}
-                      <button className="rm-add" onClick={() => add({ stage: folder })}>+ New task</button>
+                    <div className="rm-stage-grid">
+                      <section className="rm-card">
+                        <div className="rm-card-head">Tasks <span>{items.length}</span></div>
+                        <div className="rm-task-list">
+                          {items.map((t) => renderRow(t))}
+                        </div>
+                        <button className="rm-add" onClick={() => add({ stage: folder })}>+ Add a task</button>
+                      </section>
+                      <section className="rm-card">
+                        <div className="rm-card-head">Notes</div>
+                        <textarea
+                          className="rm-notes"
+                          value={notes[folder] ?? ""}
+                          onChange={(e) => writeNote(folder, e.target.value)}
+                          placeholder="Ideas, links, questions for the school…"
+                          rows={Math.max(8, (notes[folder] ?? "").split("\n").length + 1)}
+                        />
+                      </section>
                     </div>
                   </div>
                 );
@@ -366,7 +441,7 @@ export default function CareerRoadmap({ savedUniversities = [], currentUser, onS
                 <button type="button" className={!stageFilter ? "is-on" : ""} onClick={() => setStageFilter(null)}>All stages</button>
                 {STAGES.map((st) => (
                   <button key={st.id} type="button" className={`${st.color} ${stageFilter === st.id ? "is-on" : ""}`} onClick={() => setStageFilter(stageFilter === st.id ? null : st.id)}>
-                    {st.emoji} {st.label}<span>{list.filter((t) => t.stage === st.id).length}</span>
+                    <Icon name={st.id} />{st.label}<span>{list.filter((t) => t.stage === st.id).length}</span>
                   </button>
                 ))}
               </div>
@@ -390,7 +465,7 @@ export default function CareerRoadmap({ savedUniversities = [], currentUser, onS
                             {p && <UniImage src={p.image} name={p.name} className="rm-card-thumb" />}
                             <EditableText value={t.title} onChange={(v) => update(t.id, { title: v })} placeholder="Write a task…" autoFocus={t.id === justAdded} className="rm-card-title" />
                             <div className="rm-card-meta">
-                              {(() => { const st = STAGES.find((x) => x.id === t.stage) ?? STAGES[0]; return <Dropdown className={`rm-dd-tag rm-tag small ${st.color}`} label="Stage" value={st.id} options={STAGE_OPTIONS} onChange={(v) => update(t.id, { stage: v })} />; })()}
+                              {(() => { const st = STAGES.find((x) => x.id === t.stage) ?? STAGES[0]; return <Dropdown className="rm-dd-tag" label="Stage" value={st.id} options={STAGE_OPTIONS} onChange={(v) => update(t.id, { stage: v })} />; })()}
                               <Dropdown className={`rm-dd-status is-${t.status ?? "todo"}`} label="Status" value={t.status ?? "todo"} options={STATUS_OPTIONS} onChange={(v) => update(t.id, { status: v })} />
                               <DateChip value={t.date} onChange={(v) => update(t.id, { date: v })} tone={dueTone(fromIso(t.date), today, t.status === "done")} />
                               <button className="rm-row-del" onClick={() => remove(t.id)} aria-label="Delete task" title="Delete">
@@ -400,7 +475,7 @@ export default function CareerRoadmap({ savedUniversities = [], currentUser, onS
                           </div>
                         );
                       })}
-                      <button className="rm-add" onClick={() => add({ status: s.id, stage: stageFilter ?? "research" })}>+ New</button>
+                      <button className="rm-add" onClick={() => add({ status: s.id, stage: stageFilter ?? "research" })}>+ Add a task</button>
                     </section>
                   );
                 })}
@@ -410,12 +485,32 @@ export default function CareerRoadmap({ savedUniversities = [], currentUser, onS
             )}
 
             {savedUniversities.length === 0 && (
-              <p className="rm-hint">Tip: save programmes on Home (the bookmark on a card), and an “Apply” task with their deadline appears here. <button className="rm-link-btn" onClick={() => navigate("/app")}>Go to Home →</button></p>
+              <p className="rm-hint">Save a programme on Home (the bookmark on its card) and an “Apply” task with its deadline appears here. <button className="rm-link-btn" onClick={() => navigate("/app")}>Go to Home →</button></p>
             )}
-            <p className="rm-hint">Dates from schools marked “based on last year” are estimates. Always check the school's official page.</p>
+            <p className="rm-hint">Some deadlines are based on last year until the school publishes new ones. Check the school's page before you apply.</p>
           </div>
         </div>
       </div>
+
+      {undo && (
+        <div className="rm-toast" role="status">
+          Task deleted
+          <button type="button" onClick={restore}>Undo</button>
+        </div>
+      )}
+
+      {confirmReset && (
+        <div className="rm-modal-back" onClick={() => setConfirmReset(false)}>
+          <div className="rm-modal" role="dialog" aria-modal="true" aria-labelledby="rm-reset-title" onClick={(e) => e.stopPropagation()}>
+            <h3 id="rm-reset-title">Start your plan over?</h3>
+            <p>Your list goes back to the suggested tasks. Tasks you added, notes and ticked boxes will be lost. This can't be undone.</p>
+            <div className="rm-modal-actions">
+              <button type="button" className="rm-modal-keep" onClick={() => setConfirmReset(false)} autoFocus>Keep my plan</button>
+              <button type="button" className="rm-modal-reset" onClick={resetPlan}>Start over</button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

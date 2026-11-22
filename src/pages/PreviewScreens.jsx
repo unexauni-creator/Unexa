@@ -74,3 +74,14 @@ export function PreviewDorm() {
     </Shell>
   );
 }
+
+// local test page only (/dev/roadmap): the real Roadmap at any screen size, without the fixed 1440 frame
+export function DevRoadmap() {
+  return (
+    <div className="app">
+      <main className="main">
+        <CareerRoadmap savedUniversities={demo} onSelectUni={noop} onToggleSave={noop} />
+      </main>
+    </div>
+  );
+}
