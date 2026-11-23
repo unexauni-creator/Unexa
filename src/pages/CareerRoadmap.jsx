@@ -119,13 +119,74 @@ function Icon({ name, className = "" }) {
   return <svg className={`rm-icon ${className}`} viewBox="0 0 24 24" aria-hidden="true">{ICON_PATHS[name]}</svg>;
 }
 
+// A small calendar in the app's style instead of the browser's date picker.
+const WEEKDAYS = ["Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"];
+const toIso = (d) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+
 function DateChip({ value, onChange, tone }) {
   const date = fromIso(value);
+  const [open, setOpen] = useState(false);
+  const [up, setUp] = useState(false); // open above the chip when there is no room below
+  const [month, setMonth] = useState(() => { const d = date ?? new Date(); return new Date(d.getFullYear(), d.getMonth(), 1); });
+  const ref = useRef(null);
+  useEffect(() => {
+    if (!open) return undefined;
+    const close = (e) => { if (!ref.current?.contains(e.target)) setOpen(false); };
+    const esc = (e) => { if (e.key === "Escape") setOpen(false); };
+    document.addEventListener("mousedown", close);
+    document.addEventListener("keydown", esc);
+    return () => { document.removeEventListener("mousedown", close); document.removeEventListener("keydown", esc); };
+  }, [open]);
+  function toggle() {
+    if (!open) {
+      const d = date ?? new Date();
+      setMonth(new Date(d.getFullYear(), d.getMonth(), 1));
+      const r = ref.current?.getBoundingClientRect();
+      setUp(Boolean(r && window.innerHeight - r.bottom < 360 && r.top > 360));
+    }
+    setOpen((o) => !o);
+  }
+  function pick(d) { onChange(d ? toIso(d) : ""); setOpen(false); }
+
+  // the days of the shown month, starting on Monday, with blanks before the 1st
+  const first = month.getDay() === 0 ? 6 : month.getDay() - 1;
+  const count = new Date(month.getFullYear(), month.getMonth() + 1, 0).getDate();
+  const cells = [...Array(first).fill(null), ...Array.from({ length: count }, (_, i) => new Date(month.getFullYear(), month.getMonth(), i + 1))];
+  const todayIso = toIso(new Date());
+
   return (
-    <label className={`rm-date ${tone} ${date ? "" : "is-empty"}`}>
-      <span>{date ? fmt(date, date.getFullYear() !== new Date().getFullYear()) : "Add date"}</span>
-      <input type="date" value={value || ""} onChange={(e) => onChange(e.target.value)} aria-label="Due date" />
-    </label>
+    <div className={`rm-cal ${open ? "open" : ""}`} ref={ref}>
+      <button type="button" className={`rm-date ${tone} ${date ? "" : "is-empty"}`} onClick={toggle} aria-haspopup="dialog" aria-expanded={open} aria-label={date ? `Due ${fmt(date)}, change date` : "Add a due date"}>
+        {date ? fmt(date, date.getFullYear() !== new Date().getFullYear()) : "Add date"}
+      </button>
+      {open && (
+        <div className={`rm-cal-pop ${up ? "is-up" : ""}`} role="dialog" aria-label="Choose a date">
+          <div className="rm-cal-head">
+            <button type="button" onClick={() => setMonth(new Date(month.getFullYear(), month.getMonth() - 1, 1))} aria-label="Previous month">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7" /></svg>
+            </button>
+            <span>{month.toLocaleDateString("en-GB", { month: "long", year: "numeric" })}</span>
+            <button type="button" onClick={() => setMonth(new Date(month.getFullYear(), month.getMonth() + 1, 1))} aria-label="Next month">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7" /></svg>
+            </button>
+          </div>
+          <div className="rm-cal-grid">
+            {WEEKDAYS.map((w) => <span key={w} className="rm-cal-wd">{w}</span>)}
+            {cells.map((d, i) => d ? (
+              <button key={i} type="button" onClick={() => pick(d)}
+                className={`rm-cal-day ${toIso(d) === value ? "is-on" : ""} ${toIso(d) === todayIso ? "is-today" : ""}`}
+                aria-pressed={toIso(d) === value}>
+                {d.getDate()}
+              </button>
+            ) : <span key={i} />)}
+          </div>
+          <div className="rm-cal-foot">
+            <button type="button" onClick={() => pick(new Date())}>Today</button>
+            {date && <button type="button" onClick={() => pick(null)}>Remove date</button>}
+          </div>
+        </div>
+      )}
+    </div>
   );
 }
 
@@ -143,7 +204,8 @@ export default function CareerRoadmap({ savedUniversities = [], currentUser }) {
   const [dragId, setDragId] = useState(null);
   const [stageFilter, setStageFilter] = useState(null); // board: show only one stage's tasks
   // on phones the steps are a row you swipe: keep the chosen one in view
-  const [notesOpen, setNotesOpen] = useState(false);
+  const [noteDraft, setNoteDraft] = useState(null); // text being edited, or null when notes are just shown
+  const [noteSaved, setNoteSaved] = useState(false);
   const [undo, setUndo] = useState(null); // the task just deleted, so it can come back
   const [confirmReset, setConfirmReset] = useState(false);
   const [tipHidden, setTipHidden] = useState(() => { try { return localStorage.getItem("unexa_rm_tip") === "hidden"; } catch { return false; } });
@@ -248,6 +310,23 @@ export default function CareerRoadmap({ savedUniversities = [], currentUser }) {
   const currentStage = nextStep ? STAGES[stageIndex(nextStep)] : null;
   const lateCount = list.filter((t) => t.status !== "done" && dueTone(fromIso(t.date), today, false) === "late").length;
 
+  // the step shown in the path and the card below it
+  const activeId = folder ?? currentStage?.id ?? STAGES[0].id;
+  const st = STAGES.find((x) => x.id === activeId);
+  const items = list.filter((t) => t.stage === activeId).sort(byDate);
+  const done = items.filter((t) => t.status === "done").length;
+  function openStep(id) {
+    setFolder(id);
+    setView("list");
+    setNoteDraft(null);
+  }
+  function saveNote() {
+    writeNote(activeId, noteDraft ?? "");
+    setNoteDraft(null);
+    setNoteSaved(true);
+    setTimeout(() => setNoteSaved(false), 2200);
+  }
+
   // a plain function, not a component: a component defined here would be re-created on every keystroke and lose focus
   function renderRow(t) {
     const done = t.status === "done";
@@ -288,7 +367,32 @@ export default function CareerRoadmap({ savedUniversities = [], currentUser }) {
               </div>
             )}
 
-            {/* widgets: progress ring, the next deadline as a sticky note, the intake */}
+            {/* the path at the top: six stops on a gentle wave; click one to open that step */}
+            <div className="rm-path">
+              <div className="rm-path-badge"><span>Step {STAGES.indexOf(st) + 1}{currentStage?.id === activeId ? " · you are here" : ""}</span>{st.label}</div>
+              <div className="rm-path-inner">
+                <svg className="rm-path-line" viewBox="0 0 1000 200" preserveAspectRatio="none" aria-hidden="true">
+                  <path d={PATH_D} />
+                </svg>
+                {STAGES.map((s2, n) => {
+                  const its = list.filter((t) => t.stage === s2.id);
+                  const d = its.filter((t) => t.status === "done").length;
+                  const complete = its.length > 0 && d === its.length;
+                  const [x, y] = PATH_POINTS[n];
+                  const active = s2.id === activeId && view === "list";
+                  return (
+                    <div key={s2.id} className="rm-path-stop" style={{ left: `${x / 10}%`, top: `${y / 2}%` }}>
+                      <span className="rm-path-tick" aria-hidden="true" />
+                      <button type="button" aria-current={active ? "step" : undefined} aria-label={`Step ${n + 1}: ${s2.label}, ${d} of ${its.length} done`}
+                        className={`rm-path-dot ${active ? "is-active" : ""} ${complete ? "is-complete" : ""}`} onClick={() => openStep(s2.id)} />
+                      <span className={`rm-path-name ${active ? "is-active" : ""}`}>{s2.label}<em>{d}/{its.length}</em></span>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* widgets: next step, next deadline, start date */}
             <div className="rm-widgets">
               <div className="rm-widget rm-ring-card">
                 <ProgressRing done={doneCount} total={list.length} />
@@ -333,7 +437,7 @@ export default function CareerRoadmap({ savedUniversities = [], currentUser }) {
             {/* views */}
             <div className="rm-views">
               <div className="community-tabs rm-tabs" role="tablist">
-                <button role="tab" aria-selected={view === "list"} className={`community-tab ${view === "list" ? "active" : ""}`} onClick={() => { setView("list"); setFolder(null); }}>Steps <span className="community-tab-count">{STAGES.length}</span></button>
+                <button role="tab" aria-selected={view === "list"} className={`community-tab ${view === "list" ? "active" : ""}`} onClick={() => setView("list")}>Steps <span className="community-tab-count">{STAGES.length}</span></button>
                 <button role="tab" aria-selected={view === "board"} className={`community-tab ${view === "board" ? "active" : ""}`} onClick={() => setView("board")}>By status <span className="community-tab-count">{list.length}</span></button>
               </div>
               <button className="rm-ghost" onClick={() => setConfirmReset(true)}>Start over</button>
@@ -342,37 +446,8 @@ export default function CareerRoadmap({ savedUniversities = [], currentUser }) {
             {view === "list" ? (
               /* steps on the left, the chosen step's tasks and notes on the right: no clicking in and out */
               (() => {
-                const activeId = folder ?? currentStage?.id ?? STAGES[0].id;
-                const st = STAGES.find((x) => x.id === activeId);
-                const items = list.filter((t) => t.stage === activeId).sort(byDate);
-                const done = items.filter((t) => t.status === "done").length;
                 return (
                   <>
-                    {/* the path: six points on a gentle wave; click one to open that step */}
-                    <div className="rm-path">
-                      <div className="rm-path-inner">
-                      <svg className="rm-path-line" viewBox="0 0 1000 200" preserveAspectRatio="none" aria-hidden="true">
-                        <path d={PATH_D} />
-                      </svg>
-                      {STAGES.map((s2, n) => {
-                        const its = list.filter((t) => t.stage === s2.id);
-                        const d = its.filter((t) => t.status === "done").length;
-                        const complete = its.length > 0 && d === its.length;
-                        const [x, y] = PATH_POINTS[n];
-                        const active = s2.id === activeId;
-                        return (
-                          <div key={s2.id} className="rm-path-stop" style={{ left: `${x / 10}%`, top: `${y / 2}%` }}>
-                            {active && <div className="rm-path-tip"><span>Step {n + 1}{currentStage?.id === s2.id ? " · you are here" : ""}</span>{s2.label}</div>}
-                            <span className="rm-path-tick" aria-hidden="true" />
-                            <button type="button" aria-current={active ? "step" : undefined} aria-label={`Step ${n + 1}: ${s2.label}, ${d} of ${its.length} done`}
-                              className={`rm-path-dot ${active ? "is-active" : ""} ${complete ? "is-complete" : ""}`} onClick={() => setFolder(s2.id)} />
-                            <span className={`rm-path-name ${active ? "is-active" : ""}`}>{s2.label}<em>{d}/{its.length}</em></span>
-                          </div>
-                        );
-                      })}
-                      </div>
-                    </div>
-
                     {/* the chosen step */}
                     <section className="rm-card rm-detail">
                       <div className="rm-detail-head">
@@ -388,24 +463,43 @@ export default function CareerRoadmap({ savedUniversities = [], currentUser }) {
                       </div>
                       <div className="rm-detail-foot">
                         <button className="rm-add" onClick={() => add({ stage: activeId })}>+ Add a task</button>
-                        <button type="button" className="rm-add" onClick={() => setNotesOpen((o) => !o)}>{notesOpen ? "Hide notes" : notes[activeId]?.trim() ? "Show notes" : "+ Add notes"}</button>
                         {STAGES.indexOf(st) < STAGES.length - 1 && (
-                          <button type="button" className="rm-next-step" onClick={() => setFolder(STAGES[STAGES.indexOf(st) + 1].id)}>
+                          <button type="button" className="rm-next-step" onClick={() => openStep(STAGES[STAGES.indexOf(st) + 1].id)}>
                             Next: {STAGES[STAGES.indexOf(st) + 1].label}
                             <svg className="rm-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7" /></svg>
                           </button>
                         )}
                       </div>
-                      {notesOpen && (
-                        <textarea
-                          className="rm-notes"
-                          value={notes[activeId] ?? ""}
-                          onChange={(e) => writeNote(activeId, e.target.value)}
-                          placeholder="Ideas, links, questions for the school…"
-                          rows={Math.max(4, (notes[activeId] ?? "").split("\n").length + 1)}
-                          autoFocus
-                        />
-                      )}
+                      {/* notes for this step: shown, edited and saved here */}
+                      <div className="rm-notes-block">
+                        <div className="rm-notes-head">
+                          <span>Notes</span>
+                          {noteSaved && <em className="rm-saved">✓ Saved</em>}
+                          {noteDraft === null && notes[activeId]?.trim() && (
+                            <button type="button" className="rm-link-btn" onClick={() => setNoteDraft(notes[activeId] ?? "")}>Edit</button>
+                          )}
+                        </div>
+                        {noteDraft !== null ? (
+                          <>
+                            <textarea
+                              className="rm-notes"
+                              value={noteDraft}
+                              onChange={(e) => setNoteDraft(e.target.value)}
+                              placeholder="Ideas, links, questions for the school…"
+                              rows={Math.max(4, noteDraft.split("\n").length + 1)}
+                              autoFocus
+                            />
+                            <div className="rm-notes-actions">
+                              <button type="button" className="rm-modal-keep" onClick={() => setNoteDraft(null)}>Cancel</button>
+                              <button type="button" className="rm-save-btn" onClick={saveNote}>Save notes</button>
+                            </div>
+                          </>
+                        ) : notes[activeId]?.trim() ? (
+                          <p className="rm-notes-text" onClick={() => setNoteDraft(notes[activeId])}>{notes[activeId]}</p>
+                        ) : (
+                          <button type="button" className="rm-notes-empty" onClick={() => setNoteDraft("")}>+ Write notes for this step: ideas, links, questions for the school</button>
+                        )}
+                      </div>
                     </section>
                   </>
                 );
