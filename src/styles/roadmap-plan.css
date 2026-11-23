@@ -262,46 +262,73 @@
 .rm-callout-icon { color: var(--rm-soft); }
 .rm-gadd span { color: var(--rm-soft); }
 
-/* ---------- steps: a list on the left, the chosen step beside it ---------- */
-.rm-split { display: grid; grid-template-columns: 250px minmax(0, 1fr); gap: 20px; align-items: start; }
-.rm-stepper { position: sticky; top: 0; display: flex; flex-direction: column; gap: 4px; padding: 8px; border-radius: 20px; background: rgba(255,255,255,0.35); border: 1px solid rgba(255,255,255,0.7); }
-.rm-stepper-item { position: relative; display: flex; align-items: center; gap: 12px; width: 100%; font: inherit; text-align: left; color: var(--rm-ink); background: none; border: none; border-radius: 14px; padding: 10px 12px; cursor: pointer; transition: background 0.15s; }
-/* the thin line that joins the numbers */
-.rm-stepper-item:not(:last-child)::after { content: ""; position: absolute; left: 27px; top: 42px; bottom: -14px; width: 1.5px; background: rgba(43,31,24,0.1); }
-.rm-stepper-item:hover { background: rgba(255,255,255,0.6); }
-.rm-stepper-item.is-active { background: #fff; box-shadow: 0 1px 2px rgba(43,31,24,0.05), 0 8px 18px rgba(43,31,24,0.07); }
-.rm-stepper-num { position: relative; z-index: 1; width: 30px; height: 30px; flex-shrink: 0; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 800; color: #6d6058; background: #fff; border: 1.5px solid rgba(43,31,24,0.15); }
-.rm-stepper-item.is-active .rm-stepper-num { border-color: #2b1f18; color: #2b1f18; }
-.rm-stepper-item.is-complete .rm-stepper-num { background: #2b1f18; border-color: #2b1f18; color: #fff; }
-.rm-stepper-num svg { width: 14px; height: 14px; fill: none; stroke: currentColor; stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; }
-.rm-stepper-text { display: flex; flex-direction: column; min-width: 0; }
-.rm-stepper-name { font-size: 15px; font-weight: 700; }
-.rm-stepper-meta { font-size: 12.5px; color: var(--rm-soft); }
-.rm-stage-page .rm-stage-head { margin-top: 4px; }
-.rm-stage-page .rm-card + .rm-card { margin-top: 14px; }
-.rm-next-step { display: inline-flex; align-items: center; gap: 6px; margin-top: 16px; font: inherit; font-size: 14px; font-weight: 700; color: var(--rm-ink); background: rgba(255,255,255,0.75); border: 1px solid rgba(255,255,255,0.9); border-radius: 12px; padding: 9px 12px 9px 16px; cursor: pointer; box-shadow: 0 1px 2px rgba(43,31,24,0.04), 0 6px 14px rgba(43,31,24,0.05); }
-.rm-next-step:hover { background: #fff; }
-.rm-next-step .rm-icon { width: 16px; height: 16px; stroke-width: 2; }
-
-@media (max-width: 900px) {
-  .rm-split { grid-template-columns: 1fr; }
-  /* steps become a row you can swipe */
-  .rm-stepper { position: static; flex-direction: row; overflow-x: auto; scrollbar-width: none; }
-  .rm-stepper::-webkit-scrollbar { display: none; }
-  .rm-stepper-item { width: auto; flex-shrink: 0; padding: 8px 12px 8px 8px; }
-  .rm-stepper-item::after { display: none; }
-}
-
-/* phones: step header and task rows get room to breathe */
+/* phones: task rows get room to breathe */
 @media (max-width: 600px) {
-  .rm-stage-head { flex-wrap: nowrap; align-items: flex-start; gap: 12px; }
-  .rm-stage-badge { width: 44px; height: 44px; border-radius: 14px; }
-  .rm-stage-badge .rm-icon { width: 22px; height: 22px; }
-  .rm-stage-title { font-size: 22px; }
-  .rm-stage-progress { display: none; }
-  .rm-card { padding: 14px 12px 10px; }
   .rm-row { flex-wrap: wrap; align-items: flex-start; row-gap: 6px; }
   .rm-row-main { flex: 1 1 calc(100% - 70px); }
   .rm-row .rm-dd-status { margin-left: 30px; }
   .rm-row-del { opacity: 1; margin-left: auto; }
+}
+
+/* ---------- the path: six stops on a soft wave ---------- */
+.rm-path { position: relative; height: 230px; margin-bottom: 16px; border-radius: 24px;
+  background: rgba(255,255,255,0.55); border: 1px solid rgba(255,255,255,0.9); box-shadow: 0 1px 2px rgba(43,31,24,0.04), 0 10px 24px rgba(43,31,24,0.05); }
+.rm-path-inner { position: absolute; left: 5%; right: 5%; top: 46px; height: 120px; }
+.rm-path-line { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+.rm-path-line path { fill: none; stroke: #dcc3ad; stroke-width: 2.5; vector-effect: non-scaling-stroke; stroke-linecap: round; }
+/* each stop sits on the same box as the line: 4% side padding, 34px top, 140px tall */
+.rm-path-stop { position: absolute; width: 0; height: 0; }
+.rm-path-dot { position: absolute; left: -11px; top: -11px; width: 22px; height: 22px; border-radius: 50%; padding: 0; cursor: pointer; background: #fff; border: 3px solid #b08a73; box-shadow: 0 2px 6px rgba(43,31,24,0.12); transition: transform 0.18s ease, background 0.18s; }
+.rm-path-dot:hover { transform: scale(1.15); }
+.rm-path-dot:focus-visible { outline: 3px solid rgba(43,31,24,0.35); outline-offset: 3px; }
+.rm-path-dot.is-complete { background: #b08a73; }
+.rm-path-dot.is-active { left: -15px; top: -15px; width: 30px; height: 30px; background: #9c7763; border-color: #6e5244; box-shadow: 0 6px 16px rgba(110,82,68,0.35); }
+.rm-path-tick { position: absolute; left: -0.5px; bottom: 14px; height: 42px; border-left: 1.5px dashed rgba(43,31,24,0.14); }
+.rm-path-name { position: absolute; top: 22px; left: 0; transform: translateX(-50%); display: flex; flex-direction: column; align-items: center; gap: 1px; font-size: 13.5px; font-weight: 700; color: #6d6058; white-space: nowrap; pointer-events: none; }
+.rm-path-name em { font-style: normal; font-size: 11.5px; font-weight: 600; color: #a99c92; }
+.rm-path-name.is-active { color: #1f1813; }
+.rm-path-tip { position: absolute; bottom: 30px; left: 0; transform: translateX(-50%); z-index: 2; display: flex; flex-direction: column; align-items: center; padding: 8px 16px; border-radius: 14px; background: #5c463b; color: #fff; font-size: 14.5px; font-weight: 700; white-space: nowrap; box-shadow: 0 10px 24px rgba(43,31,24,0.25); animation: rm-in 0.2s ease; }
+.rm-path-tip span { font-size: 11.5px; font-weight: 600; opacity: 0.75; }
+/* keep the first and last tooltip inside the card */
+.rm-path-inner > .rm-path-stop:nth-of-type(1) .rm-path-tip { transform: translateX(-24px); }
+.rm-path-inner > .rm-path-stop:last-child .rm-path-tip { transform: translateX(calc(-100% + 24px)); }
+
+/* the chosen step */
+.rm-detail { padding: 24px 26px 18px; }
+.rm-detail-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; margin-bottom: 10px; }
+.rm-detail-kicker { font-size: 12.5px; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; color: #b08a73; }
+.rm-detail-title { font-size: 26px; font-weight: 700; margin: 4px 0 6px; color: #1f1813; }
+.rm-detail-about { font-size: 15px; line-height: 1.55; color: #6d6058; margin: 0; max-width: 620px; }
+.rm-detail-count { flex-shrink: 0; font-size: 13px; font-weight: 700; color: #6d6058; background: rgba(43,31,24,0.05); padding: 5px 12px; border-radius: 100px; }
+.rm-detail .rm-task-list { margin: 8px -6px 0; border-top: 1px solid var(--rm-line); padding-top: 6px; }
+.rm-detail-foot { display: flex; align-items: center; gap: 4px; flex-wrap: wrap; margin-top: 6px; }
+.rm-detail-foot .rm-add { width: auto; }
+.rm-detail-foot .rm-next-step { margin: 0 0 0 auto; }
+.rm-detail .rm-notes { margin-top: 10px; }
+
+@media (max-width: 700px) {
+  .rm-path { height: 190px; }
+  .rm-path-inner { top: 52px; height: 80px; left: 7%; right: 7%; }
+  .rm-path-name { font-size: 11px; }
+  .rm-path-name em { display: none; }
+  .rm-path-name:not(.is-active) { color: #a99c92; }
+  .rm-path-tip { font-size: 13px; padding: 6px 12px; }
+  .rm-detail { padding: 18px 14px 12px; }
+  .rm-detail-head { flex-direction: column; gap: 8px; }
+  .rm-detail-title { font-size: 22px; }
+  .rm-detail-foot .rm-next-step { margin: 6px 0 0; }
+}
+.rm-next-step { display: inline-flex; align-items: center; gap: 6px; font: inherit; font-size: 14px; font-weight: 700; color: var(--rm-ink); background: #fff; border: 1px solid rgba(43,31,24,0.1); border-radius: 12px; padding: 8px 12px 8px 16px; cursor: pointer; transition: border-color 0.15s; }
+.rm-next-step:hover { border-color: #2b1f18; }
+.rm-next-step .rm-icon { width: 16px; height: 16px; stroke-width: 2; }
+
+/* phones: the card below already names the step, so no tooltip; only the chosen stop is labelled */
+@media (max-width: 700px) {
+  .rm-path { height: 150px; }
+  .rm-path-inner { top: 34px; height: 64px; left: 8%; right: 8%; }
+  .rm-path-tip, .rm-path-tick { display: none; }
+  .rm-path-name:not(.is-active) { display: none; }
+  .rm-path-name.is-active { font-size: 13px; }
+  .rm-path-inner > .rm-path-stop:nth-of-type(1) .rm-path-name { transform: translateX(-20%); }
+  .rm-path-inner > .rm-path-stop:last-child .rm-path-name { transform: translateX(-80%); }
 }

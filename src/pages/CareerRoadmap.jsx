@@ -91,6 +91,15 @@ function ProgressRing({ done, total }) {
   );
 }
 
+// six stops on a gentle wave (viewBox 1000 × 200), alternating low and high like a path over hills
+const PATH_POINTS = [[70, 140], [242, 70], [414, 140], [586, 70], [758, 140], [930, 70]];
+const PATH_D = PATH_POINTS.reduce((d, [x, y], i) => {
+  if (i === 0) return `M ${x} ${y}`;
+  const [px, py] = PATH_POINTS[i - 1];
+  const mx = (px + x) / 2;
+  return `${d} C ${mx} ${py}, ${mx} ${y}, ${x} ${y}`;
+}, "");
+
 const STATUS_OPTIONS = STATUSES.map((s) => ({ value: s.id, label: s.label }));
 const STAGE_OPTIONS = STAGES.map((s) => ({ value: s.id, label: s.label }));
 
@@ -120,7 +129,7 @@ function DateChip({ value, onChange, tone }) {
   );
 }
 
-export default function CareerRoadmap({ savedUniversities = [], currentUser, onSelectUni, onToggleSave }) {
+export default function CareerRoadmap({ savedUniversities = [], currentUser }) {
   const navigate = useNavigate();
   const userId = currentUser?.id;
   const today = useMemo(() => new Date(), []);
@@ -134,9 +143,7 @@ export default function CareerRoadmap({ savedUniversities = [], currentUser, onS
   const [dragId, setDragId] = useState(null);
   const [stageFilter, setStageFilter] = useState(null); // board: show only one stage's tasks
   // on phones the steps are a row you swipe: keep the chosen one in view
-  useEffect(() => {
-    document.querySelector(".rm-stepper-item.is-active")?.scrollIntoView({ block: "nearest", inline: "nearest" });
-  }, [folder, view]);
+  const [notesOpen, setNotesOpen] = useState(false);
   const [undo, setUndo] = useState(null); // the task just deleted, so it can come back
   const [confirmReset, setConfirmReset] = useState(false);
   const [tipHidden, setTipHidden] = useState(() => { try { return localStorage.getItem("unexa_rm_tip") === "hidden"; } catch { return false; } });
@@ -328,46 +335,11 @@ export default function CareerRoadmap({ savedUniversities = [], currentUser, onS
               <div className="community-tabs rm-tabs" role="tablist">
                 <button role="tab" aria-selected={view === "list"} className={`community-tab ${view === "list" ? "active" : ""}`} onClick={() => { setView("list"); setFolder(null); }}>Steps <span className="community-tab-count">{STAGES.length}</span></button>
                 <button role="tab" aria-selected={view === "board"} className={`community-tab ${view === "board" ? "active" : ""}`} onClick={() => setView("board")}>By status <span className="community-tab-count">{list.length}</span></button>
-                <button role="tab" aria-selected={view === "gallery"} className={`community-tab ${view === "gallery" ? "active" : ""}`} onClick={() => setView("gallery")}>Saved programmes <span className="community-tab-count">{savedUniversities.length}</span></button>
               </div>
               <button className="rm-ghost" onClick={() => setConfirmReset(true)}>Start over</button>
             </div>
 
-            {view === "gallery" ? (
-              <div className="rm-gallery">
-                {savedUniversities.map((p) => {
-                  const t = list.find((x) => String(x.programId) === String(p.id));
-                  const date = fromIso(t?.date);
-                  const done = t?.status === "done";
-                  return (
-                    <div key={p.id} className="rm-gitem">
-                      {/* the same programme card as on Home */}
-                      <div className="uni-card-new" onClick={() => onSelectUni?.(p)}>
-                        <UniImage src={p.image} name={p.name} className="uni-card-img" />
-                        <div className="uni-card-glass">
-                          {p.image && <img src={p.image} alt="" aria-hidden="true" className="card-glass-photo" />}
-                          <div className="uni-card-glass-blur" />
-                          <div className="uni-card-text">
-                            <div className="uni-card-title" title={p.program}>{p.program}</div>
-                            <div className="uni-card-subtitle" title={p.name}>{p.name}</div>
-                          </div>
-                          <button className="uni-card-save saved" onClick={(e) => { e.stopPropagation(); onToggleSave?.(p); }} aria-label="Remove from saved">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" strokeWidth="2"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" /></svg>
-                          </button>
-                        </div>
-                      </div>
-                      <div className="rm-gitem-meta">
-                        <span className={`rm-chip ${done ? "is-done" : ""}`}>{done ? "Applied" : "To apply"}</span>
-                        {date ? <span className={`rm-pill ${dueTone(date, today, done)}`}>Deadline {fmt(date)}</span> : <span className="rm-faint">No deadline listed</span>}
-                      </div>
-                    </div>
-                  );
-                })}
-                <button className="rm-gadd" onClick={() => navigate("/app")}>
-                  <span>+</span>Save more programmes on Home
-                </button>
-              </div>
-            ) : view === "list" ? (
+            {view === "list" ? (
               /* steps on the left, the chosen step's tasks and notes on the right: no clicking in and out */
               (() => {
                 const activeId = folder ?? currentStage?.id ?? STAGES[0].id;
@@ -375,64 +347,67 @@ export default function CareerRoadmap({ savedUniversities = [], currentUser, onS
                 const items = list.filter((t) => t.stage === activeId).sort(byDate);
                 const done = items.filter((t) => t.status === "done").length;
                 return (
-                  <div className="rm-split">
-                    <nav className="rm-stepper" aria-label="Steps">
+                  <>
+                    {/* the path: six points on a gentle wave; click one to open that step */}
+                    <div className="rm-path">
+                      <div className="rm-path-inner">
+                      <svg className="rm-path-line" viewBox="0 0 1000 200" preserveAspectRatio="none" aria-hidden="true">
+                        <path d={PATH_D} />
+                      </svg>
                       {STAGES.map((s2, n) => {
                         const its = list.filter((t) => t.stage === s2.id);
                         const d = its.filter((t) => t.status === "done").length;
                         const complete = its.length > 0 && d === its.length;
+                        const [x, y] = PATH_POINTS[n];
+                        const active = s2.id === activeId;
                         return (
-                          <button key={s2.id} type="button" aria-current={s2.id === activeId ? "step" : undefined}
-                            className={`rm-stepper-item ${s2.id === activeId ? "is-active" : ""} ${complete ? "is-complete" : ""}`}
-                            onClick={() => setFolder(s2.id)}>
-                            <span className="rm-stepper-num">{complete ? <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3.5 8.5l3 3 6-7" /></svg> : n + 1}</span>
-                            <span className="rm-stepper-text">
-                              <span className="rm-stepper-name">{s2.label}</span>
-                              <span className="rm-stepper-meta">{currentStage?.id === s2.id ? "You are here · " : ""}{d}/{its.length} done</span>
-                            </span>
-                          </button>
+                          <div key={s2.id} className="rm-path-stop" style={{ left: `${x / 10}%`, top: `${y / 2}%` }}>
+                            {active && <div className="rm-path-tip"><span>Step {n + 1}{currentStage?.id === s2.id ? " · you are here" : ""}</span>{s2.label}</div>}
+                            <span className="rm-path-tick" aria-hidden="true" />
+                            <button type="button" aria-current={active ? "step" : undefined} aria-label={`Step ${n + 1}: ${s2.label}, ${d} of ${its.length} done`}
+                              className={`rm-path-dot ${active ? "is-active" : ""} ${complete ? "is-complete" : ""}`} onClick={() => setFolder(s2.id)} />
+                            <span className={`rm-path-name ${active ? "is-active" : ""}`}>{s2.label}<em>{d}/{its.length}</em></span>
+                          </div>
                         );
                       })}
-                    </nav>
-
-                    <div className="rm-stage-page">
-                      <div className="rm-stage-head">
-                        <span className="rm-stage-badge"><Icon name={st.id} /></span>
-                        <div className="rm-stage-head-text">
-                          <div className="rm-stage-kicker">Step {STAGES.indexOf(st) + 1} of {STAGES.length}</div>
-                          <h2 className="rm-stage-title">{st.label}</h2>
-                          <p className="rm-stage-about">{st.about}</p>
-                        </div>
-                        <div className="rm-stage-progress">
-                          <ProgressRing done={done} total={items.length} />
-                          <span>{done} of {items.length} done</span>
-                        </div>
                       </div>
-                      <section className="rm-card">
-                        <div className="rm-card-head">Tasks <span>{items.length}</span></div>
-                        <div className="rm-task-list">
-                          {items.map((t) => renderRow(t))}
+                    </div>
+
+                    {/* the chosen step */}
+                    <section className="rm-card rm-detail">
+                      <div className="rm-detail-head">
+                        <div>
+                          <div className="rm-detail-kicker">Step {STAGES.indexOf(st) + 1} of {STAGES.length}</div>
+                          <h2 className="rm-detail-title">{st.label}</h2>
+                          <p className="rm-detail-about">{st.about}</p>
                         </div>
+                        <span className="rm-detail-count">{done} of {items.length} done</span>
+                      </div>
+                      <div className="rm-task-list">
+                        {items.map((t) => renderRow(t))}
+                      </div>
+                      <div className="rm-detail-foot">
                         <button className="rm-add" onClick={() => add({ stage: activeId })}>+ Add a task</button>
-                      </section>
-                      <section className="rm-card rm-notes-card">
-                        <div className="rm-card-head">Notes</div>
+                        <button type="button" className="rm-add" onClick={() => setNotesOpen((o) => !o)}>{notesOpen ? "Hide notes" : notes[activeId]?.trim() ? "Show notes" : "+ Add notes"}</button>
+                        {STAGES.indexOf(st) < STAGES.length - 1 && (
+                          <button type="button" className="rm-next-step" onClick={() => setFolder(STAGES[STAGES.indexOf(st) + 1].id)}>
+                            Next: {STAGES[STAGES.indexOf(st) + 1].label}
+                            <svg className="rm-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7" /></svg>
+                          </button>
+                        )}
+                      </div>
+                      {notesOpen && (
                         <textarea
                           className="rm-notes"
                           value={notes[activeId] ?? ""}
                           onChange={(e) => writeNote(activeId, e.target.value)}
                           placeholder="Ideas, links, questions for the school…"
                           rows={Math.max(4, (notes[activeId] ?? "").split("\n").length + 1)}
+                          autoFocus
                         />
-                      </section>
-                      {STAGES.indexOf(st) < STAGES.length - 1 && (
-                        <button type="button" className="rm-next-step" onClick={() => setFolder(STAGES[STAGES.indexOf(st) + 1].id)}>
-                          Next step: {STAGES[STAGES.indexOf(st) + 1].label}
-                          <svg className="rm-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7" /></svg>
-                        </button>
                       )}
-                    </div>
-                  </div>
+                    </section>
+                  </>
                 );
               })()
             ) : (
