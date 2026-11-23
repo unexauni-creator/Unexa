@@ -133,6 +133,10 @@ export default function CareerRoadmap({ savedUniversities = [], currentUser, onS
   const [justAdded, setJustAdded] = useState(null);
   const [dragId, setDragId] = useState(null);
   const [stageFilter, setStageFilter] = useState(null); // board: show only one stage's tasks
+  // on phones the steps are a row you swipe: keep the chosen one in view
+  useEffect(() => {
+    document.querySelector(".rm-stepper-item.is-active")?.scrollIntoView({ block: "nearest", inline: "nearest" });
+  }, [folder, view]);
   const [undo, setUndo] = useState(null); // the task just deleted, so it can come back
   const [confirmReset, setConfirmReset] = useState(false);
   const [tipHidden, setTipHidden] = useState(() => { try { return localStorage.getItem("unexa_rm_tip") === "hidden"; } catch { return false; } });
@@ -363,74 +367,70 @@ export default function CareerRoadmap({ savedUniversities = [], currentUser, onS
                   <span>+</span>Save more programmes on Home
                 </button>
               </div>
-            ) : view === "list" && !folder ? (
-              /* every stage is a folder; open one to see its tasks and write notes */
-              <div className="rm-steps">
-                {STAGES.map((st, n) => {
-                  const items = list.filter((t) => t.stage === st.id);
-                  const done = items.filter((t) => t.status === "done").length;
-                  const next = items.filter((t) => t.status !== "done" && t.date).sort(byDate)[0];
-                  const complete = items.length > 0 && done === items.length;
-                  const current = currentStage?.id === st.id;
-                  return (
-                    <button key={st.id} className={`rm-step ${current ? "is-current" : ""} ${complete ? "is-complete" : ""}`} onClick={() => setFolder(st.id)}>
-                      <span className="rm-step-top">
-                        <span className="rm-step-num">{complete ? "✓" : n + 1}</span>
-                        <Icon name={st.id} className="rm-step-icon" />
-                        {current && <span className="rm-step-here">You are here</span>}
-                      </span>
-                      <span className="rm-step-name">{st.label}</span>
-                      <span className="rm-step-about">{st.about}</span>
-                      <span className="rm-step-foot">
-                        <span className="rm-step-bar"><span style={{ width: `${items.length ? (done / items.length) * 100 : 0}%` }} /></span>
-                        <span className="rm-step-meta">{done}/{items.length}{notes[st.id]?.trim() ? " · notes" : ""}</span>
-                      </span>
-                      <span className="rm-step-next">{complete ? "All done" : next ? <>Next: {next.title} <em>· {fmt(fromIso(next.date), false)}</em></> : "No tasks with a date"}</span>
-                    </button>
-                  );
-                })}
-              </div>
             ) : view === "list" ? (
+              /* steps on the left, the chosen step's tasks and notes on the right: no clicking in and out */
               (() => {
-                const st = STAGES.find((x) => x.id === folder);
-                const items = list.filter((t) => t.stage === folder).sort(byDate);
+                const activeId = folder ?? currentStage?.id ?? STAGES[0].id;
+                const st = STAGES.find((x) => x.id === activeId);
+                const items = list.filter((t) => t.stage === activeId).sort(byDate);
                 const done = items.filter((t) => t.status === "done").length;
                 return (
-                  <div className="rm-stage-page">
-                    <button className="rm-back" onClick={() => setFolder(null)}>
-                      <svg className="rm-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7" /></svg>All steps
-                    </button>
-                    <div className="rm-stage-head">
-                      <span className="rm-stage-badge"><Icon name={st.id} /></span>
-                      <div className="rm-stage-head-text">
-                        <div className="rm-stage-kicker">Step {STAGES.indexOf(st) + 1} of {STAGES.length}</div>
-                        <h2 className="rm-stage-title">{st.label}</h2>
-                        <p className="rm-stage-about">{st.about}</p>
-                      </div>
-                      <div className="rm-stage-progress">
-                        <ProgressRing done={done} total={items.length} />
-                        <span>{done} of {items.length} done</span>
-                      </div>
-                    </div>
+                  <div className="rm-split">
+                    <nav className="rm-stepper" aria-label="Steps">
+                      {STAGES.map((s2, n) => {
+                        const its = list.filter((t) => t.stage === s2.id);
+                        const d = its.filter((t) => t.status === "done").length;
+                        const complete = its.length > 0 && d === its.length;
+                        return (
+                          <button key={s2.id} type="button" aria-current={s2.id === activeId ? "step" : undefined}
+                            className={`rm-stepper-item ${s2.id === activeId ? "is-active" : ""} ${complete ? "is-complete" : ""}`}
+                            onClick={() => setFolder(s2.id)}>
+                            <span className="rm-stepper-num">{complete ? <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3.5 8.5l3 3 6-7" /></svg> : n + 1}</span>
+                            <span className="rm-stepper-text">
+                              <span className="rm-stepper-name">{s2.label}</span>
+                              <span className="rm-stepper-meta">{currentStage?.id === s2.id ? "You are here · " : ""}{d}/{its.length} done</span>
+                            </span>
+                          </button>
+                        );
+                      })}
+                    </nav>
 
-                    <div className="rm-stage-grid">
+                    <div className="rm-stage-page">
+                      <div className="rm-stage-head">
+                        <span className="rm-stage-badge"><Icon name={st.id} /></span>
+                        <div className="rm-stage-head-text">
+                          <div className="rm-stage-kicker">Step {STAGES.indexOf(st) + 1} of {STAGES.length}</div>
+                          <h2 className="rm-stage-title">{st.label}</h2>
+                          <p className="rm-stage-about">{st.about}</p>
+                        </div>
+                        <div className="rm-stage-progress">
+                          <ProgressRing done={done} total={items.length} />
+                          <span>{done} of {items.length} done</span>
+                        </div>
+                      </div>
                       <section className="rm-card">
                         <div className="rm-card-head">Tasks <span>{items.length}</span></div>
                         <div className="rm-task-list">
                           {items.map((t) => renderRow(t))}
                         </div>
-                        <button className="rm-add" onClick={() => add({ stage: folder })}>+ Add a task</button>
+                        <button className="rm-add" onClick={() => add({ stage: activeId })}>+ Add a task</button>
                       </section>
-                      <section className="rm-card">
+                      <section className="rm-card rm-notes-card">
                         <div className="rm-card-head">Notes</div>
                         <textarea
                           className="rm-notes"
-                          value={notes[folder] ?? ""}
-                          onChange={(e) => writeNote(folder, e.target.value)}
+                          value={notes[activeId] ?? ""}
+                          onChange={(e) => writeNote(activeId, e.target.value)}
                           placeholder="Ideas, links, questions for the school…"
-                          rows={Math.max(8, (notes[folder] ?? "").split("\n").length + 1)}
+                          rows={Math.max(4, (notes[activeId] ?? "").split("\n").length + 1)}
                         />
                       </section>
+                      {STAGES.indexOf(st) < STAGES.length - 1 && (
+                        <button type="button" className="rm-next-step" onClick={() => setFolder(STAGES[STAGES.indexOf(st) + 1].id)}>
+                          Next step: {STAGES[STAGES.indexOf(st) + 1].label}
+                          <svg className="rm-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7" /></svg>
+                        </button>
+                      )}
                     </div>
                   </div>
                 );

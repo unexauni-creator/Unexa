@@ -269,19 +269,29 @@ function AnswersPanel({ profile, onClose, onSave }) {
       <div className="filter-panel answers-panel" onClick={e => e.stopPropagation()}>
         <div className="filter-handle-bar" />
         <div className="filter-header">
-          <span className="filter-title">Your answers</span>
+          <div>
+            <span className="filter-title">Your answers</span>
+            <div className="answers-lead">Programmes that fit these are marked “For you”.</div>
+          </div>
           <button className="filter-close-btn" onClick={onClose} aria-label="Close">✕</button>
         </div>
         <div className="filter-body">
-          <p className="filter-note">These are the answers from your first visit. Programmes that fit them are marked “For you” and come first on Home.</p>
           {STEPS.map(st => (
             <div key={st.key} className="answers-group">
-              <div className="filter-group-title">{st.title}</div>
+              <div className="answers-q">
+                <span>{st.title}</span>
+                {(() => { const v = draft[st.column]; const n = Array.isArray(v) ? v.length : v ? 1 : 0; return n > 0 && st.type === "multi" ? <em>{n} chosen</em> : null; })()}
+              </div>
               <div className="answers-sub">{st.sub}</div>
               <div className="answers-chips">
                 {st.options.map(o => {
                   const on = st.type === "multi" ? (draft[st.column] ?? []).includes(o) : draft[st.column] === o;
-                  return <button key={o} type="button" className={`answers-chip ${on ? "is-on" : ""}`} aria-pressed={on} onClick={() => pick(st, o)}>{o}</button>;
+                  return (
+                    <button key={o} type="button" className={`answers-chip ${on ? "is-on" : ""}`} aria-pressed={on} onClick={() => pick(st, o)}>
+                      {on && <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3.5 8.5l3 3 6-7" /></svg>}
+                      {o}
+                    </button>
+                  );
                 })}
               </div>
             </div>
@@ -764,7 +774,12 @@ export default function Home({ onSelectUni, savedUniversities, onToggleSave, cur
               {!loading && <span className="community-tab-count">{matching.length}</span>}
             </button>
           </div>
-          {hasPreferences(profile) && <button type="button" className="home-answers-btn" onClick={() => setShowAnswers(true)}>Your answers · edit</button>}
+          {hasPreferences(profile) && (
+            <button type="button" className="home-answers-btn" onClick={() => setShowAnswers(true)}>
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16z" /><path d="M13.5 6.5l4 4" /></svg>
+              Edit your answers
+            </button>
+          )}
         </div>
       </div>
 
