@@ -748,11 +748,17 @@ export default function Home({ onSelectUni, savedUniversities, onToggleSave, cur
             )}
           </div>
           <div className="home-icon-buttons">
-            <button className="home-filter-btn" onClick={() => { setFilters(appliedFilters); setShowFilter(true); }}>
+            <button className="home-filter-btn" onClick={() => { setFilters(appliedFilters); setShowFilter(true); }} aria-label="Filters">
               <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h10M18 7h2M4 17h4M12 17h8" /><circle cx="16" cy="7" r="2" /><circle cx="10" cy="17" r="2" /></svg>
-              Filters
+              <span className="home-btn-label">Filters</span>
               {activeCount > 0 && <span className="home-filter-count">{activeCount}</span>}
             </button>
+            {hasPreferences(profile) && (
+              <button className="home-filter-btn" onClick={() => setShowAnswers(true)} title="The answers “For you” is based on" aria-label="Your answers">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16z" /><path d="M13.5 6.5l4 4" /></svg>
+                <span className="home-btn-label">Your answers</span>
+              </button>
+            )}
             <button className="home-icon-btn filter-trigger" onClick={() => setShowNotif(true)} aria-label="Notifications">
               <img src="/notification.svg" alt="Notifications" />
               {unreadNotifCount > 0 && <span className="filter-badge">{unreadNotifCount}</span>}
@@ -774,12 +780,6 @@ export default function Home({ onSelectUni, savedUniversities, onToggleSave, cur
               {!loading && <span className="community-tab-count">{matching.length}</span>}
             </button>
           </div>
-          {hasPreferences(profile) && (
-            <button type="button" className="home-answers-btn" onClick={() => setShowAnswers(true)}>
-              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16z" /><path d="M13.5 6.5l4 4" /></svg>
-              Edit your answers
-            </button>
-          )}
         </div>
       </div>
 
