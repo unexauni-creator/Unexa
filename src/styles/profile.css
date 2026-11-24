@@ -533,3 +533,17 @@
 .settings-page .settings-nav-logout svg,
 .settings-page .settings-delete-btn svg,
 .profile-page .profile-settings-btn svg { width: 14px; height: 14px; }
+
+/* Your answers: a button next to Settings, opens a sidebar on the right */
+.profile-btns { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.profile-answers-btn { display: inline-flex; align-items: center; gap: 8px; min-height: 40px; padding: 0 16px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.9); background: rgba(255,255,255,0.7); box-shadow: 0 1px 2px rgba(43,31,24,0.05); font-family: 'Nunito', sans-serif; font-size: 14px; font-weight: 700; color: #2b1f18; cursor: pointer; transition: background 0.15s; }
+.profile-answers-btn:hover { background: #fff; }
+.profile-answers-btn svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.profile-answers-count { font-size: 12px; font-weight: 700; color: #8a7c70; background: #f3eee8; border-radius: 100px; padding: 1px 8px; }
+.profile-btns { margin-top: 16px; }
+.profile-btns .profile-settings-btn { margin: 0; }
+.profile-page .profile-btns .profile-settings-btn { margin: 0; }
+.profile-page .profile-answers-btn { min-height: 0; padding: 8px 14px; font-size: 13px; line-height: 1.2; border-radius: 10px; }
+.profile-page .profile-answers-btn svg { width: 14px; height: 14px; }
+.profile-page .profile-answers-count { font-size: 11px; padding: 0 7px; }
+@media (max-width: 768px) { .profile-btns { margin-top: 14px; margin-left: 8px; } }

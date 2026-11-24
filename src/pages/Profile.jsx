@@ -1,10 +1,11 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { createPortal } from "react-dom";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "../lib/supabaseClient";
 import UniImage from "../components/UniImage.jsx";
 import { getInitials } from "../lib/initials.js";
 import { loadPrefs, savePrefs } from "../lib/notifications.js";
+import { STEPS } from "../lib/onboardingSteps.js";
 
 const SETTINGS_SECTIONS = [
   { id: "profile", label: "Edit profile" },
@@ -23,6 +24,112 @@ function ToggleSwitch({ checked, onChange }) {
     >
       <span className="settings-toggle-knob" />
     </button>
+  );
+}
+
+// The onboarding answers, right on the profile page: a summary, and the same questions to change them.
+// Home marks programmes that fit them "For you".
+const emptyDraft = (data) => Object.fromEntries(STEPS.map(st => [st.column, data?.[st.column] ?? (st.type === "multi" ? [] : "")]));
+const chosen = (v) => (Array.isArray(v) ? v : v ? [v] : []);
+
+function ProfileAnswers() {
+  const [saved, setSaved] = useState(null);
+  const [draft, setDraft] = useState(null); // non-null while the sidebar is open
+  const [userId, setUserId] = useState(null);
+  const [saving, setSaving] = useState(false);
+  const [status, setStatus] = useState(null);
+  useEffect(() => {
+    let alive = true;
+    (async () => {
+      const { data: { user } = {} } = await supabase.auth.getUser().catch(() => ({ data: {} }));
+      const { data } = user ? await supabase.from("profiles").select("*").eq("id", user.id).maybeSingle() : { data: null };
+      if (!alive) return;
+      setUserId(user?.id ?? null);
+      setSaved(emptyDraft(data));
+    })();
+    return () => { alive = false; };
+  }, []);
+  useEffect(() => {
+    if (!draft) return;
+    const esc = (e) => { if (e.key === "Escape") setDraft(null); };
+    document.addEventListener("keydown", esc);
+    return () => document.removeEventListener("keydown", esc);
+  }, [draft]);
+  function pick(st, option) {
+    setStatus(null);
+    setDraft(d => {
+      if (st.type === "single") return { ...d, [st.column]: d[st.column] === option ? "" : option };
+      const cur = d[st.column] ?? [];
+      if (cur.includes(option)) return { ...d, [st.column]: cur.filter(x => x !== option) };
+      if (st.max && cur.length >= st.max) return d;
+      return { ...d, [st.column]: [...cur, option] };
+    });
+  }
+  async function save() {
+    if (!userId) { setStatus("error"); return; }
+    setSaving(true);
+    const { error } = await supabase.from("profiles").upsert({ id: userId, ...draft });
+    setSaving(false);
+    if (error) { setStatus("error"); return; }
+    setSaved(draft); setStatus("saved");
+    setTimeout(() => { setDraft(null); setStatus(null); }, 900);
+  }
+  const count = saved ? STEPS.reduce((n, st) => n + (chosen(saved[st.column]).length ? 1 : 0), 0) : 0;
+  return (
+    <>
+      <button className="profile-answers-btn" onClick={() => { setStatus(null); setDraft(saved ?? emptyDraft(null)); }}>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16z" /><path d="M13.5 6.5l4 4" /></svg>
+        Your answers
+        {saved && <span className="profile-answers-count">{count}/{STEPS.length}</span>}
+      </button>
+      {draft && createPortal(
+        <div className="filter-backdrop" onClick={() => setDraft(null)}>
+          <div className="filter-panel answers-panel" role="dialog" aria-modal="true" aria-label="Your answers" onClick={e => e.stopPropagation()}>
+            <div className="filter-handle-bar" />
+            <div className="filter-header">
+              <div>
+                <span className="filter-title">Your answers</span>
+                <div className="answers-lead">Programmes that fit these are marked “For you” on Home.</div>
+              </div>
+              <button className="filter-close-btn" onClick={() => setDraft(null)} aria-label="Close">✕</button>
+            </div>
+            <div className="filter-body">
+              {STEPS.map(st => {
+                const v = draft[st.column];
+                const n = chosen(v).length;
+                return (
+                  <div key={st.key} className="answers-group">
+                    <div className="answers-q">
+                      <span>{st.title}</span>
+                      {n > 0 && st.type === "multi" && <em>{n} chosen</em>}
+                    </div>
+                    <div className="answers-sub">{st.sub}</div>
+                    <div className="answers-chips">
+                      {st.options.map(o => {
+                        const on = st.type === "multi" ? (v ?? []).includes(o) : v === o;
+                        return (
+                          <button key={o} type="button" className={`answers-chip ${on ? "is-on" : ""}`} aria-pressed={on} onClick={() => pick(st, o)}>
+                            {on && <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3.5 8.5l3 3 6-7" /></svg>}
+                            {o}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+            <div className="filter-footer">
+              {status === "saved" && <span className="answers-saved">✓ Saved</span>}
+              {status === "error" && <span className="answers-error" role="alert">Couldn't save. Try again.</span>}
+              <button className="filter-clear-btn" onClick={() => setDraft(null)} disabled={saving}>Cancel</button>
+              <button className="filter-save-btn" onClick={save} disabled={saving}>{saving ? "Saving…" : "Save answers"}</button>
+            </div>
+          </div>
+        </div>,
+        document.body
+      )}
+    </>
   );
 }
 
@@ -457,6 +564,8 @@ export default function Profile({
             {photoError && <p className="settings-save-error" role="alert">{photoError}</p>}
           </div>
         </div>
+        <div className="profile-btns">
+        <ProfileAnswers />
         <button className="profile-settings-btn" onClick={() => setShowSettings(true)}>
           Settings
           <svg className="profile-settings-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -464,6 +573,7 @@ export default function Profile({
             <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
           </svg>
         </button>
+        </div>
       </div>
 
       <div className="profile-content">

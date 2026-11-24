@@ -6,7 +6,6 @@ import UniImage from "../components/UniImage.jsx";
 import { searchPrograms, buildSuggestions, highlight } from "../lib/search.js";
 import { buildNotifications, loadGone, loadPrefs, loadRead, saveGone, saveRead, timeAgo } from "../lib/notifications.js";
 import { hasPreferences, matchScores } from "../lib/recommendations.js";
-import { STEPS } from "../lib/onboardingSteps.js";
 
 const DEGREES = ["Bachelor", "Master", "Foundation Year", "Short Course", "Summer School", "Online Course"];
 const LANGUAGES = ["French", "English", "French/English", "German", "Spanish", "Italian", "Polish", "Ukrainian", "Korean", "Japanese", "Chinese"];
@@ -251,61 +250,6 @@ function FilterPanel({ filters, setFilters, universities = [], onClose, onApply,
   );
 }
 
-// The onboarding answers, to look at again and change. Saved to the profile; "For you" follows them.
-function AnswersPanel({ profile, onClose, onSave }) {
-  const [draft, setDraft] = useState(() => Object.fromEntries(STEPS.map(st => [st.column, profile?.[st.column] ?? (st.type === "multi" ? [] : "")])));
-  const [saving, setSaving] = useState(false);
-  function pick(st, option) {
-    setDraft(d => {
-      if (st.type === "single") return { ...d, [st.column]: d[st.column] === option ? "" : option };
-      const cur = d[st.column] ?? [];
-      if (cur.includes(option)) return { ...d, [st.column]: cur.filter(x => x !== option) };
-      if (st.max && cur.length >= st.max) return d;
-      return { ...d, [st.column]: [...cur, option] };
-    });
-  }
-  return (
-    <div className="filter-backdrop" onClick={onClose}>
-      <div className="filter-panel answers-panel" onClick={e => e.stopPropagation()}>
-        <div className="filter-handle-bar" />
-        <div className="filter-header">
-          <div>
-            <span className="filter-title">Your answers</span>
-            <div className="answers-lead">Programmes that fit these are marked “For you”.</div>
-          </div>
-          <button className="filter-close-btn" onClick={onClose} aria-label="Close">✕</button>
-        </div>
-        <div className="filter-body">
-          {STEPS.map(st => (
-            <div key={st.key} className="answers-group">
-              <div className="answers-q">
-                <span>{st.title}</span>
-                {(() => { const v = draft[st.column]; const n = Array.isArray(v) ? v.length : v ? 1 : 0; return n > 0 && st.type === "multi" ? <em>{n} chosen</em> : null; })()}
-              </div>
-              <div className="answers-sub">{st.sub}</div>
-              <div className="answers-chips">
-                {st.options.map(o => {
-                  const on = st.type === "multi" ? (draft[st.column] ?? []).includes(o) : draft[st.column] === o;
-                  return (
-                    <button key={o} type="button" className={`answers-chip ${on ? "is-on" : ""}`} aria-pressed={on} onClick={() => pick(st, o)}>
-                      {on && <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3.5 8.5l3 3 6-7" /></svg>}
-                      {o}
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-          ))}
-        </div>
-        <div className="filter-footer">
-          <button className="filter-clear-btn" onClick={onClose}>Cancel</button>
-          <button className="filter-save-btn" disabled={saving} onClick={async () => { setSaving(true); await onSave(draft); setSaving(false); }}>{saving ? "Saving…" : "Save answers"}</button>
-        </div>
-      </div>
-    </div>
-  );
-}
-
 function NotificationPanel({ notifications, readIds, onRead, onReadAll, onDelete, onDeleteAll, onOpen, onClose }) {
   const unreadCount = notifications.filter(n => !readIds.has(n.id)).length;
 
@@ -464,7 +408,6 @@ export default function Home({ onSelectUni, savedUniversities, onToggleSave, cur
   const [profile, setProfile] = useState(demoProfile ?? null);
   const [profileLoaded, setProfileLoaded] = useState(Boolean(demoProfile));
   const [onlyForYou, setOnlyForYou] = useState(Boolean(demoProfile));
-  const [showAnswers, setShowAnswers] = useState(false);
   const [goneIds, setGoneIds] = useState(() => loadGone(currentUser?.id));
   const [showFilter, setShowFilter] = useState(false);
   const [showNotif, setShowNotif] = useState(false);
@@ -554,15 +497,6 @@ export default function Home({ onSelectUni, savedUniversities, onToggleSave, cur
       saveGone(currentUser?.id, next);
       return next;
     });
-  }
-
-  async function saveAnswers(draft) {
-    if (!currentUser?.id) { setProfile(p => ({ ...(p ?? {}), ...draft })); setShowAnswers(false); return; }
-    const { error } = await supabase.from("profiles").upsert({ id: currentUser.id, ...draft });
-    if (error) { setToast("Couldn't save your answers. Try again."); return; }
-    setProfile(p => ({ ...(p ?? {}), ...draft }));
-    setShowAnswers(false);
-    setToast("Answers saved. “For you” is updated.");
   }
 
   function markRead(ids) {
@@ -753,12 +687,6 @@ export default function Home({ onSelectUni, savedUniversities, onToggleSave, cur
               <span className="home-btn-label">Filters</span>
               {activeCount > 0 && <span className="home-filter-count">{activeCount}</span>}
             </button>
-            {hasPreferences(profile) && (
-              <button className="home-filter-btn" onClick={() => setShowAnswers(true)} title="The answers “For you” is based on" aria-label="Your answers">
-                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16z" /><path d="M13.5 6.5l4 4" /></svg>
-                <span className="home-btn-label">Your answers</span>
-              </button>
-            )}
             <button className="home-icon-btn filter-trigger" onClick={() => setShowNotif(true)} aria-label="Notifications">
               <img src="/notification.svg" alt="Notifications" />
               {unreadNotifCount > 0 && <span className="filter-badge">{unreadNotifCount}</span>}
@@ -848,8 +776,6 @@ export default function Home({ onSelectUni, savedUniversities, onToggleSave, cur
           onClose={() => { setFilters(appliedFilters); setShowFilter(false); }}
           onApply={applyFilters} onClear={clearFilters} />
       )}
-
-      {showAnswers && <AnswersPanel profile={profile} onClose={() => setShowAnswers(false)} onSave={saveAnswers} />}
 
       {showNotif && (
         <NotificationPanel

@@ -356,9 +356,7 @@ export default function CareerRoadmap({ savedUniversities = [], currentUser }) {
         <h1 className="rm-title">Roadmap</h1>
         <p className="rm-desc">Everything to do before you start art school, in order.<br />Tick tasks off as you go.</p>
       </header>
-      <div className="rm-panel">
-        <div className="rm-scroll">
-          <div className="rm-doc">
+      <div className="rm-top">
             {!tipHidden && (
               <div className="rm-callout">
                 <Icon name="info" className="rm-callout-icon" />
@@ -372,7 +370,15 @@ export default function CareerRoadmap({ savedUniversities = [], currentUser }) {
               <div className="rm-path-badge"><span>Step {STAGES.indexOf(st) + 1}{currentStage?.id === activeId ? " · you are here" : ""}</span>{st.label}</div>
               <div className="rm-path-inner">
                 <svg className="rm-path-line" viewBox="0 0 1000 200" preserveAspectRatio="none" aria-hidden="true">
+                  <defs>
+                    <linearGradient id="rm-path-fill" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stopColor="#c9a58f" stopOpacity="0.38" />
+                      <stop offset="100%" stopColor="#c9a58f" stopOpacity="0" />
+                    </linearGradient>
+                  </defs>
+                  <path className="rm-path-area" d={`${PATH_D} L${PATH_POINTS[PATH_POINTS.length - 1][0]},200 L${PATH_POINTS[0][0]},200 Z`} fill="url(#rm-path-fill)" />
                   <path d={PATH_D} />
+                  <path className="rm-path-progress" d={PATH_D} pathLength="1" strokeDasharray={`${currentStage ? STAGES.indexOf(currentStage) / (STAGES.length - 1) : 1} 1`} />
                 </svg>
                 {STAGES.map((s2, n) => {
                   const its = list.filter((t) => t.stage === s2.id);
@@ -382,13 +388,40 @@ export default function CareerRoadmap({ savedUniversities = [], currentUser }) {
                   const active = s2.id === activeId && view === "list";
                   return (
                     <div key={s2.id} className="rm-path-stop" style={{ left: `${x / 10}%`, top: `${y / 2}%` }}>
-                      <span className="rm-path-tick" aria-hidden="true" />
-                      <button type="button" aria-current={active ? "step" : undefined} aria-label={`Step ${n + 1}: ${s2.label}, ${d} of ${its.length} done`}
-                        className={`rm-path-dot ${active ? "is-active" : ""} ${complete ? "is-complete" : ""}`} onClick={() => openStep(s2.id)} />
-                      <span className={`rm-path-name ${active ? "is-active" : ""}`}>{s2.label}<em>{d}/{its.length}</em></span>
+                      <button type="button" aria-current={active ? "step" : undefined} aria-label={`Step ${n + 1}: ${s2.label}, ${d} of ${its.length} done`} title={`${n + 1}. ${s2.label} · ${d}/${its.length} done`}
+                        className={`rm-path-dot ${active ? "is-active" : ""} ${complete ? "is-complete" : ""}`} onClick={() => openStep(s2.id)}>
+                        {complete ? <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 8.5l2.5 2.5L12 5.5" /></svg> : <span>{n + 1}</span>}
+                      </button>
                     </div>
                   );
                 })}
+                {/* chart axes: numbers on the left, months along the bottom */}
+                <div className="rm-path-grid" aria-hidden="true">
+                  {[100, 75, 50, 25, 0].map((v, i) => (
+                    <div key={v} className="rm-path-gridline" style={{ top: `${i * 25}%` }}><span>{v}</span></div>
+                  ))}
+                </div>
+                <div className="rm-path-axis" aria-hidden="true">
+                  {(() => {
+                    const dates = list.map((t) => t.date).filter(Boolean).sort();
+                    const start = new Date(today.getFullYear(), today.getMonth(), 1);
+                    const last = dates.length ? fromIso(dates[dates.length - 1]) : new Date(today.getFullYear() + 1, today.getMonth(), 1);
+                    const months = [];
+                    for (let d = new Date(start); d <= last && months.length < 36; d = new Date(d.getFullYear(), d.getMonth() + 1, 1)) months.push(d);
+                    if (months.length < 2) months.push(new Date(start.getFullYear(), start.getMonth() + 1, 1));
+                    const step = Math.ceil(months.length / 7);
+                    const shown = months.filter((_, i) => i % step === 0);
+                    return shown.map((d, i) => {
+                      const x = 7 + (86 * i) / Math.max(1, shown.length - 1);
+                      const newYear = i === 0 || i === shown.length - 1 || d.getMonth() < step;
+                      return (
+                        <span key={d.toISOString()} className="rm-path-month" style={{ left: `${x}%` }}>
+                          {d.toLocaleDateString("en-GB", { month: "short" })}{newYear ? <em>{d.getFullYear()}</em> : null}
+                        </span>
+                      );
+                    });
+                  })()}
+                </div>
               </div>
             </div>
 
@@ -397,7 +430,7 @@ export default function CareerRoadmap({ savedUniversities = [], currentUser }) {
               <div className="rm-widget rm-ring-card">
                 <ProgressRing done={doneCount} total={list.length} />
                 <div className="rm-next">
-                  <div className="rm-widget-label">{nextStep ? "Your next step" : "All done"}</div>
+                  <div className="rm-widget-label"><Icon name={currentStage?.id ?? "start"} />{nextStep ? "Your next step" : "All done"}</div>
                   {nextStep ? (
                     <>
                       <div className="rm-next-title">{nextStep.title}</div>
@@ -433,15 +466,20 @@ export default function CareerRoadmap({ savedUniversities = [], currentUser }) {
                 <div className="rm-faint">{!startYear || startYear === "Not sure yet" ? "Pick a start date and every task gets a due date." : `Task dates are planned for ${startYear}.`}</div>
               </div>
             </div>
+      </div>
 
-            {/* views */}
-            <div className="rm-views">
-              <div className="community-tabs rm-tabs" role="tablist">
-                <button role="tab" aria-selected={view === "list"} className={`community-tab ${view === "list" ? "active" : ""}`} onClick={() => setView("list")}>Steps <span className="community-tab-count">{STAGES.length}</span></button>
-                <button role="tab" aria-selected={view === "board"} className={`community-tab ${view === "board" ? "active" : ""}`} onClick={() => setView("board")}>By status <span className="community-tab-count">{list.length}</span></button>
-              </div>
-              <button className="rm-ghost" onClick={() => setConfirmReset(true)}>Start over</button>
-            </div>
+      <div className="rm-stack">
+      {/* views: tabs sit on top of the panel, like Community */}
+      <div className="rm-views">
+        <div className="community-tabs rm-tabs" role="tablist">
+          <button role="tab" aria-selected={view === "list"} className={`community-tab ${view === "list" ? "active" : ""}`} onClick={() => setView("list")}>Steps <span className="community-tab-count">{STAGES.length}</span></button>
+          <button role="tab" aria-selected={view === "board"} className={`community-tab ${view === "board" ? "active" : ""}`} onClick={() => setView("board")}>By status <span className="community-tab-count">{list.length}</span></button>
+        </div>
+        <button className="rm-ghost" onClick={() => setConfirmReset(true)}>Start over</button>
+      </div>
+      <div className="rm-panel">
+        <div className="rm-scroll">
+          <div className="rm-doc">
 
             {view === "list" ? (
               /* steps on the left, the chosen step's tasks and notes on the right: no clicking in and out */
@@ -458,6 +496,8 @@ export default function CareerRoadmap({ savedUniversities = [], currentUser }) {
                         </div>
                         <span className="rm-detail-count">{done} of {items.length} done</span>
                       </div>
+                      <div className="rm-detail-body">
+                      <div className="rm-detail-tasks">
                       <div className="rm-task-list">
                         {items.map((t) => renderRow(t))}
                       </div>
@@ -470,7 +510,8 @@ export default function CareerRoadmap({ savedUniversities = [], currentUser }) {
                           </button>
                         )}
                       </div>
-                      {/* notes for this step: shown, edited and saved here */}
+                      </div>
+                      {/* notes for this step: shown, edited and saved here, beside the tasks */}
                       <div className="rm-notes-block">
                         <div className="rm-notes-head">
                           <span>Notes</span>
@@ -499,6 +540,7 @@ export default function CareerRoadmap({ savedUniversities = [], currentUser }) {
                         ) : (
                           <button type="button" className="rm-notes-empty" onClick={() => setNoteDraft("")}>+ Write notes for this step: ideas, links, questions for the school</button>
                         )}
+                      </div>
                       </div>
                     </section>
                   </>
@@ -559,6 +601,7 @@ export default function CareerRoadmap({ savedUniversities = [], currentUser }) {
             <p className="rm-hint">Some deadlines are based on last year until the school publishes new ones. Check the school's page before you apply.</p>
           </div>
         </div>
+      </div>
       </div>
 
       {undo && (

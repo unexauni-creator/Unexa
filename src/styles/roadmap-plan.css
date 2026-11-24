@@ -378,3 +378,153 @@ button.rm-date { font: inherit; font-size: 12.5px; font-weight: 600; border: non
   .rm-path-inner { top: 70px; left: 9%; right: 9%; height: 52px; }
   .rm-path-tick { display: none; }
 }
+
+
+/* Path and the three widgets sit on the page; only the steps live in the frosted panel. The page scrolls as one. */
+.rm-page { height: 100%; overflow-y: auto; }
+.rm-top { flex-shrink: 0; display: flex; flex-direction: column; gap: 16px; }
+.rm-top .rm-path { margin-bottom: 0; }
+.rm-panel { flex: 0 0 auto; min-height: auto; overflow: visible; }
+.rm-scroll { overflow: visible; }
+.rm-page::-webkit-scrollbar { width: 6px; }
+.rm-page::-webkit-scrollbar-thumb { background: rgba(172,136,118,0.4); border-radius: 6px; }
+
+/* Glass, as in the rest of the app: the path and the three widgets */
+.rm-path, .rm-top .rm-widget, .rm-top .rm-sticker, .rm-top .rm-sticker.soon, .rm-top .rm-sticker.late, .rm-top .rm-sticker.empty {
+  background: linear-gradient(160deg, rgba(255,255,255,0.55) 0%, rgba(255,255,255,0.25) 100%);
+  border: 1px solid rgba(255,255,255,0.6); border-radius: 24px;
+  box-shadow: 0 18px 40px rgba(43,31,24,0.05), inset 0 1px 0 rgba(255,255,255,0.5);
+  backdrop-filter: blur(20px) saturate(140%); -webkit-backdrop-filter: blur(20px) saturate(140%); }
+.rm-path { overflow: hidden; }
+.rm-path-line path.rm-path-area { stroke: none; fill: url(#rm-path-fill); }
+
+/* Tabs on top of the panel, like Community */
+.rm-stack { flex-shrink: 0; display: flex; flex-direction: column; }
+.rm-stack > .rm-views { margin: 0; align-items: flex-end; }
+.rm-stack > .rm-views .rm-ghost { margin-bottom: 8px; }
+.rm-stack .rm-panel { border-top-left-radius: 0; }
+.rm-stack .rm-doc { padding-top: 24px; }
+
+/* Graph, cleaner: no dashed ticks, numbered stops, the walked part of the wave in dark brown */
+.rm-path-tick { display: none; }
+.rm-path-line path { stroke: #e3cfbf; stroke-width: 3; }
+.rm-path-line path.rm-path-progress { stroke: #8f6c5a; stroke-width: 3.5; fill: none; }
+.rm-path-dot { display: flex; align-items: center; justify-content: center; left: -14px; top: -14px; width: 28px; height: 28px; border: 2px solid #d7bfae; background: #fff; color: #8a7c70; font: inherit; font-size: 12px; font-weight: 800; box-shadow: 0 4px 10px rgba(43,31,24,0.08); }
+.rm-path-dot svg { width: 14px; height: 14px; fill: none; stroke: #fff; stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; }
+.rm-path-dot.is-complete { background: #8f6c5a; border-color: #8f6c5a; }
+.rm-path-dot.is-active { left: -18px; top: -18px; width: 36px; height: 36px; background: #5c463b; border-color: #5c463b; color: #fff; font-size: 14px; box-shadow: 0 0 0 7px rgba(172,136,118,0.18), 0 8px 18px rgba(92,70,59,0.3); }
+.rm-path-name { top: 28px; font-size: 14px; color: #4a3f38; }
+.rm-path-name em { margin-top: 2px; padding: 1px 8px; border-radius: 100px; background: rgba(172,136,118,0.12); color: #8a7c70; }
+.rm-path-name.is-active { color: #1f1813; }
+
+/* the three widgets always share one row above phone size */
+.rm-widgets { grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr) minmax(0, 1fr); }
+@media (max-width: 1100px) {
+  .rm-widgets { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .rm-ring-card { grid-column: auto; flex-direction: column; align-items: flex-start; gap: 12px; }
+  .rm-ring-card .rm-ring { width: 56px; height: 56px; }
+  .rm-ring-card .rm-ring span { font-size: 14px; }
+  .rm-next-title { font-size: 17px; }
+}
+@media (max-width: 768px) {
+  .rm-widgets { grid-template-columns: 1fr; }
+  .rm-ring-card { flex-direction: row; align-items: center; }
+}
+
+/* step card: tasks on the left, notes on the right */
+.rm-detail { container-type: inline-size; }
+.rm-detail-body { display: grid; grid-template-columns: 1fr; }
+.rm-detail-tasks { min-width: 0; }
+@container (min-width: 620px) {
+  .rm-detail-body { grid-template-columns: minmax(0, 1fr) minmax(220px, 34%); gap: 22px; align-items: start; }
+  .rm-detail-body .rm-notes-block { margin-top: 8px; padding: 16px 0 0 22px; border-top: none; border-left: 1px solid var(--rm-line); align-self: stretch; }
+  .rm-detail-body .rm-notes-empty { min-height: 120px; text-align: left; align-items: flex-start; }
+}
+/* when the step card is not wide, status and date go under the task title so the title is read in full */
+@container (min-width: 620px) and (max-width: 940px) {
+  .rm-detail-body .rm-row { flex-wrap: wrap; row-gap: 4px; }
+  .rm-detail-body .rm-row-main { flex: 1 1 calc(100% - 40px); }
+  .rm-detail-body .rm-row > .rm-dd-status { margin-left: 34px; }
+}
+@container (max-width: 520px) {
+  .rm-row { flex-wrap: wrap; row-gap: 4px; }
+  .rm-row-main { flex: 1 1 calc(100% - 40px); }
+  .rm-row > .rm-dd-status { margin-left: 34px; }
+}
+
+/* labels in one row under the wave, all on the same line, with the step's month and day */
+.rm-path { height: 300px; }
+.rm-path-inner { top: 70px; height: 104px; }
+.rm-path-name { display: none; }
+.rm-path-axis { position: absolute; left: 0; right: 0; top: calc(100% + 34px); height: 0; }
+.rm-path-axis::before { content: ""; position: absolute; left: -4%; right: -4%; top: -14px; border-top: 1px solid rgba(43,31,24,0.07); }
+.rm-path-label { position: absolute; top: 0; transform: translateX(-50%); display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 0; border: none; background: none; font: inherit; cursor: pointer; white-space: nowrap; }
+.rm-path-label strong { font-size: 14px; font-weight: 700; color: #6d6058; }
+.rm-path-label.is-active strong { color: #1f1813; }
+.rm-path-meta { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 600; color: #a99c92; }
+.rm-path-meta em { font-style: normal; font-weight: 700; padding: 1px 8px; border-radius: 100px; background: rgba(172,136,118,0.12); color: #8a7c70; }
+.rm-path-label.is-active .rm-path-meta { color: #6d6058; }
+@media (max-width: 900px) {
+  .rm-path-label strong { font-size: 12.5px; }
+  .rm-path-meta em { display: none; }
+}
+@media (max-width: 768px) {
+  .rm-path { height: 210px; }
+  .rm-path-inner { top: 66px; height: 56px; }
+  .rm-path-axis { top: calc(100% + 30px); }
+  .rm-path-label:not(.is-active) strong { display: none; }
+  .rm-path-meta { font-size: 11px; }
+}
+
+/* the three widgets: same padding, label at the top of each, content from the top */
+.rm-top .rm-widget, .rm-top .rm-sticker { justify-content: flex-start; padding: 20px 22px; gap: 6px; min-height: 170px; box-sizing: border-box; }
+.rm-top .rm-ring-card { position: relative; flex-direction: column; align-items: stretch; gap: 0; }
+.rm-top .rm-ring-card .rm-ring { position: absolute; top: 16px; right: 16px; width: 52px; height: 52px; }
+.rm-top .rm-ring-card .rm-ring span { font-size: 13px; }
+.rm-top .rm-ring-card .rm-next { padding-right: 60px; gap: 6px; }
+.rm-top .rm-widget-label, .rm-top .rm-sticker-label { min-height: 20px; margin: 0 0 4px; }
+.rm-top .rm-next-title, .rm-top .rm-sticker-days, .rm-top .rm-start-card .rm-dd-btn { margin-top: 0; }
+.rm-top .rm-next-done { margin-top: auto; }
+.rm-top .rm-ring-card .rm-next { flex: 1; }
+.rm-top .rm-next-done { white-space: nowrap; }
+@media (max-width: 1100px) {
+  .rm-top .rm-widget, .rm-top .rm-sticker { padding: 18px; }
+  .rm-top .rm-ring-card .rm-ring { width: 42px; height: 42px; top: 14px; right: 14px; }
+  .rm-top .rm-ring-card .rm-ring span { font-size: 11px; }
+  .rm-top .rm-ring-card .rm-next { padding-right: 0; }
+  .rm-top .rm-ring-card .rm-widget-label { padding-right: 48px; }
+  .rm-top .rm-next-title { font-size: 16px; }
+  .rm-top .rm-sticker-days { font-size: 34px; }
+  .rm-top .rm-sticker-title { font-size: 14px; }
+  .rm-top .rm-faint { font-size: 13px; }
+}
+
+/* chart axes */
+.rm-path { height: 272px; }
+.rm-path-inner { top: 64px; height: 130px; left: 8%; }
+.rm-path-axis::before { display: none; }
+.rm-path-label { display: none; }
+.rm-path-grid { position: absolute; inset: 0; pointer-events: none; z-index: 0; }
+.rm-path-gridline { position: absolute; left: 0; right: 0; border-top: 1px dashed rgba(43,31,24,0.08); }
+.rm-path-gridline:last-child { border-top-style: solid; border-top-color: rgba(43,31,24,0.12); }
+.rm-path-gridline span { position: absolute; right: calc(100% + 12px); top: -8px; font-size: 11.5px; font-weight: 700; color: #b3a69c; font-variant-numeric: tabular-nums; }
+.rm-path-line, .rm-path-stop { z-index: 1; }
+.rm-path-axis { top: calc(100% + 14px); }
+.rm-path-month { position: absolute; top: 0; transform: translateX(-50%); display: flex; flex-direction: column; align-items: center; font-size: 12.5px; font-weight: 700; color: #8a7c70; white-space: nowrap; }
+.rm-path-month em { font-style: normal; font-size: 10.5px; font-weight: 600; color: #b3a69c; }
+@media (max-width: 768px) {
+  .rm-path { height: 220px; }
+  .rm-path-inner { top: 64px; height: 90px; left: 12%; right: 6%; }
+  .rm-path-month { font-size: 11px; }
+}
+
+/* next step card: the ring sits on the right, beside the text, never over it */
+.rm-top .rm-ring-card { display: grid; grid-template-columns: minmax(0, 1fr) auto; column-gap: 14px; align-items: start; }
+.rm-top .rm-ring-card .rm-ring { position: relative; top: auto; right: auto; order: 2; width: 72px; height: 72px; grid-column: 2; grid-row: 1; }
+.rm-top .rm-ring-card .rm-ring span { font-size: 15px; }
+.rm-top .rm-ring-card .rm-next { grid-column: 1; grid-row: 1; padding-right: 0; height: 100%; }
+.rm-top .rm-ring-card .rm-widget-label { padding-right: 0; }
+@media (max-width: 1100px) {
+  .rm-top .rm-ring-card .rm-ring { width: 56px; height: 56px; }
+  .rm-top .rm-ring-card .rm-ring span { font-size: 12.5px; }
+}

@@ -389,7 +389,8 @@ export default function App() {
       <Route path="/preview/detail" element={<PreviewDetail />} />
       <Route path="/preview/dorm" element={<PreviewDorm />} />
       {import.meta.env.DEV && (
-        <Route path="/dev/roadmap" element={<DevRoadmap />} />
+        <><Route path="/dev/roadmap" element={<DevRoadmap />} />
+        <Route path="/dev/profile" element={<div className="app"><main className="main"><Profile userName="Lina" userEmail="lina@example.test" /></main></div>} /></>
       )}
       {import.meta.env.DEV && (
         <Route path="/dev/home" element={<div className="app"><main className="main"><DevHome onSelectUni={() => {}} savedUniversities={[]} onToggleSave={() => {}} currentUser={{ name: "Lina" }} demoProfile={{ study_fields: ["Graphic Design", "Illustration"], countries: ["Italy", "Germany"], study_level: "Bachelor" }} /></main></div>} />
