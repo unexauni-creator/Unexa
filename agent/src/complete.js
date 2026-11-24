@@ -9,6 +9,7 @@
 //   npm run complete                           усі школи, де є порожні поля, потім країни
 //   npm run complete -- --only "RISD"          одна школа
 //   npm run complete -- --countries-only       лише віза / кошти / державні стипендії
+//   npm run complete -- --force --pages 30 --pdfs 8   глибший прохід: усі школи знову, більше сторінок і PDF
 //   npm run complete -- --refresh              щомісячне оновлення: перечитує всі школи й ОНОВЛЮЄ
 //                                              дедлайни, вартість, intake, вимоги й стипендії, якщо вони змінились
 import { access, mkdir, writeFile } from "node:fs/promises";
@@ -25,6 +26,7 @@ const { values: args } = parseArgs({
     only: { type: "string" },
     limit: { type: "string", default: "100" },
     pages: { type: "string", default: "22" },
+    pdfs: { type: "string", default: "5" }, // how many official PDFs (fee tables, guides) to read per school
     "min-confidence": { type: "string", default: "0.5" },
     "dry-run": { type: "boolean", default: false },
     force: { type: "boolean", default: false },
@@ -149,7 +151,7 @@ async function readPages(urls, log) {
   for (const url of urls) {
     await sleep(1200);
     if (/\.pdf($|\?)/i.test(url)) {
-      if (pdfs.length >= 5) continue;
+      if (pdfs.length >= Number(args.pdfs)) continue;
       const pdf = await fetchPdf(url);
       if (pdf) { pdfs.push(pdf); log(`   PDF: ${url}`); }
       continue;

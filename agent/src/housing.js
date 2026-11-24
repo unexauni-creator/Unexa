@@ -7,6 +7,7 @@
 //   npm run housing -- --dry-run --only "Albertina"   show the result, no saving
 //   npm run housing                                    schools with no prices yet
 //   npm run housing -- --force                         every school again
+//   npm run housing -- --no-prices                     only schools whose residences have no price yet
 import { mkdir, writeFile } from "node:fs/promises";
 import { parseArgs } from "node:util";
 import { z } from "zod";
@@ -20,6 +21,7 @@ const { values: args } = parseArgs({
     only: { type: "string" },
     limit: { type: "string", default: "100" },
     force: { type: "boolean", default: false },
+    "no-prices": { type: "boolean", default: false }, // only schools whose residences still have no price
     "dry-run": { type: "boolean", default: false },
   },
 });
@@ -79,6 +81,7 @@ if (error) throw new Error(error.message);
 const norm = (s) => (s ?? "").normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
 const hasPrices = (h) => (h?.options ?? []).some((o) => o.price);
 let list = unis.filter((u) => u.website_url && (args.force || (h => h?.version !== VERSION && !hasPrices(h))(u.housing)));
+if (args["no-prices"]) list = unis.filter((u) => u.website_url && !hasPrices(u.housing));
 if (args.only) list = unis.filter((u) => norm(u.name).includes(norm(args.only)));
 list = list.slice(0, Number(args.limit));
 console.log(`Житло: ${list.length} школ(и), AI: ${aiProvider}${dryRun ? " (dry-run)" : ""}\n`);
