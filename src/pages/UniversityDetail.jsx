@@ -1,3 +1,4 @@
+import { rangesOf, yearWindow } from "../lib/programCalendar.js";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import ScholarshipSection from "../components/ScholarshipSection";
@@ -46,6 +47,120 @@ function PhotoStack({ images, label, onClick }) {
         </span>
       </span>
     </button>
+  );
+}
+
+// The Program tab: what you will learn and when. The academic year as a timetable (semesters,
+// holidays, exam periods), the subjects period by period, then exams, internship and final project.
+// Degree, length, language and fees are on the Information tab, so they are not repeated here.
+const PG_ICONS = {
+  exam: <path d="M7 4h10v16H7zM10 8h4M10 12h4M10 16h2" />,
+  work: <><rect x="4" y="7" width="16" height="12" rx="2" /><path d="M9 7V5h6v2M4 12h16" /></>,
+  flag: <path d="M6 20V4M6 5h11l-2 4 2 4H6" />,
+};
+
+function YearTimetable({ calendar }) {
+  const win = yearWindow(calendar);
+  if (!win) return null;
+  const span = win.end - win.start;
+  const pos = (d) => Math.min(100, Math.max(0, ((d - win.start) / span) * 100));
+  const rows = [
+    ["Semesters", "is-term", calendar.terms],
+    ["Holidays", "is-break", calendar.breaks],
+    ["Exams", "is-exam", calendar.exam_periods],
+  ].filter(([, , l]) => l?.length);
+  const months = Array.from({ length: 12 }, (_, i) => new Date(win.start.getFullYear(), win.start.getMonth() + i, 1));
+  return (
+    <div className="pg-tt">
+      <div className="pg-tt-grid">
+        <div className="pg-tt-months">
+          {months.map((m) => <span key={m.toISOString()}>{m.toLocaleDateString("en-GB", { month: "short" })}</span>)}
+        </div>
+        {rows.map(([label, tone, items]) => (
+          <div key={label} className="pg-tt-row">
+            <div className="pg-tt-label">{label}</div>
+            <div className="pg-tt-track">
+              {months.map((m, i) => <i key={i} style={{ left: `${(i / 12) * 100}%` }} />)}
+              {items.flatMap((it) => rangesOf(it, win.fallbackYear).map((r, k) => {
+                const l = pos(r.start), w = Math.max(0.9, pos(new Date(r.end.getTime() + 86400000)) - l);
+                return <span key={`${it.name}-${k}`} className={`pg-tt-bar ${tone}`} style={{ left: `${l}%`, width: `${w}%` }} title={`${it.name}: ${it.dates}`} />;
+              }))}
+            </div>
+          </div>
+        ))}
+      </div>
+      <div className="pg-tt-list">
+        {rows.map(([label, tone, items]) => (
+          <div key={label} className="pg-tt-col">
+            <div className="pg-tt-col-head"><span className={`pg-tt-key ${tone}`} />{label}</div>
+            {items.map((x) => <div key={`${x.name}-${x.dates}`} className="pg-tt-item"><span>{x.name}</span><em>{x.dates}</em></div>)}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function ProgramTab({ uni }) {
+  const d = uni.programDetails;
+  const cal = d?.calendar;
+  const hasCal = cal && (cal.terms?.length || cal.breaks?.length || cal.exam_periods?.length);
+  const notes = [["Exams", d?.exams, "exam"], ["Internship", d?.internship, "work"], ["Final project", d?.final_project, "flag"]].filter(([, v]) => v);
+  return (
+    <div className="pg">
+      {hasCal && (
+        <section className="pg-card">
+          <div className="pg-card-head">
+            <div className="pg-card-title">Academic year{cal.year ? ` ${cal.year}` : ""}</div>
+            {cal.url && <a className="pg-link" href={cal.url} target="_blank" rel="noopener noreferrer">School calendar ↗</a>}
+          </div>
+          <YearTimetable calendar={cal} />
+        </section>
+      )}
+
+      <div className="pg-grid">
+        <section className="pg-card">
+          <div className="pg-card-head">
+            <div className="pg-card-title">What you'll study</div>
+            {d?.url && <a className="pg-link" href={d.url} target="_blank" rel="noopener noreferrer">Programme page ↗</a>}
+          </div>
+          {d?.structure?.length ? (
+            <div className="pg-subjects">
+              {d.structure.map((p, i) => (
+                <div key={`${p.period}-${i}`} className="pg-subj-row">
+                  <div className="pg-subj-period">{p.period}</div>
+                  <div className="pg-subj-body">
+                    {p.focus && <div className="pg-subj-focus">{p.focus}</div>}
+                    {p.modules.length > 0 && <ul className="pg-subj-list">{p.modules.map((m) => <li key={m}>{m}</li>)}</ul>}
+                  </div>
+                </div>
+              ))}
+              {d.electives?.length > 0 && (
+                <div className="pg-subj-row">
+                  <div className="pg-subj-period">Electives</div>
+                  <div className="pg-subj-body"><ul className="pg-subj-list">{d.electives.map((m) => <li key={m}>{m}</li>)}</ul></div>
+                </div>
+              )}
+            </div>
+          ) : (
+            <p className="pg-muted">{uni.curriculumSummary || "We haven't collected the subjects for this programme yet."}</p>
+          )}
+        </section>
+
+        {notes.length > 0 && (
+          <aside className="pg-card pg-notes">
+            {notes.map(([label, text, icon]) => (
+              <div key={label} className="pg-note">
+                <div className="pg-note-title"><svg className="pg-icon" viewBox="0 0 24 24" aria-hidden="true">{PG_ICONS[icon]}</svg>{label}</div>
+                <p>{text}</p>
+              </div>
+            ))}
+          </aside>
+        )}
+      </div>
+
+      <p className="pg-source">From {uni.name}'s official website. Dates and subjects can change, so check before you apply.</p>
+    </div>
   );
 }
 
@@ -290,16 +405,7 @@ export default function UniversityDetail({
           )}
 
           {/* ── PROGRAM TAB ── */}
-          {activeTab === "program" && (
-            <div className="detail-section">
-              <div className="detail-section-title">Program Overview</div>
-              <div className="detail-info-box">
-                <p className="detail-desc" style={{ margin: 0, lineHeight: 1.7 }}>
-                  {uni.curriculumSummary || "Detailed program information for this specialty hasn't been added yet."}
-                </p>
-              </div>
-            </div>
-          )}
+          {activeTab === "program" && <ProgramTab uni={uni} />}
 
           {/* ── SCHOLARSHIP TAB ── */}
           {activeTab === "scholarship" && (

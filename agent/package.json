@@ -20,7 +20,8 @@
     "complete": "node --env-file-if-exists=.env src/complete.js",
     "housing": "node --env-file-if-exists=.env src/housing.js",
     "housing-photos": "node --env-file-if-exists=.env src/housingPhotos.js",
-    "housing-map": "node --env-file-if-exists=.env src/housingMap.js"
+    "housing-map": "node --env-file-if-exists=.env src/housingMap.js",
+    "program": "node --env-file-if-exists=.env src/program.js"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^1.5.0",

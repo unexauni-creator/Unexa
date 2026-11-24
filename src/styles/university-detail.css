@@ -179,3 +179,63 @@
   .detail-social-row { grid-template-columns: 1fr; gap: 40px; padding: 8px 8% 16px 0; justify-items: center; }
   .detail-social-card { max-width: 320px; }
 }
+
+/* ── Program tab: neutral, clean; colour only marks the three kinds of dates ── */
+.pg { display: flex; flex-direction: column; gap: 16px; font-family: 'Nunito', sans-serif; color: #1f1813; }
+.pg-card { padding: 20px 22px; border-radius: 20px; background: linear-gradient(160deg, rgba(255,255,255,0.72) 0%, rgba(255,255,255,0.48) 100%); border: 1px solid rgba(255,255,255,0.9); box-shadow: 0 1px 2px rgba(43,31,24,0.04), 0 10px 24px rgba(43,31,24,0.04); }
+.pg-card-head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin-bottom: 14px; }
+.pg-card-title { font-size: 17px; font-weight: 700; color: #1f1813; }
+.pg-link { font-size: 13px; font-weight: 700; color: #6d6058; text-decoration: none; white-space: nowrap; }
+.pg-link:hover { color: #1f1813; text-decoration: underline; text-underline-offset: 3px; }
+.pg-muted { margin: 0; font-size: 14.5px; line-height: 1.6; color: #8a7c70; }
+.pg-grid { display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(240px, 1fr); gap: 16px; align-items: start; }
+.pg-grid > :only-child { grid-column: 1 / -1; }
+.pg-source { margin: 0; font-size: 12.5px; color: #a99c92; }
+
+/* timetable */
+.pg-tt-grid { display: flex; flex-direction: column; gap: 8px; }
+.pg-tt-months, .pg-tt-row { display: grid; grid-template-columns: 84px 1fr; align-items: center; }
+.pg-tt-months { grid-template-columns: 84px repeat(12, 1fr); font-size: 11.5px; font-weight: 700; color: #a99c92; }
+.pg-tt-months::before { content: ""; }
+.pg-tt-months span { padding-left: 4px; }
+.pg-tt-label { font-size: 12.5px; font-weight: 700; color: #6d6058; }
+.pg-tt-track { position: relative; height: 22px; border-radius: 8px; background: rgba(43,31,24,0.035); overflow: hidden; }
+.pg-tt-track i { position: absolute; top: 0; bottom: 0; border-left: 1px solid rgba(43,31,24,0.06); }
+.pg-tt-bar { position: absolute; top: 4px; bottom: 4px; border-radius: 6px; }
+.pg-tt-bar.is-term, .pg-tt-key.is-term { background: #3a2f28; }
+.pg-tt-bar.is-break, .pg-tt-key.is-break { background: #a9c2a4; }
+.pg-tt-bar.is-exam, .pg-tt-key.is-exam { background: #e2c58f; }
+.pg-tt-list { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 18px; margin-top: 18px; padding-top: 16px; border-top: 1px solid rgba(43,31,24,0.07); }
+.pg-tt-col { display: flex; flex-direction: column; gap: 8px; }
+.pg-tt-col-head { display: flex; align-items: center; gap: 8px; font-size: 12.5px; font-weight: 700; color: #6d6058; }
+.pg-tt-key { width: 10px; height: 10px; border-radius: 3px; }
+.pg-tt-item { display: flex; flex-direction: column; }
+.pg-tt-item span { font-size: 14px; font-weight: 600; color: #1f1813; }
+.pg-tt-item em { font-style: normal; font-size: 13px; color: #8a7c70; }
+
+/* subjects */
+.pg-subjects { display: flex; flex-direction: column; }
+.pg-subj-row { display: grid; grid-template-columns: 150px minmax(0, 1fr); gap: 16px; padding: 14px 0; border-top: 1px solid rgba(43,31,24,0.07); }
+.pg-subj-row:first-child { border-top: none; padding-top: 2px; }
+.pg-subj-period { font-size: 14px; font-weight: 700; color: #1f1813; }
+.pg-subj-focus { font-size: 13.5px; color: #8a7c70; line-height: 1.5; margin-bottom: 8px; }
+.pg-subj-list { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 6px 18px; }
+.pg-subj-list li { position: relative; padding-left: 14px; font-size: 14px; line-height: 1.45; color: #3a2f28; }
+.pg-subj-list li::before { content: ""; position: absolute; left: 0; top: 0.6em; width: 5px; height: 5px; border-radius: 50%; background: #c9bdb3; }
+
+/* exams, internship, final project */
+.pg-notes { display: flex; flex-direction: column; gap: 0; padding-top: 8px; padding-bottom: 8px; }
+.pg-note { padding: 12px 0; border-top: 1px solid rgba(43,31,24,0.07); }
+.pg-note:first-child { border-top: none; }
+.pg-note-title { display: flex; align-items: center; gap: 8px; font-size: 14.5px; font-weight: 700; }
+.pg-note p { margin: 6px 0 0; font-size: 14px; line-height: 1.6; color: #4a3f38; }
+.pg-icon { width: 17px; height: 17px; flex-shrink: 0; fill: none; stroke: #8a7c70; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
+
+@media (max-width: 1000px) { .pg-grid { grid-template-columns: 1fr; } }
+@media (max-width: 640px) {
+  .pg-card { padding: 16px; }
+  .pg-subj-row { grid-template-columns: 1fr; gap: 6px; }
+  .pg-tt-months, .pg-tt-row { grid-template-columns: 64px 1fr; }
+  .pg-tt-months { grid-template-columns: 64px repeat(12, 1fr); font-size: 10px; }
+  .pg-tt-months span { padding-left: 1px; }
+}

@@ -16,6 +16,7 @@ import { access, mkdir, writeFile } from "node:fs/promises";
 import { parseArgs } from "node:util";
 import { z } from "zod";
 import { get, htmlToText, extractLinks } from "./crawl.js";
+import { HUB, collectLinks, readPages as readSitePages } from "./site.js";
 import { generateStructured, aiProvider } from "./extract.js";
 import { Extraction, SYSTEM_PROMPT, buildUserPrompt } from "./schema.js";
 import { getSupabase, SPECIALTY_FK } from "./db.js";
@@ -66,53 +67,6 @@ function sameProgram(a, b) {
   return [...ta].filter((t) => tb.has(t)).length / Math.min(ta.size, tb.size) >= 0.75;
 }
 
-// ---------- 1. усі посилання школи ----------
-const SKIP = /\/(news|press|events?|agenda|calendar|blog|tag|category|author|login|intranet|search|shop|jobs?|vacanc|career-staff|alumni-stories)(\/|$)|\.(jpe?g|png|gif|svg|webp|zip|mp4|mp3|docx?|xlsx?|pptx?)$/i;
-const HUB = /admission|apply|applicat|study|studies|programm|courses?|degrees?|international|fees|tuition|scholar|funding|financial|undergrad|postgrad|graduate|bachelor|master|studium|studien|bewerbung|studiare|ammission|iscrizion|offerta|corsi|didattica|estudios|admision|matricula|grados?|rekrutacja|studia|kandyd|oplat|formation|candidat|admission|вступ|абітурієнт|освітні|навчання|вартість|入学|입학/i;
-
-async function sitemapUrls(origin) {
-  const found = new Set();
-  const robots = await get(`${origin}/robots.txt`).catch(() => null);
-  const maps = [...(robots?.body.matchAll(/^sitemap:\s*(\S+)/gim) ?? [])].map((m) => m[1]);
-  if (!maps.length) maps.push(`${origin}/sitemap.xml`, `${origin}/sitemap_index.xml`);
-  const queue = [...maps];
-  let reads = 0;
-  while (queue.length && reads < 10 && found.size < 5000) {
-    const page = await get(queue.shift()).catch(() => null);
-    reads++;
-    if (!page) continue;
-    const locs = [...page.body.matchAll(/<loc>\s*([^<\s]+)\s*<\/loc>/gi)].map((m) => m[1].replace(/&amp;/g, "&"));
-    if (/<sitemapindex/i.test(page.body)) {
-      // в індексі спершу беремо карти сторінок / програм, а не новин чи зображень
-      locs.sort((a, b) => Number(/news|post|event|image|tag|author/i.test(a)) - Number(/news|post|event|image|tag|author/i.test(b)));
-      queue.push(...locs.slice(0, 8));
-    } else locs.forEach((l) => found.add(l));
-  }
-  return [...found];
-}
-
-async function collectLinks(site) {
-  const start = new URL(site);
-  const root = start.hostname.split(".").slice(-2).join(".");
-  const own = (u) => { try { return new URL(u).hostname.endsWith(root); } catch { return false; } };
-  const links = new Map(); // url -> текст посилання
-  const add = (url, text = "") => { if (own(url) && !SKIP.test(url) && !links.has(url.split("#")[0])) links.set(url.split("#")[0], text); };
-
-  const home = await get(start.href).catch(() => null);
-  if (!home) throw new Error("головна сторінка не відкривається (сайт блокує агента)");
-  for (const [u, t] of extractLinks(home.body, home.url)) add(u, t);
-
-  // один рівень углиб: розділи вступу / навчання / міжнародних студентів
-  const hubs = [...links].filter(([u, t]) => HUB.test(`${u} ${t}`)).slice(0, 8);
-  for (const [hub] of hubs) {
-    await sleep(800);
-    const page = await get(hub).catch(() => null);
-    if (page) for (const [u, t] of extractLinks(page.body, page.url)) add(u, t);
-  }
-  for (const u of await sitemapUrls(start.origin)) add(u);
-  return links;
-}
-
 // ---------- 2. AI вибирає сторінки ----------
 const Plan = z.object({
   pages: z.array(z.object({ url: z.string(), for: z.string().describe("which programme or topic this page is for") })),
@@ -135,33 +89,6 @@ Return at most ${args.pages} URLs, copied exactly from the list. Never invent UR
   const user = `University: ${uni.name} (${uni.city}, ${uni.country})\nProgrammes with gaps:\n${programmes}\n\nLinks (url | link text):\n${ranked.map((r) => `${r.u} | ${r.t}`).join("\n")}`;
   const { data } = await generateStructured({ system, user, schema: Plan });
   return [...new Set(data.pages.map((p) => p.url).filter((u) => links.has(u)))].slice(0, Number(args.pages));
-}
-
-// ---------- 3. читання сторінок і PDF ----------
-async function fetchPdf(url) {
-  const res = await fetch(url, { headers: { "User-Agent": USER_AGENT }, redirect: "follow", signal: AbortSignal.timeout(30000) }).catch(() => null);
-  if (!res?.ok || !/pdf/i.test(res.headers.get("content-type") ?? "")) return null;
-  const buf = Buffer.from(await res.arrayBuffer());
-  if (buf.length > 8 * 1024 * 1024) return null;
-  return { url, data: buf.toString("base64") };
-}
-
-async function readPages(urls, log) {
-  const pages = [], pdfs = [];
-  for (const url of urls) {
-    await sleep(1200);
-    if (/\.pdf($|\?)/i.test(url)) {
-      if (pdfs.length >= Number(args.pdfs)) continue;
-      const pdf = await fetchPdf(url);
-      if (pdf) { pdfs.push(pdf); log(`   PDF: ${url}`); }
-      continue;
-    }
-    const page = await get(url).catch(() => null);
-    if (!page) continue;
-    const text = htmlToText(page.body).slice(0, 20000);
-    if (text.length > 200) { pages.push({ url: page.url, text }); log(`   прочитано: ${page.url}`); }
-  }
-  return { pages, pdfs };
 }
 
 const COMPLETE_RULES = `
@@ -260,7 +187,7 @@ if (!args["countries-only"]) {
       const links = await collectLinks(uni.website_url);
       console.log(`   посилань на сайті: ${links.size}`);
       const chosen = await planPages(uni, gaps, links);
-      const { pages, pdfs } = await readPages([uni.website_url, ...chosen], console.log);
+      const { pages, pdfs } = await readSitePages([uni.website_url, ...chosen], console.log, { maxPdfs: Number(args.pdfs) });
       if (!pages.length && !pdfs.length) throw new Error("не вдалося прочитати жодної сторінки");
 
       const result = await generateStructured({

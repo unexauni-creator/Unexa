@@ -65,6 +65,7 @@ export function mapSpecialty(rawRow) {
 
     // Program tab
     curriculumSummary: row.curriculum_summary,
+    programDetails: row.program_details ?? null, // overview, modules by year, skills, careers… (agent: npm run program)
 
     // Scholarship tab
     scholarshipsText: row.scholarships_text,
