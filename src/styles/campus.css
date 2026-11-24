@@ -251,3 +251,6 @@ a.tc-row:hover { background: #fff; padding-left: 16px; }
 @media (max-width: 1100px) { .tc-grid { grid-template-columns: 1fr; } }
 @media (max-width: 640px) { .tc-row, .tc-others .tc-row { grid-template-columns: 40px minmax(0, 1fr) 16px; padding: 12px; } }
 .tc-others[open] summary span:first-child::before, .tc-others summary span:first-child::before { content: none; display: none; }
+.tc-page .tc-intro { top: 16px; }
+.tc-source-link { color: #2b1f18; font-weight: 700; text-decoration: underline; text-underline-offset: 3px; }
+.tc-layout.is-single { grid-template-columns: 1fr; }

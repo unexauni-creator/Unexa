@@ -1,5 +1,6 @@
 import { getInitials } from "../lib/initials.js";
 import "../styles/campus.css";
+import "../styles/student-life.css";
 
 // Teachers of one school, collected by the Unexa agent from its official website (universities.faculty):
 // how teaching works, studios and workshops, and teachers named on the site with a link to their page.
@@ -44,17 +45,21 @@ export default function TeachersSection({ onBack, uni }) {
   }
 
   return (
-    <div className="campus-page">
-      <div className="dorm-top-row">
-        <button className="dorm-back-icon-btn" onClick={onBack} aria-label="Go back">
-          <img src="/arrow-left.svg" alt="" className="dorm-back-icon-img" />
-        </button>
-        <div className="dorm-heading">
-          <div className="dorm-heading-title">Teachers</div>
-          <div className="dorm-heading-desc">{uni?.program ? `Who teaches ${uni.program} at ${uni.name}` : uni?.name ? `Who teaches at ${uni.name}` : "Who teaches and how."}</div>
+    <div className="student-life-page tc-page">
+      {/* the same container as Student Life and Dorm: the header stays put, the content scrolls under it */}
+      <header className="sl-page-header">
+        <div className="sl-top-row">
+          <button className="sl-back-icon-btn" onClick={onBack} aria-label="Go back">
+            <img src="/arrow-left.svg" alt="" className="sl-back-icon" />
+          </button>
+          <div className="sl-heading">
+            <div className="sl-heading-title">Teachers</div>
+            <div className="sl-heading-desc">{uni?.program ? `Who teaches ${uni.program} at ${uni.name}` : uni?.name ? `Who teaches at ${uni.name}` : "Who teaches and how."}</div>
+          </div>
         </div>
-      </div>
+      </header>
 
+      <div className="sl-scroll">
       {!hasAny ? (
         <div className="campus-empty">
           <div className="campus-empty-mark" aria-hidden="true">Aa</div>
@@ -63,33 +68,15 @@ export default function TeachersSection({ onBack, uni }) {
           {uni?.website && <a className="campus-btn" href={uni.website} target="_blank" rel="noopener noreferrer">Visit the official website ↗</a>}
         </div>
       ) : (
-        <div className="tc-layout">
+        <div className={`tc-layout ${f.summary ? "" : "is-single"}`}>
           {/* left: the editorial part, stays in view while the list scrolls */}
+          {f.summary && (
           <aside className="tc-intro">
             <div className="tc-kicker">How teaching works</div>
-            {f.summary && <p className="tc-quote">{f.summary}</p>}
+            <p className="tc-quote">{f.summary}</p>
 
-            <div className="tc-stats">
-              {people.length > 0 && <div><strong>{people.length}</strong><span>on this course</span></div>}
-              {studios.length > 0 && <div><strong>{studios.length}</strong><span>studios & labs</span></div>}
-              {f.class_size && <div className="wide"><strong className="small">{f.class_size}</strong><span>class size</span></div>}
-            </div>
-
-            {f.visiting && (
-              <div className="tc-note">
-                <span className="tc-note-label">Visiting artists</span>
-                {f.visiting}
-              </div>
-            )}
-
-            {studios.length > 0 && (
-              <div className="tc-studios">
-                <div className="tc-kicker">Studios & workshops</div>
-                <ul>{studios.map((s) => <li key={s}>{s}</li>)}</ul>
-              </div>
-            )}
-            {f.url && <a className="tc-link" href={f.url} target="_blank" rel="noopener noreferrer">All faculty on the school's website <span aria-hidden="true">→</span></a>}
           </aside>
+          )}
 
           {/* right: the teachers of this course with their career, then others at the school */}
           <section className="tc-directory">
@@ -110,10 +97,11 @@ export default function TeachersSection({ onBack, uni }) {
                 <div className="tc-grid">{others.map((p, i) => renderPerson(p, i, false))}</div>
               </details>
             )}
-            <p className="campus-source">Collected from {uni?.name}'s official website. Details can change, so check the linked pages.</p>
+            <p className="campus-source">Collected from {uni?.name}'s official website. Details can change, so check the linked pages.{f.url && <> <a className="tc-source-link" href={f.url} target="_blank" rel="noopener noreferrer">All faculty on the school's website ↗</a></>}</p>
           </section>
         </div>
       )}
+      </div>
     </div>
   );
 }
