@@ -214,3 +214,40 @@ a.dm-listing:hover .dm-listing-go span { transform: translateX(3px); }
 .dm2-top.has-map .dm2-title { font-size: clamp(24px, 2.6vw, 32px); }
 @media (max-width: 900px) { .dm2-top.has-map { grid-template-columns: 1fr; } .dmap { min-height: 240px; } }
 .dmap .leaflet-tile-pane { filter: grayscale(0.85) sepia(0.12) brightness(1.04) contrast(0.92); }
+
+/* ── Teachers, cleaner: calm text, chips for studios, teachers as light cards ── */
+.tc-layout { grid-template-columns: minmax(260px, 0.8fr) minmax(0, 1.5fr); gap: 24px; }
+.tc-intro { gap: 16px; padding: 24px; background: linear-gradient(160deg, rgba(255,255,255,0.7) 0%, rgba(255,255,255,0.45) 100%); border: 1px solid rgba(255,255,255,0.9); box-shadow: 0 1px 2px rgba(43,31,24,0.04), 0 12px 28px rgba(43,31,24,0.05); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); }
+.tc-kicker { font-size: 12px; letter-spacing: 0.06em; color: #8a7c70; }
+.tc-quote { font-size: 15.5px; line-height: 1.65; font-weight: 500; letter-spacing: 0; color: #3a2f28; padding-left: 0; border-left: none; }
+.tc-stats { display: flex; flex-wrap: wrap; gap: 8px; background: none; border-radius: 0; overflow: visible; }
+.tc-stats > div { flex: 1 1 110px; padding: 12px 14px; border-radius: 14px; background: rgba(246,243,240,0.9); }
+.tc-stats strong { font-size: 24px; }
+.tc-note { font-size: 13.5px; background: rgba(246,243,240,0.9); }
+.tc-note-label { font-size: 12px; letter-spacing: 0.04em; text-transform: none; color: #8a7c70; }
+.tc-studios ul { flex-direction: row; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+.tc-studios li { padding: 6px 12px; border-top: none; border-radius: 100px; background: rgba(246,243,240,0.9); font-size: 13px; font-weight: 600; color: #3a2f28; }
+
+.tc-directory { gap: 14px; }
+.tc-dir-head, .tc-others summary { align-items: center; font-size: 13px; font-weight: 700; letter-spacing: 0; text-transform: none; color: #2b1f18; padding: 0 2px 4px; border-bottom: none; }
+.tc-count { font-size: 12px; font-weight: 700; color: #8a7c70; background: rgba(43,31,24,0.06); border-radius: 100px; padding: 2px 9px; }
+.tc-others { margin-top: 6px; }
+.tc-others summary span:first-child::before { content: none; }
+.tc-others summary span:first-child::after { content: ""; display: inline-block; width: 7px; height: 7px; margin-left: 10px; border-right: 1.8px solid #8a7c70; border-bottom: 1.8px solid #8a7c70; transform: translateY(-3px) rotate(45deg); transition: transform 0.2s; }
+.tc-others:not([open]) summary span:first-child::after { transform: translateY(-1px) rotate(-45deg); }
+.tc-dir-empty { display: flex; gap: 10px; align-items: flex-start; font-size: 14px; color: #6b5f57; padding: 14px 16px; border-top: none; border-radius: 14px; background: rgba(255,255,255,0.55); border: 1px solid rgba(255,255,255,0.9); }
+.tc-dir-empty svg { flex-shrink: 0; width: 18px; height: 18px; margin-top: 2px; fill: none; stroke: #AC8876; stroke-width: 1.8; stroke-linecap: round; }
+.tc-dir-empty b { color: #2b1f18; }
+
+.tc-row, .tc-others .tc-row { grid-template-columns: 44px minmax(0, 1fr) 20px; align-items: center; gap: 14px; padding: 14px 16px; margin-bottom: 8px; border-bottom: none; border-radius: 16px; background: rgba(255,255,255,0.6); border: 1px solid rgba(255,255,255,0.9); box-shadow: 0 1px 2px rgba(43,31,24,0.03); }
+.tc-row.has-bio { align-items: start; }
+a.tc-row:hover { background: #fff; padding-left: 16px; }
+.tc-mono, .tc-others .tc-mono { width: 44px; height: 44px; font-size: 14px; margin-top: 0; }
+.tc-name, .tc-others .tc-name { font-size: 15px; }
+.tc-role { font-size: 13px; line-height: 1.45; color: #8a7c70; margin-top: 2px; }
+.tc-arrow { opacity: 0.5; transform: none; }
+.tc-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; margin-top: 10px; }
+.tc-grid .tc-row { margin-bottom: 0; align-items: start; }
+@media (max-width: 1100px) { .tc-grid { grid-template-columns: 1fr; } }
+@media (max-width: 640px) { .tc-row, .tc-others .tc-row { grid-template-columns: 40px minmax(0, 1fr) 16px; padding: 12px; } }
+.tc-others[open] summary span:first-child::before, .tc-others summary span:first-child::before { content: none; display: none; }

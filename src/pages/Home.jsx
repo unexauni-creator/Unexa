@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, useMemo } from "react";
+import { useState, useRef, useEffect, useLayoutEffect, useMemo } from "react";
 import { Link } from "react-router-dom";
 import { supabase } from "../lib/supabaseClient";
 import { mapSpecialty } from "../lib/mapSpecialty.js";
@@ -392,7 +392,15 @@ function withoutTag(f, tag) {
 }
 
 // demoProfile: local test page only (/dev/home), stands in for the onboarding answers of a signed-in student
-export default function Home({ onSelectUni, savedUniversities, onToggleSave, currentUser, demoProfile }) {
+// Where the list was scrolled to, kept while the user looks at a school, so Back returns to the same card.
+// The list scrolls inside .home-scroll on wide screens and the whole .main on phones; both are kept.
+const SCROLL_KEY = "unexa_home_scroll";
+function readScroll() { try { return JSON.parse(sessionStorage.getItem(SCROLL_KEY)) ?? { inner: 0, outer: 0 }; } catch { return { inner: 0, outer: 0 }; } }
+function writeScroll(v) { try { sessionStorage.setItem(SCROLL_KEY, JSON.stringify(v)); } catch { /* private mode */ } }
+
+export default function Home({ onSelectUni, savedUniversities, onToggleSave, currentUser, demoProfile, active = true }) {
+  const scrollRef = useRef(null);
+  const activeRef = useRef(active);
   const [universities, setUniversities] = useState([]);
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState(null);
@@ -414,6 +422,36 @@ export default function Home({ onSelectUni, savedUniversities, onToggleSave, cur
   const [filters, setFilters] = useState(DEFAULT_FILTERS);
   const [appliedFilters, setAppliedFilters] = useState(DEFAULT_FILTERS);
   const [toast, setToast] = useState(null);
+
+  // remember the scroll position while Home is on screen
+  useEffect(() => {
+    const inner = scrollRef.current;
+    const outer = inner?.closest(".main");
+    if (!inner) return;
+    let t = null;
+    const save = () => {
+      if (!activeRef.current) return; // a school page is open over Home: its scrolling is not ours
+      clearTimeout(t);
+      t = setTimeout(() => writeScroll({ inner: inner.scrollTop, outer: outer?.scrollTop ?? 0 }), 80);
+    };
+    inner.addEventListener("scroll", save, { passive: true });
+    outer?.addEventListener("scroll", save, { passive: true });
+    return () => { clearTimeout(t); inner.removeEventListener("scroll", save); outer?.removeEventListener("scroll", save); };
+  }, []);
+  // put it back when coming back from a school, and once the list has loaded after a reload
+  useLayoutEffect(() => {
+    activeRef.current = active;
+    if (!active || loading) return;
+    const inner = scrollRef.current;
+    if (!inner) return;
+    const { inner: y, outer: oy } = readScroll();
+    inner.scrollTop = y;
+    const outer = inner.closest(".main");
+    if (outer) outer.scrollTop = oy;
+    // images above may still be loading: try once more after layout settles
+    const t = setTimeout(() => { if (activeRef.current) { inner.scrollTop = y; if (outer) outer.scrollTop = oy; } }, 120);
+    return () => clearTimeout(t);
+  }, [active, loading]);
   const searchRef = useRef(null);
 
   // Fetch specialties + their parent university in one query
@@ -712,7 +750,7 @@ export default function Home({ onSelectUni, savedUniversities, onToggleSave, cur
       </div>
 
       <div className="home-panel">
-      <div className="home-scroll">
+      <div className="home-scroll" ref={scrollRef}>
         {loading && (
           <div style={{ textAlign: "center", padding: "48px 0", fontFamily: "Nunito", color: "#8a7c70" }}>
             Loading universities...

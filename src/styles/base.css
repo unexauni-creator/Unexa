@@ -31,3 +31,4 @@ body, #root { height: 100vh; font-family: 'DM Sans', sans-serif; background: #e2
 .preview-still .home-icon-btn { position: relative; display: inline-flex; align-items: center; justify-content: center; }
 .preview-still *::-webkit-scrollbar { display: none; }
 .preview-still * { scrollbar-width: none; }
+.main-view { height: 100%; }

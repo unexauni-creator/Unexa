@@ -31,8 +31,9 @@ const PreviewHome = lazy(() => import("./pages/PreviewHome"));
 const PreviewDashboard = lazy(() => import("./pages/PreviewScreens").then((m) => ({ default: m.PreviewDashboard })));
 const PreviewRoadmap = lazy(() => import("./pages/PreviewScreens").then((m) => ({ default: m.PreviewRoadmap })));
 const PreviewDetail = lazy(() => import("./pages/PreviewScreens").then((m) => ({ default: m.PreviewDetail })));
-const DevHome = lazy(() => import("./pages/Home"));
+const DevHome = lazy(() => import("./pages/PreviewScreens").then((m) => ({ default: m.DevHomeFlow })));
 const DevRoadmap = lazy(() => import("./pages/PreviewScreens").then((m) => ({ default: m.DevRoadmap })));
+const DevDetail = lazy(() => import("./pages/PreviewScreens").then((m) => ({ default: m.DevDetail })));
 const PreviewDorm = lazy(() => import("./pages/PreviewScreens").then((m) => ({ default: m.PreviewDorm })));
 
 // Saved universities used to live only in this browser; this key is now read once
@@ -65,6 +66,8 @@ const MAX_COMPARE = 4;
 
 export default function App() {
   const [selectedUni, setSelectedUni] = useState(null);
+  // a school page starts at its top (on phones the whole .main scrolls, and Home left it scrolled down)
+  useEffect(() => { if (selectedUni) document.querySelector(".main")?.scrollTo(0, 0); }, [selectedUni]);
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -390,10 +393,11 @@ export default function App() {
       <Route path="/preview/dorm" element={<PreviewDorm />} />
       {import.meta.env.DEV && (
         <><Route path="/dev/roadmap" element={<DevRoadmap />} />
+        <Route path="/dev/detail" element={<DevDetail />} />
         <Route path="/dev/profile" element={<div className="app"><main className="main"><Profile userName="Lina" userEmail="lina@example.test" /></main></div>} /></>
       )}
       {import.meta.env.DEV && (
-        <Route path="/dev/home" element={<div className="app"><main className="main"><DevHome onSelectUni={() => {}} savedUniversities={[]} onToggleSave={() => {}} currentUser={{ name: "Lina" }} demoProfile={{ study_fields: ["Graphic Design", "Illustration"], countries: ["Italy", "Germany"], study_level: "Bachelor" }} /></main></div>} />
+        <Route path="/dev/home" element={<DevHome />} />
       )}
       <Route path="/preview/onboarding" element={<Onboarding demo onLogin={() => {}} />} />
       {/* ── Public: always reachable, regardless of login state ── */}
@@ -411,7 +415,8 @@ export default function App() {
             <div className="app">
               <Sidebar avatarUrl={avatarUrl} userInitials={userInitials} userName={authUser.name} />
               <main className="main">
-                {selectedUni ? (
+                {/* a school opens over Home without unmounting it, so the list, tab, filters and scroll stay as they were */}
+                {selectedUni && (
                   <UniversityDetail
                     uni={selectedUni}
                     onBack={() => setSelectedUni(null)}
@@ -420,12 +425,14 @@ export default function App() {
                     comparedUniversities={comparedUniversities}
                     onAddToCompare={addToCompare}
                   />
-                ) : (
+                )}
+                <div className="main-view" style={selectedUni ? { display: "none" } : undefined}>
                   <Routes>
                     <Route
                       index
                       element={
                         <Home
+                          active={!selectedUni}
                           onSelectUni={setSelectedUni}
                           savedUniversities={savedUniversities}
                           onToggleSave={toggleSaveUni}
@@ -487,6 +494,7 @@ export default function App() {
                       path="*"
                       element={
                         <Home
+                          active={!selectedUni}
                           onSelectUni={setSelectedUni}
                           savedUniversities={savedUniversities}
                           onToggleSave={toggleSaveUni}
@@ -495,7 +503,7 @@ export default function App() {
                       }
                     />
                   </Routes>
-                )}
+                </div>
               </main>
             </div>
           ) : (

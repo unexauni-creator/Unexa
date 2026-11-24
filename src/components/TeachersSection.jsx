@@ -31,7 +31,6 @@ export default function TeachersSection({ onBack, uni }) {
     const Row = p.url ? "a" : "div";
     return (
       <Row key={p.name} className={`tc-row ${withBio && p.bio ? "has-bio" : ""}`} {...(p.url ? { href: p.url, target: "_blank", rel: "noopener noreferrer" } : {})}>
-        <span className="tc-num">{String(i + 1).padStart(2, "0")}</span>
         <span className={`tc-mono ${toneOf(p.name)}`} aria-hidden="true">{monogram(p.name)}</span>
         <span className="tc-who">
           <span className="tc-name">{p.name}</span>
@@ -86,7 +85,7 @@ export default function TeachersSection({ onBack, uni }) {
             {studios.length > 0 && (
               <div className="tc-studios">
                 <div className="tc-kicker">Studios & workshops</div>
-                <ul>{studios.map((s) => <li key={s}><span aria-hidden="true" />{s}</li>)}</ul>
+                <ul>{studios.map((s) => <li key={s}>{s}</li>)}</ul>
               </div>
             )}
             {f.url && <a className="tc-link" href={f.url} target="_blank" rel="noopener noreferrer">All faculty on the school's website <span aria-hidden="true">→</span></a>}
@@ -96,16 +95,19 @@ export default function TeachersSection({ onBack, uni }) {
           <section className="tc-directory">
             {people.length > 0 ? (
               <>
-                <div className="tc-dir-head"><span>Teaching on this course</span><span>{people.length}</span></div>
+                <div className="tc-dir-head"><span>Teaching on this course</span><span className="tc-count">{people.length}</span></div>
                 {people.map((p, i) => renderPerson(p, i, true))}
               </>
             ) : (
-              <div className="tc-dir-empty">The school's website doesn't say who teaches {uni?.program ? <b>{uni.program}</b> : "this course"}.{others.length ? " Here are teachers from other programmes at the school." : " See the faculty page for who teaches each programme."}</div>
+              <div className="tc-dir-empty">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9" /><path d="M12 11v5M12 8h.01" /></svg>
+                <span>The school's website doesn't say who teaches {uni?.program ? <b>{uni.program}</b> : "this course"}.{others.length ? " Here are teachers from other programmes at the school." : " See the faculty page for who teaches each programme."}</span>
+              </div>
             )}
             {others.length > 0 && (
               <details className="tc-others" open={people.length === 0}>
-                <summary><span>Other teachers at {uni?.name}</span><span>{others.length}</span></summary>
-                {others.map((p, i) => renderPerson(p, i, false))}
+                <summary><span>Other teachers at {uni?.name}</span><span className="tc-count">{others.length}</span></summary>
+                <div className="tc-grid">{others.map((p, i) => renderPerson(p, i, false))}</div>
               </details>
             )}
             <p className="campus-source">Collected from {uni?.name}'s official website. Details can change, so check the linked pages.</p>

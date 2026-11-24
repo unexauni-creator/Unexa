@@ -163,3 +163,19 @@
   color: #8a7a70;
 }
 .detail-verified svg { color: #6f9a6a; flex-shrink: 0; }
+
+/* Wider glass stacks with more blur: three columns that fill the row, so there is less empty space between them */
+.detail-social-row { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 28px; justify-content: stretch; padding: 8px 4% 16px 0; }
+.detail-social-card { min-width: 0; width: 100%; flex: none; }
+.polaroid-stack { width: 84%; margin-top: 12%; aspect-ratio: 1.22 / 1; }
+.polaroid { padding: 8% 7% 0; border-radius: 30px; background: linear-gradient(165deg, rgba(252,251,250,0.72) 0%, rgba(240,238,235,0.58) 100%); backdrop-filter: blur(40px) saturate(160%); -webkit-backdrop-filter: blur(40px) saturate(160%); }
+.polaroid img { aspect-ratio: 16 / 10; border-radius: 18px; }
+.polaroid-back1 img, .polaroid-back2 img { filter: blur(3px) saturate(0.9); opacity: 0.85; }
+.polaroid-back1 { transform: translate(8%, -8%) rotate(-1deg); }
+.polaroid-back2 { transform: translate(15%, -15%) rotate(5deg); }
+.detail-social-card:hover .polaroid-back1 { transform: translate(10%, -10%) rotate(0deg); }
+.detail-social-card:hover .polaroid-back2 { transform: translate(18%, -17%) rotate(7deg); }
+@media (max-width: 768px) {
+  .detail-social-row { grid-template-columns: 1fr; gap: 40px; padding: 8px 8% 16px 0; justify-items: center; }
+  .detail-social-card { max-width: 320px; }
+}

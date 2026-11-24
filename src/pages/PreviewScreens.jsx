@@ -1,6 +1,8 @@
 // Real Unexa screens for the landing page, filled with a snapshot of real programmes from the database
 // (src/lib/demoPrograms.json). They render the app's own components, so the landing always shows the
 // product as it really looks. Shown at 1440×900 inside an iframe and scaled down; nothing is saved.
+import { useState } from "react";
+import Home from "./Home";
 import Dashboard from "./Dashboard";
 import CareerRoadmap from "./CareerRoadmap";
 import UniversityDetail from "./UniversityDetail";
@@ -81,6 +83,34 @@ export function DevRoadmap() {
     <div className="app">
       <main className="main">
         <CareerRoadmap savedUniversities={demo} onSelectUni={noop} onToggleSave={noop} />
+      </main>
+    </div>
+  );
+}
+
+// local test page only (/dev/detail?school=…): a school page at any screen size
+export function DevDetail() {
+  const want = new URLSearchParams(window.location.search).get("school") || "Weißensee";
+  const uni = demo.find((p) => p.name.toLowerCase().includes(want.toLowerCase())) ?? demo.find((p) => p.faculty?.people?.length) ?? demo[0];
+  return (
+    <div className="app">
+      <main className="main">
+        <UniversityDetail uni={uni} onBack={noop} savedUniversities={[uni]} onToggleSave={noop} comparedUniversities={[]} onAddToCompare={noop} />
+      </main>
+    </div>
+  );
+}
+
+// local test page only (/dev/home): Home with a school opening over it, the same way the real app does
+export function DevHomeFlow() {
+  const [uni, setUni] = useState(null);
+  return (
+    <div className="app">
+      <main className="main">
+        {uni && <UniversityDetail uni={uni} onBack={() => setUni(null)} savedUniversities={[]} onToggleSave={noop} comparedUniversities={[]} onAddToCompare={noop} />}
+        <div className="main-view" style={uni ? { display: "none" } : undefined}>
+          <Home active={!uni} onSelectUni={setUni} savedUniversities={[]} onToggleSave={noop} currentUser={{ name: "Lina" }} demoProfile={{ study_fields: ["Graphic Design", "Illustration"], countries: ["Italy", "Germany"], study_level: "Bachelor" }} />
+        </div>
       </main>
     </div>
   );
