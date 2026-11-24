@@ -1,5 +1,7 @@
 # Once a month the Unexa agent re-reads every school's official website and updates
 # deadlines, fees, intake, requirements and scholarships, then fills any fields still empty.
+# A second job then refreshes the Program tab: subjects, the academic year (semesters, holidays,
+# exam periods), exams and internship.
 # Needs three repository secrets (Settings → Secrets and variables → Actions):
 #   SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, GEMINI_API_KEY
 name: Agent monthly refresh
@@ -41,4 +43,35 @@ jobs:
         with:
           name: agent-run
           path: agent/out/*.json
+          if-no-files-found: ignore
+
+  programmes:
+    needs: refresh # one job at a time, so the two don't share the Gemini quota
+    if: always()
+    runs-on: ubuntu-latest
+    timeout-minutes: 340
+    defaults:
+      run:
+        working-directory: agent
+    env:
+      SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+      SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+      GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+      AI_PROVIDER: gemini
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: agent/package-lock.json
+      - run: npm ci
+      - name: Subjects, academic year, exams and internship of every programme
+        run: npm run program -- --force
+      - name: Keep the run log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: agent-programmes
+          path: agent/out/program-*.json
           if-no-files-found: ignore
